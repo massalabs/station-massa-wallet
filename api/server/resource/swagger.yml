@@ -1,0 +1,298 @@
+consumes:
+  - application/json
+info:
+  description: Massa core Thyra plugin.
+  title: massa-core-plugin
+  version: 0.0.0
+produces:
+  - application/json
+schemes:
+  - http
+  - https
+swagger: "2.0"
+paths:
+  /web/wallet/{resource}:
+    get:
+      operationId: webWallet
+      produces:
+        - application/json
+        - text/javascript
+        - text/html
+        - text/css
+        - text/webp
+        - image/png
+      parameters:
+        - in: path
+          name: resource
+          type: string
+          default: index.html
+          required: true
+          description: Website resource.
+      responses:
+        "200":
+          description: Page found
+        "404":
+          description: Resource not found.
+          schema:
+            $ref: "#/definitions/Error"
+  /rest/wallet:
+    get:
+      operationId: restWalletList
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Wallets retrieved
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Wallet"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      operationId: restWalletCreate
+      parameters:
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            type: object
+            required:
+              - nickname
+              - password
+            properties:
+              nickname:
+                description: Wallet's short name.
+                type: string
+              password:
+                description: Private key password.
+                type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: New wallet created.
+          schema:
+            $ref: "#/definitions/Wallet"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      operationId: restWalletImport
+      parameters:
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/Wallet"
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Wallet imported.
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /rest/wallet/{nickname}:
+    delete:
+      operationId: restWalletDelete
+      parameters:
+        - in: path
+          name: nickname
+          type: string
+          required: true
+          description: Wallet's short name.
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Wallet removed.
+          schema:
+            $ref: "#/definitions/Wallet"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    get:
+      operationId: restWalletGet
+      parameters:
+        - in: path
+          name: nickname
+          type: string
+          required: true
+          description: Wallet's short name.
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Wallet retrieved.
+          schema:
+            $ref: "#/definitions/Wallet"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /rest/wallet/{nickname}/signOperation:
+    post:
+      operationId: restWalletSignOperation
+      parameters:
+        - in: path
+          name: nickname
+          type: string
+          required: true
+          description: Wallet's short name.
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            type: object
+            required:
+              - operation
+            properties:
+              operation:
+                description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
+                type: string
+                format: byte
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Signature.
+          schema:
+            $ref: "#/definitions/Signature"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+definitions:
+  Error:
+    type: object
+    description: Error object.
+    required:
+      - code
+      - message
+    properties:
+      code:
+        description: error code.
+        type: string
+        x-nullable: false
+      message:
+        description: error message.
+        type: string
+        x-nullable: false
+  Signature:
+    type: object
+    description: Signature of a sent operation.
+    required:
+      - signature
+      - publicKey
+    properties:
+      publicKey:
+        description: Public part of the key pair used to sign the operation.
+        type: string
+        x-nullable: false
+      signature:
+        description: Hash of the operation attributes encrypted with the private part of the key pair.
+        type: string
+        format: byte
+        x-nullable: false
+  Wallet:
+    type: object
+    description: Wallet object (V0).
+    required:
+      - nickname
+      - address
+      - keyPairs
+    properties:
+      nickname:
+        description: wallet's nickname.
+        type: string
+      address:
+        description: wallet's address.
+        type: string
+      keyPairs:
+        description: wallet's key pairs.
+        type: array
+        items:
+          type: object
+          required:
+            - privateKey
+            - publicKey
+            - salt
+            - nonce
+          properties:
+            privateKey:
+              description: Key pair's private key.
+              type: string
+              format: base58check
+            publicKey:
+              description: Key pair's public key.
+              type: string
+              format: base58check
+            salt:
+              description: Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.
+              type: string
+              format: base58check
+            nonce:
+              description: Nonce used by the AES-GCM algorithm used to protect the key pair's private key.
+              type: string
+              format: base58check
