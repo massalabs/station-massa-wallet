@@ -1,15 +1,25 @@
-package api
+package main
 
 import (
 	"log"
 	"sync"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
 	"github.com/go-openapi/loads"
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi"
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-massa-core/internal/api/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler"
+	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler/wallet"
 )
+
+func main() {
+	myApp := app.New()
+
+	go StartServer(&myApp)
+
+	myApp.Run()
+}
 
 func StartServer(app *fyne.App) {
 
@@ -18,7 +28,7 @@ func StartServer(app *fyne.App) {
 		log.Fatalln(err)
 	}
 
-	localAPI := operations.NewMassaCoreAPI(swaggerSpec)
+	localAPI := operations.NewMassaWalletAPI(swaggerSpec)
 	server := restapi.NewServer(localAPI)
 
 	var walletStorage sync.Map // to be replaced by channel
@@ -27,9 +37,9 @@ func StartServer(app *fyne.App) {
 	localAPI.RestWalletDeleteHandler = wallet.NewDelete(&walletStorage)
 	localAPI.RestWalletImportHandler = wallet.NewImport(&walletStorage)
 	localAPI.RestWalletListHandler = wallet.NewList(&walletStorage)
-	// localAPI.RestWalletGetHandler doesn't exist in Thyra
+
 	localAPI.RestWalletSignOperationHandler = wallet.NewSign(&walletStorage, app)
-	localAPI.WebWalletHandler = operations.WebWalletHandlerFunc(WebWalletHandler)
+	localAPI.WebHandler = operations.WebHandlerFunc(handler.WebWalletHandler)
 
 	server.ConfigureAPI()
 

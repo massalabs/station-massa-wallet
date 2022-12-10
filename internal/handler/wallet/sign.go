@@ -8,12 +8,12 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"lukechampine.com/blake3"
 
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/base58"
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/gui"
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/gui"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 //nolint:nolintlint,ireturn
@@ -33,7 +33,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if len(params.Nickname) == 0 {
 		return operations.NewRestWalletSignOperationBadRequest().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletSignOperationEmptyNickname,
+				Code:    errorSignOperationEmptyNickname,
 				Message: "Error: nickname field is mandatory.",
 			})
 	}
@@ -42,7 +42,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeGetWallet,
+				Code:    errorGetWallet,
 				Message: "Error cannot load wallet : " + err.Error(),
 			})
 	}
@@ -51,16 +51,16 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    ErrorCodeWalletCanceledAction,
-				Message: ErrorCodeWalletCanceledAction,
+				Code:    errorCanceledAction,
+				Message: errorCanceledAction,
 			})
 	}
 
 	if len(clearPassword) == 0 {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    ErrorCodeWalletPasswordEmptyExecuteFct,
-				Message: ErrorCodeWalletPasswordEmptyExecuteFct,
+				Code:    errorPasswordEmptyExecuteFct,
+				Message: errorPasswordEmptyExecuteFct,
 			})
 
 	}
@@ -70,7 +70,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletWrongPassword,
+				Code:    errorWrongPassword,
 				Message: "Error : cannot uncipher the wallet : " + err.Error(),
 			})
 	}
@@ -83,7 +83,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletSignOperationRead,
+				Code:    errorSignOperationRead,
 				Message: "Error: while reading operation.",
 			})
 	}

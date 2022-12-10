@@ -1,19 +1,18 @@
 consumes:
   - application/json
 info:
-  description: Massa core Thyra plugin.
-  title: massa-core-plugin
+  description: Thyra plugin - Massa wallet
+  title: massa-wallet
   version: 0.0.0
 produces:
   - application/json
 schemes:
   - http
-  - https
 swagger: "2.0"
 paths:
-  /web/wallet/{resource}:
+  /web/{resource}:
     get:
-      operationId: webWallet
+      operationId: web
       produces:
         - application/json
         - text/javascript

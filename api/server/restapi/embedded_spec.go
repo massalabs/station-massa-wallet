@@ -25,13 +25,12 @@ func init() {
     "application/json"
   ],
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Massa core Thyra plugin.",
-    "title": "massa-core-plugin",
+    "description": "Thyra plugin - Massa wallet",
+    "title": "massa-wallet",
     "version": "0.0.0"
   },
   "paths": {
@@ -321,7 +320,7 @@ func init() {
         }
       }
     },
-    "/web/wallet/{resource}": {
+    "/web/{resource}": {
       "get": {
         "produces": [
           "application/json",
@@ -331,7 +330,7 @@ func init() {
           "text/webp",
           "image/png"
         ],
-        "operationId": "webWallet",
+        "operationId": "web",
         "parameters": [
           {
             "type": "string",
@@ -462,13 +461,12 @@ func init() {
     "application/json"
   ],
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Massa core Thyra plugin.",
-    "title": "massa-core-plugin",
+    "description": "Thyra plugin - Massa wallet",
+    "title": "massa-wallet",
     "version": "0.0.0"
   },
   "paths": {
@@ -758,7 +756,7 @@ func init() {
         }
       }
     },
-    "/web/wallet/{resource}": {
+    "/web/{resource}": {
       "get": {
         "produces": [
           "application/json",
@@ -768,7 +766,7 @@ func init() {
           "text/javascript",
           "text/webp"
         ],
-        "operationId": "webWallet",
+        "operationId": "web",
         "parameters": [
           {
             "type": "string",
