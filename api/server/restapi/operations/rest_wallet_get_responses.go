@@ -16,7 +16,8 @@ import (
 // RestWalletGetOKCode is the HTTP code returned for type RestWalletGetOK
 const RestWalletGetOKCode int = 200
 
-/*RestWalletGetOK Wallet retrieved.
+/*
+RestWalletGetOK Wallet retrieved.
 
 swagger:response restWalletGetOK
 */
@@ -60,7 +61,8 @@ func (o *RestWalletGetOK) WriteResponse(rw http.ResponseWriter, producer runtime
 // RestWalletGetBadRequestCode is the HTTP code returned for type RestWalletGetBadRequest
 const RestWalletGetBadRequestCode int = 400
 
-/*RestWalletGetBadRequest Bad request.
+/*
+RestWalletGetBadRequest Bad request.
 
 swagger:response restWalletGetBadRequest
 */
@@ -104,7 +106,8 @@ func (o *RestWalletGetBadRequest) WriteResponse(rw http.ResponseWriter, producer
 // RestWalletGetNotFoundCode is the HTTP code returned for type RestWalletGetNotFound
 const RestWalletGetNotFoundCode int = 404
 
-/*RestWalletGetNotFound Bad request.
+/*
+RestWalletGetNotFound Bad request.
 
 swagger:response restWalletGetNotFound
 */
@@ -148,7 +151,8 @@ func (o *RestWalletGetNotFound) WriteResponse(rw http.ResponseWriter, producer r
 // RestWalletGetUnprocessableEntityCode is the HTTP code returned for type RestWalletGetUnprocessableEntity
 const RestWalletGetUnprocessableEntityCode int = 422
 
-/*RestWalletGetUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+/*
+RestWalletGetUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
 
 swagger:response restWalletGetUnprocessableEntity
 */
@@ -192,7 +196,8 @@ func (o *RestWalletGetUnprocessableEntity) WriteResponse(rw http.ResponseWriter,
 // RestWalletGetInternalServerErrorCode is the HTTP code returned for type RestWalletGetInternalServerError
 const RestWalletGetInternalServerErrorCode int = 500
 
-/*RestWalletGetInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
+/*
+RestWalletGetInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
 
 swagger:response restWalletGetInternalServerError
 */

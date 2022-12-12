@@ -6,10 +6,8 @@ import (
 	"sync"
 
 	"github.com/go-openapi/runtime/middleware"
-
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
@@ -59,7 +57,12 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 			})
 	}
 
-	err = newWallet.Protect(*params.Body.Password, 0)
+	return CreateNewWallet(params.Body.Nickname, params.Body.Password, c.walletStorage, newWallet)
+}
+
+//nolint:lll,nolintlint,ireturn
+func CreateNewWallet(nickname *string, password *string, storage *sync.Map, newWallet *wallet.Wallet) middleware.Responder {
+	err := newWallet.Protect(*password, 0)
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
@@ -77,7 +80,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 			})
 	}
 
-	err = os.WriteFile("wallet_"+*params.Body.Nickname+".json", bytesOutput, fileModeUserRW)
+	err = os.WriteFile(wallet.GetWalletFile(*nickname), bytesOutput, fileModeUserRW)
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
@@ -86,7 +89,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 			})
 	}
 
-	c.walletStorage.Store(newWallet.Nickname, newWallet)
+	storage.Store(newWallet.Nickname, newWallet)
 
 	privK := base58.CheckEncode(newWallet.KeyPairs[0].PrivateKey)
 	pubK := base58.CheckEncode(newWallet.KeyPairs[0].PublicKey)
@@ -103,5 +106,6 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 				Salt:       &salt,
 				Nonce:      &nonce,
 			}},
+			Balance: 0,
 		})
 }

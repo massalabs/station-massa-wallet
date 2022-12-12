@@ -10,15 +10,22 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path"
+	"reflect"
 	"strings"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/massalabs/thyra/pkg/config"
 	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
 	"lukechampine.com/blake3"
 )
 
-var ErrUnprotectedSerialization = errors.New("private key must be protected before serialization")
+var (
+	ErrUnprotectedSerialization = errors.New("private key must be protected before serialization")
+	ErrWalletAlreadyImported    = errors.New("wallet already imported")
+)
 
 const (
 	SecretKeyLength           = 32
@@ -118,21 +125,21 @@ func FromYAML(raw []byte) (w Wallet, err error) {
 func LoadAll() (wallets []Wallet, e error) {
 	wallets = []Wallet{}
 
-	workingDir, err := os.Getwd()
+	configDir, err := config.GetConfigDir()
 	if err != nil {
-		return nil, fmt.Errorf("returning working directory: %w", err)
+		return nil, fmt.Errorf("reading config directory '%s': %w", configDir, err)
 	}
 
-	files, err := os.ReadDir(workingDir)
+	files, err := os.ReadDir(configDir)
 	if err != nil {
-		return nil, fmt.Errorf("reading working directory '%s': %w", workingDir, err)
+		return nil, fmt.Errorf("reading wallet directory '%s': %w", configDir, err)
 	}
 
 	for _, f := range files {
 		fileName := f.Name()
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".json") {
-			bytesInput, err := os.ReadFile(fileName)
+			bytesInput, err := os.ReadFile(path.Join(configDir, fileName))
 			if err != nil {
 				return nil, fmt.Errorf("reading file '%s': %w", fileName, err)
 			}
@@ -152,7 +159,7 @@ func LoadAll() (wallets []Wallet, e error) {
 }
 
 func Load(nickname string) (*Wallet, error) {
-	bytesInput, err := os.ReadFile("wallet_" + nickname + ".json")
+	bytesInput, err := os.ReadFile(GetWalletFile(nickname))
 	if err != nil {
 		return nil, fmt.Errorf("reading file 'wallet_%s.json': %w", nickname, err)
 	}
@@ -175,9 +182,56 @@ func New(nickname string) (*Wallet, error) {
 
 	addr := blake3.Sum256(pubKey)
 
+	return CreateWalletFromKeys(nickname, privKey, pubKey, addr)
+}
+
+func Imported(nickname string, privateKeyB58V string) (*Wallet, error) {
+	privateKeyBytes, _, err := base58.VersionedCheckDecode(privateKeyB58V[1:])
+	if err != nil {
+		return nil, fmt.Errorf("encoding private key B58: %w", err)
+	}
+
+	wallets, err := LoadAll()
+	if err != nil {
+		return nil, fmt.Errorf("error loading wallets %w", err)
+	}
+
+	// The ed25519 seed is in fact what we call a private key in cryptography...
+	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
+
+	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
+
+	addr := blake3.Sum256(pubKeyBytes)
+	version := byte(0)
+	address := "A" + base58.VersionedCheckEncode(addr[:], version)
+
+	if slices.IndexFunc(
+		wallets,
+		func(wallet Wallet) bool { return wallet.Address == address },
+	) != -1 {
+		return nil, ErrWalletAlreadyImported
+	}
+
+	return CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, addr)
+}
+
+func Delete(nickname string) (err error) {
+	err = os.Remove(GetWalletFile(nickname))
+	if err != nil {
+		return fmt.Errorf("deleting wallet 'wallet_%s.json': %w", nickname, err)
+	}
+
+	return nil
+}
+
+func CheckAddress(address string) bool {
+	return len(address) > MinAddressLength
+}
+
+func CreateWalletFromKeys(nickname string, privKeyBytes []byte, pubKeyBytes []byte, addr [32]byte) (*Wallet, error) {
 	var salt [16]byte
 
-	_, err = rand.Read(salt[:])
+	_, err := rand.Read(salt[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random salt: %w", err)
 	}
@@ -194,8 +248,8 @@ func New(nickname string) (*Wallet, error) {
 		Nickname: nickname,
 		Address:  "A" + base58.CheckEncode(append(make([]byte, 1), addr[:]...)),
 		KeyPairs: []KeyPair{{
-			PrivateKey: privKey,
-			PublicKey:  pubKey,
+			PrivateKey: privKeyBytes,
+			PublicKey:  pubKeyBytes,
 			Salt:       salt,
 			Nonce:      nonce,
 		}},
@@ -206,7 +260,7 @@ func New(nickname string) (*Wallet, error) {
 		return nil, fmt.Errorf("marshalling wallet: %w", err)
 	}
 
-	err = os.WriteFile("wallet_"+nickname+".json", bytesOutput, FileModeUserReadWriteOnly)
+	err = os.WriteFile(GetWalletFile(nickname), bytesOutput, FileModeUserReadWriteOnly)
 	if err != nil {
 		return nil, fmt.Errorf("writing wallet to 'wallet_%s.json': %w", nickname, err)
 	}
@@ -214,15 +268,11 @@ func New(nickname string) (*Wallet, error) {
 	return &wallet, nil
 }
 
-func Delete(nickname string) (err error) {
-	err = os.Remove("wallet_" + nickname + ".json")
+func GetWalletFile(nickname string) string {
+	configDir, err := config.GetConfigDir()
 	if err != nil {
-		return fmt.Errorf("deleting wallet 'wallet_%s.json': %w", nickname, err)
+		return ""
 	}
 
-	return nil
-}
-
-func AddressChecker(address string) bool {
-	return len(address) > MinAddressLength
+	return path.Join(configDir, "wallet_"+nickname+".json")
 }

@@ -1,98 +1,70 @@
 package wallet
 
 import (
-	"encoding/json"
-	"os"
+	"errors"
 	"sync"
 
+	"fyne.io/fyne/v2"
 	"github.com/go-openapi/runtime/middleware"
-
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/gui"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 const fileModeUserRW = 0o600
 
 //nolint:nolintlint,ireturn
-func NewImport(walletStorage *sync.Map) operations.RestWalletImportHandler {
-	return &wImport{walletStorage: walletStorage}
+func NewImport(walletStorage *sync.Map, app *fyne.App) operations.RestWalletImportHandler {
+	return &wImport{walletStorage: walletStorage, app: app}
 }
 
 type wImport struct {
 	walletStorage *sync.Map
+	app           *fyne.App
 }
 
 //nolint:nolintlint,ireturn,funlen
 func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
-	var err error
-
-	_, ok := c.walletStorage.Load(*params.Body.Nickname)
-	if ok {
-		return operations.NewRestWalletImportInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorAlreadyExists,
-				Message: "Error: a wallet with the same nickname already exists.",
-			})
-	}
-
-	keyPairs := make([]wallet.KeyPair, len(params.Body.KeyPairs))
-	for index := 0; index < len(params.Body.KeyPairs); index++ {
-		keyPairs[index].PrivateKey, err = base58.CheckDecode(*params.Body.KeyPairs[index].PrivateKey)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
-
-		keyPairs[index].PublicKey, err = base58.CheckDecode(*params.Body.KeyPairs[index].PublicKey)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
-
-		salt, err := base58.CheckDecode(*params.Body.KeyPairs[index].Salt)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
-
-		copy(keyPairs[index].Salt[:], salt)
-
-		nonce, err := base58.CheckDecode(*params.Body.KeyPairs[index].Nonce)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
-
-		copy(keyPairs[index].Nonce[:], nonce)
-
-		keyPairs[index].Protected = true
-	}
-
-	newWallet := wallet.Wallet{
-		Version:  0,
-		Nickname: *params.Body.Nickname,
-		Address:  *params.Body.Address,
-		KeyPairs: keyPairs,
-	}
-
-	c.walletStorage.Store(newWallet.Nickname, newWallet)
-
-	bytesOutput, err := json.Marshal(newWallet)
+	password, walletName, privateKey, err := gui.AskWalletInfo(c.app)
 	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
+		return NewWalletError(errorCreateNew, err.Error())
+	}
+
+	if len(walletName) == 0 {
+		return operations.NewRestWalletCreateBadRequest().WithPayload(
 			&models.Error{
-				Code:    errorImportNew,
-				Message: err.Error(),
+				Code:    errorCreateNoNickname,
+				Message: "Error: nickname field is mandatory.",
 			})
 	}
 
-	err = os.WriteFile("wallet_"+*params.Body.Nickname+".json", bytesOutput, fileModeUserRW)
+	_, inStore := c.walletStorage.Load(walletName)
+	if inStore {
+		return NewWalletError(errorAlreadyExists, "Error: a wallet with the same nickname already exists.")
+	}
+
+	if len(password) == 0 {
+		return NewWalletError(errorCreateNoPassword, "Error: password field is mandatory.")
+	}
+
+	newWallet, err := wallet.Imported(walletName, privateKey)
 	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorImportNew,
-				Message: err.Error(),
-			})
+		if errors.Is(err, wallet.ErrWalletAlreadyImported) {
+			return NewWalletError(errorAlreadyImported, err.Error())
+		}
+
+		return NewWalletError(errorCreateNew, err.Error())
 	}
 
-	return operations.NewRestWalletImportNoContent()
+	return CreateNewWallet(&walletName, &password, c.walletStorage, newWallet)
+}
+
+//nolint:nolintlint,ireturn
+func NewWalletError(code string, message string) middleware.Responder {
+	return operations.NewRestWalletCreateInternalServerError().WithPayload(
+		&models.Error{
+			Code:    code,
+			Message: message,
+		})
 }

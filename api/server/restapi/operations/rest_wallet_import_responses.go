@@ -16,7 +16,8 @@ import (
 // RestWalletImportNoContentCode is the HTTP code returned for type RestWalletImportNoContent
 const RestWalletImportNoContentCode int = 204
 
-/*RestWalletImportNoContent Wallet imported.
+/*
+RestWalletImportNoContent Wallet imported.
 
 swagger:response restWalletImportNoContent
 */
@@ -40,7 +41,8 @@ func (o *RestWalletImportNoContent) WriteResponse(rw http.ResponseWriter, produc
 // RestWalletImportBadRequestCode is the HTTP code returned for type RestWalletImportBadRequest
 const RestWalletImportBadRequestCode int = 400
 
-/*RestWalletImportBadRequest Bad request.
+/*
+RestWalletImportBadRequest Bad request.
 
 swagger:response restWalletImportBadRequest
 */
@@ -84,7 +86,8 @@ func (o *RestWalletImportBadRequest) WriteResponse(rw http.ResponseWriter, produ
 // RestWalletImportUnprocessableEntityCode is the HTTP code returned for type RestWalletImportUnprocessableEntity
 const RestWalletImportUnprocessableEntityCode int = 422
 
-/*RestWalletImportUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+/*
+RestWalletImportUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
 
 swagger:response restWalletImportUnprocessableEntity
 */
@@ -128,7 +131,8 @@ func (o *RestWalletImportUnprocessableEntity) WriteResponse(rw http.ResponseWrit
 // RestWalletImportInternalServerErrorCode is the HTTP code returned for type RestWalletImportInternalServerError
 const RestWalletImportInternalServerErrorCode int = 500
 
-/*RestWalletImportInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
+/*
+RestWalletImportInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
 
 swagger:response restWalletImportInternalServerError
 */

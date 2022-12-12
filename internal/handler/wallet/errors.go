@@ -16,4 +16,5 @@ const (
 	errorGetWallets
 	errorSignOperationEmptyNickname
 	errorSignOperationRead
+	errorAlreadyImported
 )

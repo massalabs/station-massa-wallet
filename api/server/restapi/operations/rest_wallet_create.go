@@ -34,10 +34,10 @@ func NewRestWalletCreate(ctx *middleware.Context, handler RestWalletCreateHandle
 	return &RestWalletCreate{Context: ctx, Handler: handler}
 }
 
-/* RestWalletCreate swagger:route POST /rest/wallet restWalletCreate
+/*
+	RestWalletCreate swagger:route POST /rest/wallet restWalletCreate
 
 RestWalletCreate rest wallet create API
-
 */
 type RestWalletCreate struct {
 	Context *middleware.Context

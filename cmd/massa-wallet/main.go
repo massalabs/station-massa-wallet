@@ -35,7 +35,7 @@ func StartServer(app *fyne.App) {
 
 	localAPI.RestWalletCreateHandler = wallet.NewCreate(&walletStorage)
 	localAPI.RestWalletDeleteHandler = wallet.NewDelete(&walletStorage)
-	localAPI.RestWalletImportHandler = wallet.NewImport(&walletStorage)
+	localAPI.RestWalletImportHandler = wallet.NewImport(&walletStorage, app)
 	localAPI.RestWalletListHandler = wallet.NewList(&walletStorage)
 
 	localAPI.RestWalletSignOperationHandler = wallet.NewSign(&walletStorage, app)

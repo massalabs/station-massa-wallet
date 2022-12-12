@@ -16,7 +16,8 @@ import (
 // RestWalletCreateOKCode is the HTTP code returned for type RestWalletCreateOK
 const RestWalletCreateOKCode int = 200
 
-/*RestWalletCreateOK New wallet created.
+/*
+RestWalletCreateOK New wallet created.
 
 swagger:response restWalletCreateOK
 */
@@ -60,7 +61,8 @@ func (o *RestWalletCreateOK) WriteResponse(rw http.ResponseWriter, producer runt
 // RestWalletCreateBadRequestCode is the HTTP code returned for type RestWalletCreateBadRequest
 const RestWalletCreateBadRequestCode int = 400
 
-/*RestWalletCreateBadRequest Bad request.
+/*
+RestWalletCreateBadRequest Bad request.
 
 swagger:response restWalletCreateBadRequest
 */
@@ -104,7 +106,8 @@ func (o *RestWalletCreateBadRequest) WriteResponse(rw http.ResponseWriter, produ
 // RestWalletCreateUnprocessableEntityCode is the HTTP code returned for type RestWalletCreateUnprocessableEntity
 const RestWalletCreateUnprocessableEntityCode int = 422
 
-/*RestWalletCreateUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+/*
+RestWalletCreateUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
 
 swagger:response restWalletCreateUnprocessableEntity
 */
@@ -148,7 +151,8 @@ func (o *RestWalletCreateUnprocessableEntity) WriteResponse(rw http.ResponseWrit
 // RestWalletCreateInternalServerErrorCode is the HTTP code returned for type RestWalletCreateInternalServerError
 const RestWalletCreateInternalServerErrorCode int = 500
 
-/*RestWalletCreateInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
+/*
+RestWalletCreateInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
 
 swagger:response restWalletCreateInternalServerError
 */

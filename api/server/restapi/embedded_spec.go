@@ -410,6 +410,10 @@ func init() {
           "description": "wallet's address.",
           "type": "string"
         },
+        "balance": {
+          "description": "wallet's balance.",
+          "type": "number"
+        },
         "keyPairs": {
           "description": "wallet's key pairs.",
           "type": "array",
@@ -845,6 +849,10 @@ func init() {
         "address": {
           "description": "wallet's address.",
           "type": "string"
+        },
+        "balance": {
+          "description": "wallet's balance.",
+          "type": "number"
         },
         "keyPairs": {
           "description": "wallet's key pairs.",

@@ -2,23 +2,23 @@
 
 // Package restapi massa-wallet
 //
-//  Thyra plugin - Massa wallet
-//  Schemes:
-//    http
-//  Host: localhost
-//  BasePath: /
-//  Version: 0.0.0
+//	Thyra plugin - Massa wallet
+//	Schemes:
+//	  http
+//	Host: localhost
+//	BasePath: /
+//	Version: 0.0.0
 //
-//  Consumes:
-//    - application/json
+//	Consumes:
+//	  - application/json
 //
-//  Produces:
-//    - image/png
-//    - text/css
-//    - text/html
-//    - text/javascript
-//    - application/json
-//    - text/webp
+//	Produces:
+//	  - image/png
+//	  - text/css
+//	  - text/html
+//	  - text/javascript
+//	  - application/json
+//	  - text/webp
 //
 // swagger:meta
 package restapi

@@ -16,7 +16,8 @@ import (
 // RestWalletSignOperationOKCode is the HTTP code returned for type RestWalletSignOperationOK
 const RestWalletSignOperationOKCode int = 200
 
-/*RestWalletSignOperationOK Signature.
+/*
+RestWalletSignOperationOK Signature.
 
 swagger:response restWalletSignOperationOK
 */
@@ -60,7 +61,8 @@ func (o *RestWalletSignOperationOK) WriteResponse(rw http.ResponseWriter, produc
 // RestWalletSignOperationBadRequestCode is the HTTP code returned for type RestWalletSignOperationBadRequest
 const RestWalletSignOperationBadRequestCode int = 400
 
-/*RestWalletSignOperationBadRequest Bad request.
+/*
+RestWalletSignOperationBadRequest Bad request.
 
 swagger:response restWalletSignOperationBadRequest
 */
@@ -104,7 +106,8 @@ func (o *RestWalletSignOperationBadRequest) WriteResponse(rw http.ResponseWriter
 // RestWalletSignOperationUnprocessableEntityCode is the HTTP code returned for type RestWalletSignOperationUnprocessableEntity
 const RestWalletSignOperationUnprocessableEntityCode int = 422
 
-/*RestWalletSignOperationUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+/*
+RestWalletSignOperationUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
 
 swagger:response restWalletSignOperationUnprocessableEntity
 */
@@ -148,7 +151,8 @@ func (o *RestWalletSignOperationUnprocessableEntity) WriteResponse(rw http.Respo
 // RestWalletSignOperationInternalServerErrorCode is the HTTP code returned for type RestWalletSignOperationInternalServerError
 const RestWalletSignOperationInternalServerErrorCode int = 500
 
-/*RestWalletSignOperationInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
+/*
+RestWalletSignOperationInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
 
 swagger:response restWalletSignOperationInternalServerError
 */
