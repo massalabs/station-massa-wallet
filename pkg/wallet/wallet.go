@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/base58"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
 	"golang.org/x/crypto/pbkdf2"
 	"gopkg.in/yaml.v3"
 	"lukechampine.com/blake3"

@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/models"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 )
 
 // RestWalletDeleteNoContentCode is the HTTP code returned for type RestWalletDeleteNoContent

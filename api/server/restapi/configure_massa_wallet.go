@@ -4,8 +4,6 @@ package restapi
 
 import (
 	"crypto/tls"
-	"embed"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -13,16 +11,16 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../../server --name MassaCore --spec ../resource/swagger.yml --principal interface{} --exclude-main
+//go:generate swagger generate server --target ../../server --name MassaWallet --spec ../../wallet_api-v0.yml --principal interface{} --exclude-main
 
-func configureFlags(api *operations.MassaCoreAPI) {
+func configureFlags(api *operations.MassaWalletAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
 }
 
-func configureAPI(api *operations.MassaCoreAPI) http.Handler {
+func configureAPI(api *operations.MassaWalletAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
@@ -78,8 +76,13 @@ func configureAPI(api *operations.MassaCoreAPI) http.Handler {
 			return middleware.NotImplemented("operation operations.RestWalletList has not yet been implemented")
 		})
 	}
-	if api.WebWalletHandler == nil {
-		api.WebWalletHandler = operations.WebWalletHandlerFunc(func(params operations.WebWalletParams) middleware.Responder {
+	if api.RestWalletSignOperationHandler == nil {
+		api.RestWalletSignOperationHandler = operations.RestWalletSignOperationHandlerFunc(func(params operations.RestWalletSignOperationParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RestWalletSignOperation has not yet been implemented")
+		})
+	}
+	if api.WebHandler == nil {
+		api.WebHandler = operations.WebHandlerFunc(func(params operations.WebParams) middleware.Responder {
 			return middleware.NotImplemented("operation operations.Web has not yet been implemented")
 		})
 	}
@@ -91,36 +94,9 @@ func configureAPI(api *operations.MassaCoreAPI) http.Handler {
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
 
-//go:embed certificate
-var content embed.FS
-
 // The TLS configuration before HTTPS server starts.
 func configureTLS(tlsConfig *tls.Config) {
-	basePath := "certificate/"
-
-	unsecureCertificate, err := content.ReadFile(basePath + "unsecure.crt")
-	if err != nil {
-		panic(err)
-	}
-
-	unsecureKey, err := content.ReadFile(basePath + "unsecure.key")
-	if err != nil {
-		panic(err)
-	}
-
-	if len(tlsConfig.Certificates) == 0 {
-		fmt.Println("warning: insecure HTTPS configuration.")
-		fmt.Println("	To fix this, use your own .crt and .key files using `--tls-certificate` and `--tls-key` flags")
-
-		var err error
-
-		tlsConfig.Certificates = make([]tls.Certificate, 1)
-		tlsConfig.Certificates[0], err = tls.X509KeyPair(unsecureCertificate, unsecureKey)
-
-		if err != nil {
-			panic(err)
-		}
-	}
+	// Make all necessary changes to the TLS configuration here.
 }
 
 // As soon as server is initialized but not run yet, this function will be called.

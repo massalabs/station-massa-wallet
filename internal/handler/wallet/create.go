@@ -7,11 +7,11 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/base58"
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 //nolint:nolintlint,ireturn
@@ -28,7 +28,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if params.Body.Nickname == nil || len(*params.Body.Nickname) == 0 {
 		return operations.NewRestWalletCreateBadRequest().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletCreateNoNickname,
+				Code:    errorCreateNoNickname,
 				Message: "Error: nickname field is mandatory.",
 			})
 	}
@@ -37,7 +37,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if ok {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletAlreadyExists,
+				Code:    errorAlreadyExists,
 				Message: "Error: a wallet with the same nickname already exists.",
 			})
 	}
@@ -45,7 +45,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if params.Body.Password == nil || len(*params.Body.Password) == 0 {
 		return operations.NewRestWalletCreateBadRequest().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletCreateNoPassword,
+				Code:    errorCreateNoPassword,
 				Message: "Error: password field is mandatory.",
 			})
 	}
@@ -54,7 +54,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletCreateNew,
+				Code:    errorCreateNew,
 				Message: err.Error(),
 			})
 	}
@@ -63,7 +63,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletCreateNew,
+				Code:    errorCreateNew,
 				Message: err.Error(),
 			})
 	}
@@ -72,7 +72,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletCreateNew,
+				Code:    errorCreateNew,
 				Message: err.Error(),
 			})
 	}
@@ -81,7 +81,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletCreateNew,
+				Code:    errorCreateNew,
 				Message: err.Error(),
 			})
 	}

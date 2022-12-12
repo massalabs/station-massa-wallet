@@ -7,11 +7,11 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/base58"
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 const fileModeUserRW = 0o600
@@ -33,7 +33,7 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 	if ok {
 		return operations.NewRestWalletImportInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletAlreadyExists,
+				Code:    errorAlreadyExists,
 				Message: "Error: a wallet with the same nickname already exists.",
 			})
 	}
@@ -80,7 +80,7 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletImportNew,
+				Code:    errorImportNew,
 				Message: err.Error(),
 			})
 	}
@@ -89,7 +89,7 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletImportNew,
+				Code:    errorImportNew,
 				Message: err.Error(),
 			})
 	}

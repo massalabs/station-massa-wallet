@@ -1,32 +1,10 @@
-package api
+package openapi
 
 import (
 	"net/http"
-	"path/filepath"
 
 	"github.com/go-openapi/runtime"
 )
-
-func contentType(rsc string) map[string]string {
-	var contentType map[string]string
-
-	switch filepath.Ext(rsc) {
-	case ".css":
-		contentType = map[string]string{"Content-Type": "text/css"}
-	case ".js":
-		contentType = map[string]string{"Content-Type": "text/javascript"}
-	case ".html":
-		contentType = map[string]string{"Content-Type": "text/html"}
-	case ".webp":
-		contentType = map[string]string{"Content-Type": "text/webp"}
-	case ".png":
-		contentType = map[string]string{"Content-Type": "image/png"}
-	default:
-		contentType = map[string]string{}
-	}
-
-	return contentType
-}
 
 type CustomResponder struct {
 	Body       []byte

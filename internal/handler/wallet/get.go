@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-core/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-core/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 //nolint:nolintlint,ireturn
@@ -26,7 +26,7 @@ func (c *walletList) Handle(params operations.RestWalletListParams) middleware.R
 	if err != nil {
 		return operations.NewRestWalletListInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCodeWalletGetWallets,
+				Code:    errorGetWallets,
 				Message: err.Error(),
 			})
 	}
