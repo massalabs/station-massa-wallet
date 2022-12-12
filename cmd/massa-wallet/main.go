@@ -34,7 +34,7 @@ func StartServer(app *fyne.App) {
 	var walletStorage sync.Map // to be replaced by channel
 
 	localAPI.RestWalletCreateHandler = wallet.NewCreate(&walletStorage)
-	localAPI.RestWalletDeleteHandler = wallet.NewDelete(&walletStorage)
+	localAPI.RestWalletDeleteHandler = wallet.NewDelete(&walletStorage, app)
 	localAPI.RestWalletImportHandler = wallet.NewImport(&walletStorage, app)
 	localAPI.RestWalletListHandler = wallet.NewList(&walletStorage)
 
