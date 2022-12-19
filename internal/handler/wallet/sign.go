@@ -2,9 +2,7 @@ package wallet
 
 import (
 	"crypto/ed25519"
-	"sync"
 
-	"fyne.io/fyne/v2"
 	"github.com/go-openapi/runtime/middleware"
 	"lukechampine.com/blake3"
 
@@ -12,18 +10,16 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/gui"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 //nolint:nolintlint,ireturn
-func NewSign(walletStorage *sync.Map, app *fyne.App) operations.RestWalletSignOperationHandler {
-	return &walletSign{walletStorage: walletStorage, app: app}
+func NewSign(pwdPrompt func(string) (string, error)) operations.RestWalletSignOperationHandler {
+	return &walletSign{pwdPrompt: pwdPrompt}
 }
 
 type walletSign struct {
-	walletStorage *sync.Map
-	app           *fyne.App
+	pwdPrompt func(string) (string, error)
 }
 
 //nolint:nolintlint,ireturn,funlen
@@ -47,7 +43,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 			})
 	}
 
-	clearPassword, err := gui.AskPassword(params.Nickname, s.app)
+	clearPassword, err := s.pwdPrompt(params.Nickname) //gui.AskPassword(params.Nickname, s.app)
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{

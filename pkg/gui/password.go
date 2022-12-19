@@ -15,6 +15,20 @@ type PasswordEntry struct {
 	Err           error
 }
 
+type PasswordPrompt struct {
+	app *fyne.App
+}
+
+func (p *PasswordPrompt) Ask(name string) (string, error) {
+	prompt := <-PasswordDialog(name, p.app)
+
+	return prompt.ClearPassword, prompt.Err
+}
+
+func NewPasswordPrompt(app *fyne.App) *PasswordPrompt {
+	return &PasswordPrompt{app: app}
+}
+
 func AskPassword(nickname string, app *fyne.App) (string, error) {
 	return Password(nickname, app)
 }

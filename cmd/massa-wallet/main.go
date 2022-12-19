@@ -12,6 +12,7 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler"
 	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/gui"
 )
 
 func main() {
@@ -46,7 +47,9 @@ func StartServer(app *fyne.App, port int) {
 	localAPI.RestWalletImportHandler = wallet.NewImport(&walletStorage)
 	localAPI.RestWalletListHandler = wallet.NewList(&walletStorage)
 
-	localAPI.RestWalletSignOperationHandler = wallet.NewSign(&walletStorage, app)
+	pwdPrompter := gui.NewPasswordPrompt(app)
+
+	localAPI.RestWalletSignOperationHandler = wallet.NewSign(pwdPrompter.Ask)
 	localAPI.WebHandler = operations.WebHandlerFunc(handler.WebWalletHandler)
 	localAPI.DefaultPageHandler = operations.DefaultPageHandlerFunc(handler.DefaultPageHandler)
 
