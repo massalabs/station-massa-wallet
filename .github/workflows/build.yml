@@ -12,7 +12,6 @@ permissions:
   contents: read
 
 jobs:
-
   lint:
     uses: ./.github/workflows/lint.yml
 
@@ -20,7 +19,6 @@ jobs:
     uses: ./.github/workflows/tests.yml
 
   build:
-    if: ${{ github.ref == 'refs/heads/main' }}
     needs: [lint, tests]
     name: build and upload artifacts
     strategy:
@@ -29,43 +27,31 @@ jobs:
           - os: ubuntu-latest
             arch: amd64
             target: windows
-            cc: x86_64-w64-mingw32-gcc
-            cxx: CXX=x86_64-w64-mingw32-g++
           - os: ubuntu-latest
             arch: amd64
             target: linux
-            cc: gcc
-            cxx: g++
           - os: macos-latest
             arch: amd64
             target: darwin
-            cc: ""
-            cxx: ""
           - os: macos-latest
             arch: arm64
             target: darwin
-            cc: ""
-            cxx: ""
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - name: installing dependencies
-        uses: ./.github/actions/install
         with:
-          os: ${{ matrix.os }}
-      - name: Build binary for ${{ matrix.target }} on ${{ matrix.arch}}
-        run: GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} CGO_ENABLED=1 CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} go build -o thyra-plugin_massa-core_${{ matrix.target }}_${{ matrix.arch }} ./cmd/thyra-plugin_massa-core/
+          submodules: true
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ">=1.19.2"
+      - name: Build binary and prepare archive for publish
+        shell: bash
+        run: |
+          export GOOS=${{ matrix.target }}
+          export GOARCH=${{ matrix.arch }} 
+          ./build.sh
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.target }}-${{ matrix.arch }}-binary
-          path: thyra-plugin_massa-core_${{ matrix.target }}_${{ matrix.arch }}
-      - name: Create release and upload binaries
-        if: ${{ env.RELEASE_VERSION != '' }}
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.RELEASE_VERSION }}
-          draft: ${{ env.RELEASE_AS_DRAFT }}
-          prerelease: ${{ env.RELEASE_AS_PRERELEASE }}
-          generate_release_notes: ${{ env.GENERATE_RELEASE_NOTES }}
-          files: thyra-plugin_massa-core_${{ matrix.target }}_${{ matrix.arch }}
+          name: Wallet-plugin-${{ matrix.target }}_${{ matrix.arch }}
+          path: build
