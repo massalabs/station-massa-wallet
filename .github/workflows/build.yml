@@ -26,9 +26,6 @@ jobs:
         include:
           - os: ubuntu-latest
             arch: amd64
-            target: windows
-          - os: ubuntu-latest
-            arch: amd64
             target: linux
           - os: macos-latest
             arch: amd64
@@ -43,7 +40,7 @@ jobs:
           submodules: true
       - uses: actions/setup-go@v3
         with:
-          go-version: ">=1.15"
+          go-version: ">=1.19.3"
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |
