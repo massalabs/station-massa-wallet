@@ -33,6 +33,9 @@ jobs:
           - os: ubuntu-latest
             arch: amd64
             target: linux
+          - os: windows-latest
+            arch: amd64
+            target: windows
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
