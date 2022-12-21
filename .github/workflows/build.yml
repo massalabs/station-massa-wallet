@@ -47,6 +47,8 @@ jobs:
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl-dev libglfw3-dev
           export GOOS=${{ matrix.target }}
           export GOARCH=${{ matrix.arch }} 
           ./build.sh
