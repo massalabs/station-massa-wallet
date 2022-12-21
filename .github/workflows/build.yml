@@ -24,18 +24,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
-            arch: amd64
-            target: darwin
-          - os: macos-latest
-            arch: arm64
-            target: darwin
           - os: ubuntu-latest
             arch: amd64
             target: linux
-          - os: windows-latest
-            arch: amd64
-            target: windows
+
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
