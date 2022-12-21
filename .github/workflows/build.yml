@@ -26,7 +26,16 @@ jobs:
         include:
           - os: ubuntu-latest
             arch: amd64
+            target: windows
+          - os: ubuntu-latest
+            arch: amd64
             target: linux
+          - os: macos-latest
+            arch: amd64
+            target: darwin
+          - os: macos-latest
+            arch: arm64
+            target: darwin
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -39,8 +48,13 @@ jobs:
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y xorg-dev
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            sudo apt-get update
+            sudo apt-get install -y xorg-dev
+          fi
+          export GOOS=${{ matrix.target }}
+          export GOARCH=${{ matrix.arch }} 
+          ./build.sh
           export GOOS=${{ matrix.target }}
           export GOARCH=${{ matrix.arch }} 
           ./build.sh
