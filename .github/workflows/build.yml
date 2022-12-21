@@ -24,15 +24,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            arch: amd64
-            target: linux
           - os: macos-latest
             arch: amd64
             target: darwin
           - os: macos-latest
             arch: arm64
             target: darwin
+          - os: ubuntu-latest
+            arch: amd64
+            target: linux
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -41,6 +41,9 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: ">=1.19.3"
+      - name: Set CGO_ENABLED environment variable
+        env:
+          CGO_ENABLED: 1
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |
