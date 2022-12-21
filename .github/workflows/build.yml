@@ -1,50 +1,70 @@
-name: build and upload artifacts
+# This is a configuration file for a GitHub Actions workflow.
+# The workflow is triggered when a tag matching the pattern v[0-9]+.* is pushed to the main branch,
+# or when a pull request is opened or when the workflow is manually called.
 on:
   push:
     tags:
-      - v[0-9]+.*
+      - v[0-9]+.* # this regular expression matches tags like v1.0.0, v2.3.4, etc.
     branches:
       - main
   pull_request:
   workflow_call:
 
+# The contents of the repository should be readable by the workflow.
 permissions:
   contents: read
 
+# The workflow consists of three jobs: lint, tests, and build.
 jobs:
   lint:
+    # The lint job uses a configuration file in the .github/workflows directory.
     uses: ./.github/workflows/lint.yml
 
   tests:
+    # The tests job uses a configuration file in the .github/workflows directory.
     uses: ./.github/workflows/tests.yml
 
   build:
+    # The build job depends on the lint and tests jobs to run successfully before it can start.
     needs: [lint, tests]
     name: build and upload artifacts
+    # The build job has a matrix strategy, which means it will run multiple times with different combinations of the os, arch, and target variables.
     strategy:
       matrix:
         include:
+          # The first combination is Ubuntu running on an AMD64 processor, building for Windows.
           - os: ubuntu-latest
             arch: amd64
             target: windows
+          # The second combination is Ubuntu running on an AMD64 processor, building for Linux.
           - os: ubuntu-latest
             arch: amd64
             target: linux
+          # The third combination is macOS running on an AMD64 processor, building for Darwin (macOS).
           - os: macos-latest
             arch: amd64
             target: darwin
+          # The fourth combination is macOS running on an ARM64 processor, building for Darwin (macOS).
           - os: macos-latest
             arch: arm64
             target: darwin
 
+    # The build job runs on the specified operating system.
     runs-on: ${{ matrix.os }}
     steps:
+      # The first step checks out the repository.
       - uses: actions/checkout@v3
         with:
           submodules: true
+      # The second step sets up Go.
       - uses: actions/setup-go@v3
         with:
           go-version: ">=1.19.3"
+      # The third step builds the binary and prepares an archive for publishing.
+      # If the operating system is Ubuntu, install xorg-dev.
+      # xorg-dev package is required to build certain graphical applications.
+      # If the target is Windows, install mingw-w64 and set the CC environment variable.
+      # mingw-w64 is a compiler toolchain for Windows. The CC environment variable specifies the C compiler to use.
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |
@@ -56,9 +76,6 @@ jobs:
             sudo apt-get install gcc-mingw-w64
             export CC=x86_64-w64-mingw32-gcc
           fi
-          export GOOS=${{ matrix.target }}
-          export GOARCH=${{ matrix.arch }} 
-          ./build.sh
           export GOOS=${{ matrix.target }}
           export GOARCH=${{ matrix.arch }} 
           ./build.sh
