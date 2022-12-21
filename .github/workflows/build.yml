@@ -51,6 +51,7 @@ jobs:
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             sudo apt-get update
             sudo apt-get install -y xorg-dev
+            sudo apt-get install gcc-mingw-w64
           fi
           export GOOS=${{ matrix.target }}
           export GOARCH=${{ matrix.arch }} 
