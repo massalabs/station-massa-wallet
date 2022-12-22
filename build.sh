@@ -6,4 +6,4 @@ PLUGIN=wallet-plugin
 
 # Build the binary
 mkdir -p "build/$PLUGIN/"
-env CGO_ENABLED="1" go build -o build/$PLUGIN/thyra-plugin-wallet  cmd/massa-wallet/main.go
+CGO_ENABLED="1" go build -o build/$PLUGIN/thyra-plugin-wallet  cmd/massa-wallet/main.go
