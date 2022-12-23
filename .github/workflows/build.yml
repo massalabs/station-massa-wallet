@@ -1,5 +1,5 @@
 # This is a configuration file for a GitHub Actions workflow.
-# The workflow is triggered when a tag matching the pattern v[0-9]+.* is pushed to the main branch,
+# The workflow is triggered when a versioned tag is pushed to the main branch,
 # or when a pull request is opened or when the workflow is manually called.
 on:
   push:

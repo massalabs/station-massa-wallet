@@ -1,5 +1,5 @@
-#!/bin/bash
-set -ex
+#!/bin/bash -ex
+
 # Set the GOPATH environment variable
 PLUGIN=wallet-plugin
 
