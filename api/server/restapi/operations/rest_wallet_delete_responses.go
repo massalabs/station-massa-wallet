@@ -16,7 +16,8 @@ import (
 // RestWalletDeleteNoContentCode is the HTTP code returned for type RestWalletDeleteNoContent
 const RestWalletDeleteNoContentCode int = 204
 
-/*RestWalletDeleteNoContent Wallet removed.
+/*
+RestWalletDeleteNoContent Wallet removed.
 
 swagger:response restWalletDeleteNoContent
 */
@@ -60,7 +61,8 @@ func (o *RestWalletDeleteNoContent) WriteResponse(rw http.ResponseWriter, produc
 // RestWalletDeleteBadRequestCode is the HTTP code returned for type RestWalletDeleteBadRequest
 const RestWalletDeleteBadRequestCode int = 400
 
-/*RestWalletDeleteBadRequest Bad request.
+/*
+RestWalletDeleteBadRequest Bad request.
 
 swagger:response restWalletDeleteBadRequest
 */
@@ -104,7 +106,8 @@ func (o *RestWalletDeleteBadRequest) WriteResponse(rw http.ResponseWriter, produ
 // RestWalletDeleteNotFoundCode is the HTTP code returned for type RestWalletDeleteNotFound
 const RestWalletDeleteNotFoundCode int = 404
 
-/*RestWalletDeleteNotFound Bad request.
+/*
+RestWalletDeleteNotFound Bad request.
 
 swagger:response restWalletDeleteNotFound
 */
@@ -148,7 +151,8 @@ func (o *RestWalletDeleteNotFound) WriteResponse(rw http.ResponseWriter, produce
 // RestWalletDeleteUnprocessableEntityCode is the HTTP code returned for type RestWalletDeleteUnprocessableEntity
 const RestWalletDeleteUnprocessableEntityCode int = 422
 
-/*RestWalletDeleteUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+/*
+RestWalletDeleteUnprocessableEntity Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
 
 swagger:response restWalletDeleteUnprocessableEntity
 */
@@ -192,7 +196,8 @@ func (o *RestWalletDeleteUnprocessableEntity) WriteResponse(rw http.ResponseWrit
 // RestWalletDeleteInternalServerErrorCode is the HTTP code returned for type RestWalletDeleteInternalServerError
 const RestWalletDeleteInternalServerErrorCode int = 500
 
-/*RestWalletDeleteInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
+/*
+RestWalletDeleteInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
 
 swagger:response restWalletDeleteInternalServerError
 */

@@ -33,3 +33,7 @@ func WebWalletHandler(params operations.WebParams) middleware.Responder {
 
 	return helper.NewCustomResponder(resourceContent, header, http.StatusOK)
 }
+
+func DefaultPageHandler(_ operations.DefaultPageParams) middleware.Responder {
+	return helper.NewCustomResponder(nil, map[string]string{"Location": "web/index.html"}, http.StatusPermanentRedirect)
+}

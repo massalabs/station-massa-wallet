@@ -48,6 +48,7 @@ func StartServer(app *fyne.App, port int) {
 
 	localAPI.RestWalletSignOperationHandler = wallet.NewSign(&walletStorage, app)
 	localAPI.WebHandler = operations.WebHandlerFunc(handler.WebWalletHandler)
+	localAPI.DefaultPageHandler = operations.DefaultPageHandlerFunc(handler.DefaultPageHandler)
 
 	server.ConfigureAPI()
 

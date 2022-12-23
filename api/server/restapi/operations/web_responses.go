@@ -16,7 +16,8 @@ import (
 // WebOKCode is the HTTP code returned for type WebOK
 const WebOKCode int = 200
 
-/*WebOK Page found
+/*
+WebOK Page found
 
 swagger:response webOK
 */
@@ -40,7 +41,8 @@ func (o *WebOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer)
 // WebNotFoundCode is the HTTP code returned for type WebNotFound
 const WebNotFoundCode int = 404
 
-/*WebNotFound Resource not found.
+/*
+WebNotFound Resource not found.
 
 swagger:response webNotFound
 */

@@ -56,6 +56,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 			return errors.NotImplemented("textWebp producer has not yet been implemented")
 		}),
 
+		DefaultPageHandler: DefaultPageHandlerFunc(func(params DefaultPageParams) middleware.Responder {
+			return middleware.NotImplemented("operation DefaultPage has not yet been implemented")
+		}),
 		RestWalletCreateHandler: RestWalletCreateHandlerFunc(func(params RestWalletCreateParams) middleware.Responder {
 			return middleware.NotImplemented("operation RestWalletCreate has not yet been implemented")
 		}),
@@ -128,6 +131,8 @@ type MassaWalletAPI struct {
 	//   - text/webp
 	TextWebpProducer runtime.Producer
 
+	// DefaultPageHandler sets the operation handler for the default page operation
+	DefaultPageHandler DefaultPageHandler
 	// RestWalletCreateHandler sets the operation handler for the rest wallet create operation
 	RestWalletCreateHandler RestWalletCreateHandler
 	// RestWalletDeleteHandler sets the operation handler for the rest wallet delete operation
@@ -234,6 +239,9 @@ func (o *MassaWalletAPI) Validate() error {
 		unregistered = append(unregistered, "TextWebpProducer")
 	}
 
+	if o.DefaultPageHandler == nil {
+		unregistered = append(unregistered, "DefaultPageHandler")
+	}
 	if o.RestWalletCreateHandler == nil {
 		unregistered = append(unregistered, "RestWalletCreateHandler")
 	}
@@ -353,6 +361,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"][""] = NewDefaultPage(o.context, o.DefaultPageHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

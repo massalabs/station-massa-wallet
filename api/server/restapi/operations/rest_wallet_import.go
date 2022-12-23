@@ -29,10 +29,10 @@ func NewRestWalletImport(ctx *middleware.Context, handler RestWalletImportHandle
 	return &RestWalletImport{Context: ctx, Handler: handler}
 }
 
-/* RestWalletImport swagger:route PUT /rest/wallet restWalletImport
+/*
+	RestWalletImport swagger:route PUT /rest/wallet restWalletImport
 
 RestWalletImport rest wallet import API
-
 */
 type RestWalletImport struct {
 	Context *middleware.Context

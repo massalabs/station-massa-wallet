@@ -29,10 +29,10 @@ func NewRestWalletList(ctx *middleware.Context, handler RestWalletListHandler) *
 	return &RestWalletList{Context: ctx, Handler: handler}
 }
 
-/* RestWalletList swagger:route GET /rest/wallet restWalletList
+/*
+	RestWalletList swagger:route GET /rest/wallet restWalletList
 
 RestWalletList rest wallet list API
-
 */
 type RestWalletList struct {
 	Context *middleware.Context
