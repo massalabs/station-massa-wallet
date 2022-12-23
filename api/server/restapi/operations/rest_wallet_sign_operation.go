@@ -34,10 +34,10 @@ func NewRestWalletSignOperation(ctx *middleware.Context, handler RestWalletSignO
 	return &RestWalletSignOperation{Context: ctx, Handler: handler}
 }
 
-/* RestWalletSignOperation swagger:route POST /rest/wallet/{nickname}/signOperation restWalletSignOperation
+/*
+	RestWalletSignOperation swagger:route POST /rest/wallet/{nickname}/signOperation restWalletSignOperation
 
 RestWalletSignOperation rest wallet sign operation API
-
 */
 type RestWalletSignOperation struct {
 	Context *middleware.Context

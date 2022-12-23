@@ -29,10 +29,10 @@ func NewWeb(ctx *middleware.Context, handler WebHandler) *Web {
 	return &Web{Context: ctx, Handler: handler}
 }
 
-/* Web swagger:route GET /web/{resource} web
+/*
+	Web swagger:route GET /web/{resource} web
 
 Web web API
-
 */
 type Web struct {
 	Context *middleware.Context

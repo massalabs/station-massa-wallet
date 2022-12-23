@@ -16,7 +16,8 @@ import (
 // RestWalletListOKCode is the HTTP code returned for type RestWalletListOK
 const RestWalletListOKCode int = 200
 
-/*RestWalletListOK Wallets retrieved
+/*
+RestWalletListOK Wallets retrieved
 
 swagger:response restWalletListOK
 */
@@ -63,7 +64,8 @@ func (o *RestWalletListOK) WriteResponse(rw http.ResponseWriter, producer runtim
 // RestWalletListBadRequestCode is the HTTP code returned for type RestWalletListBadRequest
 const RestWalletListBadRequestCode int = 400
 
-/*RestWalletListBadRequest Bad request.
+/*
+RestWalletListBadRequest Bad request.
 
 swagger:response restWalletListBadRequest
 */
@@ -107,7 +109,8 @@ func (o *RestWalletListBadRequest) WriteResponse(rw http.ResponseWriter, produce
 // RestWalletListInternalServerErrorCode is the HTTP code returned for type RestWalletListInternalServerError
 const RestWalletListInternalServerErrorCode int = 500
 
-/*RestWalletListInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
+/*
+RestWalletListInternalServerError Internal Server Error - The server has encountered a situation it does not know how to handle.
 
 swagger:response restWalletListInternalServerError
 */

@@ -10,6 +10,12 @@ schemes:
   - http
 swagger: "2.0"
 paths:
+  /:
+    get:
+      operationId: defaultPage
+      responses:
+        "301":
+          description: Move to the default endpoint
   /web/{resource}:
     get:
       operationId: web

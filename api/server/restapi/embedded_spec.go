@@ -34,6 +34,16 @@ func init() {
     "version": "0.0.0"
   },
   "paths": {
+    "/": {
+      "get": {
+        "operationId": "defaultPage",
+        "responses": {
+          "301": {
+            "description": "Move to the default endpoint"
+          }
+        }
+      }
+    },
     "/rest/wallet": {
       "get": {
         "produces": [
@@ -470,6 +480,16 @@ func init() {
     "version": "0.0.0"
   },
   "paths": {
+    "/": {
+      "get": {
+        "operationId": "defaultPage",
+        "responses": {
+          "301": {
+            "description": "Move to the default endpoint"
+          }
+        }
+      }
+    },
     "/rest/wallet": {
       "get": {
         "produces": [

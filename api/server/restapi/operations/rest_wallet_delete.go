@@ -29,10 +29,10 @@ func NewRestWalletDelete(ctx *middleware.Context, handler RestWalletDeleteHandle
 	return &RestWalletDelete{Context: ctx, Handler: handler}
 }
 
-/* RestWalletDelete swagger:route DELETE /rest/wallet/{nickname} restWalletDelete
+/*
+	RestWalletDelete swagger:route DELETE /rest/wallet/{nickname} restWalletDelete
 
 RestWalletDelete rest wallet delete API
-
 */
 type RestWalletDelete struct {
 	Context *middleware.Context
