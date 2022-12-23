@@ -1,71 +1,89 @@
-name: build and upload artifacts
+# This is a configuration file for a GitHub Actions workflow.
+# The workflow is triggered when a versioned tag is pushed to the main branch,
+# or when a pull request is opened or when the workflow is manually called.
 on:
   push:
     tags:
-      - v[0-9]+.*
+      - v[0-9]+.* # this regular expression matches tags like v1.0.0, v2.3.4, etc.
     branches:
       - main
   pull_request:
   workflow_call:
 
+# The contents of the repository should be readable by the workflow.
 permissions:
   contents: read
 
+# The workflow consists of three jobs: lint, tests, and build.
 jobs:
-
   lint:
+    # The lint job uses a configuration file in the .github/workflows directory.
     uses: ./.github/workflows/lint.yml
 
   tests:
+    # The tests job uses a configuration file in the .github/workflows directory.
     uses: ./.github/workflows/tests.yml
 
   build:
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # The build job depends on the lint and tests jobs to run successfully before it can start.
+    # The build is triggered only on main branch and releases
+    if: ${{ (github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/v') }}
     needs: [lint, tests]
     name: build and upload artifacts
+    # The build job has a matrix strategy, which means it will run multiple times with different combinations of the os, arch, and target variables.
     strategy:
       matrix:
         include:
+          # The first combination is Ubuntu running on an AMD64 processor, building for Windows.
           - os: ubuntu-latest
             arch: amd64
             target: windows
-            cc: x86_64-w64-mingw32-gcc
-            cxx: CXX=x86_64-w64-mingw32-g++
+          # The second combination is Ubuntu running on an AMD64 processor, building for Linux.
           - os: ubuntu-latest
             arch: amd64
             target: linux
-            cc: gcc
-            cxx: g++
+          # The third combination is macOS running on an AMD64 processor, building for Darwin (macOS).
           - os: macos-latest
             arch: amd64
             target: darwin
-            cc: ""
-            cxx: ""
+          # The fourth combination is macOS running on an ARM64 processor, building for Darwin (macOS).
           - os: macos-latest
             arch: arm64
             target: darwin
-            cc: ""
-            cxx: ""
+
+    # The build job runs on the specified operating system.
     runs-on: ${{ matrix.os }}
     steps:
+      # The first step checks out the repository.
       - uses: actions/checkout@v3
-      - name: installing dependencies
-        uses: ./.github/actions/install
         with:
-          os: ${{ matrix.os }}
-      - name: Build binary for ${{ matrix.target }} on ${{ matrix.arch}}
-        run: GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} CGO_ENABLED=1 CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} go build -o thyra-plugin_massa-core_${{ matrix.target }}_${{ matrix.arch }} ./cmd/thyra-plugin_massa-core/
+          submodules: true
+      # The second step sets up Go.
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ">=1.19.3"
+      # The third step builds the binary and prepares an archive for publishing.
+      # If the operating system is Ubuntu, install xorg-dev.
+      # xorg-dev package is required to build certain graphical applications.
+      # If the target is Windows, install mingw-w64 and set the CC environment variable.
+      # mingw-w64 is a compiler toolchain for Windows. The CC environment variable specifies the C compiler to use.
+      - name: Build binary and prepare archive for publish
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            sudo apt-get update
+            sudo apt-get install -y xorg-dev
+          fi
+          if [ "${{ matrix.target }}" == "windows" ]; then
+            sudo apt-get install gcc-mingw-w64
+            export CC=x86_64-w64-mingw32-gcc
+          fi
+          export GOOS=${{ matrix.target }}
+          export GOARCH=${{ matrix.arch }} 
+          ./build.sh
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.target }}-${{ matrix.arch }}-binary
-          path: thyra-plugin_massa-core_${{ matrix.target }}_${{ matrix.arch }}
-      - name: Create release and upload binaries
-        if: ${{ env.RELEASE_VERSION != '' }}
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.RELEASE_VERSION }}
-          draft: ${{ env.RELEASE_AS_DRAFT }}
-          prerelease: ${{ env.RELEASE_AS_PRERELEASE }}
-          generate_release_notes: ${{ env.GENERATE_RELEASE_NOTES }}
-          files: thyra-plugin_massa-core_${{ matrix.target }}_${{ matrix.arch }}
+          # Name the artifact using the values of the matrix.target and matrix.arch variables
+          name: Wallet-plugin-${{ matrix.target }}_${{ matrix.arch }}
+          path: build

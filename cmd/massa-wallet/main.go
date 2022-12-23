@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"sync"
 
@@ -14,14 +15,21 @@ import (
 )
 
 func main() {
-	myApp := app.New()
+	var port int
+	var path string
+	flag.IntVar(&port, "port", 8080, "the port to listen on")
+	//The path is not actually used in the script.
+	//It is included only to maintain temporary compatibility with Thyra, and it will be removed at a later time.
+	flag.StringVar(&path, "path", "", "the path to listen on")
+	flag.Parse()
 
-	go StartServer(&myApp)
+	myApp := app.New()
+	go StartServer(&myApp, port)
 
 	myApp.Run()
 }
 
-func StartServer(app *fyne.App) {
+func StartServer(app *fyne.App, port int) {
 
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -42,6 +50,9 @@ func StartServer(app *fyne.App) {
 	localAPI.WebHandler = operations.WebHandlerFunc(handler.WebWalletHandler)
 
 	server.ConfigureAPI()
+
+	// Set the port to listen on to the passed-in port
+	server.Port = port
 
 	defer (*app).Quit()
 
