@@ -40,6 +40,7 @@ func configureAPIServerPrecondition() (*operations.MassaWalletAPI, error) {
 
 // createTestWallet creates a new wallet which will be used as a preconditon to run other tests
 func createTestWallet(t *testing.T) {
+	t.Log("\n................... createTestWallet start ...................\n")
 	// Configure the API server
 	api, err := configureAPIServerPrecondition()
 	if err != nil {
@@ -78,6 +79,7 @@ func createTestWallet(t *testing.T) {
 	}
 
 	// Create a new HTTP request to the create wallet
+	t.Logf("\n................... create wallet %v ...................\n", strings.NewReader(testPrecondition.body))
 	httpRequest, err := http.NewRequest("POST", "/rest/wallet", strings.NewReader(testPrecondition.body))
 	if err != nil {
 		// Log an error and exit if there was an error creating the request
@@ -98,5 +100,6 @@ func createTestWallet(t *testing.T) {
 		// Log an error and exit if the status code is not the expected value
 		log.Fatalln("Unexpected status code: got", resp.Result().StatusCode, "want", testPrecondition.want.statusCode)
 	}
+	t.Log("\n................... createTestWallet complete ...................\n")
 
 }

@@ -77,5 +77,8 @@ func Test_walletImport_Handle(t *testing.T) {
 		if resp.Result().StatusCode != testsImport.want.statusCode {
 			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, testsImport.want.statusCode)
 		}
+		// Run the cleanupTestData function after running the tests
+		// cleanupTestData Clean up test data by listing all created wallets with tests and deleting them
+		t.Run("cleanupTestData", func(t *testing.T) { cleanupTestData(t) })
 	})
 }

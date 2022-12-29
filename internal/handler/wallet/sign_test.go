@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -65,6 +66,8 @@ func Test_walletSign_Handle(t *testing.T) {
 	}{
 		{"passing", "toto", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: nil}, want{statusCode: 200}},
 		{"wrong password", "toto", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "4321", err: nil}, want{statusCode: 500}},
+		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: nil}, want{statusCode: 500}},
+		{"prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: errors.New("Error while getting password prompt")}, want{statusCode: 500}},
 	}
 	for _, tt := range testsSign {
 		t.Run(tt.name, func(t *testing.T) {

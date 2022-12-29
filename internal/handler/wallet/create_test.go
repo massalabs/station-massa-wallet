@@ -101,4 +101,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 			}
 		})
 	}
+	// Run the cleanupTestData function after running the tests
+	// createTestWallet Clean up test data by listing all created wallets with tests and deleting them
+	t.Run("cleanupTestData", func(t *testing.T) { cleanupTestData(t) })
 }
