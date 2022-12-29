@@ -24,7 +24,6 @@ type walletSign struct {
 
 //nolint:nolintlint,ireturn,funlen
 func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) middleware.Responder {
-
 	// retrieves key pair using wallet's nickname.
 	if len(params.Nickname) == 0 {
 		return operations.NewRestWalletSignOperationBadRequest().WithPayload(
@@ -43,7 +42,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 			})
 	}
 
-	clearPassword, err := s.pwdPrompt(params.Nickname) //gui.AskPassword(params.Nickname, s.app)
+	clearPassword, err := s.pwdPrompt(params.Nickname) // gui.AskPassword(params.Nickname, s.app)
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
@@ -58,7 +57,6 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 				Code:    errorPasswordEmptyExecuteFct,
 				Message: errorPasswordEmptyExecuteFct,
 			})
-
 	}
 
 	err = wlt.Unprotect(clearPassword, 0)

@@ -73,5 +73,4 @@ func cleanupTestData(t *testing.T) {
 		handlerDelete.ServeHTTP(resp, httpRequest)
 	}
 	t.Log("\n................... cleanupTestData complete ...................\n")
-
 }

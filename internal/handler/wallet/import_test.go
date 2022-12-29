@@ -58,7 +58,6 @@ func Test_walletImport_Handle(t *testing.T) {
 	}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 204}}
 
 	t.Run(testsImport.name, func(t *testing.T) {
-
 		handler_create, exist := api_Import.HandlerFor("put", "/rest/wallet")
 		if !exist {
 			t.Fatalf("Endpoint doesn't exist")

@@ -44,12 +44,12 @@ func Test_walletGet_Handle(t *testing.T) {
 	}
 
 	testsGet := []struct {
-		name string
-		body string
-		want want
+		name     string
+		nickname string
+		want     want
 	}{
 		{"Passed_list_empty", ``, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
-		{"Passed_list_with_wallets", `{"Nickname": "precondition_wallet"}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
+		{"Passed_list_with_wallets", "precondition_wallet", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
 	}
 
 	t.Run(testsGet[0].name, func(t *testing.T) {
@@ -114,14 +114,8 @@ func Test_walletGet_Handle(t *testing.T) {
 			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
 		}
 
-		// Unmarshal the JSON string into a map
-		var data map[string]interface{}
-		json.Unmarshal([]byte(testsGet[1].body), &data)
-		// Extract the Nickname field from the map
-		nickname := data["Nickname"].(string)
-
-		if *wallets[0].Nickname != nickname {
-			t.Fatalf("the wallet nickname was: %s, want %s", *wallets[0].Nickname, nickname)
+		if *wallets[0].Nickname != testsGet[1].nickname {
+			t.Fatalf("the wallet nickname was: %s, want %s", *wallets[0].Nickname, testsGet[1].nickname)
 		}
 	})
 }

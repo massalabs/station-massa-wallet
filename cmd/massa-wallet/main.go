@@ -19,8 +19,8 @@ func main() {
 	var port int
 	var path string
 	flag.IntVar(&port, "port", 8080, "the port to listen on")
-	//The path is not actually used in the script.
-	//It is included only to maintain temporary compatibility with Thyra, and it will be removed at a later time.
+	// The path is not actually used in the script.
+	// It is included only to maintain temporary compatibility with Thyra, and it will be removed at a later time.
 	flag.StringVar(&path, "path", "", "the path to listen on")
 	flag.Parse()
 
@@ -31,7 +31,6 @@ func main() {
 }
 
 func StartServer(app *fyne.App, port int) {
-
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
 		log.Fatalln(err)

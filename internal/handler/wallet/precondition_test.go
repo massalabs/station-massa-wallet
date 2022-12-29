@@ -101,5 +101,4 @@ func createTestWallet(t *testing.T) {
 		log.Fatalln("Unexpected status code: got", resp.Result().StatusCode, "want", testPrecondition.want.statusCode)
 	}
 	t.Log("\n................... createTestWallet complete ...................\n")
-
 }
