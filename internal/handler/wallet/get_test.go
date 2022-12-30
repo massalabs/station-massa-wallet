@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -37,22 +38,7 @@ func Test_walletGet_Handle(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
-	type want struct {
-		header     http.Header
-		statusCode int
-	}
-
-	testsGet := []struct {
-		name           string
-		walletNickname string
-		want           want
-	}{
-		{"Passed_list_empty", "", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
-		{"Passed_list_with_wallets", "precondition_wallet", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
-	}
-
-	t.Run(testsGet[0].name, func(t *testing.T) {
+	t.Run("Passed_list_empty", func(t *testing.T) {
 		handler_get, exist := api_get.HandlerFor("get", "/rest/wallet")
 		if !exist {
 			t.Fatalf("Endpoint doesn't exist")
@@ -68,8 +54,8 @@ func Test_walletGet_Handle(t *testing.T) {
 		resp := httptest.NewRecorder()
 		handler_get.ServeHTTP(resp, httpRequest)
 
-		if resp.Result().StatusCode != testsGet[0].want.statusCode {
-			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, testsGet[0].want.statusCode)
+		if resp.Result().StatusCode != 200 {
+			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, 200)
 		}
 
 		var wallets []models.Wallet
@@ -83,7 +69,7 @@ func Test_walletGet_Handle(t *testing.T) {
 		}
 	})
 
-	t.Run(testsGet[1].name, func(t *testing.T) {
+	t.Run("Passed_list_with_wallets", func(t *testing.T) {
 		// createTestWallet create a wallet called "precondition_wallet" to test the get function
 		api_create, err := configureAPIServeCreate()
 		if err != nil {
@@ -105,8 +91,8 @@ func Test_walletGet_Handle(t *testing.T) {
 		resp := httptest.NewRecorder()
 		handler_get.ServeHTTP(resp, httpRequest)
 
-		if resp.Result().StatusCode != testsGet[1].want.statusCode {
-			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, testsGet[1].want.statusCode)
+		if resp.Result().StatusCode != 200 {
+			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, 200)
 		}
 
 		if resp.Result().StatusCode != 200 {
@@ -118,8 +104,15 @@ func Test_walletGet_Handle(t *testing.T) {
 			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
 		}
 
-		if *wallets[0].Nickname != testsGet[1].walletNickname {
-			t.Fatalf("the wallet nickname was: %s, want %s", *wallets[0].Nickname, testsGet[1].walletNickname)
+		if *wallets[0].Nickname != "precondition_wallet" {
+			t.Fatalf("the wallet nickname was: %s, want %s", *wallets[0].Nickname, "precondition_wallet")
 		}
 	})
+
+	// Run the cleanupTestData function after running the tests
+	// createTestWallet Clean up test data by deleting the created wallet.
+	err = cleanupTestData([]string{"precondition_wallet"})
+	if err != nil {
+		log.Printf("Error while cleaning up TestData ")
+	}
 }
