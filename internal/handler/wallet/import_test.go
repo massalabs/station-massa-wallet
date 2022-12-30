@@ -37,14 +37,10 @@ func Test_walletImport_Handle(t *testing.T) {
 		panic(err)
 	}
 
-	type want struct {
-		header     http.Header
-		statusCode int
-	}
 	testsImport := []struct {
-		name string
-		body string
-		want want
+		name       string
+		body       string
+		statusCode int
 	}{
 		{"passing", `{
 		"address": "A12TFdPyw8Sg9qouzgTWwW5yo5PBDu5C3BWEGPjB9vRx9s3b42qv",
@@ -57,9 +53,9 @@ func Test_walletImport_Handle(t *testing.T) {
 			}
 		],
 		"nickname": "imported"
-	}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 204}},
+	}`, 204},
 
-		{"fail_empty_fields", `{}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 422}}}
+		{"fail_empty_fields", `{}`, 422}}
 	for _, tt := range testsImport {
 		t.Run(tt.name, func(t *testing.T) {
 			handler_create, exist := api_Import.HandlerFor("put", "/rest/wallet")
@@ -77,8 +73,8 @@ func Test_walletImport_Handle(t *testing.T) {
 			resp := httptest.NewRecorder()
 			handler_create.ServeHTTP(resp, httpRequest)
 
-			if resp.Result().StatusCode != tt.want.statusCode {
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
+			if resp.Result().StatusCode != tt.statusCode {
+				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.statusCode)
 			}
 
 			// Run the cleanupTestData function after running the tests
