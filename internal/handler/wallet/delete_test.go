@@ -53,22 +53,16 @@ func Test_walletDelete_Handle(t *testing.T) {
 		panic(err)
 	}
 
-	// Define the expected result struct of the test cases
-	type want struct {
-		header     http.Header
-		statusCode int
-	}
-
 	// Define the test cases
 	// The first test case tests the deletion of the wallet created with the createTestWallet(t) function.
 	// The second test case tests the deletion of a wallet that does not exist.
 	testsDelete := []struct {
-		name string
-		body string
-		want want
+		name           string
+		walletNickname string
+		statusCode     int
 	}{
-		{"passing", "precondition_wallet", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 204}},
-		{"failing_wallet_does_not_exist", "wallet_does_not_exist", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 500}},
+		{"passing", "precondition_wallet", 204},
+		{"failing_wallet_does_not_exist", "wallet_does_not_exist", 500},
 	}
 
 	// Iterate through the test cases
@@ -81,7 +75,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 			}
 
 			// Create a DELETE request for the wallet with the specified nickname
-			httpRequest, err := http.NewRequest("DELETE", fmt.Sprintf("/rest/wallet/%s", tt.body), strings.NewReader(""))
+			httpRequest, err := http.NewRequest("DELETE", fmt.Sprintf("/rest/wallet/%s", tt.walletNickname), strings.NewReader(""))
 			if err != nil {
 				t.Fatalf(err.Error())
 			}
@@ -91,8 +85,8 @@ func Test_walletDelete_Handle(t *testing.T) {
 			resp := httptest.NewRecorder()
 			handler_delete.ServeHTTP(resp, httpRequest)
 
-			if resp.Result().StatusCode != tt.want.statusCode {
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
+			if resp.Result().StatusCode != tt.statusCode {
+				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.statusCode)
 			}
 		})
 	}

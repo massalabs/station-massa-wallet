@@ -44,11 +44,11 @@ func Test_walletGet_Handle(t *testing.T) {
 	}
 
 	testsGet := []struct {
-		name     string
-		nickname string
-		want     want
+		name           string
+		walletNickname string
+		want           want
 	}{
-		{"Passed_list_empty", ``, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
+		{"Passed_list_empty", "", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
 		{"Passed_list_with_wallets", "precondition_wallet", want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
 	}
 
@@ -118,8 +118,8 @@ func Test_walletGet_Handle(t *testing.T) {
 			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
 		}
 
-		if *wallets[0].Nickname != testsGet[1].nickname {
-			t.Fatalf("the wallet nickname was: %s, want %s", *wallets[0].Nickname, testsGet[1].nickname)
+		if *wallets[0].Nickname != testsGet[1].walletNickname {
+			t.Fatalf("the wallet nickname was: %s, want %s", *wallets[0].Nickname, testsGet[1].walletNickname)
 		}
 	})
 }
