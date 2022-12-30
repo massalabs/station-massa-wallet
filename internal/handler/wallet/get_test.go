@@ -85,7 +85,11 @@ func Test_walletGet_Handle(t *testing.T) {
 
 	t.Run(testsGet[1].name, func(t *testing.T) {
 		// createTestWallet create a wallet called "precondition_wallet" to test the get function
-		createTestWallet(t)
+		api_create, err := configureAPIServeCreate()
+		if err != nil {
+			panic(err)
+		}
+		createTestWallet(t, api_create, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
 		handler_get, exist := api_get.HandlerFor("get", "/rest/wallet")
 		if !exist {
 			t.Fatalf("Endpoint doesn't exist")

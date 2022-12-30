@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -40,11 +41,12 @@ func Test_walletImport_Handle(t *testing.T) {
 		header     http.Header
 		statusCode int
 	}
-	testsImport := struct {
+	testsImport := []struct {
 		name string
 		body string
 		want want
-	}{"create_passing", `{
+	}{
+		{"passing", `{
 		"address": "A12TFdPyw8Sg9qouzgTWwW5yo5PBDu5C3BWEGPjB9vRx9s3b42qv",
 		"keyPairs": [
 			{
@@ -55,29 +57,36 @@ func Test_walletImport_Handle(t *testing.T) {
 			}
 		],
 		"nickname": "imported"
-	}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 204}}
+	}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 204}},
 
-	t.Run(testsImport.name, func(t *testing.T) {
-		handler_create, exist := api_Import.HandlerFor("put", "/rest/wallet")
-		if !exist {
-			t.Fatalf("Endpoint doesn't exist")
-		}
+		{"fail_empty_fields", `{}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 422}}}
+	for _, tt := range testsImport {
+		t.Run(tt.name, func(t *testing.T) {
+			handler_create, exist := api_Import.HandlerFor("put", "/rest/wallet")
+			if !exist {
+				t.Fatalf("Endpoint doesn't exist")
+			}
 
-		httpRequest, err := http.NewRequest("PUT", "/rest/wallet", strings.NewReader(testsImport.body))
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
+			httpRequest, err := http.NewRequest("PUT", "/rest/wallet", strings.NewReader(tt.body))
+			if err != nil {
+				t.Fatalf(err.Error())
+			}
 
-		httpRequest.Header.Set("Content-Type", "application/json")
+			httpRequest.Header.Set("Content-Type", "application/json")
 
-		resp := httptest.NewRecorder()
-		handler_create.ServeHTTP(resp, httpRequest)
+			resp := httptest.NewRecorder()
+			handler_create.ServeHTTP(resp, httpRequest)
 
-		if resp.Result().StatusCode != testsImport.want.statusCode {
-			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, testsImport.want.statusCode)
-		}
-		// Run the cleanupTestData function after running the tests
-		// cleanupTestData Clean up test data by listing all created wallets with tests and deleting them
-		t.Run("cleanupTestData", func(t *testing.T) { cleanupTestData(t) })
-	})
+			if resp.Result().StatusCode != tt.want.statusCode {
+				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
+			}
+
+			// Run the cleanupTestData function after running the tests
+			// createTestWallet Clean up test data by deleting the created wallets
+			err = cleanupTestData([]string{"imported"})
+			if err != nil {
+				log.Printf("Error while cleaning up TestData ")
+			}
+		})
+	}
 }

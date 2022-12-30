@@ -41,7 +41,11 @@ func configureAPIServerDelete() (*operations.MassaWalletAPI, error) {
 func Test_walletDelete_Handle(t *testing.T) {
 	// Run the createTestWallet function before running the tests
 	// createTestWallet create a wallet called "precondition_wallet" to test the delete function
-	createTestWallet(t)
+	api_create, err := configureAPIServeCreate()
+	if err != nil {
+		panic(err)
+	}
+	createTestWallet(t, api_create, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
 
 	// Configure the API server for the DELETE wallet operation
 	api_Delete, err := configureAPIServerDelete()

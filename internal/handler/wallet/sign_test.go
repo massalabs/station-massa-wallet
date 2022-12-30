@@ -1,8 +1,10 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -47,9 +49,12 @@ func configureAPIServerSign(prompt chan prompt) (*operations.MassaWalletAPI, err
 func Test_walletSign_Handle(t *testing.T) {
 	// Run the createTestWallet function before running the tests
 	// createTestWallet create a wallet called "precondition_wallet" to test the delete function
-	createTestWallet(t)
-
-	channel := make(chan prompt, 1) // buffered channel
+	api_create, err := configureAPIServeCreate()
+	if err != nil {
+		panic(err)
+	}
+	createTestWallet(t, api_create, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
+	channel := make(chan prompt, 2) // buffered channel
 	api_Sign, err := configureAPIServerSign(channel)
 	if err != nil {
 		panic(err)
@@ -69,8 +74,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: nil}, want{statusCode: 200}},
 		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "4321", err: nil}, want{statusCode: 500}},
 		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: nil}, want{statusCode: 500}},
-		// to debug why this test never finish
-		// {"prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: errors.New("Error while getting password prompt")}, want{statusCode: 500}},
+		{"prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, prompt{password: "1234", err: errors.New("Error while getting password prompt")}, want{statusCode: 500}},
 	}
 	for _, tt := range testsSign {
 		t.Run(tt.name, func(t *testing.T) {
@@ -101,6 +105,9 @@ func Test_walletSign_Handle(t *testing.T) {
 		})
 	}
 	// Run the cleanupTestData function after running the tests
-	// cleanupTestData Clean up test data by listing all created wallets with tests and deleting them
-	t.Run("cleanupTestData", func(t *testing.T) { cleanupTestData(t) })
+	// createTestWallet Clean up test data by deleting the created wallets
+	err = cleanupTestData([]string{"precondition_wallet"})
+	if err != nil {
+		log.Printf("Error while cleaning up TestData ")
+	}
 }

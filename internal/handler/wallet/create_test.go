@@ -2,9 +2,9 @@ package wallet
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -15,17 +15,20 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 )
 
-func configureAPIServer() (*operations.MassaWalletAPI, error) {
+func configureAPIServeCreate() (*operations.MassaWalletAPI, error) {
+	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
 		return nil, err
 	}
-
+	// Create a new MassaWalletAPI instance
 	localAPI := operations.NewMassaWalletAPI(swaggerSpec)
 	server := restapi.NewServer(localAPI)
 
+	// Create a sync.Map to store the wallets
 	var walletStorage sync.Map
 
+	// Set the handler function for the create wallet endpoint
 	localAPI.RestWalletCreateHandler = NewCreate(&walletStorage)
 
 	server.ConfigureAPI()
@@ -34,73 +37,71 @@ func configureAPIServer() (*operations.MassaWalletAPI, error) {
 }
 
 func Test_walletCreate_Handle(t *testing.T) {
-	api, err := configureAPIServer()
+	api_create, err := configureAPIServeCreate()
 	if err != nil {
 		panic(err)
 	}
 
-	type want struct {
-		header     http.Header
-		statusCode int
-	}
-
 	tests := []struct {
-		name string
-		body string
-		want want
+		name       string
+		body       string
+		statusCode int
 	}{
-		{"passing", `{"Nickname": "toto", "Password": "1234"}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 200}},
-		{"without Password", `{"Nickname": "toto"}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 422}},
-		{"without Nickname", `{"Password": "1234"}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 422}},
-		{"without Password and Nickname", `{}`, want{header: http.Header{"Content-Type": {"application/json"}}, statusCode: 422}},
+		{"passing", `{"Nickname": "toto", "Password": "1234"}`, 200},
+		{"without Password", `{"Nickname": "toto"}`, 422},
+		{"without Nickname", `{"Password": "1234"}`, 422},
+		{"without Password and Nickname", `{}`, 422},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			handler, exist := api.HandlerFor("post", "/rest/wallet")
-			if !exist {
-				t.Fatalf("Endpoint doesn't exist")
-			}
-
-			httpRequest, err := http.NewRequest("POST", "/rest/wallet", strings.NewReader(tt.body))
-			if err != nil {
-				t.Fatalf(err.Error())
-			}
-
-			httpRequest.Header.Set("Content-Type", "application/json")
-
-			resp := httptest.NewRecorder()
-			handler.ServeHTTP(resp, httpRequest)
-
-			if resp.Result().StatusCode != tt.want.statusCode {
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
-			}
-
-			if !reflect.DeepEqual(resp.Header(), tt.want.header) {
-				t.Fatalf("the response header was: %v, want: %v", resp.Header(), tt.want.header)
-			}
-
-			if resp.Result().StatusCode != 200 {
-				return
-			}
-
-			var wallet models.Wallet
-			err = json.Unmarshal(resp.Body.Bytes(), &wallet)
-			if err != nil {
-				t.Fatalf("impossible to hydrate models.Wallet: %s", err)
-			}
-
-			var body operations.RestWalletCreateBody
-			err = json.Unmarshal([]byte(tt.body), &body)
-			if err != nil {
-				t.Fatalf("impossible to hydrate operations.RestWalletCreateBody: %s", err)
-			}
-
-			if *wallet.Nickname != *body.Nickname {
-				t.Fatalf("the wallet nickname was: %s, want %s", *wallet.Nickname, `toto`)
-			}
-		})
+		createTestWallet(t, api_create, tt.name, tt.body, tt.statusCode)
 	}
 	// Run the cleanupTestData function after running the tests
-	// createTestWallet Clean up test data by listing all created wallets with tests and deleting them
-	t.Run("cleanupTestData", func(t *testing.T) { cleanupTestData(t) })
+	// createTestWallet Clean up test data by deleting the created wallets
+	err = cleanupTestData([]string{"toto"})
+	if err != nil {
+		log.Printf("Error while cleaning up TestData ")
+	}
+}
+
+func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, name string, inputBody string, statusCode int) {
+	t.Run(name, func(t *testing.T) {
+		handler, exist := api.HandlerFor("post", "/rest/wallet")
+		if !exist {
+			t.Fatalf("Endpoint doesn't exist")
+		}
+
+		httpRequest, err := http.NewRequest("POST", "/rest/wallet", strings.NewReader(inputBody))
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+
+		httpRequest.Header.Set("Content-Type", "application/json")
+
+		resp := httptest.NewRecorder()
+		handler.ServeHTTP(resp, httpRequest)
+
+		if resp.Result().StatusCode != statusCode {
+			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, statusCode)
+		}
+
+		if resp.Result().StatusCode != 200 {
+			return
+		}
+
+		var wallet models.Wallet
+		err = json.Unmarshal(resp.Body.Bytes(), &wallet)
+		if err != nil {
+			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
+		}
+
+		var body operations.RestWalletCreateBody
+		err = json.Unmarshal([]byte(inputBody), &body)
+		if err != nil {
+			t.Fatalf("impossible to hydrate operations.RestWalletCreateBody: %s", err)
+		}
+
+		if *wallet.Nickname != *body.Nickname {
+			t.Fatalf("the wallet nickname was: %s, want %s", *wallet.Nickname, `toto`)
+		}
+	})
 }
