@@ -38,10 +38,10 @@ func NewCustomResponder(body []byte, header map[string]string, statusCode int) *
 	return &CustomResponder{Body: body, Header: header, StatusCode: statusCode}
 }
 
-// NewNotFoundResponder creates a not found reponse.
+// NewNotFoundResponder creates a not found response.
 //
 // A CustomResponder with a "Page not found" body, a "Content-Type" header set to "text/html"
-// and a status code of 404 (Not Found) is instanciate.
+// and a status code of 404 (Not Found) is instantiate.
 func NewNotFoundResponder() *CustomResponder {
 	return NewCustomResponder(
 		[]byte("Page not found"),
@@ -49,10 +49,10 @@ func NewNotFoundResponder() *CustomResponder {
 		http.StatusNotFound)
 }
 
-// NewInternalServerResponder creates an internal server error reponse.
+// NewInternalServerResponder creates an internal server error response.
 //
 // A CustomResponder with a body with the error content, a "Content-Type" header set to "text/html"
-// and a status code of 505 (Internal Server Error) is instanciate.
+// and a status code of 505 (Internal Server Error) is instantiate.
 func NewInternalServerErrorResponder(err error) *CustomResponder {
 	return NewCustomResponder(
 		[]byte(err.Error()),

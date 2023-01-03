@@ -26,7 +26,7 @@ func (f *FynePrompter) Ask(name string) (string, error) {
 	return result.password, result.err
 }
 
-// NewFynePrompter creates a new password rpomter with the given Fyne GUI application.
+// NewFynePrompter creates a new password prompter with the given Fyne GUI application.
 func NewFynePrompter(f *fyne.App) *FynePrompter {
 	return &FynePrompter{guiApp: f}
 }
