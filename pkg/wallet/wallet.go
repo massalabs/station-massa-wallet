@@ -39,23 +39,33 @@ type Wallet struct {
 	KeyPair  KeyPair
 }
 
+// aead returns a authenticated encryption with associated data.
+func aead(password []byte, salt []byte) (cipher.AEAD, error) {
+	secretKey := pbkdf2.Key([]byte(password), salt, PBKDF2NbRound, SecretKeyLength, sha256.New)
+
+	block, err := aes.NewCipher(secretKey)
+	if err != nil {
+		return nil, fmt.Errorf("intializing block ciphering: %w", err)
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, fmt.Errorf("intializing the AES block cipher wrapped in a Gallois Counter Mode ciphering: %w", err)
+	}
+
+	return aesGCM, nil
+}
+
 // Protect encrypts the private key using the given password.
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
-	secretKey := pbkdf2.Key([]byte(password), w.KeyPair.Salt[:], PBKDF2NbRound, SecretKeyLength, sha256.New)
-
-	block, err := aes.NewCipher(secretKey)
+	aead, err := aead([]byte(password), w.KeyPair.Salt[:])
 	if err != nil {
-		return fmt.Errorf("intializing block ciphering: %w", err)
+		return fmt.Errorf("while protecting wallet: %w", err)
 	}
 
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return fmt.Errorf("intializing the AES block cipher wrapped in a Gallois Counter Mode ciphering: %w", err)
-	}
-
-	w.KeyPair.PrivateKey = aesgcm.Seal(
+	w.KeyPair.PrivateKey = aead.Seal(
 		nil,
 		w.KeyPair.Nonce[:],
 		w.KeyPair.PrivateKey,
@@ -68,19 +78,12 @@ func (w *Wallet) Protect(password string) error {
 // The encryption algorithm used to unprotect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Unprotect(password string) error {
-	secretKey := pbkdf2.Key([]byte(password), w.KeyPair.Salt[:], PBKDF2NbRound, SecretKeyLength, sha256.New)
-
-	block, err := aes.NewCipher(secretKey)
+	aead, err := aead([]byte(password), w.KeyPair.Salt[:])
 	if err != nil {
-		return fmt.Errorf("intializing block ciphering: %w", err)
+		return fmt.Errorf("while unprotecting wallet: %w", err)
 	}
 
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return fmt.Errorf("intializing the AES block cipher wrapped in a Gallois Counter Mode ciphering: %w", err)
-	}
-
-	pk, err := aesgcm.Open(nil, w.KeyPair.Nonce[:], w.KeyPair.PrivateKey, nil)
+	pk, err := aead.Open(nil, w.KeyPair.Nonce[:], w.KeyPair.PrivateKey, nil)
 	if err != nil {
 		return fmt.Errorf("opening the private key seal: %w", err)
 	}
@@ -143,7 +146,7 @@ func LoadAll() ([]Wallet, error) {
 	return wallets, nil
 }
 
-// Load loads the wallet taht match the given name in the working directory
+// Load loads the wallet that match the given name in the working directory
 // Note: `wallet_` prefix and a `.json` extension are automatically added.
 func Load(nickname string) (*Wallet, error) {
 	walletName := Filename(nickname)
@@ -162,7 +165,7 @@ func Load(nickname string) (*Wallet, error) {
 	return &wallet, nil
 }
 
-// Generate instanciates a new wallet, protects its private key and persists it.
+// Generate instantiates a new wallet, protects its private key and persists it.
 // Everything is dynamically generated except from the nickname.
 func Generate(nickname string, password string) (*Wallet, error) {
 	publicKey, privateKey, err := ed25519.GenerateKey(nil)
@@ -188,7 +191,7 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 	wallet, err := New(nickname, addr, privateKey, publicKey, salt, nonce)
 	if err != nil {
-		return nil, fmt.Errorf("instanciating a new wallet: %w", err)
+		return nil, fmt.Errorf("instantiating a new wallet: %w", err)
 	}
 
 	err = wallet.Protect(password)
@@ -205,7 +208,7 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 }
 
-// New instanciates a new wallet.
+// New instantiates a new wallet.
 func New(nickname string, addr [32]byte, privateKey []byte, publicKey []byte, salt [16]byte, nonce [12]byte) (*Wallet, error) {
 	wallet := Wallet{
 		Version:  0,
