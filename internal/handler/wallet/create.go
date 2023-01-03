@@ -1,31 +1,18 @@
 package wallet
 
 import (
-	"encoding/json"
-	"os"
-	"sync"
-
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-//nolint:nolintlint,ireturn
-func NewCreate(walletStorage *sync.Map) operations.RestWalletCreateHandler {
-	return &walletCreate{walletStorage: walletStorage}
-}
-
-type walletCreate struct {
-	walletStorage *sync.Map
-}
-
-//nolint:nolintlint,ireturn,funlen
-func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middleware.Responder {
-	if params.Body.Nickname == nil || len(*params.Body.Nickname) == 0 {
+// HandleCreate handles a create request
+func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder {
+	if len(params.Body.Nickname) == 0 {
 		return operations.NewRestWalletCreateBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorCreateNoNickname,
@@ -33,16 +20,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 			})
 	}
 
-	_, ok := c.walletStorage.Load(*params.Body.Nickname)
-	if ok {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorAlreadyExists,
-				Message: "Error: a wallet with the same nickname already exists.",
-			})
-	}
-
-	if params.Body.Password == nil || len(*params.Body.Password) == 0 {
+	if len(params.Body.Password) == 0 {
 		return operations.NewRestWalletCreateBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorCreateNoPassword,
@@ -50,7 +28,7 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 			})
 	}
 
-	newWallet, err := wallet.New(*params.Body.Nickname)
+	newWallet, err := wallet.Generate(params.Body.Nickname, params.Body.Password)
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
@@ -59,49 +37,20 @@ func (c *walletCreate) Handle(params operations.RestWalletCreateParams) middlewa
 			})
 	}
 
-	err = newWallet.Protect(*params.Body.Password, 0)
-	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCreateNew,
-				Message: err.Error(),
-			})
-	}
-
-	bytesOutput, err := json.Marshal(newWallet)
-	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCreateNew,
-				Message: err.Error(),
-			})
-	}
-
-	err = os.WriteFile("wallet_"+*params.Body.Nickname+".json", bytesOutput, fileModeUserRW)
-	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCreateNew,
-				Message: err.Error(),
-			})
-	}
-
-	c.walletStorage.Store(newWallet.Nickname, newWallet)
-
-	privK := base58.CheckEncode(newWallet.KeyPairs[0].PrivateKey)
-	pubK := base58.CheckEncode(newWallet.KeyPairs[0].PublicKey)
-	salt := base58.CheckEncode(newWallet.KeyPairs[0].Salt[:])
-	nonce := base58.CheckEncode(newWallet.KeyPairs[0].Nonce[:])
+	privK := base58.CheckEncode(newWallet.KeyPair.PrivateKey, wallet.Base58Version)
+	pubK := base58.CheckEncode(newWallet.KeyPair.PublicKey, wallet.Base58Version)
+	salt := base58.CheckEncode(newWallet.KeyPair.Salt[:], wallet.Base58Version)
+	nonce := base58.CheckEncode(newWallet.KeyPair.Nonce[:], wallet.Base58Version)
 
 	return operations.NewRestWalletCreateOK().WithPayload(
 		&models.Wallet{
-			Nickname: &newWallet.Nickname,
-			Address:  &newWallet.Address,
-			KeyPairs: []*models.WalletKeyPairsItems0{{
-				PrivateKey: &privK,
-				PublicKey:  &pubK,
-				Salt:       &salt,
-				Nonce:      &nonce,
-			}},
+			Nickname: newWallet.Nickname,
+			Address:  newWallet.Address,
+			KeyPair: models.WalletKeyPair{
+				PrivateKey: privK,
+				PublicKey:  pubK,
+				Salt:       salt,
+				Nonce:      nonce,
+			},
 		})
 }

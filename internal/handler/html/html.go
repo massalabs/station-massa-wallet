@@ -1,4 +1,4 @@
-package handler
+package html
 
 import (
 	"mime"
@@ -13,8 +13,8 @@ import (
 
 const indexHTML = "index.html"
 
-//nolint:nolintlint,ireturn
-func WebWalletHandler(params operations.WebParams) middleware.Responder {
+// Handle a Web request.
+func Handle(params operations.WebParams) middleware.Responder {
 	resourceName := params.Resource
 	if params.Resource == indexHTML {
 		resourceName = "wallet.html"
@@ -34,6 +34,13 @@ func WebWalletHandler(params operations.WebParams) middleware.Responder {
 	return helper.NewCustomResponder(resourceContent, header, http.StatusOK)
 }
 
-func DefaultPageHandler(_ operations.DefaultPageParams) middleware.Responder {
+// DefaultRedirectHandler redirects request to "/" URL to "web/index.html"
+func DefaultRedirectHandler(_ operations.DefaultPageParams) middleware.Responder {
 	return helper.NewCustomResponder(nil, map[string]string{"Location": "web/index.html"}, http.StatusPermanentRedirect)
+}
+
+// AppendEndpoints append web endpoints to the API.
+func AppendEndpoints(api *operations.MassaWalletAPI) {
+	api.DefaultPageHandler = operations.DefaultPageHandlerFunc(DefaultRedirectHandler)
+	api.WebHandler = operations.WebHandlerFunc(Handle)
 }
