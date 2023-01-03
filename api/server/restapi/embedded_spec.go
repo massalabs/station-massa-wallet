@@ -121,7 +121,6 @@ func init() {
         "operationId": "restWalletCreate",
         "parameters": [
           {
-            "x-nullable": false,
             "name": "body",
             "in": "body",
             "required": true,
@@ -134,11 +133,13 @@ func init() {
               "properties": {
                 "nickname": {
                   "description": "Wallet's short name.",
-                  "type": "string"
+                  "type": "string",
+                  "x-nullable": false
                 },
                 "password": {
                   "description": "Private key password.",
-                  "type": "string"
+                  "type": "string",
+                  "x-nullable": false
                 }
               }
             }
@@ -413,51 +414,55 @@ func init() {
       "required": [
         "nickname",
         "address",
-        "keyPairs"
+        "keyPair"
       ],
       "properties": {
         "address": {
           "description": "wallet's address.",
-          "type": "string"
+          "type": "string",
+          "x-nullable": false
         },
-        "keyPairs": {
-          "description": "wallet's key pairs.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "privateKey",
-              "publicKey",
-              "salt",
-              "nonce"
-            ],
-            "properties": {
-              "nonce": {
-                "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
-                "type": "string",
-                "format": "base58check"
-              },
-              "privateKey": {
-                "description": "Key pair's private key.",
-                "type": "string",
-                "format": "base58check"
-              },
-              "publicKey": {
-                "description": "Key pair's public key.",
-                "type": "string",
-                "format": "base58check"
-              },
-              "salt": {
-                "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
-                "type": "string",
-                "format": "base58check"
-              }
+        "keyPair": {
+          "description": "wallet's key pair.",
+          "type": "object",
+          "required": [
+            "privateKey",
+            "publicKey",
+            "salt",
+            "nonce"
+          ],
+          "properties": {
+            "nonce": {
+              "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            },
+            "privateKey": {
+              "description": "Key pair's private key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            },
+            "publicKey": {
+              "description": "Key pair's public key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            },
+            "salt": {
+              "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
             }
-          }
+          },
+          "x-nullable": false
         },
         "nickname": {
           "description": "wallet's nickname.",
-          "type": "string"
+          "type": "string",
+          "x-nullable": false
         }
       }
     }
@@ -567,7 +572,6 @@ func init() {
         "operationId": "restWalletCreate",
         "parameters": [
           {
-            "x-nullable": false,
             "name": "body",
             "in": "body",
             "required": true,
@@ -580,11 +584,13 @@ func init() {
               "properties": {
                 "nickname": {
                   "description": "Wallet's short name.",
-                  "type": "string"
+                  "type": "string",
+                  "x-nullable": false
                 },
                 "password": {
                   "description": "Private key password.",
-                  "type": "string"
+                  "type": "string",
+                  "x-nullable": false
                 }
               }
             }
@@ -859,27 +865,60 @@ func init() {
       "required": [
         "nickname",
         "address",
-        "keyPairs"
+        "keyPair"
       ],
       "properties": {
         "address": {
           "description": "wallet's address.",
-          "type": "string"
+          "type": "string",
+          "x-nullable": false
         },
-        "keyPairs": {
-          "description": "wallet's key pairs.",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/WalletKeyPairsItems0"
-          }
+        "keyPair": {
+          "description": "wallet's key pair.",
+          "type": "object",
+          "required": [
+            "privateKey",
+            "publicKey",
+            "salt",
+            "nonce"
+          ],
+          "properties": {
+            "nonce": {
+              "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            },
+            "privateKey": {
+              "description": "Key pair's private key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            },
+            "publicKey": {
+              "description": "Key pair's public key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            },
+            "salt": {
+              "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
+              "type": "string",
+              "format": "base58check",
+              "x-nullable": false
+            }
+          },
+          "x-nullable": false
         },
         "nickname": {
           "description": "wallet's nickname.",
-          "type": "string"
+          "type": "string",
+          "x-nullable": false
         }
       }
     },
-    "WalletKeyPairsItems0": {
+    "WalletKeyPair": {
+      "description": "wallet's key pair.",
       "type": "object",
       "required": [
         "privateKey",
@@ -891,24 +930,29 @@ func init() {
         "nonce": {
           "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
           "type": "string",
-          "format": "base58check"
+          "format": "base58check",
+          "x-nullable": false
         },
         "privateKey": {
           "description": "Key pair's private key.",
           "type": "string",
-          "format": "base58check"
+          "format": "base58check",
+          "x-nullable": false
         },
         "publicKey": {
           "description": "Key pair's public key.",
           "type": "string",
-          "format": "base58check"
+          "format": "base58check",
+          "x-nullable": false
         },
         "salt": {
           "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
           "type": "string",
-          "format": "base58check"
+          "format": "base58check",
+          "x-nullable": false
         }
-      }
+      },
+      "x-nullable": false
     }
   }
 }`))

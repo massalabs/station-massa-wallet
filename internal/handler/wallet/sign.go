@@ -4,45 +4,82 @@ import (
 	"crypto/ed25519"
 
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 	"lukechampine.com/blake3"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/btcsuite/btcutil/base58"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-//nolint:nolintlint,ireturn
-func NewSign(pwdPrompt func(string) (string, error)) operations.RestWalletSignOperationHandler {
+// NewSign instanciates a sign Handler
+// The "classical" way is not possible beacause we need to pass to the handler a password.Asker.
+func NewSign(pwdPrompt password.Asker) operations.RestWalletSignOperationHandler {
 	return &walletSign{pwdPrompt: pwdPrompt}
 }
 
 type walletSign struct {
-	pwdPrompt func(string) (string, error)
+	pwdPrompt password.Asker
 }
 
-//nolint:nolintlint,ireturn,funlen
+// Handle handles a sign request.
 func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) middleware.Responder {
-	// retrieves key pair using wallet's nickname.
-	if len(params.Nickname) == 0 {
-		return operations.NewRestWalletSignOperationBadRequest().WithPayload(
+
+	wlt, resp := loadWallet(params.Nickname)
+	if resp != nil {
+		return resp
+	}
+
+	resp = unprotectWalletAskingPassword(wlt, s.pwdPrompt, params.Nickname)
+	if resp != nil {
+		return resp
+	}
+
+	pubKey := wlt.KeyPair.PublicKey
+	privKey := wlt.KeyPair.PrivateKey
+
+	digest, resp := digestOperationAndPubKey(params.Body.Operation, pubKey)
+	if resp != nil {
+		return resp
+	}
+
+	signature := ed25519.Sign(privKey, digest[:])
+
+	return operations.NewRestWalletSignOperationOK().WithPayload(
+		&models.Signature{
+			PublicKey: "P" + base58.CheckEncode(pubKey, wallet.Base58Version),
+			Signature: signature,
+		})
+}
+
+// loadWallet loads a wallet from the file systme or returns an error.
+func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
+	if len(nickname) == 0 {
+		return nil, operations.NewRestWalletSignOperationBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorSignOperationEmptyNickname,
 				Message: "Error: nickname field is mandatory.",
 			})
 	}
 
-	wlt, err := wallet.Load(params.Nickname)
+	w, err := wallet.Load(nickname)
 	if err != nil {
-		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallet,
-				Message: "Error cannot load wallet : " + err.Error(),
+				Message: "Error cannot load wallet: " + err.Error(),
 			})
 	}
 
-	clearPassword, err := s.pwdPrompt(params.Nickname) // gui.AskPassword(params.Nickname, s.app)
+	return w, nil
+}
+
+// unprotectWalletAskingPassword ask for a password and unprotect the wallet.
+func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Asker, nickname string) middleware.Responder {
+	clearPassword, err := prompter.Ask(nickname)
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
@@ -59,23 +96,24 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 			})
 	}
 
-	err = wlt.Unprotect(clearPassword, 0)
-
+	err = wallet.Unprotect(clearPassword)
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorWrongPassword,
-				Message: "Error : cannot uncipher the wallet : " + err.Error(),
+				Message: "Error : cannot uncipher the wallet: " + err.Error(),
 			})
 	}
 
-	pubKey := wlt.KeyPairs[0].PublicKey
-	privKey := wlt.KeyPairs[0].PrivateKey
+	return nil
+}
 
+// digestOperationAndPubKey prepares teh digest for signature.
+func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]byte, middleware.Responder) {
 	// reads operation to sign
-	op, err := params.Body.Operation.MarshalText()
+	op, err := operation.MarshalText()
 	if err != nil {
-		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+		return [32]byte{}, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignOperationRead,
 				Message: "Error: while reading operation.",
@@ -83,17 +121,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	}
 
 	// signs operation
+	digest := blake3.Sum256(append(publicKey, op...))
 
-	digest := blake3.Sum256(append(pubKey, op...))
-
-	signature := ed25519.Sign(privKey, digest[:])
-
-	// format public key
-	pubKeyB58VC := "P" + base58.VersionedCheckEncode(pubKey, 0)
-
-	return operations.NewRestWalletSignOperationOK().WithPayload(
-		&models.Signature{
-			PublicKey: pubKeyB58VC,
-			Signature: signature,
-		})
+	return digest, nil
 }

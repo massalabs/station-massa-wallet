@@ -1,3 +1,4 @@
 .vscode
 wallet_*.json
 *.exe
+wallet-plugin*

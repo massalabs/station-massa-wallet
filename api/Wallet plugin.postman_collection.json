@@ -162,7 +162,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"address\": \"A12TFdPyw8Sg9qouzgTWwW5yo5PBDu5C3BWEGPjB9vRx9s3b42qv\",\n    \"keyPairs\": [\n        {\n            \"nonce\": \"86zrpLuzBXBtePQiC5b4d1\",\n            \"privateKey\": \"HvAH6XuMNamRCuCuAaGsUKrCSjFibwyZ35aHZ4zBd5iNM5x2YM74vLUUH9KhAxDKGxWJ4V3YWNvGGiziGjC4yA1J72NKmcVMitHZM23eW44FAHay4iA\",\n            \"publicKey\": \"ub4aTM9RSBydGJCbkxe8v7GqWpZNNXuh7uGQgthBpaWhocvA1\",\n            \"salt\": \"4B28WQKc6jaYN6ymx6xoX8GzwHqF\"\n        }\n    ],\n    \"nickname\": \"imported\"\n}",
+					"raw": "{\n    \"address\": \"A12TFdPyw8Sg9qouzgTWwW5yo5PBDu5C3BWEGPjB9vRx9s3b42qv\",\n    \"keyPair\": \n        {\n            \"nonce\": \"86zrpLuzBXBtePQiC5b4d1\",\n            \"privateKey\": \"HvAH6XuMNamRCuCuAaGsUKrCSjFibwyZ35aHZ4zBd5iNM5x2YM74vLUUH9KhAxDKGxWJ4V3YWNvGGiziGjC4yA1J72NKmcVMitHZM23eW44FAHay4iA\",\n            \"publicKey\": \"ub4aTM9RSBydGJCbkxe8v7GqWpZNNXuh7uGQgthBpaWhocvA1\",\n            \"salt\": \"4B28WQKc6jaYN6ymx6xoX8GzwHqF\"\n        },\n    \"nickname\": \"imported\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1179,7 +1179,7 @@
 	"variable": [
 		{
 			"key": "baseURL",
-			"value": "127.0.0.1:38771",
+			"value": "127.0.0.1:8080",
 			"type": "string"
 		},
 		{

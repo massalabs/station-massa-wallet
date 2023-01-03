@@ -66,7 +66,6 @@ paths:
         - in: body
           name: body
           required: true
-          x-nullable: false
           schema:
             type: object
             required:
@@ -76,9 +75,11 @@ paths:
               nickname:
                 description: Wallet's short name.
                 type: string
+                x-nullable: false
               password:
                 description: Private key password.
                 type: string
+                x-nullable: false
       produces:
         - application/json
       responses:
@@ -266,38 +267,43 @@ definitions:
     required:
       - nickname
       - address
-      - keyPairs
+      - keyPair
     properties:
       nickname:
         description: wallet's nickname.
         type: string
+        x-nullable: false
       address:
         description: wallet's address.
         type: string
-      keyPairs:
-        description: wallet's key pairs.
-        type: array
-        items:
-          type: object
-          required:
-            - privateKey
-            - publicKey
-            - salt
-            - nonce
-          properties:
-            privateKey:
-              description: Key pair's private key.
-              type: string
-              format: base58check
-            publicKey:
-              description: Key pair's public key.
-              type: string
-              format: base58check
-            salt:
-              description: Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.
-              type: string
-              format: base58check
-            nonce:
-              description: Nonce used by the AES-GCM algorithm used to protect the key pair's private key.
-              type: string
-              format: base58check
+        x-nullable: false
+      keyPair:
+        description: wallet's key pair.
+        type: object
+        x-nullable: false
+        required:
+          - privateKey
+          - publicKey
+          - salt
+          - nonce
+        properties:
+          privateKey:
+            description: Key pair's private key.
+            type: string
+            format: base58check
+            x-nullable: false
+          publicKey:
+            description: Key pair's public key.
+            type: string
+            format: base58check
+            x-nullable: false
+          salt:
+            description: Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.
+            type: string
+            format: base58check
+            x-nullable: false
+          nonce:
+            description: Nonce used by the AES-GCM algorithm used to protect the key pair's private key.
+            type: string
+            format: base58check
+            x-nullable: false

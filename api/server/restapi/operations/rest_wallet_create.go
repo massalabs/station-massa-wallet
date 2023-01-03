@@ -67,11 +67,11 @@ type RestWalletCreateBody struct {
 
 	// Wallet's short name.
 	// Required: true
-	Nickname *string `json:"nickname"`
+	Nickname string `json:"nickname"`
 
 	// Private key password.
 	// Required: true
-	Password *string `json:"password"`
+	Password string `json:"password"`
 }
 
 // Validate validates this rest wallet create body
@@ -94,7 +94,7 @@ func (o *RestWalletCreateBody) Validate(formats strfmt.Registry) error {
 
 func (o *RestWalletCreateBody) validateNickname(formats strfmt.Registry) error {
 
-	if err := validate.Required("body"+"."+"nickname", "body", o.Nickname); err != nil {
+	if err := validate.RequiredString("body"+"."+"nickname", "body", o.Nickname); err != nil {
 		return err
 	}
 
@@ -103,7 +103,7 @@ func (o *RestWalletCreateBody) validateNickname(formats strfmt.Registry) error {
 
 func (o *RestWalletCreateBody) validatePassword(formats strfmt.Registry) error {
 
-	if err := validate.Required("body"+"."+"password", "body", o.Password); err != nil {
+	if err := validate.RequiredString("body"+"."+"password", "body", o.Password); err != nil {
 		return err
 	}
 

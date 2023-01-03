@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -22,15 +21,15 @@ type Wallet struct {
 
 	// wallet's address.
 	// Required: true
-	Address *string `json:"address"`
+	Address string `json:"address"`
 
-	// wallet's key pairs.
+	// key pair
 	// Required: true
-	KeyPairs []*WalletKeyPairsItems0 `json:"keyPairs"`
+	KeyPair WalletKeyPair `json:"keyPair"`
 
 	// wallet's nickname.
 	// Required: true
-	Nickname *string `json:"nickname"`
+	Nickname string `json:"nickname"`
 }
 
 // Validate validates this wallet
@@ -41,7 +40,7 @@ func (m *Wallet) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateKeyPairs(formats); err != nil {
+	if err := m.validateKeyPair(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,35 +56,22 @@ func (m *Wallet) Validate(formats strfmt.Registry) error {
 
 func (m *Wallet) validateAddress(formats strfmt.Registry) error {
 
-	if err := validate.Required("address", "body", m.Address); err != nil {
+	if err := validate.RequiredString("address", "body", m.Address); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *Wallet) validateKeyPairs(formats strfmt.Registry) error {
+func (m *Wallet) validateKeyPair(formats strfmt.Registry) error {
 
-	if err := validate.Required("keyPairs", "body", m.KeyPairs); err != nil {
+	if err := m.KeyPair.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("keyPair")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("keyPair")
+		}
 		return err
-	}
-
-	for i := 0; i < len(m.KeyPairs); i++ {
-		if swag.IsZero(m.KeyPairs[i]) { // not required
-			continue
-		}
-
-		if m.KeyPairs[i] != nil {
-			if err := m.KeyPairs[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("keyPairs" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("keyPairs" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
 	}
 
 	return nil
@@ -93,7 +79,7 @@ func (m *Wallet) validateKeyPairs(formats strfmt.Registry) error {
 
 func (m *Wallet) validateNickname(formats strfmt.Registry) error {
 
-	if err := validate.Required("nickname", "body", m.Nickname); err != nil {
+	if err := validate.RequiredString("nickname", "body", m.Nickname); err != nil {
 		return err
 	}
 
@@ -104,7 +90,7 @@ func (m *Wallet) validateNickname(formats strfmt.Registry) error {
 func (m *Wallet) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateKeyPairs(ctx, formats); err != nil {
+	if err := m.contextValidateKeyPair(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -114,21 +100,15 @@ func (m *Wallet) ContextValidate(ctx context.Context, formats strfmt.Registry) e
 	return nil
 }
 
-func (m *Wallet) contextValidateKeyPairs(ctx context.Context, formats strfmt.Registry) error {
+func (m *Wallet) contextValidateKeyPair(ctx context.Context, formats strfmt.Registry) error {
 
-	for i := 0; i < len(m.KeyPairs); i++ {
-
-		if m.KeyPairs[i] != nil {
-			if err := m.KeyPairs[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("keyPairs" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("keyPairs" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
+	if err := m.KeyPair.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("keyPair")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("keyPair")
 		}
-
+		return err
 	}
 
 	return nil
@@ -152,30 +132,30 @@ func (m *Wallet) UnmarshalBinary(b []byte) error {
 	return nil
 }
 
-// WalletKeyPairsItems0 wallet key pairs items0
+// WalletKeyPair wallet's key pair.
 //
-// swagger:model WalletKeyPairsItems0
-type WalletKeyPairsItems0 struct {
+// swagger:model WalletKeyPair
+type WalletKeyPair struct {
 
 	// Nonce used by the AES-GCM algorithm used to protect the key pair's private key.
 	// Required: true
-	Nonce *string `json:"nonce"`
+	Nonce string `json:"nonce"`
 
 	// Key pair's private key.
 	// Required: true
-	PrivateKey *string `json:"privateKey"`
+	PrivateKey string `json:"privateKey"`
 
 	// Key pair's public key.
 	// Required: true
-	PublicKey *string `json:"publicKey"`
+	PublicKey string `json:"publicKey"`
 
 	// Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.
 	// Required: true
-	Salt *string `json:"salt"`
+	Salt string `json:"salt"`
 }
 
-// Validate validates this wallet key pairs items0
-func (m *WalletKeyPairsItems0) Validate(formats strfmt.Registry) error {
+// Validate validates this wallet key pair
+func (m *WalletKeyPair) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateNonce(formats); err != nil {
@@ -200,49 +180,49 @@ func (m *WalletKeyPairsItems0) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *WalletKeyPairsItems0) validateNonce(formats strfmt.Registry) error {
+func (m *WalletKeyPair) validateNonce(formats strfmt.Registry) error {
 
-	if err := validate.Required("nonce", "body", m.Nonce); err != nil {
+	if err := validate.RequiredString("keyPair"+"."+"nonce", "body", m.Nonce); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *WalletKeyPairsItems0) validatePrivateKey(formats strfmt.Registry) error {
+func (m *WalletKeyPair) validatePrivateKey(formats strfmt.Registry) error {
 
-	if err := validate.Required("privateKey", "body", m.PrivateKey); err != nil {
+	if err := validate.RequiredString("keyPair"+"."+"privateKey", "body", m.PrivateKey); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *WalletKeyPairsItems0) validatePublicKey(formats strfmt.Registry) error {
+func (m *WalletKeyPair) validatePublicKey(formats strfmt.Registry) error {
 
-	if err := validate.Required("publicKey", "body", m.PublicKey); err != nil {
+	if err := validate.RequiredString("keyPair"+"."+"publicKey", "body", m.PublicKey); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *WalletKeyPairsItems0) validateSalt(formats strfmt.Registry) error {
+func (m *WalletKeyPair) validateSalt(formats strfmt.Registry) error {
 
-	if err := validate.Required("salt", "body", m.Salt); err != nil {
+	if err := validate.RequiredString("keyPair"+"."+"salt", "body", m.Salt); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// ContextValidate validates this wallet key pairs items0 based on context it is used
-func (m *WalletKeyPairsItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this wallet key pair based on context it is used
+func (m *WalletKeyPair) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *WalletKeyPairsItems0) MarshalBinary() ([]byte, error) {
+func (m *WalletKeyPair) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -250,8 +230,8 @@ func (m *WalletKeyPairsItems0) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *WalletKeyPairsItems0) UnmarshalBinary(b []byte) error {
-	var res WalletKeyPairsItems0
+func (m *WalletKeyPair) UnmarshalBinary(b []byte) error {
+	var res WalletKeyPair
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

@@ -1,36 +1,20 @@
 package wallet
 
 import (
-	"encoding/json"
-	"os"
-	"sync"
-
 	"github.com/go-openapi/runtime/middleware"
+	"lukechampine.com/blake3"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/base58"
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-const fileModeUserRW = 0o600
-
-//nolint:nolintlint,ireturn
-func NewImport(walletStorage *sync.Map) operations.RestWalletImportHandler {
-	return &wImport{walletStorage: walletStorage}
-}
-
-type wImport struct {
-	walletStorage *sync.Map
-}
-
-//nolint:nolintlint,ireturn,funlen
-func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
-	var err error
-
-	_, ok := c.walletStorage.Load(*params.Body.Nickname)
-	if ok {
+// checkDuplicate checks that the same wallet doesn't already exist.
+func checkDuplicate(nickname string) middleware.Responder {
+	_, err := wallet.Load(nickname)
+	if err == nil {
 		return operations.NewRestWalletImportInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorAlreadyExists,
@@ -38,60 +22,77 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 			})
 	}
 
-	keyPairs := make([]wallet.KeyPair, len(params.Body.KeyPairs))
-	for index := 0; index < len(params.Body.KeyPairs); index++ {
-		keyPairs[index].PrivateKey, err = base58.CheckDecode(*params.Body.KeyPairs[index].PrivateKey)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
+	return nil
+}
 
-		keyPairs[index].PublicKey, err = base58.CheckDecode(*params.Body.KeyPairs[index].PublicKey)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
+// decodeWalletAttributes decodes all wallet attributes.
+func decodeWalletAttributes(rawPrivateKey string, rawPublicKey string, rawSalt string, rawNonce string) (privKey []byte, pubKey []byte, salt [16]byte, nonce [12]byte, resp middleware.Responder) {
+	resp = operations.NewRestWalletCreateUnprocessableEntity()
 
-		salt, err := base58.CheckDecode(*params.Body.KeyPairs[index].Salt)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
-
-		copy(keyPairs[index].Salt[:], salt)
-
-		nonce, err := base58.CheckDecode(*params.Body.KeyPairs[index].Nonce)
-		if err != nil {
-			return operations.NewRestWalletCreateUnprocessableEntity()
-		}
-
-		copy(keyPairs[index].Nonce[:], nonce)
-
-		keyPairs[index].Protected = true
-	}
-
-	newWallet := wallet.Wallet{
-		Version:  0,
-		Nickname: *params.Body.Nickname,
-		Address:  *params.Body.Address,
-		KeyPairs: keyPairs,
-	}
-
-	c.walletStorage.Store(newWallet.Nickname, newWallet)
-
-	bytesOutput, err := json.Marshal(newWallet)
+	privKey, _, err := base58.CheckDecode(rawPrivateKey)
 	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorImportNew,
-				Message: err.Error(),
-			})
+		return
 	}
 
-	err = os.WriteFile("wallet_"+*params.Body.Nickname+".json", bytesOutput, fileModeUserRW)
+	pubKey, _, err = base58.CheckDecode(rawPublicKey)
 	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorImportNew,
-				Message: err.Error(),
-			})
+		return
+	}
+
+	unsizedSalt, _, err := base58.CheckDecode(rawSalt)
+	if err != nil {
+		return
+	}
+
+	copy(salt[:], unsizedSalt)
+
+	unsizedNonce, _, err := base58.CheckDecode(rawNonce)
+	if err != nil {
+		return
+	}
+
+	copy(nonce[:], unsizedNonce)
+
+	resp = nil
+	return
+}
+
+// failure generates an internal server error based on given error.
+func failure(err error) middleware.Responder {
+	return operations.NewRestWalletCreateInternalServerError().WithPayload(
+		&models.Error{
+			Code:    errorImportNew,
+			Message: err.Error(),
+		})
+}
+
+// HandleImport handles a import request.
+func HandleImport(params operations.RestWalletImportParams) middleware.Responder {
+	resp := checkDuplicate(params.Body.Nickname)
+	if resp != nil {
+		return resp
+	}
+
+	privateKey, publicKey, salt, nonce, resp := decodeWalletAttributes(
+		params.Body.KeyPair.PrivateKey, params.Body.KeyPair.PublicKey,
+		params.Body.KeyPair.Salt,
+		params.Body.KeyPair.Nonce)
+	if resp != nil {
+		return resp
+	}
+
+	wlt, err := wallet.New(
+		params.Body.Nickname,
+		blake3.Sum256(publicKey),
+		privateKey, publicKey,
+		salt, nonce)
+	if err != nil {
+		return failure(err)
+	}
+
+	err = wlt.Persist()
+	if err != nil {
+		return failure(err)
 	}
 
 	return operations.NewRestWalletImportNoContent()

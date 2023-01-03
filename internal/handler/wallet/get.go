@@ -1,8 +1,6 @@
 package wallet
 
 import (
-	"sync"
-
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
@@ -11,17 +9,8 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-//nolint:nolintlint,ireturn
-func NewList(walletStorage *sync.Map) operations.RestWalletListHandler {
-	return &walletList{walletStorage: walletStorage}
-}
-
-type walletList struct {
-	walletStorage *sync.Map
-}
-
-//nolint:nolintlint,ireturn
-func (c *walletList) Handle(params operations.RestWalletListParams) middleware.Responder {
+// HandleList handles a list request
+func HandleList(params operations.RestWalletListParams) middleware.Responder {
 	wallets, err := wallet.LoadAll()
 	if err != nil {
 		return operations.NewRestWalletListInternalServerError().WithPayload(
@@ -31,17 +20,16 @@ func (c *walletList) Handle(params operations.RestWalletListParams) middleware.R
 			})
 	}
 
-	var wal []*models.Wallet
+	var wlts []*models.Wallet
 
 	for i := 0; i < len(wallets); i++ {
-		walletss := &models.Wallet{
-			Nickname: &wallets[i].Nickname,
-			Address:  &wallets[i].Address,
-			KeyPairs: []*models.WalletKeyPairsItems0{},
-		}
-
-		wal = append(wal, walletss)
+		wlts = append(wlts,
+			&models.Wallet{
+				Nickname: wallets[i].Nickname,
+				Address:  wallets[i].Address,
+				KeyPair:  models.WalletKeyPair{},
+			})
 	}
 
-	return operations.NewRestWalletListOK().WithPayload(wal)
+	return operations.NewRestWalletListOK().WithPayload(wlts)
 }
