@@ -39,7 +39,7 @@ func DefaultRedirectHandler(_ operations.DefaultPageParams) middleware.Responder
 	return helper.NewCustomResponder(nil, map[string]string{"Location": "web/index.html"}, http.StatusPermanentRedirect)
 }
 
-// AppendEndpoints append web endpoints to the API.
+// AppendEndpoints appends web endpoints to the API.
 func AppendEndpoints(api *operations.MassaWalletAPI) {
 	api.DefaultPageHandler = operations.DefaultPageHandlerFunc(DefaultRedirectHandler)
 	api.WebHandler = operations.WebHandlerFunc(Handle)
