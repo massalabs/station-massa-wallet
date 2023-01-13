@@ -23,14 +23,16 @@ const (
 	PBKDF2NbRound             = 10000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
+	SaltSize                  = 12
+	NonceSize                 = 12
 )
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
 	PrivateKey []byte
 	PublicKey  []byte
-	Salt       [16]byte
-	Nonce      [12]byte
+	Salt       []byte
+	Nonce      []byte
 }
 
 // Wallet structure allows to link a nickname, an address and a version to one or more key pairs.
@@ -178,8 +180,54 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 	addr := blake3.Sum256(publicKey)
 
-	return CreateWalletFromKeys(nickname, privateKey, publicKey, addr, password)
+	salt := make([]byte, SaltSize)
 
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return nil, fmt.Errorf("generating random salt: %w", err)
+	}
+
+	nonce := make([]byte, NonceSize)
+
+	_, err = rand.Read(nonce[:])
+	if err != nil {
+		return nil, fmt.Errorf("generating random nonce: %w", err)
+	}
+
+	wallet, err := New(nickname, addr, privateKey, publicKey, salt, nonce)
+	if err != nil {
+		return nil, fmt.Errorf("instantiating a new wallet: %w", err)
+	}
+
+	err = wallet.Protect(password)
+	if err != nil {
+		return nil, fmt.Errorf("protecting the new wallet: %w", err)
+	}
+
+	err = wallet.Persist()
+	if err != nil {
+		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+	}
+
+	return wallet, nil
+
+}
+
+// New instantiates a new wallet.
+func New(nickname string, addr [32]byte, privateKey []byte, publicKey []byte, salt []byte, nonce []byte) (*Wallet, error) {
+	wallet := Wallet{
+		Version:  0,
+		Nickname: nickname,
+		Address:  "A" + base58.CheckEncode(addr[:], Base58Version),
+		KeyPair: KeyPair{
+			PrivateKey: privateKey,
+			PublicKey:  publicKey,
+			Salt:       salt,
+			Nonce:      nonce,
+		},
+	}
+
+	return &wallet, nil
 }
 
 // Delete removes wallet from file system
