@@ -26,7 +26,7 @@ func checkDuplicate(nickname string) middleware.Responder {
 }
 
 // decodeWalletAttributes decodes all wallet attributes.
-func decodeWalletAttributes(rawPrivateKey string, rawPublicKey string, rawSalt string, rawNonce string) (privKey []byte, pubKey []byte, salt [16]byte, nonce [12]byte, resp middleware.Responder) {
+func decodeWalletAttributes(rawPrivateKey string, rawPublicKey string, rawSalt string, rawNonce string) (privKey []byte, pubKey []byte, salt []byte, nonce []byte, resp middleware.Responder) {
 	resp = operations.NewRestWalletCreateUnprocessableEntity()
 
 	privKey, _, err := base58.CheckDecode(rawPrivateKey)
