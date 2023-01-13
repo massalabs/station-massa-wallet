@@ -21,14 +21,16 @@ const (
 	PBKDF2NbRound             = 10000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
+	SaltSize                  = 12
+	NonceSize                 = 12
 )
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
 	PrivateKey []byte
 	PublicKey  []byte
-	Salt       [16]byte
-	Nonce      [12]byte
+	Salt       []byte
+	Nonce      []byte
 }
 
 // Wallet structure allows to link a nickname, an address and a version to one or more key pairs.
@@ -60,6 +62,7 @@ func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
+
 	aead, err := aead([]byte(password), w.KeyPair.Salt[:])
 	if err != nil {
 		return fmt.Errorf("while protecting wallet: %w", err)
@@ -175,14 +178,14 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 	addr := blake3.Sum256(publicKey)
 
-	var salt [16]byte
+	salt := make([]byte, SaltSize)
 
 	_, err = rand.Read(salt[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random salt: %w", err)
 	}
 
-	var nonce [12]byte
+	nonce := make([]byte, NonceSize)
 
 	_, err = rand.Read(nonce[:])
 	if err != nil {
@@ -209,7 +212,7 @@ func Generate(nickname string, password string) (*Wallet, error) {
 }
 
 // New instantiates a new wallet.
-func New(nickname string, addr [32]byte, privateKey []byte, publicKey []byte, salt [16]byte, nonce [12]byte) (*Wallet, error) {
+func New(nickname string, addr [32]byte, privateKey []byte, publicKey []byte, salt []byte, nonce []byte) (*Wallet, error) {
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
