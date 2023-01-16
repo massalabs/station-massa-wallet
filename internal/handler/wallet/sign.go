@@ -11,18 +11,18 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 // NewSign instantiates a sign Handler
-// The "classical" way is not possible because we need to pass to the handler a password.Asker.
-func NewSign(pwdPrompt password.Asker) operations.RestWalletSignOperationHandler {
+// The "classical" way is not possible because we need to pass to the handler a guiModal.PasswordAsker.
+func NewSign(pwdPrompt guiModal.PasswordAsker) operations.RestWalletSignOperationHandler {
 	return &walletSign{pwdPrompt: pwdPrompt}
 }
 
 type walletSign struct {
-	pwdPrompt password.Asker
+	pwdPrompt guiModal.PasswordAsker
 }
 
 // Handle handles a sign request.
@@ -78,7 +78,7 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 }
 
 // unprotectWalletAskingPassword asks for a password and unprotects the wallet.
-func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Asker, nickname string) middleware.Responder {
+func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter guiModal.PasswordAsker, nickname string) middleware.Responder {
 	clearPassword, err := prompter.Ask(nickname)
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(

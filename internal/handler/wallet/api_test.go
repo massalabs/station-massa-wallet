@@ -22,7 +22,7 @@ type Prompt struct {
 	Err      error
 }
 
-// testPrompter implements the password.Asker interface for test purpose.
+// testPrompter implements the guiModal.PasswordAsker interface for test purpose.
 type testPrompter struct {
 	mockPasswordEntry chan Prompt
 }

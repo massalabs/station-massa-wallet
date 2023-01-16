@@ -104,10 +104,6 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
-          description: New wallet created.
-          schema:
-            $ref: "#/definitions/Wallet"
         "204":
           description: Wallet imported.
         "400":

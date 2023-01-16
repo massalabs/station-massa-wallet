@@ -15,7 +15,7 @@ func Test_walletImport_Handle(t *testing.T) {
 	defer test.NewApp()
 
 	walletStorage := new(sync.Map)
-	importHandler := NewImport(walletStorage, &app)
+	importHandler := NewImport(&app)
 
 	// Import wallet canceled
 	resp := importHandler.Handle(operations.NewRestWalletImportParams())

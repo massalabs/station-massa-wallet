@@ -132,7 +132,7 @@ func init() {
                   "x-nullable": false
                 },
                 "password": {
-                  "description": "Private key password.",
+                  "description": "Private key guiModal.",
                   "type": "string",
                   "x-nullable": false
                 }
@@ -578,7 +578,7 @@ func init() {
                   "x-nullable": false
                 },
                 "password": {
-                  "description": "Private key password.",
+                  "description": "Private key guiModal.",
                   "type": "string",
                   "x-nullable": false
                 }

@@ -1,6 +1,6 @@
-package password
+package guiModal
 
-// In this file is implemented the Fyne version of the password.Asker interface.
+// In this file is implemented the Fyne version of the guiModal.PasswordAsker interface.
 // As the Fyne application must have a GUI application that is initialized from the main,
 // we use the FynePrompter structure to wrap it and thus allow the Ask function to use it thanks to the closure mechanism.
 // Finally, the end user input is retrieved asynchronously using a channel.
@@ -12,7 +12,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// FynePrompter is a struct that wraps a Fyne GUI application and implements the password.Asker interface.
+// FynePrompter is a struct that wraps a Fyne GUI application and implements the guiModal.PasswordAsker interface.
 type FynePrompter struct {
 	guiApp *fyne.App
 }
@@ -32,7 +32,7 @@ func NewFynePrompter(f *fyne.App) *FynePrompter {
 }
 
 // Verifies at compilation time that FynePrompter implements Asker interface.
-var _ Asker = &FynePrompter{}
+var _ PasswordAsker = &FynePrompter{}
 
 // passwordEntry represents a password entry, containing the password and any error that may have occurred.
 // Data sent through the channel to get the password entry asynchronously.

@@ -1,37 +1,34 @@
 package wallet
 
 import (
-	"sync"
-
-	"fyne.io/fyne/v2"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
 //nolint:nolintlint,ireturn
-func NewImport(walletStorage *sync.Map, app *fyne.App) operations.RestWalletImportHandler {
-	return &wImport{walletStorage: walletStorage, app: app}
+func NewImport(walletInfoModal guiModal.WalletInfoAsker) operations.RestWalletImportHandler {
+	return &wImport{walletInfoModal: walletInfoModal}
 }
 
 type wImport struct {
-	walletStorage *sync.Map
-	app           *fyne.App
+	walletInfoModal guiModal.WalletInfoAsker
 }
 
 //nolint:nolintlint,ireturn,funlen
 func (c *wImport) Handle(operations.RestWalletImportParams) middleware.Responder {
-	password, walletName, privateKey, err := password.AskWalletInfo(c.app)
+
+	password, walletName, privateKey, err := c.walletInfoModal.WalletInfo()
 	if err != nil {
 		return NewWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
 	}
 
-	_, inStore := c.walletStorage.Load(walletName)
-	if inStore {
-		return NewWalletError(err.Error(), "Error: a wallet with the same nickname already exists.")
-	}
+	// _, inStore := c.walletStorage.Load(walletName)
+	// if inStore {
+	// 	return NewWalletError(err.Error(), "Error: a wallet with the same nickname already exists.")
+	// }
 
 	newWallet, err := wallet.Imported(walletName, privateKey, password)
 	if err != nil {

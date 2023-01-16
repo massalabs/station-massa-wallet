@@ -60,7 +60,7 @@ func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 	return aesGCM, nil
 }
 
-// Protect encrypts the private key using the given password.
+// Protect encrypts the private key using the given guiModal.
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
@@ -79,7 +79,7 @@ func (w *Wallet) Protect(password string) error {
 	return nil
 }
 
-// Unprotect decrypts the private key using the given password.
+// Unprotect decrypts the private key using the given guiModal.
 // The encryption algorithm used to unprotect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Unprotect(password string) error {

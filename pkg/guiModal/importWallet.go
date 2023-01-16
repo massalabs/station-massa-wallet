@@ -1,4 +1,4 @@
-package password
+package guiModal
 
 import (
 	"errors"
@@ -18,12 +18,8 @@ type WalletInfoEntry struct {
 	Err           error
 }
 
-func AskWalletInfo(app *fyne.App) (string, string, string, error) {
-	return WalletInfo(app)
-}
-
-func WalletInfo(app *fyne.App) (string, string, string, error) {
-	WalletInfoEntry := <-LoadWalletDialog(app)
+func (f *FynePrompter) WalletInfo() (string, string, string, error) {
+	WalletInfoEntry := <-LoadWalletDialog(f.guiApp)
 
 	return WalletInfoEntry.ClearPassword, WalletInfoEntry.WalletName, WalletInfoEntry.PrivateKey, WalletInfoEntry.Err
 }

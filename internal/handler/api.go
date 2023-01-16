@@ -1,17 +1,16 @@
 package handler
 
 import (
-	"fyne.io/fyne/v2"
 	"github.com/go-openapi/loads"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler/html"
 	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler/wallet"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
 )
 
 // InitializeAPI initializes the API handlers
-func InitializeAPI(passwordPrompter password.Asker, app *fyne.App) (*operations.MassaWalletAPI, error) {
+func InitializeAPI(passwordPrompter guiModal.PasswordAsker, walletInfoModal guiModal.WalletInfoAsker) (*operations.MassaWalletAPI, error) {
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -25,7 +24,7 @@ func InitializeAPI(passwordPrompter password.Asker, app *fyne.App) (*operations.
 	html.AppendEndpoints(api)
 
 	// Set wallet API endpoints
-	wallet.AppendEndpoints(api, app, passwordPrompter)
+	wallet.AppendEndpoints(api, walletInfoModal, passwordPrompter)
 
 	return api, nil
 }
