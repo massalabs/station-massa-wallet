@@ -13,6 +13,51 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 )
 
+// RestWalletImportOKCode is the HTTP code returned for type RestWalletImportOK
+const RestWalletImportOKCode int = 200
+
+/*
+RestWalletImportOK New wallet created.
+
+swagger:response restWalletImportOK
+*/
+type RestWalletImportOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Wallet `json:"body,omitempty"`
+}
+
+// NewRestWalletImportOK creates RestWalletImportOK with default headers values
+func NewRestWalletImportOK() *RestWalletImportOK {
+
+	return &RestWalletImportOK{}
+}
+
+// WithPayload adds the payload to the rest wallet import o k response
+func (o *RestWalletImportOK) WithPayload(payload *models.Wallet) *RestWalletImportOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the rest wallet import o k response
+func (o *RestWalletImportOK) SetPayload(payload *models.Wallet) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *RestWalletImportOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // RestWalletImportNoContentCode is the HTTP code returned for type RestWalletImportNoContent
 const RestWalletImportNoContentCode int = 204
 

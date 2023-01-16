@@ -9,10 +9,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 
-	"github.com/btcsuite/btcutil/base58"
+	"github.com/massalabs/thyra/pkg/node/base58"
 	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/exp/slices"
 	"lukechampine.com/blake3"
 )
 
@@ -178,54 +180,8 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 	addr := blake3.Sum256(publicKey)
 
-	salt := make([]byte, SaltSize)
+	return CreateWalletFromKeys(nickname, privateKey, publicKey, addr, password)
 
-	_, err = rand.Read(salt[:])
-	if err != nil {
-		return nil, fmt.Errorf("generating random salt: %w", err)
-	}
-
-	nonce := make([]byte, NonceSize)
-
-	_, err = rand.Read(nonce[:])
-	if err != nil {
-		return nil, fmt.Errorf("generating random nonce: %w", err)
-	}
-
-	wallet, err := New(nickname, addr, privateKey, publicKey, salt, nonce)
-	if err != nil {
-		return nil, fmt.Errorf("instantiating a new wallet: %w", err)
-	}
-
-	err = wallet.Protect(password)
-	if err != nil {
-		return nil, fmt.Errorf("protecting the new wallet: %w", err)
-	}
-
-	err = wallet.Persist()
-	if err != nil {
-		return nil, fmt.Errorf("persisting the new wallet: %w", err)
-	}
-
-	return wallet, nil
-
-}
-
-// New instantiates a new wallet.
-func New(nickname string, addr [32]byte, privateKey []byte, publicKey []byte, salt []byte, nonce []byte) (*Wallet, error) {
-	wallet := Wallet{
-		Version:  0,
-		Nickname: nickname,
-		Address:  "A" + base58.CheckEncode(addr[:], Base58Version),
-		KeyPair: KeyPair{
-			PrivateKey: privateKey,
-			PublicKey:  publicKey,
-			Salt:       salt,
-			Nonce:      nonce,
-		},
-	}
-
-	return &wallet, nil
 }
 
 // Delete removes wallet from file system
@@ -241,4 +197,74 @@ func Delete(nickname string) (err error) {
 // Filename returns the wallet Filename based on the given nickname.
 func Filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.json", nickname)
+}
+
+func Imported(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
+	privateKeyBytes, _, err := base58.VersionedCheckDecode(privateKeyB58V[1:])
+	if err != nil {
+		return nil, fmt.Errorf("encoding private key B58: %w", err)
+	}
+
+	wallets, err := LoadAll()
+	if err != nil {
+		return nil, fmt.Errorf("error loading wallets %w", err)
+	}
+
+	// The ed25519 seed is in fact what we call a private key in cryptography...
+	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
+
+	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
+
+	addr := blake3.Sum256(pubKeyBytes)
+	version := byte(0)
+	address := "A" + base58.VersionedCheckEncode(addr[:], version)
+
+	if slices.IndexFunc(
+		wallets,
+		func(wallet Wallet) bool { return wallet.Address == address },
+	) != -1 {
+		return nil, err
+	}
+
+	return CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, addr, password)
+}
+
+func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, addr [32]byte, password string) (*Wallet, error) {
+	salt := make([]byte, SaltSize)
+
+	_, err := rand.Read(salt[:])
+	if err != nil {
+		return nil, fmt.Errorf("generating random salt: %w", err)
+	}
+
+	nonce := make([]byte, NonceSize)
+
+	_, err = rand.Read(nonce[:])
+	if err != nil {
+		return nil, fmt.Errorf("generating random nonce: %w", err)
+	}
+
+	wallet := Wallet{
+		Version:  0,
+		Nickname: nickname,
+		Address:  "A" + base58.CheckEncode(append(make([]byte, 1), addr[:]...)),
+		KeyPair: KeyPair{
+			PrivateKey: privateKey,
+			PublicKey:  publicKey,
+			Salt:       salt,
+			Nonce:      nonce,
+		},
+	}
+
+	err = wallet.Protect(password)
+	if err != nil {
+		return nil, fmt.Errorf("protecting the new wallet: %w", err)
+	}
+
+	err = wallet.Persist()
+	if err != nil {
+		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+	}
+
+	return &wallet, nil
 }

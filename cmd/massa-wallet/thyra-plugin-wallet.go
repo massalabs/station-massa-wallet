@@ -34,12 +34,12 @@ func StartServer(app *fyne.App, port int) {
 	defer (*app).Quit()
 
 	// Initializes API
-	massaWalletAPI, err := handler.InitializeAPI(password.NewFynePrompter(app))
+	massaWalletAPI, err := handler.InitializeAPI(password.NewFynePrompter(app), app)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// Instanciates and configure server
+	// instantiates and configure server
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 

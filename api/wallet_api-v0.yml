@@ -101,16 +101,13 @@ paths:
             $ref: "#/definitions/Error"
     put:
       operationId: restWalletImport
-      parameters:
-        - in: body
-          name: body
-          required: true
-          x-nullable: false
-          schema:
-            $ref: "#/definitions/Wallet"
       produces:
         - application/json
       responses:
+        "200":
+          description: New wallet created.
+          schema:
+            $ref: "#/definitions/Wallet"
         "204":
           description: Wallet imported.
         "400":

@@ -79,18 +79,13 @@ func init() {
           "application/json"
         ],
         "operationId": "restWalletImport",
-        "parameters": [
-          {
-            "x-nullable": false,
-            "name": "body",
-            "in": "body",
-            "required": true,
+        "responses": {
+          "200": {
+            "description": "New wallet created.",
             "schema": {
               "$ref": "#/definitions/Wallet"
             }
-          }
-        ],
-        "responses": {
+          },
           "204": {
             "description": "Wallet imported."
           },
@@ -530,18 +525,13 @@ func init() {
           "application/json"
         ],
         "operationId": "restWalletImport",
-        "parameters": [
-          {
-            "x-nullable": false,
-            "name": "body",
-            "in": "body",
-            "required": true,
+        "responses": {
+          "200": {
+            "description": "New wallet created.",
             "schema": {
               "$ref": "#/definitions/Wallet"
             }
-          }
-        ],
-        "responses": {
+          },
           "204": {
             "description": "Wallet imported."
           },

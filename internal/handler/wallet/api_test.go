@@ -49,7 +49,7 @@ func MockAPI() (*operations.MassaWalletAPI, chan Prompt, error) {
 	// Set wallet API endpoints
 	AppendEndpoints(massaWalletAPI, &testPrompter{mockPasswordEntry: mockChan})
 
-	// Instanciates the server configure its API.
+	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
