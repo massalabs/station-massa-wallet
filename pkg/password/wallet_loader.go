@@ -2,9 +2,11 @@ package password
 
 import (
 	"errors"
+	"fmt"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
@@ -49,12 +51,25 @@ func LoadWalletDialog(app *fyne.App) chan WalletInfoEntry {
 	form := &widget.Form{
 		Items: items,
 		OnSubmit: func() {
-			window.Hide()
-			walletInfoEntry <- WalletInfoEntry{
-				ClearPassword: password.Text,
-				WalletName:    walletName.Text,
-				PrivateKey:    privateKey.Text,
-				Err:           nil,
+			var err error
+			if walletName.Text == "" {
+				err = fmt.Errorf("Wallet name is required")
+			} else if password.Text == "" {
+				err = fmt.Errorf("Password is required")
+			} else if privateKey.Text == "" {
+				err = fmt.Errorf("Private key is required")
+			}
+			if err != nil {
+				dialog.ShowError(err, window)
+			} else {
+
+				window.Hide()
+				walletInfoEntry <- WalletInfoEntry{
+					ClearPassword: password.Text,
+					WalletName:    walletName.Text,
+					PrivateKey:    privateKey.Text,
+					Err:           nil,
+				}
 			}
 		},
 		OnCancel: func() {

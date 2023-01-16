@@ -5,6 +5,7 @@ const errorCodes = new Map([
     ["Wallet-1001", "Enter a wallet nickname"],
     ["Wallet-1002", "Enter a wallet password"],
     ["Wallet-1003", "Error while creating your wallet. Try again"],
+    ["Wallet-15", "Action stopped. No wallet added to Thyra"],
     ["Wallet-2001", "Select a wallet to delete"],
     [
         "Wallet-2002",
@@ -15,15 +16,23 @@ const errorCodes = new Map([
         "Wallet-4001",
         "Error while connecting all your wallets. Reconnect all your wallets and try again",
     ],
-
-    ["Domains-0001", "Error while looking for your domain names"],
-    ["Domains-0002", "Error while connecting your domain and smart contract’s address"],
-
-    ["WebCreator-0001", "Error while creating your website container"],
-    ["WebCreator-1001", "Impossible to read you ZIP file. Try again"],
-    ["WebCreator-1002", "The upload of your ZIP file failed. Try again"],
+    ["Unknown-0001", "An unknown error occured. Please try again"],
 ]);
 
 function getErrorMessage(errorCode) {
-    return errorCodes.get(errorCode);
+    return errorCodes.get(errorCode) || errorCodes.get("Unknown-0001");
+}
+
+// If the error is from Thyra, we display the error to the user and log the details in the console.
+// Otherwise, we simply display the details in the console.
+function handleAPIError(error) {
+    if (error.response && error.response.data) {
+        if (error.response.data.code) {
+            errorAlert(getErrorMessage(error.response.data.code));
+        }
+        console.error("Thyra error:", error.response.data);
+    } else {
+        errorAlert(getErrorMessage("Unknown-0001"));
+        console.error(error);
+    }
 }

@@ -12,9 +12,7 @@ async function importWallet() {
             tableInsert(resp.data);
             wallets.push(resp.data);
         })
-        .catch((e) => {
-            errorAlert(getErrorMessage(e.response.data.code));
-        });
+        .catch(handleAPIError);
 }
 
 // Create a wallet through POST query
@@ -30,10 +28,7 @@ async function getWallets() {
                 wallets = data;
             }
         })
-        .catch((e) => {
-            console.error(e);
-            errorAlert(getErrorMessage(e.response.data.code));
-        });
+        .catch(handleAPIError);
 }
 
 // Create a wallet through POST query
@@ -50,9 +45,7 @@ function createWallet() {
             tableInsert(resp.data);
             wallets.push(resp.data);
         })
-        .catch((e) => {
-            errorAlert(getErrorMessage(e.response.data.code));
-        });
+        .catch(handleAPIError);
 }
 
 function tableInsert(resp) {
@@ -86,9 +79,7 @@ function deleteRow(element) {
         .then((_) => {
             wallets = wallets.filter((wallet) => wallet.nickname != nickname);
         })
-        .catch((e) => {
-            errorAlert(getErrorMessage(e.response.data.code));
-        });
+        .catch(handleAPIError);
 
     document.getElementById("user-wallet-table").deleteRow(rowIndex);
 }

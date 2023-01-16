@@ -28,24 +28,12 @@ type wImport struct {
 func (c *wImport) Handle(operations.RestWalletImportParams) middleware.Responder {
 	password, walletName, privateKey, err := password.AskWalletInfo(c.app)
 	if err != nil {
-		return NewWalletError(err.Error(), err.Error())
-	}
-
-	if len(walletName) == 0 {
-		return operations.NewRestWalletCreateBadRequest().WithPayload(
-			&models.Error{
-				Code:    err.Error(),
-				Message: "Error: nickname field is mandatory.",
-			})
+		return NewWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
 	}
 
 	_, inStore := c.walletStorage.Load(walletName)
 	if inStore {
 		return NewWalletError(err.Error(), "Error: a wallet with the same nickname already exists.")
-	}
-
-	if len(password) == 0 {
-		return NewWalletError(err.Error(), "Error: password field is mandatory.")
 	}
 
 	newWallet, err := wallet.Imported(walletName, privateKey, password)
