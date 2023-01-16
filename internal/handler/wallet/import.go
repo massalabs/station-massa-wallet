@@ -1,7 +1,6 @@
 package wallet
 
 import (
-	"errors"
 	"sync"
 
 	"fyne.io/fyne/v2"
@@ -36,10 +35,6 @@ func (c *wImport) Handle(operations.RestWalletImportParams) middleware.Responder
 
 	newWallet, err := wallet.Imported(walletName, privateKey, password)
 	if err != nil {
-		if errors.Is(err, err) {
-			return NewWalletError(err.Error(), err.Error())
-		}
-
 		return NewWalletError(err.Error(), err.Error())
 	}
 
