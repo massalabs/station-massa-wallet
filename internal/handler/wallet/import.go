@@ -12,8 +12,6 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-const fileModeUserRW = 0o600
-
 //nolint:nolintlint,ireturn
 func NewImport(walletStorage *sync.Map, app *fyne.App) operations.RestWalletImportHandler {
 	return &wImport{walletStorage: walletStorage, app: app}
