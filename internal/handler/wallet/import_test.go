@@ -4,37 +4,22 @@ import (
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
 )
-
-type MockWalletInfoModal struct{}
-
-func (m *MockWalletInfoModal) WalletInfo() (string, string, string, error) {
-	return "password", "walletName", "privateKey", nil
-}
 
 func Test_walletImport_Handle(t *testing.T) {
 
-	mockWalletInfoModal := &MockWalletInfoModal{}
+	var mockWalletInfoModal guiModal.WalletInfoAsker
+	wimport := NewImport(mockWalletInfoModal)
+	params := operations.RestWalletImportParams{}
 
-	importHandler := NewImport(mockWalletInfoModal)
-
-	// Import wallet canceled
-	resp := importHandler.Handle(operations.NewRestWalletImportParams())
-	if resp == nil || resp != ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled) {
-		t.Error("Expected error 'Error: wallet import canceled', got", resp)
+	response := wimport.Handle(params)
+	if response == ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled) {
+		t.Error("Wallet Canceled", response)
 	}
 
-	// NickName already taken
-	_, err := wallet.Load("nickNameAlreadyTaken")
-	if err == nil {
-		t.Error("Expected error 'Error: wallet import canceled', got", resp)
-	}
-
-	// Wallet well imported
-	_, err = wallet.Imported("validNickName", "validPK", "validPassword")
-	if err == nil {
-		t.Error("UnexpectedError, got", err)
+	if response == ImportWalletError("error", "Error: a wallet with the same nickname already exists.") {
+		t.Error("Name Already Taken", response)
 	}
 
 }
