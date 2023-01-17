@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"fyne.io/fyne/v2"
 	"github.com/go-openapi/loads"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
 )
 
 // Prompt struct will be used to drive the password prompter externally
@@ -46,7 +46,7 @@ func MockAPI() (*operations.MassaWalletAPI, chan Prompt, error) {
 
 	// Create a new MassaWalletAPI instance
 	massaWalletAPI := operations.NewMassaWalletAPI(swaggerSpec)
-	var app *fyne.App
+	var app guiModal.WalletInfoAsker
 
 	// Set wallet API endpoints
 	AppendEndpoints(massaWalletAPI, app, &testPrompter{mockPasswordEntry: mockChan})

@@ -37,11 +37,11 @@ func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder
 			})
 	}
 
-	return CreateNewWallet(newWallet)
+	return New(newWallet)
 }
 
-//nolint:lll,nolintlint,ireturn
-func CreateNewWallet(newWallet *wallet.Wallet) middleware.Responder {
+//nolint:lll
+func New(newWallet *wallet.Wallet) middleware.Responder {
 
 	privK := base58.CheckEncode(newWallet.KeyPair.PrivateKey, wallet.Base58Version)
 	pubK := base58.CheckEncode(newWallet.KeyPair.PublicKey, wallet.Base58Version)
