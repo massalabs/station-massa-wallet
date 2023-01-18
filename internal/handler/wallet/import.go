@@ -9,13 +9,13 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-func NewImport(pkPrompt privateKey.PrivateKeyAsker, pwdPrompt password.PasswordAsker) operations.RestWalletImportHandler {
+func NewImport(pkPrompt privateKey.Asker, pwdPrompt password.Asker) operations.RestWalletImportHandler {
 	return &wImport{pwdPrompt: pwdPrompt, pkPrompt: pkPrompt}
 }
 
 type wImport struct {
-	pwdPrompt password.PasswordAsker
-	pkPrompt  privateKey.PrivateKeyAsker
+	pwdPrompt password.Asker
+	pkPrompt  privateKey.Asker
 }
 
 func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
@@ -49,7 +49,7 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 }
 
 func ImportWalletError(code string, message string) middleware.Responder {
-	return operations.NewRestWalletCreateInternalServerError().WithPayload(
+	return operations.NewRestWalletImportInternalServerError().WithPayload(
 		&models.Error{
 			Code:    code,
 			Message: message,
