@@ -8,7 +8,7 @@ import (
 
 // AppendEndpoints appends wallet endpoints to the API
 // Note: the password prompter is mandatory for sign endpoint
-func AppendEndpoints(api *operations.MassaWalletAPI, privateKeyPrompter privateKey.PrivateKeyAsker, passwordPrompter password.PasswordAsker) {
+func AppendEndpoints(api *operations.MassaWalletAPI, passwordPrompter password.Asker, privateKeyPrompter privateKey.Asker) {
 	api.RestWalletCreateHandler = operations.RestWalletCreateHandlerFunc(HandleCreate)
 	api.RestWalletDeleteHandler = operations.RestWalletDeleteHandlerFunc(HandleDelete)
 	api.RestWalletImportHandler = NewImport(privateKeyPrompter, passwordPrompter)

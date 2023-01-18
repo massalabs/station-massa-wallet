@@ -1,5 +1,5 @@
 package privateKey
 
-type PrivateKeyAsker interface {
+type Asker interface {
 	Ask() (privateKey string, err error)
 }

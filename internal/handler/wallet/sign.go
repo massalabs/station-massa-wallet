@@ -17,12 +17,12 @@ import (
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(pwdPrompt password.PasswordAsker) operations.RestWalletSignOperationHandler {
+func NewSign(pwdPrompt password.Asker) operations.RestWalletSignOperationHandler {
 	return &walletSign{pwdPrompt: pwdPrompt}
 }
 
 type walletSign struct {
-	pwdPrompt password.PasswordAsker
+	pwdPrompt password.Asker
 }
 
 // Handle handles a sign request.
@@ -78,7 +78,7 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 }
 
 // unprotectWalletAskingPassword asks for a password and unprotects the wallet.
-func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.PasswordAsker, nickname string) middleware.Responder {
+func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Asker, nickname string) middleware.Responder {
 	clearPassword, err := prompter.Ask(nickname)
 	if err != nil {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(

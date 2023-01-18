@@ -40,7 +40,6 @@ func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder
 	return New(newWallet)
 }
 
-//nolint:lll
 func New(newWallet *wallet.Wallet) middleware.Responder {
 
 	privK := base58.CheckEncode(newWallet.KeyPair.PrivateKey, wallet.Base58Version)

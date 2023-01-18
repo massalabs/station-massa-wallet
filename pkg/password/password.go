@@ -32,7 +32,7 @@ func NewFynePrompter(f *fyne.App) *FynePrompter {
 }
 
 // Verifies at compilation time that FynePrompter implements Asker interface.
-var _ PasswordAsker = &FynePrompter{}
+var _ Asker = &FynePrompter{}
 
 // passwordEntry represents a password entry, containing the password and any error that may have occurred.
 // Data sent through the channel to get the password entry asynchronously.
