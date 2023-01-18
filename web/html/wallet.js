@@ -1,16 +1,29 @@
-//document.getElementById("import-wallet").addEventListener("click", importWallet);
-document.getElementById("import-wallet").addEventListener("click", openNickNameModal);
+document
+    .getElementById("import-wallet")
+    .addEventListener("click", openNickNameModal);
+
+closeModalOnClickOn("close-button");
+closeModalOnClickOn("nicknameCancelBtn");
 getWallets();
 
-function openNickNameModal(){
-    $("#nicknameModal").modal('show')  
+function openNickNameModal() {
+    $("#nicknameModal").modal("show");
+}
+
+function closeModal() {
+    $("#nicknameModal").modal("hide");
+    document.getElementById("nicknameInput").value = ""
+}
+
+function closeModalOnClickOn(elementID) {
+    document.getElementById(elementID).addEventListener("click", closeModal);
 }
 
 let wallets = [];
 
 // Import a wallet through PUT query
-async function importWallet(nickname) {
-   
+async function importWallet() {
+    let nickname = document.getElementById("nicknameInput").value;
     axios
         .put(`/rest/wallet/import/${nickname}`)
         .then((resp) => {
@@ -18,6 +31,7 @@ async function importWallet(nickname) {
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
+        closeModal()
 }
 
 // Create a wallet through POST query
