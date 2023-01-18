@@ -4,21 +4,30 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/privateKey"
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-func NewImport(walletInfoModal guiModal.WalletInfoAsker) operations.RestWalletImportHandler {
-	return &wImport{walletInfoModal: walletInfoModal}
+func NewImport(pkPrompt privateKey.PrivateKeyAsker, pwdPrompt password.PasswordAsker) operations.RestWalletImportHandler {
+	return &wImport{pwdPrompt: pwdPrompt, pkPrompt: pkPrompt}
 }
 
 type wImport struct {
-	walletInfoModal guiModal.WalletInfoAsker
+	pwdPrompt password.PasswordAsker
+	pkPrompt  privateKey.PrivateKeyAsker
 }
 
-func (c *wImport) Handle(operations.RestWalletImportParams) middleware.Responder {
+func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
 
-	password, walletName, privateKey, err := c.walletInfoModal.WalletInfo()
+	walletName := params.Nickname
+
+	password, err := c.pwdPrompt.Ask(walletName)
+	if err != nil {
+		return ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
+	}
+
+	privateKey, err := c.pkPrompt.Ask()
 	if err != nil {
 		return ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
 	}
