@@ -1,25 +1,65 @@
 package wallet
 
 import (
+	"fmt"
+	"io"
+	"strings"
 	"testing"
-
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/guiModal"
 )
 
 func Test_walletImport_Handle(t *testing.T) {
+	api, _, channel, err := MockAPI()
+	if err != nil {
+		panic(err)
+	}
+	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
 
-	var mockWalletInfoModal guiModal.WalletInfoAsker
-	wimport := NewImport(mockWalletInfoModal)
-	params := operations.RestWalletImportParams{}
-
-	response := wimport.Handle(params)
-	if response == ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled) {
-		t.Error("Wallet Canceled", response)
+	type want struct {
+		statusCode int
 	}
 
-	if response == ImportWalletError("error", "Error: a wallet with the same nickname already exists.") {
-		t.Error("Name Already Taken", response)
+	privateKeyForTests := "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA"
+
+	testsImportWallet := []struct {
+		name         string
+		nickname     string
+		promptResult PrivateKeyPrompt
+		want         want
+	}{
+		{"passing", "titi", PrivateKeyPrompt{PrivateKey: privateKeyForTests, Err: nil}, want{statusCode: 204}},
+		{"nickname empty", "", PrivateKeyPrompt{PrivateKey: privateKeyForTests, Err: nil}, want{statusCode: 400}},
+		{"wrong privateKey format", "titi", PrivateKeyPrompt{PrivateKey: "S12ABCD", Err: nil}, want{statusCode: 500}},
+		{"nickName Already taken", "precondition_wallet", PrivateKeyPrompt{PrivateKey: privateKeyForTests, Err: nil}, want{statusCode: 500}},
+		{"PrivateKey null", "titi", PrivateKeyPrompt{PrivateKey: "", Err: fmt.Errorf("Private key is required")}, want{statusCode: 500}},
+	}
+	for _, tt := range testsImportWallet {
+		t.Run(tt.name, func(t *testing.T) {
+			channel <- tt.promptResult // non blocking call as channel is buffered
+
+			handler, exist := api.HandlerFor("post", "/rest/wallet/import/{nickname}/")
+			if !exist {
+				t.Fatalf("Endpoint doesn't exist")
+			}
+
+			resp, err := handleHTTPRequest(handler, "PUT", fmt.Sprintf("/rest/wallet/import/%s", tt.nickname), "")
+			if err != nil {
+				t.Fatalf("while serving HTTP request: %s", err)
+			}
+
+			if resp.Result().StatusCode != tt.want.statusCode {
+				// Log body to simplify failure analysis.
+				body := new(strings.Builder)
+				_, _ = io.Copy(body, resp.Result().Body)
+
+				t.Logf("the returned body is: %s", strings.TrimSpace(body.String()))
+
+				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
+			}
+		})
 	}
 
+	err = cleanupTestData([]string{"precondition_wallet"})
+	if err != nil {
+		t.Fatalf("while cleaning up TestData: %s", err)
+	}
 }

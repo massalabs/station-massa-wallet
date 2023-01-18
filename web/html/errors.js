@@ -16,6 +16,7 @@ const errorCodes = new Map([
         "Wallet-4001",
         "Error while connecting all your wallets. Reconnect all your wallets and try again",
     ],
+    ["Wallet-16" , "A wallet with the same nickname already exists."],
     ["Unknown-0001", "An unknown error occured. Please try again"],
 ]);
 

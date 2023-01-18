@@ -21,6 +21,9 @@ type wImport struct {
 func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
 
 	walletName := params.Nickname
+	if walletName == "" {
+		return ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
+	}
 
 	password, err := c.pwdPrompt.Ask(walletName)
 	if err != nil {
@@ -34,7 +37,7 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 
 	_, err = wallet.Load(walletName)
 	if err == nil {
-		return ImportWalletError(err.Error(), "Error: a wallet with the same nickname already exists.")
+		return ImportWalletError(errorImportNickNameAlreadyTaken, errorImportNickNameAlreadyTaken)
 	}
 
 	newWallet, err := wallet.Imported(walletName, privateKey, password)

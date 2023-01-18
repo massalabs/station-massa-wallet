@@ -17,4 +17,5 @@ const (
 	errorSignOperationEmptyNickname
 	errorSignOperationRead
 	errorImportWalletCanceled
+	errorImportNickNameAlreadyTaken
 )

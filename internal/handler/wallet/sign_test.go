@@ -9,7 +9,7 @@ import (
 )
 
 func Test_walletSign_Handle(t *testing.T) {
-	api, channel, err := MockAPI()
+	api, channel, _, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
@@ -25,13 +25,13 @@ func Test_walletSign_Handle(t *testing.T) {
 		name         string
 		nickname     string
 		body         string
-		promptResult Prompt
+		promptResult PasswordPrompt
 		want         want
 	}{
-		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "1234", Err: nil}, want{statusCode: 200}},
-		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "4321", Err: nil}, want{statusCode: 500}},
-		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "1234", Err: nil}, want{statusCode: 500}},
-		{"prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "1234", Err: errors.New("Error while getting password prompt")}, want{statusCode: 500}},
+		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPrompt{Password: "1234", Err: nil}, want{statusCode: 200}},
+		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPrompt{Password: "4321", Err: nil}, want{statusCode: 500}},
+		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPrompt{Password: "1234", Err: nil}, want{statusCode: 500}},
+		{"PasswordPrompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}, want{statusCode: 500}},
 	}
 	for _, tt := range testsSign {
 		t.Run(tt.name, func(t *testing.T) {
