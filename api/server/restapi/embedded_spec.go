@@ -74,41 +74,6 @@ func init() {
           }
         }
       },
-      "put": {
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "restWalletImport",
-        "responses": {
-          "200": {
-            "description": "New wallet created.",
-            "schema": {
-              "$ref": "#/definitions/Wallet"
-            }
-          },
-          "204": {
-            "description": "Wallet imported."
-          },
-          "400": {
-            "description": "Bad request.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "422": {
-            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
       "post": {
         "produces": [
           "application/json"
@@ -132,7 +97,7 @@ func init() {
                   "x-nullable": false
                 },
                 "password": {
-                  "description": "Private key guiModal.",
+                  "description": "Private key password.",
                   "type": "string",
                   "x-nullable": false
                 }
@@ -146,6 +111,47 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Wallet"
             }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/wallet/import/{nickname}": {
+      "put": {
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "restWalletImport",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Wallet nickname.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Wallet imported."
           },
           "400": {
             "description": "Bad request.",
@@ -520,41 +526,6 @@ func init() {
           }
         }
       },
-      "put": {
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "restWalletImport",
-        "responses": {
-          "200": {
-            "description": "New wallet created.",
-            "schema": {
-              "$ref": "#/definitions/Wallet"
-            }
-          },
-          "204": {
-            "description": "Wallet imported."
-          },
-          "400": {
-            "description": "Bad request.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "422": {
-            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
       "post": {
         "produces": [
           "application/json"
@@ -578,7 +549,7 @@ func init() {
                   "x-nullable": false
                 },
                 "password": {
-                  "description": "Private key guiModal.",
+                  "description": "Private key password.",
                   "type": "string",
                   "x-nullable": false
                 }
@@ -592,6 +563,47 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Wallet"
             }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/wallet/import/{nickname}": {
+      "put": {
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "restWalletImport",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Wallet nickname.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Wallet imported."
           },
           "400": {
             "description": "Bad request.",

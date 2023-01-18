@@ -24,7 +24,8 @@ type Prompt struct {
 
 // testPrompter implements the guiModal.PasswordAsker interface for test purpose.
 type testPrompter struct {
-	mockPasswordEntry chan Prompt
+	mockPasswordEntry   chan Prompt
+	mockWalletInfoModal chan 
 }
 
 // Ask simulates a password entry by returning the content given through the mockPasswordEntry channel.
@@ -35,7 +36,7 @@ func (t *testPrompter) Ask(name string) (string, error) {
 
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
-func MockAPI() (*operations.MassaWalletAPI, chan Prompt, error) {
+func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt,chan walletInfoPrompt, error) {
 	mockChan := make(chan Prompt, 2) // buffered channel
 
 	// Load the Swagger specification

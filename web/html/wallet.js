@@ -1,13 +1,18 @@
-document.getElementById("import-wallet").addEventListener("click", importWallet);
-
+//document.getElementById("import-wallet").addEventListener("click", importWallet);
+document.getElementById("import-wallet").addEventListener("click", openNickNameModal);
 getWallets();
+
+function openNickNameModal(){
+    $("#nicknameModal").modal('show')  
+}
 
 let wallets = [];
 
 // Import a wallet through PUT query
-async function importWallet() {
+async function importWallet(nickname) {
+   
     axios
-        .put("/rest/wallet")
+        .put(`/rest/wallet/import/${nickname}`)
         .then((resp) => {
             tableInsert(resp.data);
             wallets.push(resp.data);

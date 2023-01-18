@@ -82,6 +82,29 @@
             </div>
         </div>
     </div>
+
+
+        <div class="modal fade" id="nicknameModal" tabindex="-1" role="dialog" aria-labelledby="nicknameModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="nicknameModalLabel">Enter Nickname</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <input type="text" id="nicknameInput" class="form-control">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" id="nicknameNextBtn" onclick="submitNickname()">Next</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" id="nicknameCancelBtn">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+   
     <script type="text/javascript" src="common.js"></script>
     <script type="text/javascript" src="errors.js"></script>
     <script type="text/javascript"

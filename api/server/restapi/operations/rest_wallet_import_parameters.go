@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 )
 
 // NewRestWalletImportParams creates a new RestWalletImportParams object
@@ -28,6 +29,12 @@ type RestWalletImportParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
+
+	/*Wallet nickname.
+	  Required: true
+	  In: path
+	*/
+	Nickname string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -39,8 +46,26 @@ func (o *RestWalletImportParams) BindRequest(r *http.Request, route *middleware.
 
 	o.HTTPRequest = r
 
+	rNickname, rhkNickname, _ := route.Params.GetOK("nickname")
+	if err := o.bindNickname(rNickname, rhkNickname, route.Formats); err != nil {
+		res = append(res, err)
+	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindNickname binds and validates parameter Nickname from path.
+func (o *RestWalletImportParams) bindNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+	// Parameter is provided by construction from the route
+	o.Nickname = raw
+
 	return nil
 }

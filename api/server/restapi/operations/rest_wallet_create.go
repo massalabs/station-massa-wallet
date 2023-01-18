@@ -69,7 +69,7 @@ type RestWalletCreateBody struct {
 	// Required: true
 	Nickname string `json:"nickname"`
 
-	// Private key guiModal.
+	// Private key password.
 	// Required: true
 	Password string `json:"password"`
 }

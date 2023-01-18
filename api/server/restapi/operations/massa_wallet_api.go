@@ -380,7 +380,7 @@ func (o *MassaWalletAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/rest/wallet"] = NewRestWalletImport(o.context, o.RestWalletImportHandler)
+	o.handlers["PUT"]["/rest/wallet/import/{nickname}"] = NewRestWalletImport(o.context, o.RestWalletImportHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
