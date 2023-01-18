@@ -21,18 +21,9 @@ type PasswordPrompt struct {
 	Err      error
 }
 
-type PrivateKeyPrompt struct {
-	PrivateKey string
-	Err        error
-}
-
 // testPrompter implements the password.PasswordAsker interface for test purpose.
 type testPrompterPassword struct {
 	mockPasswordEntry chan PasswordPrompt
-}
-
-type testPrompterPrivatekey struct {
-	mockPrivateKeyEntry chan PrivateKeyPrompt
 }
 
 // Ask simulates a password entry by returning the content given through the mockPasswordEntry channel.
@@ -41,7 +32,16 @@ func (t *testPrompterPassword) Ask(name string) (string, error) {
 	return passwordPrompter.Password, passwordPrompter.Err
 }
 
-// Ask simulates a password entry by returning the content given through the mockPasswordEntry channel.
+type PrivateKeyPrompt struct {
+	PrivateKey string
+	Err        error
+}
+
+type testPrompterPrivatekey struct {
+	mockPrivateKeyEntry chan PrivateKeyPrompt
+}
+
+// Ask simulates a private key entry by returning the content given through the mockPrivateKeyEntry channel.
 func (t *testPrompterPrivatekey) Ask() (string, error) {
 	PrivateKeyPrompter := <-t.mockPrivateKeyEntry
 	return PrivateKeyPrompter.PrivateKey, PrivateKeyPrompter.Err
@@ -50,8 +50,6 @@ func (t *testPrompterPrivatekey) Ask() (string, error) {
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
 func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKeyPrompt, error) {
-	mockChanPassword := make(chan PasswordPrompt, 2) // buffered channel
-	mockChanPrivateKey := make(chan PrivateKeyPrompt, 2)
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -61,8 +59,14 @@ func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKey
 	// Create a new MassaWalletAPI instance
 	massaWalletAPI := operations.NewMassaWalletAPI(swaggerSpec)
 
+	mockChanPassword := make(chan PasswordPrompt, 2) // buffered channel
+	mockChanPrivateKey := make(chan PrivateKeyPrompt, 2)
+
 	// Set wallet API endpoints
-	AppendEndpoints(massaWalletAPI, &testPrompterPrivatekey{mockPrivateKeyEntry: mockChanPrivateKey}, &testPrompterPassword{mockPasswordEntry: mockChanPassword})
+	AppendEndpoints(massaWalletAPI,
+		&testPrompterPassword{mockPasswordEntry: mockChanPassword},
+		&testPrompterPrivatekey{mockPrivateKeyEntry: mockChanPrivateKey},
+	)
 
 	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)
