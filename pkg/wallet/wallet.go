@@ -221,7 +221,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 		wallets,
 		func(wallet Wallet) bool { return wallet.Address == address },
 	) != -1 {
-		return nil, err
+		return nil, fmt.Errorf("Error: Address already exists.")
 	}
 
 	return CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, addr, password)
