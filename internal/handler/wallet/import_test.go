@@ -2,8 +2,6 @@ package wallet
 
 import (
 	"fmt"
-	"io"
-	"strings"
 	"testing"
 )
 
@@ -33,7 +31,7 @@ func Test_walletImport_Handle(t *testing.T) {
 		{"passing", "titi", privateKeyPromptKeyOK, want{statusCode: 200}},
 		{"wrong privateKey format", "titi", privateKeyPromptKeyKO, want{statusCode: 500}},
 		{"nickName Already taken", "precondition_wallet", privateKeyPromptKeyOK, want{statusCode: 500}},
-		{"PrivateKey null", "titi", privateKeyPromptError, want{statusCode: 500}},
+		{"PrivateKey null", "titi", privateKeyPromptError, want{statusCode: 400}},
 	}
 	for _, tt := range testsImportWallet {
 		t.Run(tt.name, func(t *testing.T) {
@@ -50,16 +48,8 @@ func Test_walletImport_Handle(t *testing.T) {
 			if err != nil {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}
+			checkTestResult(t, resp, tt.want.statusCode)
 
-			if resp.Result().StatusCode != tt.want.statusCode {
-				// Log body to simplify failure analysis.
-				body := new(strings.Builder)
-				_, _ = io.Copy(body, resp.Result().Body)
-
-				t.Logf("the returned body is: %s", strings.TrimSpace(body.String()))
-
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
-			}
 		})
 	}
 

@@ -197,7 +197,7 @@ func Filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.json", nickname)
 }
 
-func Imported(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
+func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
 	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
 	if err != nil {
 		return nil, fmt.Errorf("encoding private key B58: %w", err)

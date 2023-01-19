@@ -23,29 +23,34 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 
 	password, err := c.pwdPrompt.Ask(walletName)
 	if err != nil {
-		return ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
+		return ImportWalletErrorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
+
 	}
 
 	privateKey, err := c.pkPrompt.Ask()
 	if err != nil {
-		return ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
+		return ImportWalletErrorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
 	}
 
 	_, err = wallet.Load(walletName)
 	if err == nil {
-		return ImportWalletError(errorImportNickNameAlreadyTaken, errorImportNickNameAlreadyTaken)
+		return operations.NewRestWalletImportInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorImportNickNameAlreadyTaken,
+				Message: errorImportNickNameAlreadyTaken,
+			})
 	}
 
-	newWallet, err := wallet.Imported(walletName, privateKey, password)
+	newWallet, err := wallet.Import(walletName, privateKey, password)
 	if err != nil {
-		return ImportWalletError(err.Error(), err.Error())
+		return ImportWalletErrorBadRequest(err.Error(), err.Error())
 	}
 
 	return New(newWallet)
 }
 
-func ImportWalletError(code string, message string) middleware.Responder {
-	return operations.NewRestWalletImportInternalServerError().WithPayload(
+func ImportWalletErrorBadRequest(code string, message string) middleware.Responder {
+	return operations.NewRestWalletImportBadRequest().WithPayload(
 		&models.Error{
 			Code:    code,
 			Message: message,
