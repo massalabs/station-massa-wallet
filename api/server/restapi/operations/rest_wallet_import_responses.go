@@ -13,29 +13,29 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
 )
 
-// RestWalletImportNoContentCode is the HTTP code returned for type RestWalletImportNoContent
-const RestWalletImportNoContentCode int = 204
+// RestWalletImportOKCode is the HTTP code returned for type RestWalletImportOK
+const RestWalletImportOKCode int = 200
 
 /*
-RestWalletImportNoContent Wallet imported.
+RestWalletImportOK Wallet imported.
 
-swagger:response restWalletImportNoContent
+swagger:response restWalletImportOK
 */
-type RestWalletImportNoContent struct {
+type RestWalletImportOK struct {
 }
 
-// NewRestWalletImportNoContent creates RestWalletImportNoContent with default headers values
-func NewRestWalletImportNoContent() *RestWalletImportNoContent {
+// NewRestWalletImportOK creates RestWalletImportOK with default headers values
+func NewRestWalletImportOK() *RestWalletImportOK {
 
-	return &RestWalletImportNoContent{}
+	return &RestWalletImportOK{}
 }
 
 // WriteResponse to the client
-func (o *RestWalletImportNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *RestWalletImportOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
 
-	rw.WriteHeader(204)
+	rw.WriteHeader(200)
 }
 
 // RestWalletImportBadRequestCode is the HTTP code returned for type RestWalletImportBadRequest

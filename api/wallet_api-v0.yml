@@ -112,7 +112,7 @@ paths:
           x-nullable : false
           description: Wallet nickname.
       responses:
-        "204":
+        "200":
           description: Wallet imported.
         "400":
           description: Bad request.

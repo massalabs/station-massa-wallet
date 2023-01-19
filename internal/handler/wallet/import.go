@@ -19,11 +19,7 @@ type wImport struct {
 }
 
 func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
-
 	walletName := params.Nickname
-	if walletName == "" {
-		return ImportWalletError(errorImportWalletCanceled, errorImportWalletCanceled)
-	}
 
 	password, err := c.pwdPrompt.Ask(walletName)
 	if err != nil {

@@ -30,8 +30,7 @@ func Test_walletImport_Handle(t *testing.T) {
 		promptResult PrivateKeyPrompt
 		want         want
 	}{
-		{"passing", "titi", privateKeyPromptKeyOK, want{statusCode: 204}},
-		{"nickname empty", "", privateKeyPromptKeyOK, want{statusCode: 400}},
+		{"passing", "titi", privateKeyPromptKeyOK, want{statusCode: 200}},
 		{"wrong privateKey format", "titi", privateKeyPromptKeyKO, want{statusCode: 500}},
 		{"nickName Already taken", "precondition_wallet", privateKeyPromptKeyOK, want{statusCode: 500}},
 		{"PrivateKey null", "titi", privateKeyPromptError, want{statusCode: 500}},
@@ -64,7 +63,7 @@ func Test_walletImport_Handle(t *testing.T) {
 		})
 	}
 
-	err = cleanupTestData([]string{"precondition_wallet"})
+	err = cleanupTestData([]string{"precondition_wallet", "titi"})
 	if err != nil {
 		t.Fatalf("while cleaning up TestData: %s", err)
 	}
