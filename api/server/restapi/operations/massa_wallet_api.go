@@ -377,10 +377,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/rest/wallet/{nickname}"] = NewRestWalletGet(o.context, o.RestWalletGetHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/rest/wallet/import/{nickname}"] = NewRestWalletImport(o.context, o.RestWalletImportHandler)
+	o.handlers["POST"]["/rest/wallet/import/{nickname}"] = NewRestWalletImport(o.context, o.RestWalletImportHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

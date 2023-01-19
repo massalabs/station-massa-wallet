@@ -25,7 +25,7 @@ let wallets = [];
 async function importWallet() {
     let nickname = document.getElementById("nicknameInput").value;
     axios
-        .put(`/rest/wallet/import/${nickname}`)
+        .post(`/rest/wallet/import/${nickname}`)
         .then((resp) => {
             tableInsert(resp.data);
             wallets.push(resp.data);

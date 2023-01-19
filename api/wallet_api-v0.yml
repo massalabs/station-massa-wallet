@@ -100,7 +100,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   /rest/wallet/import/{nickname}:
-    put:
+    post:
       operationId: restWalletImport
       produces:
         - application/json   

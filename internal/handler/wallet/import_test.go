@@ -40,13 +40,13 @@ func Test_walletImport_Handle(t *testing.T) {
 			keyChan <- tt.promptResult // non blocking call as channel is buffered
 			pwdChan <- PasswordPrompt{Password: "1234", Err: nil}
 
-			handler, exist := api.HandlerFor("put", "/rest/wallet/import/{nickname}")
+			handler, exist := api.HandlerFor("post", "/rest/wallet/import/{nickname}")
 
 			if !exist {
 				panic("Endpoint doesn't exist")
 			}
 
-			resp, err := handleHTTPRequest(handler, "PUT", fmt.Sprintf("/rest/wallet/import/%s", tt.nickname), "")
+			resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/import/%s", tt.nickname), "")
 			if err != nil {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}

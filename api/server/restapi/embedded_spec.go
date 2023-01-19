@@ -134,7 +134,7 @@ func init() {
       }
     },
     "/rest/wallet/import/{nickname}": {
-      "put": {
+      "post": {
         "produces": [
           "application/json"
         ],
@@ -586,7 +586,7 @@ func init() {
       }
     },
     "/rest/wallet/import/{nickname}": {
-      "put": {
+      "post": {
         "produces": [
           "application/json"
         ],
