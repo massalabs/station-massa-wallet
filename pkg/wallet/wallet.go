@@ -23,16 +23,14 @@ const (
 	PBKDF2NbRound             = 10000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
-	SaltSize                  = 12
-	NonceSize                 = 12
 )
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
 	PrivateKey []byte
 	PublicKey  []byte
-	Salt       []byte
-	Nonce      []byte
+	Salt       [16]byte
+	Nonce      [12]byte
 }
 
 // Wallet structure allows to link a nickname, an address and a version to one or more key pairs.
@@ -230,15 +228,14 @@ func Imported(nickname string, privateKeyB58V string, password string) (*Wallet,
 }
 
 func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, addr [32]byte, password string) (*Wallet, error) {
-	salt := make([]byte, SaltSize)
 
+	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random salt: %w", err)
 	}
 
-	nonce := make([]byte, NonceSize)
-
+	var nonce [12]byte
 	_, err = rand.Read(nonce[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random nonce: %w", err)
