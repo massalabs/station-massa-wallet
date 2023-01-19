@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/massalabs/thyra/pkg/node/base58"
+	"github.com/btcsuite/btcutil/base58"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"lukechampine.com/blake3"
@@ -200,7 +200,7 @@ func Filename(nickname string) string {
 }
 
 func Imported(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
-	privateKeyBytes, _, err := base58.VersionedCheckDecode(privateKeyB58V[1:])
+	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
 	if err != nil {
 		return nil, fmt.Errorf("encoding private key B58: %w", err)
 	}
@@ -217,7 +217,7 @@ func Imported(nickname string, privateKeyB58V string, password string) (*Wallet,
 
 	addr := blake3.Sum256(pubKeyBytes)
 	version := byte(0)
-	address := "A" + base58.VersionedCheckEncode(addr[:], version)
+	address := "A" + base58.CheckEncode(addr[:], version)
 
 	if slices.IndexFunc(
 		wallets,
@@ -247,7 +247,7 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
-		Address:  "A" + base58.VersionedCheckEncode(addr[:], Base58Version),
+		Address:  "A" + base58.CheckEncode(addr[:], Base58Version),
 		KeyPair: KeyPair{
 			PrivateKey: privateKey,
 			PublicKey:  publicKey,
