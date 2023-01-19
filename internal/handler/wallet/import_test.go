@@ -28,7 +28,7 @@ func Test_walletImport_Handle(t *testing.T) {
 		promptResult PrivateKeyPrompt
 		want         want
 	}{
-		{"passing", "titi", privateKeyPromptKeyOK, want{statusCode: 200}},
+		{"passing", "titi", privateKeyPromptKeyOK, want{statusCode: 204}},
 		{"wrong privateKey format", "titi", privateKeyPromptKeyKO, want{statusCode: 500}},
 		{"nickName Already taken", "precondition_wallet", privateKeyPromptKeyOK, want{statusCode: 500}},
 		{"PrivateKey null", "titi", privateKeyPromptError, want{statusCode: 400}},
@@ -39,7 +39,6 @@ func Test_walletImport_Handle(t *testing.T) {
 			pwdChan <- PasswordPrompt{Password: "1234", Err: nil}
 
 			handler, exist := api.HandlerFor("post", "/rest/wallet/import/{nickname}")
-
 			if !exist {
 				panic("Endpoint doesn't exist")
 			}

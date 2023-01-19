@@ -150,7 +150,7 @@ func init() {
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Wallet imported."
           },
           "400": {
@@ -602,7 +602,7 @@ func init() {
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Wallet imported."
           },
           "400": {

@@ -41,12 +41,12 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 			})
 	}
 
-	newWallet, err := wallet.Import(walletName, privateKey, password)
+	_, err = wallet.Import(walletName, privateKey, password)
 	if err != nil {
 		return ImportWalletErrorBadRequest(err.Error(), err.Error())
 	}
 
-	return New(newWallet)
+	return nil
 }
 
 func ImportWalletErrorBadRequest(code string, message string) middleware.Responder {

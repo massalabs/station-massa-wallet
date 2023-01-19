@@ -41,7 +41,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 			handler, exist := api.HandlerFor("post", "/rest/wallet/{nickname}/signOperation")
 			if !exist {
-				t.Fatalf("Endpoint doesn't exist")
+				panic("Endpoint doesn't exist")
 			}
 
 			resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", tt.nickname), tt.body)
