@@ -23,13 +23,13 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 
 	password, err := c.pwdPrompt.Ask(walletName)
 	if err != nil {
-		return ImportWalletErrorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
+		return errorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
 
 	}
 
 	privateKey, err := c.pkPrompt.Ask()
 	if err != nil {
-		return ImportWalletErrorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
+		return errorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
 	}
 
 	_, err = wallet.Load(walletName)
@@ -43,13 +43,13 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 
 	_, err = wallet.Import(walletName, privateKey, password)
 	if err != nil {
-		return ImportWalletErrorBadRequest(err.Error(), err.Error())
+		return errorBadRequest(err.Error(), err.Error())
 	}
 
 	return nil
 }
 
-func ImportWalletErrorBadRequest(code string, message string) middleware.Responder {
+func errorBadRequest(code string, message string) middleware.Responder {
 	return operations.NewRestWalletImportBadRequest().WithPayload(
 		&models.Error{
 			Code:    code,
