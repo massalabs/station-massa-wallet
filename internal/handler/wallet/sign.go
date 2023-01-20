@@ -7,12 +7,12 @@ import (
 	"github.com/go-openapi/strfmt"
 	"lukechampine.com/blake3"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // NewSign instantiates a sign Handler

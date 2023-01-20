@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 )
 
 func Test_walletCreate_Handle(t *testing.T) {

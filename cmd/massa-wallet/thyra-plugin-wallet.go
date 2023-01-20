@@ -6,10 +6,10 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi"
-	"github.com/massalabs/thyra-plugin-massa-wallet/internal/handler"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/privateKey"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
+	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/privateKey"
 )
 
 func main() {

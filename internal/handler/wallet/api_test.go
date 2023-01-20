@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/go-openapi/loads"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 )
 
 // Prompt struct will be used to drive the password prompter externally

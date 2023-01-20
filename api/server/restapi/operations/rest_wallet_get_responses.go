@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 )
 
 // RestWalletGetOKCode is the HTTP code returned for type RestWalletGetOK

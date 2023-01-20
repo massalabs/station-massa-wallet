@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {

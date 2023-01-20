@@ -24,7 +24,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	"golang.org/x/net/netutil"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 )
 
 const (
