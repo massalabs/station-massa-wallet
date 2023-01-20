@@ -9,10 +9,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
 	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/exp/slices"
 	"lukechampine.com/blake3"
 )
 
@@ -56,10 +58,11 @@ func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 	return aesGCM, nil
 }
 
-// Protect encrypts the private key using the given password.
+// Protect encrypts the private key using the given guiModal.
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
+
 	aead, err := aead([]byte(password), w.KeyPair.Salt[:])
 	if err != nil {
 		return fmt.Errorf("while protecting wallet: %w", err)
@@ -74,7 +77,7 @@ func (w *Wallet) Protect(password string) error {
 	return nil
 }
 
-// Unprotect decrypts the private key using the given password.
+// Unprotect decrypts the private key using the given guiModal.
 // The encryption algorithm used to unprotect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Unprotect(password string) error {
@@ -175,54 +178,8 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 	addr := blake3.Sum256(publicKey)
 
-	var salt [16]byte
+	return CreateWalletFromKeys(nickname, privateKey, publicKey, addr, password)
 
-	_, err = rand.Read(salt[:])
-	if err != nil {
-		return nil, fmt.Errorf("generating random salt: %w", err)
-	}
-
-	var nonce [12]byte
-
-	_, err = rand.Read(nonce[:])
-	if err != nil {
-		return nil, fmt.Errorf("generating random nonce: %w", err)
-	}
-
-	wallet, err := New(nickname, addr, privateKey, publicKey, salt, nonce)
-	if err != nil {
-		return nil, fmt.Errorf("instantiating a new wallet: %w", err)
-	}
-
-	err = wallet.Protect(password)
-	if err != nil {
-		return nil, fmt.Errorf("protecting the new wallet: %w", err)
-	}
-
-	err = wallet.Persist()
-	if err != nil {
-		return nil, fmt.Errorf("persisting the new wallet: %w", err)
-	}
-
-	return wallet, nil
-
-}
-
-// New instantiates a new wallet.
-func New(nickname string, addr [32]byte, privateKey []byte, publicKey []byte, salt [16]byte, nonce [12]byte) (*Wallet, error) {
-	wallet := Wallet{
-		Version:  0,
-		Nickname: nickname,
-		Address:  "A" + base58.CheckEncode(addr[:], Base58Version),
-		KeyPair: KeyPair{
-			PrivateKey: privateKey,
-			PublicKey:  publicKey,
-			Salt:       salt,
-			Nonce:      nonce,
-		},
-	}
-
-	return &wallet, nil
 }
 
 // Delete removes wallet from file system
@@ -238,4 +195,73 @@ func Delete(nickname string) (err error) {
 // Filename returns the wallet Filename based on the given nickname.
 func Filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.json", nickname)
+}
+
+func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
+	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
+	if err != nil {
+		return nil, fmt.Errorf("encoding private key B58: %w", err)
+	}
+
+	wallets, err := LoadAll()
+	if err != nil {
+		return nil, fmt.Errorf("loading wallets: %w", err)
+	}
+
+	// The ed25519 seed is in fact what we call a private key in cryptography...
+	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
+
+	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
+
+	addr := blake3.Sum256(pubKeyBytes)
+	version := byte(0)
+	address := "A" + base58.CheckEncode(addr[:], version)
+
+	if slices.IndexFunc(
+		wallets,
+		func(wallet Wallet) bool { return wallet.Address == address },
+	) != -1 {
+		return nil, fmt.Errorf("importing new wallet: duplicate wallet with different name (but same keys).")
+	}
+
+	return CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, addr, password)
+}
+
+func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, addr [32]byte, password string) (*Wallet, error) {
+
+	var salt [16]byte
+	_, err := rand.Read(salt[:])
+	if err != nil {
+		return nil, fmt.Errorf("generating random salt: %w", err)
+	}
+
+	var nonce [12]byte
+	_, err = rand.Read(nonce[:])
+	if err != nil {
+		return nil, fmt.Errorf("generating random nonce: %w", err)
+	}
+
+	wallet := Wallet{
+		Version:  0,
+		Nickname: nickname,
+		Address:  "A" + base58.CheckEncode(addr[:], Base58Version),
+		KeyPair: KeyPair{
+			PrivateKey: privateKey,
+			PublicKey:  publicKey,
+			Salt:       salt,
+			Nonce:      nonce,
+		},
+	}
+
+	err = wallet.Protect(password)
+	if err != nil {
+		return nil, fmt.Errorf("protecting the new wallet: %w", err)
+	}
+
+	err = wallet.Persist()
+	if err != nil {
+		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+	}
+
+	return &wallet, nil
 }

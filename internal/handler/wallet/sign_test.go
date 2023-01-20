@@ -3,13 +3,11 @@ package wallet
 import (
 	"errors"
 	"fmt"
-	"io"
-	"strings"
 	"testing"
 )
 
 func Test_walletSign_Handle(t *testing.T) {
-	api, channel, err := MockAPI()
+	api, channel, _, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
@@ -21,17 +19,21 @@ func Test_walletSign_Handle(t *testing.T) {
 		statusCode int
 	}
 
+	PasswordPromptOK := PasswordPrompt{Password: "1234", Err: nil}
+	PasswordPromptKO := PasswordPrompt{Password: "4321", Err: nil}
+	PasswordPromptError := PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}
+
 	testsSign := []struct {
 		name         string
 		nickname     string
 		body         string
-		promptResult Prompt
+		promptResult PasswordPrompt
 		want         want
 	}{
-		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "1234", Err: nil}, want{statusCode: 200}},
-		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "4321", Err: nil}, want{statusCode: 500}},
-		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "1234", Err: nil}, want{statusCode: 500}},
-		{"prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, Prompt{Password: "1234", Err: errors.New("Error while getting password prompt")}, want{statusCode: 500}},
+		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 200}},
+		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptKO, want{statusCode: 500}},
+		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 500}},
+		{"password prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptError, want{statusCode: 500}},
 	}
 	for _, tt := range testsSign {
 		t.Run(tt.name, func(t *testing.T) {
@@ -39,7 +41,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 			handler, exist := api.HandlerFor("post", "/rest/wallet/{nickname}/signOperation")
 			if !exist {
-				t.Fatalf("Endpoint doesn't exist")
+				panic("Endpoint doesn't exist")
 			}
 
 			resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", tt.nickname), tt.body)
@@ -47,15 +49,7 @@ func Test_walletSign_Handle(t *testing.T) {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}
 
-			if resp.Result().StatusCode != tt.want.statusCode {
-				// Log body to simplify failure analysis.
-				body := new(strings.Builder)
-				_, _ = io.Copy(body, resp.Result().Body)
-
-				t.Logf("the returned body is: %s", strings.TrimSpace(body.String()))
-
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.want.statusCode)
-			}
+			verifyStatusCode(t, resp, tt.want.statusCode)
 		})
 	}
 

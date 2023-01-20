@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/privateKey"
 )
 
 func main() {
@@ -34,12 +35,12 @@ func StartServer(app *fyne.App, port int) {
 	defer (*app).Quit()
 
 	// Initializes API
-	massaWalletAPI, err := handler.InitializeAPI(password.NewFynePrompter(app))
+	massaWalletAPI, err := handler.InitializeAPI(password.NewFynePrompter(app), privateKey.NewFynePrompter(app))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// Instanciates and configure server
+	// instantiates and configure server
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
@@ -47,7 +48,7 @@ func StartServer(app *fyne.App, port int) {
 	server.Port = port
 
 	if err := server.Serve(); err != nil {
-		//nolint:gocritic
+
 		log.Fatalln(err)
 	}
 }

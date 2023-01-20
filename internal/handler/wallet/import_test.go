@@ -1,51 +1,59 @@
 package wallet
 
 import (
+	"fmt"
 	"testing"
 )
 
 func Test_walletImport_Handle(t *testing.T) {
-	api, _, err := MockAPI()
+	api, pwdChan, keyChan, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
+	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
 
-	testsImport := []struct {
-		name       string
-		body       string
+	type want struct {
 		statusCode int
-	}{
-		{"passing", `{
-		"address": "A12TFdPyw8Sg9qouzgTWwW5yo5PBDu5C3BWEGPjB9vRx9s3b42qv",
-		"keyPair": 
-			{
-				"nonce": "86zrpLuzBXBtePQiC5b4d1",
-				"privateKey": "HvAH6XuMNamRCuCuAaGsUKrCSjFibwyZ35aHZ4zBd5iNM5x2YM74vLUUH9KhAxDKGxWJ4V3YWNvGGiziGjC4yA1J72NKmcVMitHZM23eW44FAHay4iA",
-				"publicKey": "ub4aTM9RSBydGJCbkxe8v7GqWpZNNXuh7uGQgthBpaWhocvA1",
-				"salt": "4B28WQKc6jaYN6ymx6xoX8GzwHqF"
-			},
-		"nickname": "imported" }`, 204},
-		{"fail_empty_fields", `{}`, 422}}
-	for _, tt := range testsImport {
-		t.Run(tt.name, func(t *testing.T) {
+	}
 
-			resp, err := processHTTPRequest(api, "PUT", "/rest/wallet", tt.body)
+	privateKeyForTests := "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA"
+
+	privateKeyPromptKeyOK := PrivateKeyPrompt{PrivateKey: privateKeyForTests, Err: nil}
+	privateKeyPromptKeyKO := PrivateKeyPrompt{PrivateKey: "S12ABCD", Err: nil}
+	privateKeyPromptError := PrivateKeyPrompt{PrivateKey: "", Err: fmt.Errorf("Private key is required")}
+
+	testsImportWallet := []struct {
+		name         string
+		nickname     string
+		promptResult PrivateKeyPrompt
+		want         want
+	}{
+		{"passing", "titi", privateKeyPromptKeyOK, want{statusCode: 204}},
+		{"wrong privateKey format", "titi", privateKeyPromptKeyKO, want{statusCode: 500}},
+		{"nickName Already taken", "precondition_wallet", privateKeyPromptKeyOK, want{statusCode: 500}},
+		{"PrivateKey null", "titi", privateKeyPromptError, want{statusCode: 400}},
+	}
+	for _, tt := range testsImportWallet {
+		t.Run(tt.name, func(t *testing.T) {
+			keyChan <- tt.promptResult // non blocking call as channel is buffered
+			pwdChan <- PasswordPrompt{Password: "1234", Err: nil}
+
+			handler, exist := api.HandlerFor("post", "/rest/wallet/import/{nickname}")
+			if !exist {
+				panic("Endpoint doesn't exist")
+			}
+
+			resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/import/%s", tt.nickname), "")
 			if err != nil {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}
+			verifyStatusCode(t, resp, tt.want.statusCode)
 
-			if resp.Result().StatusCode != tt.statusCode {
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.statusCode)
-			}
-
-			if tt.statusCode != 204 {
-				return
-			}
-
-			err = cleanupTestData([]string{"imported"})
-			if err != nil {
-				t.Fatalf("while cleaning up TestData: %s", err)
-			}
 		})
+	}
+
+	err = cleanupTestData([]string{"precondition_wallet", "titi"})
+	if err != nil {
+		t.Fatalf("while cleaning up TestData: %s", err)
 	}
 }

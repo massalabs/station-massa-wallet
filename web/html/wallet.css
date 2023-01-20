@@ -1,6 +1,7 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-        "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #fff;
@@ -51,6 +52,25 @@ button {
     font-size: 1.3rem;
     background-color: transparent;
     border: 3px solid #3246ff;
+}
+
+.close-button {
+    position: absolute;
+top : 5px;
+right: 5px;
+    background-color: transparent;
+}
+
+.modal-content {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    background: #33506a;
+    border: 3px solid #808080;
+    border-radius: 30px;
+    padding: 24px;
+    width: 700px;
 }
 
 .table {

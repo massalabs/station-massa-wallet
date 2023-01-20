@@ -9,7 +9,7 @@ import (
 )
 
 func Test_walletCreate_Handle(t *testing.T) {
-	api, _, err := MockAPI()
+	api, _, _, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}

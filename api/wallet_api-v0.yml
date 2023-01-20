@@ -99,17 +99,18 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-    put:
+  /rest/wallet/import/{nickname}:
+    post:
       operationId: restWalletImport
-      parameters:
-        - in: body
-          name: body
-          required: true
-          x-nullable: false
-          schema:
-            $ref: "#/definitions/Wallet"
       produces:
-        - application/json
+        - application/json   
+      parameters:
+        - in: path
+          name: nickname
+          type: string
+          required: true
+          x-nullable : false
+          description: Wallet nickname.
       responses:
         "204":
           description: Wallet imported.
