@@ -11,7 +11,7 @@ import (
 	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
 )
 
-func checkTestResult(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {
+func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {
 
 	if resp.Result().StatusCode != statusCode {
 		// Log body to simplify failure analysis.

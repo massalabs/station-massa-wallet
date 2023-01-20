@@ -91,8 +91,8 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 	if len(clearPassword) == 0 {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorPasswordEmptyExecuteFct,
-				Message: errorPasswordEmptyExecuteFct,
+				Code:    errorCreateNoPassword,
+				Message: errorCreateNoPassword,
 			})
 	}
 

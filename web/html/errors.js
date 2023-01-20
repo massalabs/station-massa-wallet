@@ -1,23 +1,27 @@
 const errorCodes = new Map([
-    ["Wallet-01", "That nickname is taken. Try Another"],
-    ["Wallet-02", "Wrong guiModal. Try again"],
-    ["Wallet-03", "Error while retrieving that wallet. Try again"],
-    ["Wallet-06", "Enter a wallet nickname"],
-    ["Wallet-07", "Enter a wallet password"],
-    ["Wallet-1003", "Error while creating your wallet. Try again"],
-    ["Wallet-15", "Action stopped. No wallet added to Thyra"],
-    ["Wallet-09", "Select a wallet to delete"],
+    ["Wallet-0001", "Wrong password. Try again"],
+    ["Wallet-0002", "Error while retrieving that wallet. Try again"],
+    ["Wallet-0003", "Action stopped"],
+    ["Wallet-0004", "Enter a wallet nickname"],
+    ["Wallet-0005", "Enter a wallet password"],
+   
+    ["Wallet-0006", "Error while creating your wallet. Try again"],
+
+    ["Wallet-0007", "Select a wallet to delete"],
     [
-        "Wallet-10",
+        "Wallet-0008",
         "Error while deleting that wallet. Close all programs using this wallet and try again",
     ],
-    ["Wallet-11", "Error while importing this wallet. Try again"],
     [
-        "Wallet-4001",
+        "Wallet-0009",
         "Error while connecting all your wallets. Reconnect all your wallets and try again",
     ],
-    ["Wallet-16" , "A wallet with the same nickname already exists."],
-    ["Unknown-0001", "An unknown error occured. Please try again"],
+    ["Wallet-0010", "Please enter a wallet name"],
+    ["Wallet-0011", "Error while signing transaction"],
+    ["Wallet-0012", "Action stopped. No wallet added to Thyra"],
+    ["Wallet-0013", "That nickname is taken. Try Another"],
+    ["Wallet-0014", "Error while importing your wallet. Please try again"],
+    ["Unknown-0001", "An unknown error occurred. Please try again"],
 ]);
 
 function getErrorMessage(errorCode) {

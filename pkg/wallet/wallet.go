@@ -205,7 +205,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 
 	wallets, err := LoadAll()
 	if err != nil {
-		return nil, fmt.Errorf("error loading wallets %w", err)
+		return nil, fmt.Errorf("loading wallets: %w", err)
 	}
 
 	// The ed25519 seed is in fact what we call a private key in cryptography...
@@ -221,7 +221,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 		wallets,
 		func(wallet Wallet) bool { return wallet.Address == address },
 	) != -1 {
-		return nil, fmt.Errorf("Error: Address already exists.")
+		return nil, fmt.Errorf("importing new wallet: duplicate wallet with different name (but same keys).")
 	}
 
 	return CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, addr, password)

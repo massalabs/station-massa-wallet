@@ -1,21 +1,19 @@
 package wallet
 
 const (
-	_ = "Wallet-" + string('0'+(iota)/10%10) + string('0'+(iota)/1%10)
-	errorAlreadyExists
+	_ = "Wallet-" + string('0'+(iota)/1000%10) + string('0'+(iota)/100%10) + string('0'+(iota)/10%10) + string('0'+(iota)/1%10)
 	errorWrongPassword
 	errorGetWallet
 	errorCanceledAction
-	errorPasswordEmptyExecuteFct
 	errorCreateNoNickname
 	errorCreateNoPassword
 	errorCreateNew
 	errorDeleteNoNickname
 	errorDeleteFile
-	errorImportNew
 	errorGetWallets
 	errorSignOperationEmptyNickname
 	errorSignOperationRead
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
+	errorImportWallet
 )

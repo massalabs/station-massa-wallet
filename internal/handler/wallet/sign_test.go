@@ -33,7 +33,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 200}},
 		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptKO, want{statusCode: 500}},
 		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 500}},
-		{"PasswordPrompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptError, want{statusCode: 500}},
+		{"password prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptError, want{statusCode: 500}},
 	}
 	for _, tt := range testsSign {
 		t.Run(tt.name, func(t *testing.T) {
@@ -49,7 +49,7 @@ func Test_walletSign_Handle(t *testing.T) {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}
 
-			checkTestResult(t, resp, tt.want.statusCode)
+			verifyStatusCode(t, resp, tt.want.statusCode)
 		})
 	}
 
