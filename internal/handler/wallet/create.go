@@ -3,11 +3,11 @@ package wallet
 import (
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/models"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // HandleCreate handles a create request
