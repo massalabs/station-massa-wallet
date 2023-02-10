@@ -31,8 +31,7 @@ async function importWallet() {
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
-        closeModal()
-
+    closeModal()
 }
 
 // Create a wallet through POST query
@@ -66,7 +65,6 @@ function createWallet() {
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
-
 }
 
 // Fetch a wallet's balance through POST query
@@ -79,7 +77,7 @@ async function fetchBalanceOf(addresses) {
     return getBalance.data.pendingBalances;
 }
 
-function tableInsert(resp) {
+async function tableInsert(resp) {
     const tBody = document
         .getElementById("user-wallet-table")
         .getElementsByTagName("tbody")[0];
