@@ -9,11 +9,16 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 )
 
 // RestWalletImportURL generates an URL for the rest wallet import operation
 type RestWalletImportURL struct {
+	Nickname string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -35,7 +40,14 @@ func (o *RestWalletImportURL) SetBasePath(bp string) {
 func (o *RestWalletImportURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/rest/wallet"
+	var _path = "/rest/wallet/import/{nickname}"
+
+	nickname := o.Nickname
+	if nickname != "" {
+		_path = strings.Replace(_path, "{nickname}", nickname, -1)
+	} else {
+		return nil, errors.New("nickname is required on RestWalletImportURL")
+	}
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)

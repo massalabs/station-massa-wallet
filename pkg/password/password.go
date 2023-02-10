@@ -1,6 +1,6 @@
 package password
 
-// In this file is implemented the Fyne version of the password.Asker interface.
+// In this file is implemented the Fyne version of the password.PasswordAsker interface.
 // As the Fyne application must have a GUI application that is initialized from the main,
 // we use the FynePrompter structure to wrap it and thus allow the Ask function to use it thanks to the closure mechanism.
 // Finally, the end user input is retrieved asynchronously using a channel.
@@ -12,7 +12,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// FynePrompter is a struct that wraps a Fyne GUI application and implements the password.Asker interface.
+// FynePrompter is a struct that wraps a Fyne GUI application and implements the password.PasswordAsker interface.
 type FynePrompter struct {
 	guiApp *fyne.App
 }
@@ -70,8 +70,8 @@ func PasswordDialog(nickname string, app *fyne.App) chan passwordEntry {
 			result <- passwordEntry{password: passwordWidget.Text, err: nil}
 		},
 		OnCancel: func() {
-			window.Hide()
 			result <- passwordEntry{password: "", err: errors.New("password entry: cancelled by the user")}
+			window.Hide()
 		},
 		SubmitText: "Submit",
 		CancelText: "Cancel",

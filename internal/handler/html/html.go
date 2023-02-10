@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	helper "github.com/massalabs/thyra-plugin-wallet/pkg/openapi"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/openapi"
 	"github.com/massalabs/thyra-plugin-wallet/web"
 )
 
@@ -31,12 +31,12 @@ func Handle(params operations.WebParams) middleware.Responder {
 
 	header := map[string]string{"Content-Type": mimeType}
 
-	return helper.NewCustomResponder(resourceContent, header, http.StatusOK)
+	return openapi.NewCustomResponder(resourceContent, header, http.StatusOK)
 }
 
 // DefaultRedirectHandler redirects request to "/" URL to "web/index.html"
 func DefaultRedirectHandler(_ operations.DefaultPageParams) middleware.Responder {
-	return helper.NewCustomResponder(nil, map[string]string{"Location": "web/index.html"}, http.StatusPermanentRedirect)
+	return openapi.NewCustomResponder(nil, map[string]string{"Location": "web/index.html"}, http.StatusPermanentRedirect)
 }
 
 // AppendEndpoints appends web endpoints to the API.

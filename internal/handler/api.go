@@ -7,10 +7,11 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler/html"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler/wallet"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/privateKey"
 )
 
 // InitializeAPI initializes the API handlers
-func InitializeAPI(passwordPrompter password.Asker) (*operations.MassaWalletAPI, error) {
+func InitializeAPI(passwordPrompter password.Asker, privateKeyPrompter privateKey.Asker) (*operations.MassaWalletAPI, error) {
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -24,7 +25,7 @@ func InitializeAPI(passwordPrompter password.Asker) (*operations.MassaWalletAPI,
 	html.AppendEndpoints(api)
 
 	// Set wallet API endpoints
-	wallet.AppendEndpoints(api, passwordPrompter)
+	wallet.AppendEndpoints(api, passwordPrompter, privateKeyPrompter)
 
 	return api, nil
 }

@@ -15,8 +15,8 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-// NewSign instanciates a sign Handler
-// The "classical" way is not possible beacause we need to pass to the handler a password.Asker.
+// NewSign instantiates a sign Handler
+// The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
 func NewSign(pwdPrompt password.Asker) operations.RestWalletSignOperationHandler {
 	return &walletSign{pwdPrompt: pwdPrompt}
 }
@@ -55,7 +55,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 		})
 }
 
-// loadWallet loads a wallet from the file systme or returns an error.
+// loadWallet loads a wallet from the file system or returns an error.
 func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 	if len(nickname) == 0 {
 		return nil, operations.NewRestWalletSignOperationBadRequest().WithPayload(
@@ -77,7 +77,7 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 	return w, nil
 }
 
-// unprotectWalletAskingPassword ask for a password and unprotect the wallet.
+// unprotectWalletAskingPassword asks for a password and unprotects the wallet.
 func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Asker, nickname string) middleware.Responder {
 	clearPassword, err := prompter.Ask(nickname)
 	if err != nil {
@@ -91,8 +91,8 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 	if len(clearPassword) == 0 {
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorPasswordEmptyExecuteFct,
-				Message: errorPasswordEmptyExecuteFct,
+				Code:    errorCreateNoPassword,
+				Message: errorCreateNoPassword,
 			})
 	}
 
@@ -108,7 +108,7 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 	return nil
 }
 
-// digestOperationAndPubKey prepares teh digest for signature.
+// digestOperationAndPubKey prepares the digest for signature.
 func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]byte, middleware.Responder) {
 	// reads operation to sign
 	op, err := operation.MarshalText()
