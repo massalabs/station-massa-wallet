@@ -12,7 +12,7 @@ function openNickNameModal() {
 
 function closeModal() {
     $("#nicknameModal").modal("hide");
-    document.getElementById("nicknameInput").value = "";
+    document.getElementById("nicknameInput").value = ""
 }
 
 function closeModalOnClickOn(elementID) {
@@ -31,7 +31,8 @@ async function importWallet() {
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
-    closeModal();
+        closeModal()
+
 }
 
 // Create a wallet through POST query
@@ -65,6 +66,7 @@ function createWallet() {
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
+
 }
 
 // Fetch a wallet's balance through POST query
@@ -77,7 +79,7 @@ async function fetchBalanceOf(addresses) {
     return getBalance.data.pendingBalances;
 }
 
-async function tableInsert(resp) {
+function tableInsert(resp) {
     const tBody = document
         .getElementById("user-wallet-table")
         .getElementsByTagName("tbody")[0];
