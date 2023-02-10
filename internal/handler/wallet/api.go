@@ -1,8 +1,8 @@
 package wallet
 
 import (
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/password"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
 )
 
 // AppendEndpoints appends wallet endpoints to the API

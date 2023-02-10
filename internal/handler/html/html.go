@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/massalabs/thyra-plugin-massa-wallet/api/server/restapi/operations"
-	helper "github.com/massalabs/thyra-plugin-massa-wallet/pkg/openapi"
-	"github.com/massalabs/thyra-plugin-massa-wallet/web"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	helper "github.com/massalabs/thyra-plugin-wallet/pkg/openapi"
+	"github.com/massalabs/thyra-plugin-wallet/web"
 )
 
 const indexHTML = "index.html"

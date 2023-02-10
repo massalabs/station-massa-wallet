@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/massalabs/thyra-plugin-massa-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // cleanupTestData cleans up wallet created file.

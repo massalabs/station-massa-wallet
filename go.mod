@@ -1,4 +1,4 @@
-module github.com/massalabs/thyra-plugin-massa-wallet
+module github.com/massalabs/thyra-plugin-wallet
 
 go 1.19
 
