@@ -67,7 +67,7 @@ function createWallet() {
         .catch(handleAPIError);
 }
 
-// Fetch a wallet's balance through POST query
+// Fetch a wallet's pending balance through GET query
 async function fetchBalanceOf(address) {
     const getBalance = await axios.get(
         `http://my.massa/massa/addresses?attributes=balance&addresses=${address}`
@@ -90,8 +90,7 @@ async function tableInsert(resp) {
 
     cell1.innerHTML = resp.nickname;
 
-    const balance = await fetchBalanceOf(resp.address);
-    cell2.innerHTML = parseFloat(balance);
+    cell2.innerHTML = await fetchBalanceOf(resp.address);
     cell3.innerHTML =
         '<svg class="quit-button" onclick="deleteRow(this)" xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line> <line x1="6" y1="6" x2="18" y2="18"></line></svg>';
 }
