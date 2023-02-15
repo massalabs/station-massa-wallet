@@ -12,7 +12,7 @@ function openNickNameModal() {
 
 function closeModal() {
     $("#nicknameModal").modal("hide");
-    document.getElementById("nicknameInput").value = ""
+    document.getElementById("nicknameInput").value = "";
 }
 
 function closeModalOnClickOn(elementID) {
@@ -31,7 +31,7 @@ async function importWallet() {
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
-    closeModal()
+    closeModal();
 }
 
 // Create a wallet through POST query
@@ -68,13 +68,11 @@ function createWallet() {
 }
 
 // Fetch a wallet's balance through POST query
-async function fetchBalanceOf(addresses) {
-    const getBalance = await axios.post("http://my.massa/massa/addresses", {
-        addresses: addresses,
-        options: ["balances"],
-    });
-
-    return getBalance.data.pendingBalances;
+async function fetchBalanceOf(address) {
+    const getBalance = await axios.get(
+        `http://my.massa/massa/addresses?attributes=balance&addresses=${address}`
+    );
+    return getBalance.data.addressesAttributes[address].balance.pending;
 }
 
 async function tableInsert(resp) {
@@ -92,8 +90,8 @@ async function tableInsert(resp) {
 
     cell1.innerHTML = resp.nickname;
 
-    const balance = await fetchBalanceOf([resp.address]);
-    cell2.innerHTML = parseFloat(balance[0]);
+    const balance = await fetchBalanceOf(resp.address);
+    cell2.innerHTML = parseFloat(balance);
     cell3.innerHTML =
         '<svg class="quit-button" onclick="deleteRow(this)" xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line> <line x1="6" y1="6" x2="18" y2="18"></line></svg>';
 }
