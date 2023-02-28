@@ -4,8 +4,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strconv"
-	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -17,17 +15,13 @@ import (
 )
 
 func main() {
-	ln, _ := net.Listen("tcp", ":")
-
-	registerPlugin(ln)
-
 	myApp := app.New()
-	go startServer(&myApp, ln)
+	go startServer(&myApp)
 
 	myApp.Run()
 }
 
-func startServer(app *fyne.App, ln net.Listener) {
+func startServer(app *fyne.App) {
 	//mandatory to free main thread
 	defer (*app).Quit()
 
@@ -41,9 +35,11 @@ func startServer(app *fyne.App, ln net.Listener) {
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	// Set the port to listen on to the passed-in port
-	port, _ := strconv.Atoi(strings.Split(ln.Addr().String(), ":")[1])
-	server.Port = port
+	ln, err := server.HTTPListener()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	registerPlugin(ln)
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
