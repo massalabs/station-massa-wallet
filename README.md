@@ -39,12 +39,6 @@ go run cmd/massa-wallet/thyra-plugin-wallet.go 1 --standalone
 Build:
 
 ```shell
-go build -o wallet ./cmd/massa-wallet/thyra-plugin-wallet.go
-```
-
-or
-
-```shell
 ./build.sh
 ```
 
