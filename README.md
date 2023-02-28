@@ -42,9 +42,16 @@ Build:
 go build -o wallet ./cmd/massa-wallet/thyra-plugin-wallet.go
 ```
 
+or
+
+```shell
+./build.sh
+```
+
 Install the plugin:
 
 ```shell
-mkdir ~/.config/thyra/my_plugins/wallet
-mv wallet ~/.config/thyra/my_plugins/wallet
+mkdir ~/.config/thyra/my_plugins/thyra-plugin-wallet
+PLUGIN=wallet-plugin
+mv build/$PLUGIN/thyra-plugin-wallet ~/.config/thyra/my_plugins/thyra-plugin-wallet
 ```
