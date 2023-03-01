@@ -244,7 +244,7 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
-		Address:  "A" + base58.CheckEncode(addr[:], Base58Version),
+		Address:  "AU" + base58.CheckEncode(addr[:], Base58Version),
 		KeyPair: KeyPair{
 			PrivateKey: privateKey,
 			PublicKey:  publicKey,
