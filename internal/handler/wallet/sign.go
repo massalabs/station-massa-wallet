@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"crypto/ed25519"
+	"encoding/base64"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
@@ -109,9 +110,10 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 }
 
 // digestOperationAndPubKey prepares the digest for signature.
-func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]byte, middleware.Responder) {
+func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) (digest [32]byte, resp middleware.Responder) {
 	// reads operation to sign
-	op, err := operation.MarshalText()
+
+	op, err := base64.StdEncoding.DecodeString(operation.String())
 	if err != nil {
 		return [32]byte{}, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
@@ -121,7 +123,7 @@ func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]b
 	}
 
 	// signs operation
-	digest := blake3.Sum256(append(publicKey, op...))
+	digest = blake3.Sum256(append(publicKey, op...))
 
 	return digest, nil
 }
