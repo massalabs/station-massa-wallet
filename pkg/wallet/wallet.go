@@ -215,7 +215,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 
 	addr := blake3.Sum256(pubKeyBytes)
 	version := byte(0)
-	address := "A" + base58.CheckEncode(addr[:], version)
+	address := "AU" + base58.CheckEncode(addr[:], version)
 
 	if slices.IndexFunc(
 		wallets,
