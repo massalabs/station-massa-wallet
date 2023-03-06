@@ -24,28 +24,41 @@ Before testing this API, you must initialize the `baseURL` variable to 127.0.0.1
 
 ## Contribute
 
-Generate:
+**Generate:**
 
 ```shell
 go generate ./...
 ```
 
-Run:
+This will generate go swagger file and a javascript file with constants variable for the frontend.
+
+**Run:**
+
+For development purpose, you can run the plugin in standalone mode: it will not try to register against Thyra.
 
 ```shell
-go run cmd/massa-wallet/thyra-plugin-wallet.go 1 --standalone
+STANDALONE=1 go run cmd/massa-wallet/thyra-plugin-wallet.go
 ```
 
-Build:
+The `STANDALONE` environment variable is to run the plugin without Thyra.
+
+
+**Build:**
 
 ```shell
-./build.sh
+CGO_ENABLED="1" go build -o thyra-plugin-wallet  cmd/massa-wallet/thyra-plugin-wallet.go
 ```
 
-Install the plugin:
+This will create a binary file named `thyra-plugin-wallet`.
+
+**Install manually the plugin:**
+
+For development purpose, you can install the plugin manually:
 
 ```shell
-mkdir ~/.config/thyra/my_plugins/thyra-plugin-wallet
-PLUGIN=wallet-plugin
-mv build/$PLUGIN/thyra-plugin-wallet ~/.config/thyra/my_plugins/thyra-plugin-wallet
+mkdir -p ~/.config/thyra/my_plugins/thyra-plugin-wallet
+mv thyra-plugin-wallet ~/.config/thyra/my_plugins/thyra-plugin-wallet
 ```
+
+This will create Thyra plugin directories and move the binary file created in the previous step so that
+Thyra can detect the plugin and launch it.

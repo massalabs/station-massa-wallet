@@ -7,7 +7,7 @@ closeModalOnClickOn("nicknameCancelBtn");
 getWallets();
 
 function addPrefixUrl(relativeURL) {
-    return `http://my.massa/thyra/plugin/Massalabs/Massa%20Wallet/${relativeURL}`
+    return `http://my.massa/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
 }
 
 function openNickNameModal() {

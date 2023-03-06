@@ -7,10 +7,11 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
+	constants "github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/privateKey"
 )
 
@@ -47,23 +48,16 @@ func startServer(app *fyne.App) {
 }
 
 func registerPlugin(ln net.Listener) {
-	//nolint:gomnd
-	if len(os.Args) < 2 {
-		panic("this program must be run with correlation id argument!")
+	if os.Getenv("STANDALONE") == "1" {
+		return
 	}
 
-	pluginID := os.Args[1]
-
-	standaloneMode := false
-
-	if len(os.Args) == 3 && os.Args[2] == "--standalone" {
-		standaloneMode = true
-	}
-
-	if !standaloneMode {
-		err := plugin.Register(pluginID, "Massa Wallet", "Massalabs", "Massa wallet for Thyra", ln.Addr())
+	if len(os.Args) >= 2 {
+		err := plugin.Register(os.Args[1], "Massa Wallet", "Massalabs", "Massa wallet for Thyra", ln.Addr(), constants.PluginAuthor, constants.PluginName)
 		if err != nil {
 			log.Panicln(err)
 		}
+	} else {
+		panic("Usage: program must be started with an ID command line argument")
 	}
 }
