@@ -110,7 +110,7 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 }
 
 // digestOperationAndPubKey prepares the digest for signature.
-func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) (digest [32]byte, resp middleware.Responder) {
+func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]byte, middleware.Responder) {
 	// reads operation to sign
 
 	op, err := base64.StdEncoding.DecodeString(operation.String())
@@ -123,7 +123,7 @@ func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) (diges
 	}
 
 	// signs operation
-	digest = blake3.Sum256(append(publicKey, op...))
+	digest := blake3.Sum256(append(publicKey, op...))
 
 	return digest, nil
 }
