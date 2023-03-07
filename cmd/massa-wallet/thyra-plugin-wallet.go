@@ -40,20 +40,21 @@ func startServer(app *fyne.App) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	registerPlugin(ln)
+	registerPlugin(ln, "", "logo.svg")
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func registerPlugin(ln net.Listener) {
+func registerPlugin(ln net.Listener, spec string, logoURL string) {
 	if os.Getenv("STANDALONE") == "1" {
 		return
 	}
 
 	if len(os.Args) >= 2 {
-		err := plugin.Register(os.Args[1], "Massa Wallet", "Massalabs", "Massa wallet for Thyra", ln.Addr(), constants.PluginAuthor, constants.PluginName)
+		err := plugin.Register(os.Args[1], constants.PluginName, constants.PluginAuthor, constants.PluginDescription,
+			ln.Addr(), spec, logoURL)
 		if err != nil {
 			log.Panicln(err)
 		}
