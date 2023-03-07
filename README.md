@@ -22,7 +22,11 @@ You will find a postman collection in the `/api` directory.
 
 Before testing this API, you must initialize the `baseURL` variable to 127.0.0.1:`port`, port being the listening port that the plugin listens to (`33049` in the previous example).
 
-## Contribute
+## Developer guide
+
+This section helps developer getting started.
+
+If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 **Generate:**
 
@@ -41,7 +45,6 @@ STANDALONE=1 go run cmd/massa-wallet/thyra-plugin-wallet.go
 ```
 
 The `STANDALONE` environment variable is to run the plugin without Thyra.
-
 
 **Build:**
 
