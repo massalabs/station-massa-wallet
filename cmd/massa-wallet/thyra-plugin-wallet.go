@@ -2,8 +2,6 @@ package main
 
 import (
 	"log"
-	"net"
-	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -36,29 +34,17 @@ func startServer(app *fyne.App) {
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	ln, err := server.HTTPListener()
+	listener, err := server.HTTPListener()
 	if err != nil {
 		log.Fatalln(err)
 	}
-	registerPlugin(ln, "", "logo.svg")
+
+	plugin.RegisterPlugin(listener, plugin.Info{
+		Name: constants.PluginName, Author: constants.PluginAuthor,
+		Description: constants.PluginDescription, APISpec: "", Logo: "web/html/logo.png",
+	})
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
-	}
-}
-
-func registerPlugin(ln net.Listener, spec string, logoURL string) {
-	if os.Getenv("STANDALONE") == "1" {
-		return
-	}
-
-	if len(os.Args) >= 2 {
-		err := plugin.Register(os.Args[1], constants.PluginName, constants.PluginAuthor, constants.PluginDescription,
-			ln.Addr(), spec, logoURL)
-		if err != nil {
-			log.Panicln(err)
-		}
-	} else {
-		panic("Usage: program must be started with an ID command line argument")
 	}
 }

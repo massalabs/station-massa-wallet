@@ -3,7 +3,7 @@ module github.com/massalabs/thyra-plugin-wallet
 go 1.19
 
 require (
-	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230209100233-95e222df08cd
+	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503
 	golang.org/x/crypto v0.3.0
 	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
 )

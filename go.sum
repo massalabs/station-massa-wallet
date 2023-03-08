@@ -316,6 +316,8 @@ github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsI
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230209100233-95e222df08cd h1:IR+h53rqHgxqobmVlpr81qQrnQC9Vl7IvYhXRl9GvMI=
 github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230209100233-95e222df08cd/go.mod h1:7gjot7QNu6tm8q7uJjsGN89gOm2yMljjrxNpRh+iAXo=
+github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503 h1:SxxyLnRlSUnFJcghl2WDIj7Bny7NyT0n4fKqxzyishg=
+github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503/go.mod h1:7gjot7QNu6tm8q7uJjsGN89gOm2yMljjrxNpRh+iAXo=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2/go.mod h1:76rfSfYPWj01Z85hUf/ituArm797mNKcvINh1OlsZKo=
