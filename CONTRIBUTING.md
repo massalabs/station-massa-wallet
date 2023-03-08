@@ -10,7 +10,7 @@ To get an overview of the project, read the [README](README.md).
 
 ## Product Vision
 
-Thyra Plugin Wallet is MassaLabs's native wallet. Our goal is to offer the best experience possible to our users.
+This Plugin Wallet is MassaLabs's native wallet. Our goal is to provide maximum security to our end-users while still having a simple, enjoyable and user friendly experience. A wallet with no compromise.
 
 Definition of a Massa account: it is composed of 2 distinct elements:
 
