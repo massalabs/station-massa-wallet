@@ -1,36 +1,26 @@
 package main
 
 import (
-	"flag"
 	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
+	constants "github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/privateKey"
 )
 
 func main() {
-	var port int
-	var path string
-
-	flag.IntVar(&port, "port", 8080, "the port to listen on")
-
-	// The path is not actually used in the script.
-	// It is included only to maintain temporary compatibility with Thyra, and it will be removed at a later time.
-	flag.StringVar(&path, "path", "", "the path to listen on")
-
-	flag.Parse()
-
 	myApp := app.New()
-	go StartServer(&myApp, port)
+	go startServer(&myApp)
 
 	myApp.Run()
 }
 
-func StartServer(app *fyne.App, port int) {
+func startServer(app *fyne.App) {
 	//mandatory to free main thread
 	defer (*app).Quit()
 
@@ -44,11 +34,17 @@ func StartServer(app *fyne.App, port int) {
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	// Set the port to listen on to the passed-in port
-	server.Port = port
+	listener, err := server.HTTPListener()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	plugin.RegisterPlugin(listener, plugin.Info{
+		Name: constants.PluginName, Author: constants.PluginAuthor,
+		Description: constants.PluginDescription, APISpec: "", Logo: "web/html/logo.png",
+	})
 
 	if err := server.Serve(); err != nil {
-
 		log.Fatalln(err)
 	}
 }
