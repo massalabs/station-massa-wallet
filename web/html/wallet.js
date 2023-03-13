@@ -29,7 +29,7 @@ let wallets = [];
 async function importWallet() {
     let nickname = document.getElementById("nicknameInput").value;
     axios
-        .post(addPrefixUrl(`/rest/wallet/import/${nickname}`))
+        .post(addPrefixUrl(`rest/wallet/import/${nickname}`))
         .then((resp) => {
             tableInsert(resp.data);
             wallets.push(resp.data);
@@ -41,7 +41,7 @@ async function importWallet() {
 // Create a wallet through POST query
 async function getWallets() {
     axios
-        .get(addPrefixUrl("/rest/wallet"))
+        .get(addPrefixUrl("rest/wallet"))
         .then((resp) => {
             if (resp) {
                 const data = resp.data;
@@ -60,7 +60,7 @@ function createWallet() {
     const password = document.getElementById("password").value;
 
     axios
-        .post(addPrefixUrl("/rest/wallet"), {
+        .post(addPrefixUrl("rest/wallet"), {
             nickname: nicknameCreate,
             password: password,
         })
@@ -108,7 +108,7 @@ function deleteRow(element) {
     const nickname = tBody.rows[rowIndex - 1].cells[1].innerHTML;
 
     axios
-        .delete(addPrefixUrl(`/rest/wallet/${nickname}`))
+        .delete(addPrefixUrl(`rest/wallet/${nickname}`))
         .then((_) => {
             wallets = wallets.filter((wallet) => wallet.nickname != nickname);
         })
