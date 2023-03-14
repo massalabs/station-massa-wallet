@@ -73,10 +73,15 @@ function createWallet() {
 
 // Fetch a wallet's pending balance through GET query
 async function fetchBalanceOf(address) {
-    const getBalance = await axios.get(
-        `http://my.massa/massa/addresses?attributes=balance&addresses=${address}`
-    );
-    return getBalance.data.addressesAttributes[address].balance.pending;
+    try {
+        const getBalance = await axios.get(
+            `http://my.massa/massa/addresses?attributes=balance&addresses=${address}`
+        );
+        return getBalance.data.addressesAttributes[address].balance.pending;
+    } catch (error) {
+        console.error(error)
+        return '-'
+    }
 }
 
 async function tableInsert(resp) {
@@ -111,8 +116,7 @@ function deleteRow(element) {
         .delete(addPrefixUrl(`rest/wallet/${nickname}`))
         .then((_) => {
             wallets = wallets.filter((wallet) => wallet.nickname != nickname);
+            document.getElementById("user-wallet-table").deleteRow(rowIndex);
         })
         .catch(handleAPIError);
-
-    document.getElementById("user-wallet-table").deleteRow(rowIndex);
 }

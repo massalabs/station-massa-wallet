@@ -314,8 +314,6 @@ github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
-github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230209100233-95e222df08cd h1:IR+h53rqHgxqobmVlpr81qQrnQC9Vl7IvYhXRl9GvMI=
-github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230209100233-95e222df08cd/go.mod h1:7gjot7QNu6tm8q7uJjsGN89gOm2yMljjrxNpRh+iAXo=
 github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503 h1:SxxyLnRlSUnFJcghl2WDIj7Bny7NyT0n4fKqxzyishg=
 github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503/go.mod h1:7gjot7QNu6tm8q7uJjsGN89gOm2yMljjrxNpRh+iAXo=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=

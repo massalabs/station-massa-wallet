@@ -23,7 +23,7 @@ type FynePrompter struct {
 // Note: Reuses the Fyne wrapped application.
 func (f *FynePrompter) Ask(name string) (string, error) {
 	result := <-PasswordDialog(name, f.guiApp)
-	return result.password, result.err
+	return result.Password, result.Err
 }
 
 // NewFynePrompter creates a new password prompter with the given Fyne GUI application.
@@ -34,16 +34,16 @@ func NewFynePrompter(f *fyne.App) *FynePrompter {
 // Verifies at compilation time that FynePrompter implements Asker interface.
 var _ Asker = &FynePrompter{}
 
-// passwordEntry represents a password entry, containing the password and any error that may have occurred.
+// PasswordEntry represents a password entry, containing the password and any error that may have occurred.
 // Data sent through the channel to get the password entry asynchronously.
-type passwordEntry struct {
-	password string
-	err      error
+type PasswordEntry struct {
+	Password string
+	Err      error
 }
 
 // PasswordDialog displays a password dialog with the given nickname.
 // It returns a channel to get what the user entered.
-func PasswordDialog(nickname string, app *fyne.App) chan passwordEntry {
+func PasswordDialog(nickname string, app *fyne.App) chan PasswordEntry {
 	// Creates the password dialog window
 	window := (*app).NewWindow("Massa - Thyra plugin - Wallet")
 	width := 250.0
@@ -58,7 +58,7 @@ func PasswordDialog(nickname string, app *fyne.App) chan passwordEntry {
 	}
 
 	// Creates the result channel to listen to to get the actual entry.
-	result := make(chan passwordEntry)
+	result := make(chan PasswordEntry)
 
 	// Creates a simple form with two buttons: submit and cancel.
 	// Actual result are sent via the result channel.
@@ -67,10 +67,10 @@ func PasswordDialog(nickname string, app *fyne.App) chan passwordEntry {
 		Items: items,
 		OnSubmit: func() {
 			window.Hide()
-			result <- passwordEntry{password: passwordWidget.Text, err: nil}
+			result <- PasswordEntry{Password: passwordWidget.Text, Err: nil}
 		},
 		OnCancel: func() {
-			result <- passwordEntry{password: "", err: errors.New("password entry: cancelled by the user")}
+			result <- PasswordEntry{Password: "", Err: errors.New("password entry: cancelled by the user")}
 			window.Hide()
 		},
 		SubmitText: "Submit",
