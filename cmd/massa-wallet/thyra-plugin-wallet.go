@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -33,6 +34,10 @@ func startServer(app *fyne.App) {
 	// instantiates and configure server
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
+
+	if os.Getenv("STANDALONE") == "1" {
+		server.Port = 8080
+	}
 
 	listener, err := server.HTTPListener()
 	if err != nil {
