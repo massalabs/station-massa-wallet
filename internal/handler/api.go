@@ -12,7 +12,7 @@ import (
 )
 
 // InitializeAPI initializes the API handlers
-func InitializeAPI(passwordPrompter password.Asker, privateKeyPrompter privateKey.Asker, delePrompter delete.Confirmer) (*operations.MassaWalletAPI, error) {
+func InitializeAPI(passwordPrompter password.Asker, privateKeyPrompter privateKey.Asker, deletePrompter delete.Confirmer) (*operations.MassaWalletAPI, error) {
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -26,7 +26,7 @@ func InitializeAPI(passwordPrompter password.Asker, privateKeyPrompter privateKe
 	html.AppendEndpoints(api)
 
 	// Set wallet API endpoints
-	wallet.AppendEndpoints(api, passwordPrompter, privateKeyPrompter, delePrompter)
+	wallet.AppendEndpoints(api, passwordPrompter, privateKeyPrompter, deletePrompter)
 
 	return api, nil
 }
