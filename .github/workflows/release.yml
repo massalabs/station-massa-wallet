@@ -22,12 +22,25 @@ on:
         type: boolean
         default: true
 
-env:
-  RELEASE_VERSION: ${{ github.event.inputs.release-version }}
-  RELEASE_AS_DRAFT: ${{ github.event.inputs.release-as-draft }}
-  RELEASE_AS_PRERELEASE: ${{ github.event.inputs.release-as-prerelease }}
-  GENERATE_RELEASE_NOTES: ${{ github.event.inputs.generate-release-notes }}
-
 jobs:
-  build-release:
+  build:
     uses: ./.github/workflows/build.yml
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+      - run: |
+          mv ./Wallet-plugin-linux_amd64/thyra-plugin-wallet thyra-plugin-wallet-linux_amd64
+          mv ./Wallet-plugin-darwin_arm64/thyra-plugin-wallet thyra-plugin-wallet-darwin_arm64
+          mv ./Wallet-plugin-darwin_amd64/thyra-plugin-wallet thyra-plugin-wallet-darwin_amd64
+          mv ./Wallet-plugin-windows_amd64/thyra-plugin-wallet thyra-plugin-wallet-windows_amd64
+      - name: Create release and upload binaries
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.release-version }}
+          draft: ${{ github.event.inputs.release-as-draft }}
+          prerelease: ${{ github.event.inputs.release-as-prerelease }}
+          generate_release_notes: ${{ github.event.inputs.generate-release-notes }}
+          files: ./thyra-plugin-wallet-*
