@@ -51,18 +51,17 @@ The `STANDALONE` environment variable is to run the plugin without Thyra.
 **Build:**
 
 ```shell
-CGO_ENABLED="1" go build -o thyra-plugin-wallet  cmd/massa-wallet/thyra-plugin-wallet.go
+./build.sh
 ```
 
-This will create a binary file named `thyra-plugin-wallet`.
+This will create a binary file `thyra-plugin-wallet` in `build/wallet-plugin` folder.
 
 **Install manually the plugin:**
 
 For development purpose, you can install the plugin manually:
 
 ```shell
-mkdir -p ~/.config/thyra/my_plugins/thyra-plugin-wallet
-mv thyra-plugin-wallet ~/.config/thyra/my_plugins/thyra-plugin-wallet
+./manual-install.sh
 ```
 
 This will create Thyra plugin directories and move the binary file created in the previous step so that
