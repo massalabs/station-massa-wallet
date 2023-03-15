@@ -20,13 +20,20 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (c *walletDelete) Handle(params operations.RestWalletDeleteParams) middleware.Responder {
-	walletLoaded, err := wallet.Load(params.Nickname)
-
 	if len(params.Nickname) == 0 {
 		return operations.NewRestWalletDeleteBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorDeleteNoNickname,
 				Message: "Error: nickname field is mandatory.",
+			})
+	}
+
+	walletLoaded, err := wallet.Load(params.Nickname)
+	if err != nil {
+		return operations.NewRestWalletDeleteInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorGetWallet,
+				Message: "Error cannot load wallet: " + err.Error(),
 			})
 	}
 
