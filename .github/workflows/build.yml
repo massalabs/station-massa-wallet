@@ -3,6 +3,15 @@ on:
   push:
     branches: [ main ]
   workflow_call:
+    inputs:
+      tag_name:
+        type: string
+      draft:
+        type: string
+      prerelease:
+        type: string
+      generate_release_notes:
+        type: string
 
 jobs:
   build:
@@ -15,6 +24,7 @@ jobs:
           - os: ubuntu-latest
             arch: amd64
             target: windows
+            ext: .exe
           # The second combination is Ubuntu running on an AMD64 processor, building for Linux.
           - os: ubuntu-latest
             arch: amd64
@@ -30,6 +40,8 @@ jobs:
 
     # The build job runs on the specified operating system.
     runs-on: ${{ matrix.os }}
+    env:
+      TARGET_NAME: thyra-plugin-wallet_${{ matrix.target }}-${{ matrix.arch }}
     steps:
       # The first step checks out the repository.
       - uses: actions/checkout@v3
@@ -56,11 +68,24 @@ jobs:
             export CC=x86_64-w64-mingw32-gcc
           fi
           export GOOS=${{ matrix.target }}
-          export GOARCH=${{ matrix.arch }} 
-          ./build.sh
+          export GOARCH=${{ matrix.arch }}
+          export CGO_ENABLED=1
+          go build -o $TARGET_NAME${{ matrix.ext }} cmd/massa-wallet/thyra-plugin-wallet.go
       - name: Upload artifacts
+        if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
         uses: actions/upload-artifact@v3
         with:
-          # Name the artifact using the values of the matrix.target and matrix.arch variables
-          name: Wallet-plugin-${{ matrix.target }}_${{ matrix.arch }}
-          path: build/wallet-plugin
+          name: thyra-plugin-wallet_${{ matrix.target }}-${{ matrix.arch }}
+          path: ${{ env.TARGET_NAME }}${{ matrix.ext }}
+      - name: Zip binary
+        if: ${{ inputs.tag_name != '' }}
+        run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }}
+      - name: Create release and upload binaries
+        if: ${{ inputs.tag_name != '' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ inputs.tag_name }}
+          draft: ${{ inputs.draft }}
+          prerelease: ${{ inputs.prerelease }}
+          generate_release_notes: ${{ inputs.generate_release_notes }}
+          files: "*.zip"
