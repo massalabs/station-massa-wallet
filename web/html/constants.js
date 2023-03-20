@@ -1,1 +1,2 @@
-const pluginAuthor = 'Massalabs'; const pluginName = 'Massa Wallet';
+const pluginAuthor = 'Massalabs';
+const pluginName = 'Massa Wallet';
