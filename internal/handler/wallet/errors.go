@@ -13,6 +13,8 @@ const (
 	errorGetWallets
 	errorSignOperationEmptyNickname
 	errorSignOperationRead
+	errorSignOperationLoadCache
+	errorSignOperationGenerateCorrelationId
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
 	errorImportWallet

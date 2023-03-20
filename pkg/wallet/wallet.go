@@ -13,10 +13,13 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"lukechampine.com/blake3"
 )
+
+// TODO: rename to 'account'
 
 const (
 	SecretKeyLength           = 32
@@ -94,6 +97,27 @@ func (w *Wallet) Unprotect(password string) error {
 	w.KeyPair.PrivateKey = pk
 
 	return nil
+}
+
+func (w *Wallet) UnprotectFromCorrelationId(fromParams models.CorrelationID, fromCache models.CorrelationID) error {
+	pk, err := Xor(fromCache, fromParams)
+	if err != nil {
+		return fmt.Errorf("opening the private key seal: %w", err)
+	}
+	w.KeyPair.PrivateKey = pk
+
+	return nil
+}
+
+func Xor(a, b []byte) ([]byte, error) {
+	if len(a) != len(b) {
+		return nil, fmt.Errorf("length of two arrays must be same")
+	}
+	result := make([]byte, len(a))
+	for i := 0; i < len(a); i++ {
+		result[i] = a[i] ^ b[i]
+	}
+	return result, nil
 }
 
 // Persist stores the wallet on the file system.

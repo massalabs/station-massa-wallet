@@ -6,6 +6,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"github.com/bluele/gcache"
 	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
@@ -26,11 +27,17 @@ func startServer(app *fyne.App) {
 	//mandatory to free main thread
 	defer (*app).Quit()
 
+	// Initialize cache
+	gc := gcache.New(20).
+		LRU().
+		Build()
+
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
 		password.NewFynePrompter(app),
 		privateKey.NewFynePrompter(app),
 		delete.NewFynePrompter(app),
+		gc,
 	)
 	if err != nil {
 		log.Fatalln(err)
