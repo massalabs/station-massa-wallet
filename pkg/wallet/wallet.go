@@ -99,10 +99,10 @@ func (w *Wallet) Unprotect(password string) error {
 	return nil
 }
 
-func (w *Wallet) UnprotectFromCorrelationId(fromParams models.CorrelationID, fromCache models.CorrelationID) error {
-	pk, err := Xor(fromCache, fromParams)
+func (w *Wallet) UnprotectFromCorrelationId(fromCache []byte, correlationId models.CorrelationID) error {
+	pk, err := Xor(fromCache, correlationId)
 	if err != nil {
-		return fmt.Errorf("opening the private key seal: %w", err)
+		return fmt.Errorf("decrypt the private key: %w", err)
 	}
 	w.KeyPair.PrivateKey = pk
 

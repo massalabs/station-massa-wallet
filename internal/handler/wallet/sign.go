@@ -93,7 +93,7 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.RestWalletSig
 	binary.Write(buf, binary.LittleEndian, value)
 	bytes := buf.Bytes()
 
-	err = wlt.UnprotectFromCorrelationId(params.Body.CorrelationID, bytes)
+	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
 
 	if err != nil {
 		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
