@@ -200,10 +200,17 @@ func Generate(nickname string, password string) (*Wallet, error) {
 		return nil, fmt.Errorf("generating ed25519 keypair: %w", err)
 	}
 
-	addr := blake3.Sum256(publicKey)
+	wallet, err := CreateWalletFromKeys(nickname, privateKey, publicKey, password)
+	if err != nil {
+		return nil, err
+	}
 
-	return CreateWalletFromKeys(nickname, privateKey, publicKey, addr, password)
+	err = wallet.Persist()
+	if err != nil {
+		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+	}
 
+	return wallet, nil
 }
 
 // Delete removes wallet from file system
@@ -237,21 +244,27 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
 
-	addr := blake3.Sum256(pubKeyBytes)
-	version := byte(0)
-	address := "AU" + base58.CheckEncode(addr[:], version)
+	wallet, err := CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, password)
+	if err != nil {
+		return nil, err
+	}
 
 	if slices.IndexFunc(
 		wallets,
-		func(wallet Wallet) bool { return wallet.Address == address },
+		func(w Wallet) bool { return w.Address == wallet.Address },
 	) != -1 {
 		return nil, fmt.Errorf("importing new wallet: duplicate wallet with different name (but same keys).")
 	}
 
-	return CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, addr, password)
+	err = wallet.Persist()
+	if err != nil {
+		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+	}
+
+	return wallet, nil
 }
 
-func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, addr [32]byte, password string) (*Wallet, error) {
+func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, error) {
 
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
@@ -268,7 +281,7 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
-		Address:  "AU" + base58.CheckEncode(addr[:], Base58Version),
+		Address:  addressFromPublicKey(publicKey),
 		KeyPair: KeyPair{
 			PrivateKey: privateKey,
 			PublicKey:  publicKey,
@@ -282,10 +295,10 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 		return nil, fmt.Errorf("protecting the new wallet: %w", err)
 	}
 
-	err = wallet.Persist()
-	if err != nil {
-		return nil, fmt.Errorf("persisting the new wallet: %w", err)
-	}
-
 	return &wallet, nil
+}
+
+func addressFromPublicKey(pubKeyBytes []byte) string {
+	addr := blake3.Sum256(pubKeyBytes)
+	return "AU" + base58.CheckEncode(addr[:], Base58Version)
 }
