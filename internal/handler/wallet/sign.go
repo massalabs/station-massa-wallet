@@ -84,17 +84,9 @@ func sign(wlt *wallet.Wallet, params operations.RestWalletSignOperationParams) (
 }
 
 func handleWithCorrelationId(wlt *wallet.Wallet, params operations.RestWalletSignOperationParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
-	cacheKey := getCacheKey(params)
+	cacheKey := getCacheKey(params.Body.CorrelationID)
 
 	value, err := gc.Get(cacheKey)
-
-	// convert interface{} into byte[]
-	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.LittleEndian, value)
-	bytes := buf.Bytes()
-
-	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
-
 	if err != nil {
 		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
@@ -103,19 +95,36 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.RestWalletSig
 			})
 	}
 
+	// convert interface{} into byte[]
+	buf := new(bytes.Buffer)
+	err = binary.Write(buf, binary.LittleEndian, value)
+	if err != nil {
+		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorSignOperationLoadCache,
+				Message: "Error cannot convert cache value: " + err.Error(),
+			})
+	}
+	bytes := buf.Bytes()
+
+	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
+
+	if err != nil {
+		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorSignOperationLoadCache,
+				Message: "Error cannot unprotect from cache: " + err.Error(),
+			})
+	}
+
 	return params.Body.CorrelationID, nil
 }
 
-func getCacheKey(params operations.RestWalletSignOperationParams) [32]byte {
-	return blake3.Sum256(params.Body.CorrelationID)
+func getCacheKey(correlationId models.CorrelationID) [32]byte {
+	return blake3.Sum256(correlationId)
 }
 
 func handleBatch(wlt *wallet.Wallet, params operations.RestWalletSignOperationParams, s *walletSign, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
-	resp := unprotectWalletAskingPassword(wlt, s.pwdPrompt, params.Nickname)
-	if resp != nil {
-		return nil, resp
-	}
-
 	correlationId, err := generateCorrelationId()
 	if err != nil {
 		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
@@ -125,16 +134,23 @@ func handleBatch(wlt *wallet.Wallet, params operations.RestWalletSignOperationPa
 			})
 	}
 
-	cacheKey := getCacheKey(params)
+	cacheKey := getCacheKey(correlationId)
 	cacheValue, err := wallet.Xor(wlt.KeyPair.PrivateKey, correlationId)
 	if err != nil {
 		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignOperationGenerateCorrelationId,
-				Message: "Error cannot generate correlation id: " + err.Error(),
+				Message: "Error cannot XOR correlation id: " + err.Error(),
 			})
 	}
-	gc.SetWithExpire(cacheKey, cacheValue, time.Second*60*30)
+	err = gc.SetWithExpire(cacheKey, cacheValue, time.Second*60*30)
+	if err != nil {
+		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorSignOperationGenerateCorrelationId,
+				Message: "Error set correlation id in cache: " + err.Error(),
+			})
+	}
 
 	return correlationId, nil
 }

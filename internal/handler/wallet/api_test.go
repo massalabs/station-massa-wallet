@@ -70,7 +70,7 @@ func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKey
 	// Create a new MassaWalletAPI instance
 	massaWalletAPI := operations.NewMassaWalletAPI(swaggerSpec)
 
-	mockChanPassword := make(chan PasswordPrompt, 2) // buffered channel
+	mockChanPassword := make(chan PasswordPrompt, 3) // buffered channel
 	mockChanPrivateKey := make(chan PrivateKeyPrompt, 2)
 
 	// Set wallet API endpoints
