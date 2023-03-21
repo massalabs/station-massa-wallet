@@ -28,10 +28,10 @@ func NewFynePrompter(f *fyne.App) *FynePrompter {
 // Verifies at compilation time that FynePrompter implements Asker interface.
 var _ Confirmer = &FynePrompter{}
 
-// PasswordDeleteDialog displays a password dialog with the given nickname and ask confirmation for delete the account.
+// PasswordDeleteDialog displays a password dialog with the given nickname and ask confirmation to delete the account.
 // It returns a channel to get what the user entered.
 func PasswordDeleteDialog(nickname string, app *fyne.App) chan password.PasswordEntry {
-	// Creates the result channel to listen to to get the actual entry.
+	// Creates the result channel to listen in order to get the actual entry.
 	result := make(chan password.PasswordEntry)
 
 	window := (*app).NewWindow("Massa - Thyra")
