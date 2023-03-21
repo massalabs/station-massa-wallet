@@ -11,11 +11,11 @@ import (
 )
 
 func NewDelete(deleteConfirm delete.Confirmer) operations.RestWalletDeleteHandler {
-	return &walletDelete{deleteConfirm: deleteConfirm}
+	return &walletDelete{deleteConfirmPrompt: deleteConfirm}
 }
 
 type walletDelete struct {
-	deleteConfirm delete.Confirmer
+	deleteConfirmPrompt delete.Confirmer
 }
 
 // HandleDelete handles a delete request
@@ -37,7 +37,7 @@ func (c *walletDelete) Handle(params operations.RestWalletDeleteParams) middlewa
 			})
 	}
 
-	password, err := c.deleteConfirm.Confirm(params.Nickname)
+	password, err := c.deleteConfirmPrompt.Confirm(params.Nickname)
 	if err != nil {
 		return operations.NewRestWalletDeleteInternalServerError().WithPayload(
 			&models.Error{
