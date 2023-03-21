@@ -25,7 +25,7 @@ func NewFynePrompter(f *fyne.App) *FynePrompter {
 	return &FynePrompter{guiApp: f}
 }
 
-// Verifies at compilation time that FynePrompter implements Asker interface.
+// Verifies at compilation time that FynePrompter implements Confirmer interface.
 var _ Confirmer = &FynePrompter{}
 
 // PasswordDeleteDialog displays a password dialog with the given nickname and ask confirmation to delete the account.
