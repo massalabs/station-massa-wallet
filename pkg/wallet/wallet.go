@@ -23,7 +23,7 @@ import (
 
 const (
 	SecretKeyLength           = 32
-	PBKDF2NbRound             = 10000
+	PBKDF2NbRound             = 600000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
 )
