@@ -16,4 +16,5 @@ func AppendEndpoints(api *operations.MassaWalletAPI, passwordPrompter password.A
 	api.RestWalletImportHandler = NewImport(privateKeyPrompter, passwordPrompter)
 	api.RestWalletListHandler = operations.RestWalletListHandlerFunc(HandleList)
 	api.RestWalletSignOperationHandler = NewSign(passwordPrompter, gc)
+	api.RestWalletGetHandler = operations.RestWalletGetHandlerFunc(HandleGet)
 }
