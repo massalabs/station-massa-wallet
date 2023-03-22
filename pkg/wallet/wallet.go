@@ -32,6 +32,10 @@ const (
 	PublicKeyPrefix           = "P"
 )
 
+var (
+	ErrorAccountNotFound = errors.New("Account not found")
+)
+
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
 	PrivateKey []byte
