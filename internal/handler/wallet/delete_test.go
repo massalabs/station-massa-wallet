@@ -1,12 +1,13 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 )
 
 func Test_walletDelete_Handle(t *testing.T) {
-	api, _, _, err := MockAPI()
+	api, channel, _, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
@@ -14,18 +15,28 @@ func Test_walletDelete_Handle(t *testing.T) {
 	// To test wallet deletion, we need to create one first.
 	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
 
-	// Only the status code is checked
+	ConfirmPromptOK := &PasswordPrompt{Password: "1234", Err: nil}
+	ConfirmPromptKO := &PasswordPrompt{Password: "4321", Err: nil}
+	ConfirmPromptError := &PasswordPrompt{Password: "1234", Err: errors.New("Canceled by user")}
+
 	testsDelete := []struct {
 		name           string
 		walletNickname string
 		statusCode     int
+		promptResult   *PasswordPrompt
 	}{
-		{"passing", "precondition_wallet", 204},
-		{"failing_wallet_does_not_exist", "wallet_does_not_exist", 500},
+		{"passing", "precondition_wallet", 204, ConfirmPromptOK},
+		{"wrong password", "precondition_wallet", 500, ConfirmPromptKO},
+		{"canceled by user", "precondition_wallet", 500, ConfirmPromptError},
+		{"wrong nickname", "wallet_does_not_exist", 500, nil},
 	}
 
 	for _, tt := range testsDelete {
 		t.Run(tt.name, func(t *testing.T) {
+			if nil != tt.promptResult {
+				channel <- *tt.promptResult // non blocking call as channel is buffered
+			}
+
 			handler, exist := api.HandlerFor("DELETE", "/rest/wallet/{nickname}")
 			if !exist {
 				t.Fatalf("Endpoint doesn't exist")
@@ -36,9 +47,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}
 
-			if resp.Result().StatusCode != tt.statusCode {
-				t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, tt.statusCode)
-			}
+			verifyStatusCode(t, resp, tt.statusCode)
 		})
 	}
 }

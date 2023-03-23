@@ -41,10 +41,20 @@ type testPrompterPrivatekey struct {
 	mockPrivateKeyEntry chan PrivateKeyPrompt
 }
 
+type testConfirmDelete struct {
+	mockPasswordEntry chan PasswordPrompt
+}
+
 // Ask simulates a private key entry by returning the content given through the mockPrivateKeyEntry channel.
 func (t *testPrompterPrivatekey) Ask() (string, error) {
 	PrivateKeyPrompter := <-t.mockPrivateKeyEntry
 	return PrivateKeyPrompter.PrivateKey, PrivateKeyPrompter.Err
+}
+
+// Confirm simulates a password entry by returning the content given through the mockPrivateKeyEntry channel.
+func (t *testConfirmDelete) Confirm(walletName string) (string, error) {
+	confirmDeletePrompter := <-t.mockPasswordEntry
+	return confirmDeletePrompter.Password, confirmDeletePrompter.Err
 }
 
 // MockAPI mocks the wallet API.
@@ -66,6 +76,7 @@ func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKey
 	AppendEndpoints(massaWalletAPI,
 		&testPrompterPassword{mockPasswordEntry: mockChanPassword},
 		&testPrompterPrivatekey{mockPrivateKeyEntry: mockChanPrivateKey},
+		&testConfirmDelete{mockPasswordEntry: mockChanPassword},
 	)
 
 	// instantiates the server configure its API.

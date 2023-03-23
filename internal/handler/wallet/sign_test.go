@@ -19,15 +19,15 @@ func Test_walletSign_Handle(t *testing.T) {
 		statusCode int
 	}
 
-	PasswordPromptOK := PasswordPrompt{Password: "1234", Err: nil}
-	PasswordPromptKO := PasswordPrompt{Password: "4321", Err: nil}
-	PasswordPromptError := PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}
+	PasswordPromptOK := &PasswordPrompt{Password: "1234", Err: nil}
+	PasswordPromptKO := &PasswordPrompt{Password: "4321", Err: nil}
+	PasswordPromptError := &PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}
 
 	testsSign := []struct {
 		name         string
 		nickname     string
 		body         string
-		promptResult PasswordPrompt
+		promptResult *PasswordPrompt
 		want         want
 	}{
 		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 200}},
@@ -37,7 +37,9 @@ func Test_walletSign_Handle(t *testing.T) {
 	}
 	for _, tt := range testsSign {
 		t.Run(tt.name, func(t *testing.T) {
-			channel <- tt.promptResult // non blocking call as channel is buffered
+			if nil != tt.promptResult {
+				channel <- *tt.promptResult // non blocking call as channel is buffered
+			}
 
 			handler, exist := api.HandlerFor("post", "/rest/wallet/{nickname}/signOperation")
 			if !exist {
