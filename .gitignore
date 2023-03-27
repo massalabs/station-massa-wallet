@@ -2,3 +2,5 @@
 wallet_*.json
 *.exe
 wallet-plugin*
+**/api/server/restapi
+**/api/server/models
