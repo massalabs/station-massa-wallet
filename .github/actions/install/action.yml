@@ -26,6 +26,5 @@ runs:
       shell: bash
       run: |
         mkdir -p api/server
-        go generate ./...
-        echo $?
+        go generate
         
