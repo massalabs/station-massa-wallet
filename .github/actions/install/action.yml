@@ -36,4 +36,5 @@ runs:
       shell: bash
       run: |
         mkdir -p api/server
-        go generate
+        go generate ./...
+        
