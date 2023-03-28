@@ -13,12 +13,18 @@ runs:
         GO_VERSION: 1.19
       with:
         go-version: ${{ env.GO_VERSION }}
-    - name: installing linux dependencies
+    - name: installing Linux dependencies
       if: ${{ inputs.os == 'ubuntu-latest' }}
       shell: bash
       run: |
         sudo apt update
         sudo apt install -y libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64
-    - name: Install Xcode
-      if: ${{ inputs.os == 'macos-latest' }}
-      uses: devbotsxyz/xcode-select@v1
+    - name: installing Go Swagger
+      shell: bash
+      run: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+    - name: running Go generate
+      shell: bash
+      run: |
+        mkdir -p api/server
+        go generate
+        

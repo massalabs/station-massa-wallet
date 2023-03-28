@@ -1,4 +1,4 @@
-# Massa wallet plugin
+# Massa Wallet Plugin
 
 This is the Thyra plugin that implements the Massa wallet features.
 
@@ -11,7 +11,7 @@ If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) g
 ### Generate
 
 ```shell
-go generate ./...
+go generate
 ```
 
 This will generate go swagger file and a javascript file with constants variable for the frontend.
