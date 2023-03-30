@@ -27,4 +27,3 @@ runs:
       run: |
         mkdir -p api/server
         go generate
-        

@@ -73,8 +73,8 @@ jobs:
           export CGO_ENABLED=1
           # TODO: improve this installation process (duplicate with ./build.sh and install/action.yml)
           mkdir -p api/server
-          go generate
           go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+          go generate
           go build -o $TARGET_NAME${{ matrix.ext }} cmd/massa-wallet/thyra-plugin-wallet.go
       - name: Upload artifacts
         if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
