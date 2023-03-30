@@ -1,6 +1,7 @@
-name: 'Thyra install'
+name: Install
 
 inputs:
+  # the input value is the 'runs-on'
   os:
     required: true
     default: 'ubuntu-latest'
@@ -10,15 +11,16 @@ runs:
   steps:
     - uses: actions/setup-go@v3
       env:
-        GO_VERSION: 1.19
+        GO_VERSION: "1.19"
       with:
         go-version: ${{ env.GO_VERSION }}
+    # install dependencies for build for target linux and windows
     - name: installing Linux dependencies
       if: ${{ inputs.os == 'ubuntu-latest' }}
       shell: bash
       run: |
         sudo apt update
-        sudo apt install -y libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64
+        sudo apt install -y libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
     - name: installing Go Swagger
       shell: bash
       run: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
@@ -27,4 +29,3 @@ runs:
       run: |
         mkdir -p api/server
         go generate
-        

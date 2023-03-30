@@ -8,13 +8,25 @@ This section helps developer getting started.
 
 If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
-### Generate
+### Install dependencies
 
 ```shell
-go generate
+go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 ```
 
-This will generate go swagger file and a javascript file with constants variable for the frontend.
+#### On Linux
+
+```shell
+apt install libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
+```
+
+### Build
+
+```shell
+./build.sh
+```
+
+This will create a binary file `thyra-plugin-wallet` in `build/wallet-plugin` folder.
 
 ### Run
 
@@ -29,14 +41,6 @@ The `STANDALONE` environment variable is to run the plugin without Thyra.
 Now navigate into <http://localhost:8080>. Note that some features will not work if
 [thyra-server](https://github.com/massalabs/thyra) is not running.
 
-### Build
-
-```shell
-./build.sh
-```
-
-This will create a binary file `thyra-plugin-wallet` in `build/wallet-plugin` folder.
-
 **Install manually the plugin:**
 
 For development purpose, you can install the plugin manually:
@@ -45,7 +49,7 @@ For development purpose, you can install the plugin manually:
 ./manual-install.sh
 ```
 
-This will create Thyra plugin directories and move the binary file created in the previous step so that
+This will create Thyra plugin directories and copy the binary file created in the previous step so that
 Thyra can detect the plugin and launch it.
 
 ### Postman collection
