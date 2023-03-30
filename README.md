@@ -8,6 +8,18 @@ This section helps developer getting started.
 
 If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
+### Install dependencies
+
+```shell
+go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+```
+
+#### On Linux
+
+```shell
+apt install libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
+```
+
 ### Build
 
 ```shell
