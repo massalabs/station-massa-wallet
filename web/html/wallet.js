@@ -7,7 +7,7 @@ closeModalOnClickOn("nicknameCancelBtn");
 getWallets();
 
 function addPrefixUrl(relativeURL) {
-    return `http://my.massa/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
+    return `/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
 }
 
 function openNickNameModal() {
@@ -75,7 +75,7 @@ function createWallet() {
 async function fetchBalanceOf(address) {
     try {
         const getBalance = await axios.get(
-            `http://my.massa/massa/addresses?attributes=balance&addresses=${address}`
+            `/massa/addresses?attributes=balance&addresses=${address}`
         );
         return getBalance.data.addressesAttributes[address].balance.pending;
     } catch (error) {
