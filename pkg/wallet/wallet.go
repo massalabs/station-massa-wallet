@@ -7,8 +7,10 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
+	"path"
 	"reflect"
 	"strings"
 
@@ -128,35 +130,60 @@ func (w *Wallet) Persist() error {
 		return fmt.Errorf("marshalling wallet: %w", err)
 	}
 
-	err = os.WriteFile(Filename(w.Nickname), jsonified, FileModeUserReadWriteOnly)
+	filePath, err := FilePath(w.Nickname)
 	if err != nil {
-		return fmt.Errorf("writing wallet to '%s: %w", Filename(w.Nickname), err)
+		return fmt.Errorf("getting file path for '%s': %w", w.Nickname, err)
+	}
+
+	err = os.WriteFile(filePath, jsonified, FileModeUserReadWriteOnly)
+	if err != nil {
+		return fmt.Errorf("writing wallet to '%s: %w", filePath, err)
 	}
 
 	return nil
 }
 
+// copy/paste from https://github.com/massalabs/thyra/blob/main/pkg/config/config.go
+// TODO: refactor to reuse code
+// with `go get github.com/massalabs/thyra/pkg/config`
+func GetConfigDir() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", errors.New("Unable to get user home dir: " + err.Error())
+	}
+
+	confDir := path.Join(homeDir, ".config", "thyra")
+
+	_, err = os.Stat(confDir)
+	if err != nil {
+		return "", errors.New("Unable to read config dir: " + confDir + ": " + err.Error())
+	}
+
+	return confDir, nil
+}
+
 // LoadAll loads all the wallets in the working directory.
 // Note: a wallet must have: `wallet_` prefix and a `.json` extension.
 func LoadAll() ([]Wallet, error) {
-	workingDir, err := os.Getwd()
+	configDir, err := GetConfigDir()
 	if err != nil {
-		return nil, fmt.Errorf("returning working directory: %w", err)
+		return nil, fmt.Errorf("reading config directory '%s': %w", configDir, err)
 	}
 
-	files, err := os.ReadDir(workingDir)
+	files, err := os.ReadDir(configDir)
 	if err != nil {
-		return nil, fmt.Errorf("reading working directory '%s': %w", workingDir, err)
+		return nil, fmt.Errorf("reading working directory '%s': %w", configDir, err)
 	}
 
 	wallets := []Wallet{}
 	for _, f := range files {
 		fileName := f.Name()
+		filePath := path.Join(configDir, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".json") {
-			content, err := os.ReadFile(fileName)
+			content, err := os.ReadFile(filePath)
 			if err != nil {
-				return nil, fmt.Errorf("reading file '%s': %w", fileName, err)
+				return nil, fmt.Errorf("reading file '%s': %w", filePath, err)
 			}
 
 			wallet := Wallet{} //nolint:exhaustruct
@@ -176,17 +203,21 @@ func LoadAll() ([]Wallet, error) {
 // Load loads the wallet that match the given name in the working directory
 // Note: `wallet_` prefix and a `.json` extension are automatically added.
 func Load(nickname string) (*Wallet, error) {
-	walletName := Filename(nickname)
-	content, err := os.ReadFile(walletName)
+	filePath, err := FilePath(nickname)
 	if err != nil {
-		return nil, fmt.Errorf("reading file '%s': %w", walletName, err)
+		return nil, fmt.Errorf("getting file path for '%s': %w", nickname, err)
+	}
+
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("reading file '%s': %w", filePath, err)
 	}
 
 	wallet := Wallet{} //nolint:exhaustruct
 
 	err = json.Unmarshal(content, &wallet)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshalling file '%s': %w", walletName, err)
+		return nil, fmt.Errorf("unmarshalling file '%s': %w", filePath, err)
 	}
 
 	return &wallet, nil
@@ -215,7 +246,12 @@ func Generate(nickname string, password string) (*Wallet, error) {
 
 // Delete removes wallet from file system
 func Delete(nickname string) (err error) {
-	err = os.Remove(Filename(nickname))
+	filePath, err := FilePath(nickname)
+	if err != nil {
+		return fmt.Errorf("getting file path for '%s': %w", nickname, err)
+	}
+
+	err = os.Remove(filePath)
 	if err != nil {
 		return fmt.Errorf("deleting wallet '%s': %w", Filename(nickname), err)
 	}
@@ -226,6 +262,17 @@ func Delete(nickname string) (err error) {
 // Filename returns the wallet Filename based on the given nickname.
 func Filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.json", nickname)
+}
+
+// FilePath returns the wallet file path base on the given nickname.
+// Files are stored in
+func FilePath(nickname string) (string, error) {
+	configDir, err := GetConfigDir()
+	if err != nil {
+		return "", fmt.Errorf("reading config directory '%s': %w", configDir, err)
+	}
+
+	return path.Join(configDir, Filename(nickname)), nil
 }
 
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
