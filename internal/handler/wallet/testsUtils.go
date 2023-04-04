@@ -3,8 +3,6 @@ package wallet
 import (
 	"io"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -27,17 +25,8 @@ func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode 
 
 // cleanupTestData cleans up wallet created file.
 func cleanupTestData(nicknames []string) error {
-
-	// get the current working directory
-	path, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
 	for _, name := range nicknames {
-		fullPath := filepath.Join(path, wallet.Filename(name))
-
-		err := os.Remove(fullPath)
+		err := wallet.Delete(name)
 		if err != nil {
 			return err
 		}
