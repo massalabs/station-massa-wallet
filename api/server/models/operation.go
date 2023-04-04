@@ -19,7 +19,7 @@ import (
 // swagger:model Operation
 type Operation struct {
 
-	// Whether the sign operation is part of a batch of operations
+	// A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.
 	Batch bool `json:"batch,omitempty"`
 
 	// correlation Id
