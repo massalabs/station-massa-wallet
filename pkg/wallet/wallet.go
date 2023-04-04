@@ -156,7 +156,10 @@ func GetConfigDir() (string, error) {
 
 	_, err = os.Stat(confDir)
 	if err != nil {
-		return "", errors.New("Unable to read config dir: " + confDir + ": " + err.Error())
+		err = os.Mkdir(confDir, 0755)
+		if err != nil {
+			return "", errors.New("Creating thyra config dir: " + confDir + ": " + err.Error())
+		}
 	}
 
 	return confDir, nil
