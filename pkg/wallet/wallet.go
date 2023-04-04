@@ -6,7 +6,6 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -18,6 +17,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
+	"gopkg.in/yaml.v2"
 	"lukechampine.com/blake3"
 )
 
@@ -25,16 +25,14 @@ import (
 
 const (
 	SecretKeyLength           = 32
-	PBKDF2NbRound             = 600000
+	PBKDF2NbRound             = 60_0000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 )
 
-var (
-	ErrorAccountNotFound = errors.New("Account not found")
-)
+var ErrorAccountNotFound = errors.New("Account not found")
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
@@ -50,6 +48,46 @@ type Wallet struct {
 	Nickname string
 	Address  string
 	KeyPair  KeyPair
+}
+
+type AccountSerialized struct {
+	Version      uint8
+	Nickname     string
+	Address      string
+	Salt         [16]byte
+	Nonce        [12]byte
+	CipheredData []byte
+	PublicKey    []byte
+}
+
+func (accountSerialized *AccountSerialized) ToAccount() Wallet {
+	wallet := Wallet{
+		Version:  accountSerialized.Version,
+		Nickname: accountSerialized.Nickname,
+		Address:  accountSerialized.Address,
+		KeyPair: KeyPair{
+			PrivateKey: make([]byte, 0),
+			PublicKey:  accountSerialized.PublicKey,
+			Salt:       accountSerialized.Salt,
+			Nonce:      accountSerialized.Nonce,
+		},
+	}
+
+	return wallet
+}
+
+func (account *Wallet) ToAccountSerialized() AccountSerialized {
+	accountSerialized := AccountSerialized{
+		Version:      account.Version,
+		Nickname:     account.Nickname,
+		Address:      account.Address,
+		Salt:         account.KeyPair.Salt,
+		Nonce:        account.KeyPair.Nonce,
+		CipheredData: make([]byte, 0),
+		PublicKey:    account.KeyPair.PublicKey,
+	}
+
+	return accountSerialized
 }
 
 // aead returns a authenticated encryption with associated data.
@@ -130,7 +168,12 @@ func Xor(a, b []byte) ([]byte, error) {
 // Persist stores the wallet on the file system.
 // Note: the wallet is stored in JSON format and in the working directory.
 func (w *Wallet) Persist() error {
-	jsonified, err := json.Marshal(w)
+	accountSerialized := w.ToAccountSerialized()
+
+	// account is protected so PrivateKey is encrypted
+	accountSerialized.CipheredData = w.KeyPair.PrivateKey
+
+	yamlMarshaled, err := yaml.Marshal(accountSerialized)
 	if err != nil {
 		return fmt.Errorf("marshalling wallet: %w", err)
 	}
@@ -140,7 +183,7 @@ func (w *Wallet) Persist() error {
 		return fmt.Errorf("getting file path for '%s': %w", w.Nickname, err)
 	}
 
-	err = os.WriteFile(filePath, jsonified, FileModeUserReadWriteOnly)
+	err = os.WriteFile(filePath, yamlMarshaled, FileModeUserReadWriteOnly)
 	if err != nil {
 		return fmt.Errorf("writing wallet to '%s: %w", filePath, err)
 	}
@@ -171,7 +214,7 @@ func GetConfigDir() (string, error) {
 }
 
 // LoadAll loads all the wallets in the working directory.
-// Note: a wallet must have: `wallet_` prefix and a `.json` extension.
+// Note: a wallet must have: `wallet_` prefix and a `.yml` extension.
 func LoadAll() ([]Wallet, error) {
 	configDir, err := GetConfigDir()
 	if err != nil {
@@ -188,17 +231,10 @@ func LoadAll() ([]Wallet, error) {
 		fileName := f.Name()
 		filePath := path.Join(configDir, fileName)
 
-		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".json") {
-			content, err := os.ReadFile(filePath)
+		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yml") {
+			wallet, err := loadFile(filePath)
 			if err != nil {
-				return nil, fmt.Errorf("reading file '%s': %w", filePath, err)
-			}
-
-			wallet := Wallet{} //nolint:exhaustruct
-
-			err = json.Unmarshal(content, &wallet)
-			if err != nil {
-				return nil, fmt.Errorf("json unmarshaling file '%s': %w", fileName, err)
+				return nil, err
 			}
 
 			wallets = append(wallets, wallet)
@@ -209,26 +245,42 @@ func LoadAll() ([]Wallet, error) {
 }
 
 // Load loads the wallet that match the given name in the working directory
-// Note: `wallet_` prefix and a `.json` extension are automatically added.
+// Note: `wallet_` prefix and a `.yml` extension are automatically added.
 func Load(nickname string) (*Wallet, error) {
 	filePath, err := FilePath(nickname)
 	if err != nil {
 		return nil, fmt.Errorf("getting file path for '%s': %w", nickname, err)
 	}
 
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("reading file '%s': %w", filePath, err)
+	if _, err := os.Stat(filePath); err != nil {
+		return nil, ErrorAccountNotFound
 	}
 
-	wallet := Wallet{} //nolint:exhaustruct
-
-	err = json.Unmarshal(content, &wallet)
+	wallet, err := loadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshalling file '%s': %w", filePath, err)
+		return nil, err
 	}
 
 	return &wallet, nil
+}
+
+func loadFile(filePath string) (Wallet, error) {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return Wallet{}, fmt.Errorf("reading file '%s': %w", filePath, err)
+	}
+
+	accountSerialized := AccountSerialized{}
+
+	err = yaml.Unmarshal(content, &accountSerialized)
+	if err != nil {
+		return Wallet{}, fmt.Errorf("unmarshalling file '%s': %w", filePath, err)
+	}
+
+	account := accountSerialized.ToAccount()
+	account.KeyPair.PrivateKey = accountSerialized.CipheredData
+
+	return account, nil
 }
 
 // Generate instantiates a new wallet, protects its private key and persists it.
@@ -269,7 +321,7 @@ func Delete(nickname string) (err error) {
 
 // Filename returns the wallet Filename based on the given nickname.
 func Filename(nickname string) string {
-	return fmt.Sprintf("wallet_%s.json", nickname)
+	return fmt.Sprintf("wallet_%s.yml", nickname)
 }
 
 // FilePath returns the wallet file path base on the given nickname.

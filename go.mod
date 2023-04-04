@@ -9,6 +9,7 @@ require (
 	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503
 	golang.org/x/crypto v0.3.0
 	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
