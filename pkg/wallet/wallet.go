@@ -25,7 +25,7 @@ import (
 
 const (
 	SecretKeyLength           = 32
-	PBKDF2NbRound             = 60_0000
+	PBKDF2NbRound             = 600_000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
 	UserAddressPrefix         = "AU"
