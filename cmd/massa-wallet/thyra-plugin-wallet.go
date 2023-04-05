@@ -32,9 +32,17 @@ func startServer(app *fyne.App) {
 		LRU().
 		Build()
 
+	var passwordPrompter password.Asker = password.NewFynePrompter(app)
+
+	// Check if the wallet is running in test mode
+	if os.Getenv("WALLET_TEST_MODE") == "1" {
+		log.Println("Wallet is running in test mode")
+		passwordPrompter = password.NewEnvPrompter()
+	}
+
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
-		password.NewFynePrompter(app),
+		passwordPrompter,
 		privateKey.NewFynePrompter(app),
 		delete.NewFynePrompter(app),
 		gc,
