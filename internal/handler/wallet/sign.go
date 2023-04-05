@@ -17,7 +17,6 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
@@ -57,14 +56,14 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 		return resp
 	}
 
-	pubKey, signature, resp := sign(wlt, params)
+	_, signature, resp := sign(wlt, params)
 	if resp != nil {
 		return resp
 	}
 
 	return operations.NewRestWalletSignOperationOK().WithPayload(
 		&models.Signature{
-			PublicKey:     "P" + base58.CheckEncode(pubKey, wallet.Base58Version),
+			PublicKey:     wlt.GetPupKey(),
 			Signature:     signature,
 			CorrelationID: correlationId,
 		})

@@ -28,6 +28,8 @@ const (
 	PBKDF2NbRound             = 600000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
+	UserAddressPrefix         = "AU"
+	PublicKeyPrefix           = "P"
 )
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
@@ -348,7 +350,11 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 	return &wallet, nil
 }
 
+func (wallet *Wallet) GetPupKey() string {
+	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, Base58Version)
+}
+
 func addressFromPublicKey(pubKeyBytes []byte) string {
 	addr := blake3.Sum256(pubKeyBytes)
-	return "AU" + base58.CheckEncode(addr[:], Base58Version)
+	return UserAddressPrefix + base58.CheckEncode(addr[:], Base58Version)
 }
