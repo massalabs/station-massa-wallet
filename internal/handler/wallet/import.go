@@ -24,7 +24,6 @@ func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Re
 	password, err := c.pwdPrompt.Ask(walletName)
 	if err != nil {
 		return errorBadRequest(errorImportWalletCanceled, errorImportWalletCanceled)
-
 	}
 
 	privateKey, err := c.pkPrompt.Ask()

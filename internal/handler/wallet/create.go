@@ -6,7 +6,6 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -41,21 +40,15 @@ func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder
 }
 
 func New(newWallet *wallet.Wallet) middleware.Responder {
-
-	privK := base58.CheckEncode(newWallet.KeyPair.PrivateKey, wallet.Base58Version)
-	pubK := base58.CheckEncode(newWallet.KeyPair.PublicKey, wallet.Base58Version)
-	salt := base58.CheckEncode(newWallet.KeyPair.Salt[:], wallet.Base58Version)
-	nonce := base58.CheckEncode(newWallet.KeyPair.Nonce[:], wallet.Base58Version)
-
 	return operations.NewRestWalletCreateOK().WithPayload(
 		&models.Wallet{
 			Nickname: newWallet.Nickname,
 			Address:  newWallet.Address,
 			KeyPair: models.WalletKeyPair{
-				PrivateKey: privK,
-				PublicKey:  pubK,
-				Salt:       salt,
-				Nonce:      nonce,
+				PrivateKey: "",
+				PublicKey:  newWallet.GetPupKey(),
+				Salt:       "",
+				Nonce:      "",
 			},
 		})
 }

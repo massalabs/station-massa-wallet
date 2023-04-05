@@ -3,7 +3,7 @@ consumes:
 info:
   description: Thyra plugin - Massa wallet
   title: massa-wallet
-  version: 0.0.0
+  version: 0.0.1
 produces:
   - application/json
 schemes:
@@ -203,14 +203,7 @@ paths:
           required: true
           x-nullable: false
           schema:
-            type: object
-            required:
-              - operation
-            properties:
-              operation:
-                description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
-                type: string
-                format: byte
+            $ref: "#/definitions/Operation"
       produces:
         - application/json
       responses:
@@ -246,6 +239,20 @@ definitions:
         description: error message.
         type: string
         x-nullable: false
+  Operation:
+    type: object
+    required:
+      - operation
+    properties:
+      operation:
+        description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
+        type: string
+        format: byte
+      batch:
+        description: A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.
+        type: boolean
+      correlationId:
+        $ref: "#/definitions/CorrelationId"
   Signature:
     type: object
     description: Signature of a sent operation.
@@ -262,6 +269,12 @@ definitions:
         type: string
         format: byte
         x-nullable: false
+      correlationId:
+        $ref: "#/definitions/CorrelationId"
+  CorrelationId:
+    description: Correlation id of the operation batch
+    type: string
+    format: byte
   Wallet:
     type: object
     description: Wallet object (V0).

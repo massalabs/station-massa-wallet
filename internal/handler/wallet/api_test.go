@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
+	"github.com/bluele/gcache"
 	"github.com/go-openapi/loads"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
@@ -69,7 +70,7 @@ func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKey
 	// Create a new MassaWalletAPI instance
 	massaWalletAPI := operations.NewMassaWalletAPI(swaggerSpec)
 
-	mockChanPassword := make(chan PasswordPrompt, 2) // buffered channel
+	mockChanPassword := make(chan PasswordPrompt, 3) // buffered channel
 	mockChanPrivateKey := make(chan PrivateKeyPrompt, 2)
 
 	// Set wallet API endpoints
@@ -77,6 +78,9 @@ func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKey
 		&testPrompterPassword{mockPasswordEntry: mockChanPassword},
 		&testPrompterPrivatekey{mockPrivateKeyEntry: mockChanPrivateKey},
 		&testConfirmDelete{mockPasswordEntry: mockChanPassword},
+		gcache.New(20).
+			LRU().
+			Build(),
 	)
 
 	// instantiates the server configure its API.

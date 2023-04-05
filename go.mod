@@ -3,6 +3,7 @@ module github.com/massalabs/thyra-plugin-wallet
 go 1.19
 
 require (
+	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503

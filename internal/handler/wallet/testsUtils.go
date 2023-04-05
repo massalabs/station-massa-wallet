@@ -3,8 +3,6 @@ package wallet
 import (
 	"io"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -12,7 +10,6 @@ import (
 )
 
 func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {
-
 	if resp.Result().StatusCode != statusCode {
 		// Log body to simplify failure analysis.
 		body := new(strings.Builder)
@@ -22,22 +19,12 @@ func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode 
 
 		t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, statusCode)
 	}
-
 }
 
 // cleanupTestData cleans up wallet created file.
 func cleanupTestData(nicknames []string) error {
-
-	// get the current working directory
-	path, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
 	for _, name := range nicknames {
-		fullPath := filepath.Join(path, wallet.Filename(name))
-
-		err := os.Remove(fullPath)
+		err := wallet.Delete(name)
 		if err != nil {
 			return err
 		}
