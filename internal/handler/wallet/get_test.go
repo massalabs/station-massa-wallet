@@ -2,12 +2,13 @@ package wallet
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 )
 
-func Test_walletGet_Handle(t *testing.T) {
+func Test_walletGet_HandleList(t *testing.T) {
 	api, _, _, err := MockAPI()
 	if err != nil {
 		panic(err)
@@ -64,4 +65,39 @@ func Test_walletGet_Handle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("while cleaning up TestData: %s", err)
 	}
+}
+
+func Test_walletGet_HandleGet(t *testing.T) {
+	api, _, _, err := MockAPI()
+	if err != nil {
+		panic(err)
+	}
+
+	handler, exist := api.HandlerFor("get", "/rest/wallet/{nickname}")
+	if !exist {
+		panic("Endpoint doesn't exist")
+	}
+
+	// test empty configuration first.
+	t.Run("Passed_list_not_found", func(t *testing.T) {
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", "nobody"), "")
+		if err != nil {
+			t.Fatalf("while serving HTTP request: %s", err)
+		}
+
+		verifyStatusCode(t, resp, 404)
+	})
+
+	// test with one wallet configuration.
+	t.Run("Passed_list", func(t *testing.T) {
+		// let's create the wallet first.
+		createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
+
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", "precondition_wallet"), "")
+		if err != nil {
+			t.Fatalf("while serving HTTP request: %s", err)
+		}
+
+		verifyStatusCode(t, resp, 200)
+	})
 }

@@ -178,7 +178,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "404":
-          description: Bad request.
+          description: Not found.
           schema:
             $ref: "#/definitions/Error"
         "422":

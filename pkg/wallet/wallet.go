@@ -32,6 +32,8 @@ const (
 	PublicKeyPrefix           = "P"
 )
 
+var ErrorAccountNotFound = errors.New("Account not found")
+
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
 	PrivateKey []byte
@@ -210,6 +212,10 @@ func Load(nickname string) (*Wallet, error) {
 	filePath, err := FilePath(nickname)
 	if err != nil {
 		return nil, fmt.Errorf("getting file path for '%s': %w", nickname, err)
+	}
+
+	if _, err := os.Stat(filePath); err != nil {
+		return nil, ErrorAccountNotFound
 	}
 
 	content, err := os.ReadFile(filePath)
