@@ -14,9 +14,11 @@ type want struct {
 	statusCode int
 }
 
-var PasswordPromptOK PasswordPrompt = PasswordPrompt{Password: "1234", Err: nil}
-var PasswordPromptKO PasswordPrompt = PasswordPrompt{Password: "4321", Err: nil}
-var PasswordPromptError PasswordPrompt = PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}
+var (
+	PasswordPromptOK    PasswordPrompt = PasswordPrompt{Password: "1234", Err: nil}
+	PasswordPromptKO    PasswordPrompt = PasswordPrompt{Password: "4321", Err: nil}
+	PasswordPromptError PasswordPrompt = PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}
+)
 
 type TestSign struct {
 	name         string
@@ -75,7 +77,8 @@ func Test_walletSign_Handle_Batch(t *testing.T) {
 	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
 
 	testSignNewBatch := TestSign{
-		"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ=","batch":true}`, PasswordPromptOK, want{statusCode: 200}}
+		"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ=","batch":true}`, PasswordPromptOK, want{statusCode: 200},
+	}
 
 	channel <- testSignNewBatch.promptResult
 
@@ -100,7 +103,8 @@ func Test_walletSign_Handle_Batch(t *testing.T) {
 	correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
 
 	testSignBatchItem := TestSign{
-		"passing", "precondition_wallet", fmt.Sprintf(`{"operation":"MjIzM3QyNHQ=","correlationId":"%s"}`, correlationId), PasswordPromptOK, want{statusCode: 200}}
+		"passing", "precondition_wallet", fmt.Sprintf(`{"operation":"MjIzM3QyNHQ=","correlationId":"%s"}`, correlationId), PasswordPromptOK, want{statusCode: 200},
+	}
 
 	resp, err = handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", testSignBatchItem.nickname), testSignBatchItem.body)
 	if err != nil {

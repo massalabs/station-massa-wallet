@@ -24,7 +24,7 @@ func main() {
 }
 
 func startServer(app *fyne.App) {
-	//mandatory to free main thread
+	// mandatory to free main thread
 	defer (*app).Quit()
 
 	// Initialize cache

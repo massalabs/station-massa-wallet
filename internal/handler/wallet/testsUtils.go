@@ -10,7 +10,6 @@ import (
 )
 
 func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {
-
 	if resp.Result().StatusCode != statusCode {
 		// Log body to simplify failure analysis.
 		body := new(strings.Builder)
@@ -20,7 +19,6 @@ func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode 
 
 		t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, statusCode)
 	}
-
 }
 
 // cleanupTestData cleans up wallet created file.

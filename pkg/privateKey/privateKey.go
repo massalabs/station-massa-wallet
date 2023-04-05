@@ -44,7 +44,6 @@ func PrivateKeyDialog(app *fyne.App) chan PrivateKeyEntry {
 
 	privateKey := widget.NewPasswordEntry()
 	items := []*widget.FormItem{
-
 		widget.NewFormItem("Private key", privateKey),
 	}
 
@@ -62,7 +61,6 @@ func PrivateKeyDialog(app *fyne.App) chan PrivateKeyEntry {
 
 				window.Hide()
 				result <- PrivateKeyEntry{
-
 					PrivateKey: privateKey.Text,
 					Err:        nil,
 				}

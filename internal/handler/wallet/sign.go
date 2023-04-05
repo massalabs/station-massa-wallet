@@ -34,7 +34,6 @@ type walletSign struct {
 
 // Handle handles a sign request.
 func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) middleware.Responder {
-
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp

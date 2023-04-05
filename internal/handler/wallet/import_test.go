@@ -48,7 +48,6 @@ func Test_walletImport_Handle(t *testing.T) {
 				t.Fatalf("while serving HTTP request: %s", err)
 			}
 			verifyStatusCode(t, resp, tt.want.statusCode)
-
 		})
 	}
 

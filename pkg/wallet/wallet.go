@@ -69,7 +69,6 @@ func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
-
 	aead, err := aead([]byte(password), w.KeyPair.Salt[:])
 	if err != nil {
 		return fmt.Errorf("while protecting wallet: %w", err)
@@ -158,7 +157,7 @@ func GetConfigDir() (string, error) {
 
 	_, err = os.Stat(confDir)
 	if err != nil {
-		err = os.Mkdir(confDir, 0755)
+		err = os.Mkdir(confDir, 0o755)
 		if err != nil {
 			return "", errors.New("Creating thyra config dir: " + confDir + ": " + err.Error())
 		}
@@ -317,7 +316,6 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 }
 
 func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, error) {
-
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {
