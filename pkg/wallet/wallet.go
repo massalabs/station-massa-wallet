@@ -166,7 +166,7 @@ func Xor(a, b []byte) ([]byte, error) {
 }
 
 // Persist stores the wallet on the file system.
-// Note: the wallet is stored in YAML format and in the working directory.
+// Note: the wallet is stored in YAML format and in Thyra config directory.
 func (w *Wallet) Persist() error {
 	accountSerialized := w.ToAccountSerialized()
 
