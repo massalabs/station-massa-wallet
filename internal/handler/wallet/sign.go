@@ -21,6 +21,8 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
+const thirtyMinutes = time.Second * 60 * 30
+
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
 func NewSign(pwdPrompt password.Asker, gc gcache.Cache) operations.RestWalletSignOperationHandler {
@@ -141,7 +143,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.RestWalletSignOperationPa
 				Message: "Error cannot XOR correlation id: " + err.Error(),
 			})
 	}
-	err = gc.SetWithExpire(cacheKey, cacheValue, time.Second*60*30)
+	err = gc.SetWithExpire(cacheKey, cacheValue, thirtyMinutes)
 	if err != nil {
 		return nil, operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
