@@ -8,8 +8,7 @@ import (
 )
 
 // EnvPrompter is a struct that implements the password.PasswordAsker interface.
-type EnvPrompter struct {
-}
+type EnvPrompter struct{}
 
 // Ask checks if the password is set in the environment variable WALLET_${nickname}_PASSWORD.
 //
