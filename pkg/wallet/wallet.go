@@ -51,13 +51,13 @@ type Wallet struct {
 }
 
 type AccountSerialized struct {
-	Version      uint8
-	Nickname     string
-	Address      string
-	Salt         [16]byte
-	Nonce        [12]byte
-	CipheredData []byte
-	PublicKey    []byte
+	Version      uint8    `yaml:"Version"`
+	Nickname     string   `yaml:"Nickname"`
+	Address      string   `yaml:"Address"`
+	Salt         [16]byte `yaml:"Salt,flow"`
+	Nonce        [12]byte `yaml:"Nonce,flow"`
+	CipheredData []byte   `yaml:"CipheredData,flow"`
+	PublicKey    []byte   `yaml:"PublicKey,flow"`
 }
 
 func (accountSerialized *AccountSerialized) ToAccount() Wallet {
