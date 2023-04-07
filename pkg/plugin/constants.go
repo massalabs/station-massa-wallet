@@ -2,6 +2,6 @@ package plugin
 
 const PluginAuthor = "Massalabs"
 
-const PluginName = "Massa Wallet"
+const PluginName = "Wallet"
 
 const PluginDescription = "Massa wallet for Thyra"
