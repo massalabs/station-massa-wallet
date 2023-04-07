@@ -66,7 +66,7 @@ func startServer(app *fyne.App) {
 
 	plugin.RegisterPlugin(listener, plugin.Info{
 		Name: constants.PluginName, Author: constants.PluginAuthor,
-		Description: constants.PluginDescription, APISpec: "", Logo: "web/html/wallet.svg",
+		Description: constants.PluginDescription, APISpec: "", Logo: "web/wallet.svg",
 	})
 
 	if err := server.Serve(); err != nil {
