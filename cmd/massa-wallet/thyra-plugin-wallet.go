@@ -1,11 +1,10 @@
-package main
+package app
 
 import (
 	"log"
 	"os"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
 	"github.com/bluele/gcache"
 	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
@@ -16,17 +15,10 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/privateKey"
 )
 
-func main() {
-	myApp := app.New()
-	go startServer(&myApp)
+func StartServer(app *fyne.App) {
 
-	myApp.Run()
-}
-
-func startServer(app *fyne.App) {
-	// mandatory to free main thread
+	//mandatory to free main thread
 	defer (*app).Quit()
-
 	// Initialize cache
 	gc := gcache.New(20).
 		LRU().
@@ -39,7 +31,6 @@ func startServer(app *fyne.App) {
 		log.Println("Wallet is running in test mode")
 		passwordPrompter = password.NewEnvPrompter()
 	}
-
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
 		passwordPrompter,
@@ -47,6 +38,7 @@ func startServer(app *fyne.App) {
 		delete.NewFynePrompter(app),
 		gc,
 	)
+
 	if err != nil {
 		log.Fatalln(err)
 	}
