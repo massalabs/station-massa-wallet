@@ -6,3 +6,7 @@ api/server/restapi/operations
 api/server/restapi
 !api/server/restapi/configure_massa_wallet.go
 api/server/models
+
+build/bin
+node_modules
+frontend/dist
