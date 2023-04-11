@@ -25,8 +25,8 @@ const passwordExpirationTime = time.Second * 60 * 30
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(pwdPrompt password.Asker, gc gcache.Cache) operations.RestWalletSignOperationHandler {
-	return &walletSign{pwdPrompt: pwdPrompt, gc: gc}
+func NewSign(gc gcache.Cache) operations.RestWalletSignOperationHandler {
+	return &walletSign{gc: gc}
 }
 
 type walletSign struct {
