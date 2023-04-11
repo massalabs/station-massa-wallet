@@ -38,13 +38,13 @@ jobs:
           - os: macos-latest
             arch: amd64
             target: darwin
-            cgo_ldflags: "-framework UniformTypeIdentifiers -mmacosx-version-min=10.13"
+            cgo_ldflags: "-framework UniformTypeIdentifiers"
 
           # The fourth combination is macOS running on an ARM64 processor, building for Darwin (macOS).
           - os: macos-latest
             arch: arm64
             target: darwin
-            cgo_ldflags: "-framework UniformTypeIdentifiers -mmacosx-version-min=10.13"
+            cgo_ldflags: "-framework UniformTypeIdentifiers"
 
 
     # The build job runs on the specified operating system.
@@ -54,8 +54,6 @@ jobs:
     steps:
       # The first step checks out the repository.
       - uses: actions/checkout@v3
-        with:
-          submodules: true
       # The second step install the tools.
       - uses: ./.github/actions/install
         with:
@@ -68,9 +66,9 @@ jobs:
           export GOOS=${{ matrix.target }}
           export GOARCH=${{ matrix.arch }}
           export CGO_ENABLED=1
-          CC=${{ matrix.cc }} CGO_LDFLAGS="${{ matrix.cgo_ldflags }}" go build -tags desktop,production,wv2runtime.download -ldflags "-w -s ${{ matrix.ldflags }}" -gcflags "all=-N -l" -o $TARGET_NAME${{ matrix.ext }} main.go
-
-        # run: CGO_ENABLED=1 CC=${{ matrix.cc }} wails build -o $TARGET_NAME${{ matrix.ext }} -skipbindings -platform ${{ matrix.platform }}
+          export CC=${{ matrix.cc }}
+          export CGO_LDFLAGS="${{ matrix.cgo_ldflags }}"
+          go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
       - name: Upload artifacts
         # if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
         uses: actions/upload-artifact@v3
