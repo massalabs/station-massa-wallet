@@ -5,8 +5,6 @@ import (
 	"embed"
 	"fmt"
 
-	fyneApp "fyne.io/fyne/v2/app"
-
 	walletApp "github.com/massalabs/thyra-plugin-wallet/cmd/massa-wallet"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -63,8 +61,5 @@ func main() {
 		println("Error:", err.Error())
 	}
 
-	fyneApp := fyneApp.New()
-	go walletApp.StartServer(&fyneApp)
-
-	fyneApp.Run()
+	go walletApp.StartServer()
 }
