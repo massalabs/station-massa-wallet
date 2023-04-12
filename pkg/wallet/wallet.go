@@ -11,7 +11,6 @@ import (
 	"os"
 	"path"
 	"reflect"
-	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -223,19 +222,8 @@ func GetWalletDir() (string, error) {
 		return "", fmt.Errorf("reading config directory '%s': %w", configDir, err)
 	}
 
-	// switch case os and arch
-	switch {
-	case runtime.GOOS == "darwin" && runtime.GOARCH == "amd64":
-		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_darwin-amd64"), nil
-	case runtime.GOOS == "darwin" && runtime.GOARCH == "arm64":
-		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_darwin-arm64"), nil
-	case runtime.GOOS == "linux":
-		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_linux-amd64"), nil
-	case runtime.GOOS == "windows":
-		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_windows-amd64"), nil
-	}
+	return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin"), nil
 
-	return "", fmt.Errorf("unsupported os/arch: %s/%s", runtime.GOOS, runtime.GOARCH)
 }
 
 // LoadAll loads all the wallets in the working directory.
