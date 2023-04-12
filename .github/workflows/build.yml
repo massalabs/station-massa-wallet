@@ -43,7 +43,7 @@ jobs:
     # The build job runs on the specified operating system.
     runs-on: ${{ matrix.os }}
     env:
-      TARGET_NAME: thyra-plugin-wallet_${{ matrix.target }}-${{ matrix.arch }}
+      TARGET_NAME: wallet-plugin_${{ matrix.target }}-${{ matrix.arch }}
     steps:
       # The first step checks out the repository.
       - uses: actions/checkout@v3
@@ -68,7 +68,7 @@ jobs:
         if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
         uses: actions/upload-artifact@v3
         with:
-          name: thyra-plugin-wallet_${{ matrix.target }}-${{ matrix.arch }}
+          name: ${{ env.TARGET_NAME }}
           path: ${{ env.TARGET_NAME }}${{ matrix.ext }}
       - name: Zip binary
         if: ${{ inputs.tag_name != '' }}
