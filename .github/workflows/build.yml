@@ -67,7 +67,7 @@ jobs:
           export GOARCH=${{ matrix.arch }}
           export CGO_ENABLED=1
           export CC=${{ matrix.cc }}
-          export CGO_LDFLAGS="${{ matrix.cgo_ldflags }}"
+          export CGO_LDFLAGS=${{ matrix.cgo_ldflags }}
           go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
       - name: Upload artifacts
         # if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
