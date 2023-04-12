@@ -4,11 +4,13 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"time"
 
 	walletApp "github.com/massalabs/thyra-plugin-wallet/cmd/massa-wallet"
-	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/application"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 //nolint:typecheck,nolintlint
@@ -39,27 +41,61 @@ func (a *App) Greet(name string) string {
 
 func main() {
 
-	// Create an instance of the app structure
-	app := NewApp()
+	go walletApp.StartServer()
 
-	// Create application with options
-	err := wails.Run(&options.App{
-		Title:  "wailds-tmpl",
-		Width:  1024,
-		Height: 768,
-		AssetServer: &assetserver.Options{
-			Assets: assets,
-		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        app.startup,
-		Bind: []interface{}{
-			app,
-		},
-	})
+	startChan := make(chan bool)
 
-	if err != nil {
-		println("Error:", err.Error())
+	go waitAndStart(startChan)
+
+	for {
+		select {
+		case <-startChan:
+			fmt.Println("startChan received")
+			app := NewApp()
+			wailApp := application.NewWithOptions(&options.App{
+				Title:             "wallet-prompt",
+				Width:             1024,
+				Height:            768,
+				StartHidden:       true,
+				HideWindowOnClose: true,
+				AssetServer: &assetserver.Options{
+					Assets: assets,
+				},
+				BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+				OnStartup:        app.startup,
+				Bind: []interface{}{
+					app,
+				},
+			})
+
+			go waitAndStop(app)
+			fmt.Println("Run")
+			wailApp.Run()
+			return
+		}
 	}
 
-	go walletApp.StartServer()
+}
+
+func waitAndStart(start chan bool) {
+	fmt.Println("waitAndStart")
+
+	time.Sleep(time.Second * 3)
+	start <- true
+}
+
+func waitAndStop(app *App) {
+
+	time.Sleep(time.Second * 3)
+
+	fmt.Println("Show!")
+	runtime.Show(app.ctx)
+
+	time.Sleep(time.Second * 3)
+
+	fmt.Println("Hide")
+	runtime.Hide(app.ctx)
+
+	runtime.Quit(app.ctx)
+
 }
