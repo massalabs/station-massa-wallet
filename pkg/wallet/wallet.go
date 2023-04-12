@@ -11,10 +11,12 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v2"
@@ -213,23 +215,46 @@ func GetConfigDir() (string, error) {
 	return confDir, nil
 }
 
+// GetWalletDir returns the path to the wallet directory.
+// Note: the wallet directory is the folder where the wallet plugin binary resides.
+func GetWalletDir() (string, error) {
+	configDir, err := GetConfigDir()
+	if err != nil {
+		return "", fmt.Errorf("reading config directory '%s': %w", configDir, err)
+	}
+
+	// switch case os and arch
+	switch {
+	case runtime.GOOS == "darwin" && runtime.GOARCH == "amd64":
+		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_darwin-amd64"), nil
+	case runtime.GOOS == "darwin" && runtime.GOARCH == "arm64":
+		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_darwin-arm64"), nil
+	case runtime.GOOS == "linux":
+		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_linux-amd64"), nil
+	case runtime.GOOS == "windows":
+		return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin_windows-amd64"), nil
+	}
+
+	return "", fmt.Errorf("unsupported os/arch: %s/%s", runtime.GOOS, runtime.GOARCH)
+}
+
 // LoadAll loads all the wallets in the working directory.
 // Note: a wallet must have: `wallet_` prefix and a `.yml` extension.
 func LoadAll() ([]Wallet, error) {
-	configDir, err := GetConfigDir()
+	walletDir, err := GetWalletDir()
 	if err != nil {
-		return nil, fmt.Errorf("reading config directory '%s': %w", configDir, err)
+		return nil, fmt.Errorf("reading config directory '%s': %w", walletDir, err)
 	}
 
-	files, err := os.ReadDir(configDir)
+	files, err := os.ReadDir(walletDir)
 	if err != nil {
-		return nil, fmt.Errorf("reading working directory '%s': %w", configDir, err)
+		return nil, fmt.Errorf("reading working directory '%s': %w", walletDir, err)
 	}
 
 	wallets := []Wallet{}
 	for _, f := range files {
 		fileName := f.Name()
-		filePath := path.Join(configDir, fileName)
+		filePath := path.Join(walletDir, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yml") {
 			wallet, err := loadFile(filePath)
@@ -327,12 +352,12 @@ func Filename(nickname string) string {
 // FilePath returns the wallet file path base on the given nickname.
 // Files are stored in
 func FilePath(nickname string) (string, error) {
-	configDir, err := GetConfigDir()
+	walletDir, err := GetWalletDir()
 	if err != nil {
-		return "", fmt.Errorf("reading config directory '%s': %w", configDir, err)
+		return "", fmt.Errorf("getting wallet directory: %w", err)
 	}
 
-	return path.Join(configDir, Filename(nickname)), nil
+	return path.Join(walletDir, Filename(nickname)), nil
 }
 
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
