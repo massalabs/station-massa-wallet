@@ -10,12 +10,12 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v2"
@@ -192,38 +192,26 @@ func (w *Wallet) Persist() error {
 	return nil
 }
 
-// copy/paste from https://github.com/massalabs/thyra/blob/main/pkg/config/config.go
-// TODO: refactor to reuse code
-// with `go get github.com/massalabs/thyra/pkg/config`
-func GetConfigDir() (string, error) {
-	homeDir, err := os.UserHomeDir()
+func GetWorkDir() (string, error) {
+	ex, err := os.Executable()
 	if err != nil {
-		return "", errors.New("Unable to get user home dir: " + err.Error())
+		return "", fmt.Errorf("getting executable path: %w", err)
 	}
 
-	confDir := path.Join(homeDir, ".config", "thyra")
+	dir := filepath.Dir(ex)
 
-	_, err = os.Stat(confDir)
-	if err != nil {
-		err = os.Mkdir(confDir, 0o755)
-		if err != nil {
-			return "", errors.New("Creating thyra config dir: " + confDir + ": " + err.Error())
-		}
+	// Helpful when developing:
+	// when running `go run`, the executable is in a temporary directory.
+	if strings.Contains(dir, "go-build") {
+		return ".", nil
 	}
-
-	return confDir, nil
+	return filepath.Dir(ex), nil
 }
 
-// GetWalletDir returns the path to the wallet directory.
+// GetWalletDir returns the path where the account yaml file are stored.
 // Note: the wallet directory is the folder where the wallet plugin binary resides.
 func GetWalletDir() (string, error) {
-	configDir, err := GetConfigDir()
-	if err != nil {
-		return "", fmt.Errorf("reading config directory '%s': %w", configDir, err)
-	}
-
-	return path.Join(configDir, plugin.PluginDirectoryName, "wallet-plugin"), nil
-
+	return GetWorkDir()
 }
 
 // LoadAll loads all the wallets in the working directory.
