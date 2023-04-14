@@ -24,7 +24,11 @@ func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode 
 // cleanupTestData cleans up wallet created file.
 func cleanupTestData(nicknames []string) error {
 	for _, name := range nicknames {
-		err := wallet.Delete(name)
+		w, err := wallet.Load(name)
+		if err != nil {
+			return err
+		}
+		err = w.DeleteFile()
 		if err != nil {
 			return err
 		}
