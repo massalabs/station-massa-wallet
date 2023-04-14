@@ -62,7 +62,6 @@ jobs:
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |
-          cd frontend && npm i && npm run build && cd ..
           export GOOS=${{ matrix.target }}
           export GOARCH=${{ matrix.arch }}
           export CGO_ENABLED=1
@@ -75,7 +74,6 @@ jobs:
         with:
           name: ${{ env.TARGET_NAME }}
           path: ${{ env.TARGET_NAME }}${{ matrix.ext }}
-      # - run: ls -l && ls -l build/bin
       - name: Zip binary
         if: ${{ inputs.tag_name != '' }}
         run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }}

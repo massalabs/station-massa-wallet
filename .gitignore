@@ -9,4 +9,4 @@ api/server/models
 
 build/bin
 node_modules
-frontend/dist
+wails-frontend/dist

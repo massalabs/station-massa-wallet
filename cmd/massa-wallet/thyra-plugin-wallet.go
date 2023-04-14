@@ -8,10 +8,11 @@ import (
 	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
+	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	constants "github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
 )
 
-func StartServer() {
+func StartServer(walletApp *walletApp.WalletApp) {
 
 	// Initialize cache
 	gc := gcache.New(20).
@@ -24,6 +25,7 @@ func StartServer() {
 	}
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
+		walletApp,
 		gc,
 	)
 
