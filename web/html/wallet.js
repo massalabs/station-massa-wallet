@@ -7,7 +7,9 @@ closeModalOnClickOn("nicknameCancelBtn");
 getWallets();
 
 function addPrefixUrl(relativeURL) {
-    return `/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
+    return `/${relativeURL}`
+
+//    return `/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
 }
 
 function openNickNameModal() {

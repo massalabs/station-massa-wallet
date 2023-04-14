@@ -37,6 +37,5 @@ runs:
     - name: running Go generate
       shell: bash
       run: |
-        mkdir -p api/server
         go generate ./...
         

@@ -248,6 +248,11 @@ func LoadAll() ([]Wallet, error) {
 // Load loads the wallet that match the given name in the working directory
 // Note: `wallet_` prefix and a `.yml` extension are automatically added.
 func Load(nickname string) (*Wallet, error) {
+
+	if len(nickname) == 0 {
+		return nil, fmt.Errorf("nickname is required")
+	}
+
 	filePath, err := FilePath(nickname)
 	if err != nil {
 		return nil, fmt.Errorf("getting file path for '%s': %w", nickname, err)
@@ -306,15 +311,15 @@ func Generate(nickname string, password string) (*Wallet, error) {
 }
 
 // Delete removes wallet from file system
-func Delete(nickname string) (err error) {
-	filePath, err := FilePath(nickname)
+func (w *Wallet) DeleteFile() (err error) {
+	filePath, err := FilePath(w.Nickname)
 	if err != nil {
-		return fmt.Errorf("getting file path for '%s': %w", nickname, err)
+		return fmt.Errorf("getting file path for '%s': %w", w.Nickname, err)
 	}
 
 	err = os.Remove(filePath)
 	if err != nil {
-		return fmt.Errorf("deleting wallet '%s': %w", Filename(nickname), err)
+		return fmt.Errorf("deleting wallet file '%s': %w", filePath, err)
 	}
 
 	return nil
