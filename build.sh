@@ -7,4 +7,4 @@ go generate
 
 # Build the binary
 mkdir -p "build/$PLUGIN/"
-CGO_ENABLED="1" go build -o build/$PLUGIN/thyra-plugin-wallet cmd/massa-wallet/thyra-plugin-wallet.go
+CGO_ENABLED="1" go build -o build/$PLUGIN/wallet-plugin cmd/massa-wallet/thyra-plugin-wallet.go
