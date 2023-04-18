@@ -1,8 +1,8 @@
 import './App.css'
+import { h } from 'preact';
 import logo from "./assets/images/logo_massa.webp"
 import { EventsOn } from "../wailsjs/runtime";
 import { useState } from "preact/hooks";
-import { h } from 'preact';
 import PasswordPrompt from './pages/passwordPrompt';
 import { events, promptRequest } from './events/events';
 
@@ -12,14 +12,14 @@ export function App(props: any) {
         console.log("prompt request event received: ", data)
         setEventData(data)
     }
- 
-    EventsOn(events.promptRequest,handlePromptRequest)
+
+    EventsOn(events.promptRequest, handlePromptRequest)
 
     return (
         <>
             <div id="App">
-            <img src={logo} id="logo" alt="logo" />
-                <PasswordPrompt eventData={eventData}/>
+                <img src={logo} id="logo" alt="logo" />
+                <PasswordPrompt eventData={eventData} />
             </div>
         </>
     )
