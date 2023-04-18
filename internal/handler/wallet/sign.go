@@ -17,7 +17,6 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
-	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -25,13 +24,13 @@ const passwordExpirationTime = time.Second * 60 * 30
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(walletApp *walletApp.WalletApp, gc gcache.Cache) operations.RestWalletSignOperationHandler {
-	return &walletSign{gc: gc, walletApp: walletApp}
+func NewSign(prompterApp wallet.WalletPrompterInterface, gc gcache.Cache) operations.RestWalletSignOperationHandler {
+	return &walletSign{gc: gc, prompterApp: prompterApp}
 }
 
 type walletSign struct {
-	walletApp *walletApp.WalletApp
-	gc        gcache.Cache
+	prompterApp wallet.WalletPrompterInterface
+	gc          gcache.Cache
 }
 
 // Handle handles a sign request.
@@ -45,7 +44,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		if !wlt.UnprotectWalletAskingPassword(s.walletApp) {
+		if !wlt.UnprotectWalletAskingPassword(s.prompterApp) {
 			return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 				&models.Error{
 					Code:    errorCanceledAction,

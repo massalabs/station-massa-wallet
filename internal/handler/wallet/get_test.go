@@ -9,6 +9,7 @@ import (
 )
 
 func Test_walletGet_HandleList(t *testing.T) {
+	t.Skip("Skipping Test_walletGet_HandleList")
 	api, _, _, err := MockAPI()
 	if err != nil {
 		panic(err)

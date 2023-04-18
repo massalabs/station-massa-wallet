@@ -10,6 +10,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
 	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	constants "github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 func StartServer(walletApp *walletApp.WalletApp) {
@@ -18,13 +19,9 @@ func StartServer(walletApp *walletApp.WalletApp) {
 		LRU().
 		Build()
 
-	// Check if the wallet is running in test mode
-	if os.Getenv("WALLET_TEST_MODE") == "1" {
-		log.Println("Wallet is running in test mode")
-	}
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
-		walletApp,
+		wallet.NewWalletPrompter(walletApp),
 		gc,
 	)
 	if err != nil {
