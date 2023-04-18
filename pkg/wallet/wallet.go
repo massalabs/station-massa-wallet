@@ -248,7 +248,6 @@ func LoadAll() ([]Wallet, error) {
 // Load loads the wallet that match the given name in the working directory
 // Note: `wallet_` prefix and a `.yml` extension are automatically added.
 func Load(nickname string) (*Wallet, error) {
-
 	if len(nickname) == 0 {
 		return nil, fmt.Errorf("nickname is required")
 	}

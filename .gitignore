@@ -7,6 +7,6 @@ api/server/restapi
 !api/server/restapi/configure_massa_wallet.go
 api/server/models
 
-build/bin
+build
 node_modules
 wails-frontend/dist

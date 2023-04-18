@@ -13,6 +13,6 @@ func AppendEndpoints(api *operations.MassaWalletAPI, walletApp *walletApp.Wallet
 	api.RestWalletDeleteHandler = NewDelete(walletApp)
 	api.RestWalletImportHandler = NewImport()
 	api.RestWalletListHandler = operations.RestWalletListHandlerFunc(HandleList)
-	api.RestWalletSignOperationHandler = NewSign(gc)
+	api.RestWalletSignOperationHandler = NewSign(walletApp, gc)
 	api.RestWalletGetHandler = operations.RestWalletGetHandlerFunc(HandleGet)
 }
