@@ -13,7 +13,6 @@ import (
 )
 
 func StartServer(walletApp *walletApp.WalletApp) {
-
 	// Initialize cache
 	gc := gcache.New(20).
 		LRU().
@@ -28,7 +27,6 @@ func StartServer(walletApp *walletApp.WalletApp) {
 		walletApp,
 		gc,
 	)
-
 	if err != nil {
 		log.Fatalln(err)
 	}

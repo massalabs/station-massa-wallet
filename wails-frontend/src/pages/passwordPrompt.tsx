@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { ApplyPassword, Hide } from "../../wailsjs/go/walletapp/WalletApp";
+import { AbortAction, ApplyPassword, Hide } from "../../wailsjs/go/walletapp/WalletApp";
 import { EventsOnce, WindowReloadApp } from "../../wailsjs/runtime";
 import { h } from 'preact';
 import { events, promptRequest } from "../events/events";
@@ -21,6 +21,11 @@ const PasswordPrompt = ({ eventData }: Props) => {
         // Reload the wails frontend
         WindowReloadApp();
     };
+
+    const handleCancel = () => {
+        AbortAction();
+        hideAndReload();
+    }
 
     const handleApplyResult = (result: any) => {
         console.log("result", result);
@@ -61,7 +66,7 @@ const PasswordPrompt = ({ eventData }: Props) => {
                 <button className="btn" onClick={applyPassword}>
                     Ok
                 </button>
-                <button className="btn" onClick={hideAndReload}>
+                <button className="btn" onClick={handleCancel}>
                     Cancel
                 </button>
             </div>

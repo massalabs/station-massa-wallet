@@ -10,11 +10,9 @@ func NewImport() operations.RestWalletImportHandler {
 	return &wImport{}
 }
 
-type wImport struct {
-}
+type wImport struct{}
 
 func (c *wImport) Handle(params operations.RestWalletImportParams) middleware.Responder {
-
 	return nil
 }
 

@@ -17,7 +17,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
-	"github.com/massalabs/thyra-plugin-wallet/pkg/password"
+	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -25,12 +25,12 @@ const passwordExpirationTime = time.Second * 60 * 30
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(gc gcache.Cache) operations.RestWalletSignOperationHandler {
-	return &walletSign{gc: gc}
+func NewSign(walletApp *walletApp.WalletApp, gc gcache.Cache) operations.RestWalletSignOperationHandler {
+	return &walletSign{gc: gc, walletApp: walletApp}
 }
 
 type walletSign struct {
-	pwdPrompt password.Asker
+	walletApp *walletApp.WalletApp
 	gc        gcache.Cache
 }
 
@@ -45,9 +45,12 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		resp = unprotectWalletAskingPassword(wlt, s.pwdPrompt, params.Nickname)
-		if resp != nil {
-			return resp
+		if !wlt.UnprotectWalletAskingPassword(s.walletApp) {
+			return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+				&models.Error{
+					Code:    errorCanceledAction,
+					Message: "Unable to unprotect wallet",
+				})
 		}
 		if params.Body.Batch {
 			correlationId, resp = handleBatch(wlt, params, s, s.gc)
@@ -186,37 +189,6 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 	}
 
 	return w, nil
-}
-
-// unprotectWalletAskingPassword asks for a password and unprotects the wallet.
-func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Asker, nickname string) middleware.Responder {
-	clearPassword, err := prompter.Ask(nickname)
-	if err != nil {
-		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: errorCanceledAction,
-			})
-	}
-
-	if len(clearPassword) == 0 {
-		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCreateNoPassword,
-				Message: errorCreateNoPassword,
-			})
-	}
-
-	err = wallet.Unprotect(clearPassword)
-	if err != nil {
-		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorWrongPassword,
-				Message: "Error : cannot uncipher the wallet: " + err.Error(),
-			})
-	}
-
-	return nil
 }
 
 // digestOperationAndPubKey prepares the digest for signature.
