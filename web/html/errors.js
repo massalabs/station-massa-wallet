@@ -4,7 +4,7 @@ const errorCodes = new Map([
     ["Wallet-0003", "Action stopped"],
     ["Wallet-0004", "Enter a wallet nickname"],
     ["Wallet-0005", "Enter a wallet password"],
-   
+
     ["Wallet-0006", "Error while creating your wallet. Try again"],
 
     ["Wallet-0007", "Select a wallet to delete"],
