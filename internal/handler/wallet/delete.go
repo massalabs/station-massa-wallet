@@ -5,16 +5,15 @@ import (
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewDelete(walletApp *walletApp.WalletApp) operations.RestWalletDeleteHandler {
-	return &walletDelete{walletApp: walletApp}
+func NewDelete(prompterApp wallet.WalletPrompterInterface) operations.RestWalletDeleteHandler {
+	return &walletDelete{prompterApp: prompterApp}
 }
 
 type walletDelete struct {
-	walletApp *walletApp.WalletApp
+	prompterApp wallet.WalletPrompterInterface
 }
 
 // HandleDelete handles a delete request
@@ -28,7 +27,7 @@ func (w *walletDelete) Handle(params operations.RestWalletDeleteParams) middlewa
 			})
 	}
 
-	go wallet.Delete(w.walletApp)
+	go wallet.Delete(w.prompterApp)
 
 	return operations.NewRestWalletDeleteNoContent()
 }
