@@ -28,7 +28,6 @@ func (a *WalletApp) cleanExit() {
 }
 
 func NewWalletApp() *WalletApp {
-
 	app := &WalletApp{
 		CtrlChan:     make(chan PromptCtrl),
 		PasswordChan: make(chan string),

@@ -40,5 +40,4 @@ func (w *Wallet) Delete(walletApp *walletapp.WalletApp) {
 			return
 		}
 	}
-
 }

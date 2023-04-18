@@ -13,7 +13,6 @@ import (
 var wailsAssets embed.FS
 
 func main() {
-
 	walletApp := walletApp.NewWalletApp()
 
 	wailApp := wails.NewWailsApp(walletApp, wailsAssets)
