@@ -10,3 +10,5 @@ api/server/models
 build
 node_modules
 wails-frontend/dist
+
+internal/handler/wallet/*.yml

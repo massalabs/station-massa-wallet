@@ -26,7 +26,7 @@ const (
 	Export
 )
 
-type promptRequestData struct {
+type PromptRequestData struct {
 	Action PromptRequest
 	Msg    string
 	Data   interface{}

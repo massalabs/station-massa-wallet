@@ -10,6 +10,8 @@ import (
 	"github.com/go-openapi/loads"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // Prompt struct will be used to drive the password prompter externally
@@ -60,34 +62,27 @@ func (t *testConfirmDelete) Confirm(walletName string) (string, error) {
 
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
-func MockAPI() (*operations.MassaWalletAPI, chan PasswordPrompt, chan PrivateKeyPrompt, error) {
+func MockAPI() (*operations.MassaWalletAPI, wallet.WalletPrompterInterface, chan walletapp.EventData, error) {
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
 		return nil, nil, nil, err
 	}
-
 	// Create a new MassaWalletAPI instance
 	massaWalletAPI := operations.NewMassaWalletAPI(swaggerSpec)
 
-	mockChanPassword := make(chan PasswordPrompt, 3) // buffered channel
-	mockChanPrivateKey := make(chan PrivateKeyPrompt, 2)
+	resultChannel := make(chan walletapp.EventData)
+
+	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
 	// Set wallet API endpoints
-	AppendEndpoints(massaWalletAPI,
-		&testPrompterPassword{mockPasswordEntry: mockChanPassword},
-		&testPrompterPrivatekey{mockPrivateKeyEntry: mockChanPrivateKey},
-		&testConfirmDelete{mockPasswordEntry: mockChanPassword},
-		gcache.New(20).
-			LRU().
-			Build(),
-	)
+	AppendEndpoints(massaWalletAPI, prompterApp, gcache.New(20).LRU().Build())
 
 	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	return massaWalletAPI, mockChanPassword, mockChanPrivateKey, err
+	return massaWalletAPI, prompterApp, resultChannel, err
 }
 
 // processHTTPRequest simulates the processing of an HTTP request on the given API.

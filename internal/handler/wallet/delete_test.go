@@ -1,53 +1,98 @@
 package wallet
 
 import (
-	"errors"
 	"fmt"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
+func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string) *httptest.ResponseRecorder {
+	handler, exist := api.HandlerFor("DELETE", "/rest/wallet/{nickname}")
+	if !exist {
+		t.Fatalf("Endpoint doesn't exist")
+	}
+
+	resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/rest/wallet/%s", nickname), "")
+	if err != nil {
+		t.Fatalf("while serving HTTP request: %s", err)
+	}
+	return resp
+}
+
 func Test_walletDelete_Handle(t *testing.T) {
-	api, channel, _, err := MockAPI()
+	api, prompterApp, resChan, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
 
-	// To test wallet deletion, we need to create one first.
-	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
-
-	ConfirmPromptOK := &PasswordPrompt{Password: "1234", Err: nil}
-	ConfirmPromptKO := &PasswordPrompt{Password: "4321", Err: nil}
-	ConfirmPromptError := &PasswordPrompt{Password: "1234", Err: errors.New("Canceled by user")}
-
-	testsDelete := []struct {
-		name           string
-		walletNickname string
-		statusCode     int
-		promptResult   *PasswordPrompt
-	}{
-		{"passing", "precondition_wallet", 204, ConfirmPromptOK},
-		{"wrong password", "precondition_wallet", 500, ConfirmPromptKO},
-		{"canceled by user", "precondition_wallet", 500, ConfirmPromptError},
-		{"wrong nickname", "wallet_does_not_exist", 500, nil},
+	nickname := "walletToDelete"
+	password := "zePassword"
+	_, err = wallet.Generate(nickname, password)
+	if err != nil {
+		panic(err)
 	}
 
-	for _, tt := range testsDelete {
-		t.Run(tt.name, func(t *testing.T) {
-			if nil != tt.promptResult {
-				channel <- *tt.promptResult // non blocking call as channel is buffered
-			}
+	t.Run("invalid nickname", func(t *testing.T) {
+		resp := deleteWallet(t, api, "toto")
+		verifyStatusCode(t, resp, 400)
+	})
 
-			handler, exist := api.HandlerFor("DELETE", "/rest/wallet/{nickname}")
-			if !exist {
-				t.Fatalf("Endpoint doesn't exist")
-			}
+	t.Run("invalid password", func(t *testing.T) {
+		resp := deleteWallet(t, api, nickname)
 
-			resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/rest/wallet/%s", tt.walletNickname), "")
-			if err != nil {
-				t.Fatalf("while serving HTTP request: %s", err)
-			}
+		verifyStatusCode(t, resp, 204)
 
-			verifyStatusCode(t, resp, tt.statusCode)
-		})
-	}
+		prompterApp.App().PasswordChan <- "invalid password"
+
+		result := <-resChan
+
+		if result.Success {
+			t.Fatalf("Expected error, got success")
+		}
+
+		errMsg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
+		if result.Data != errMsg {
+			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", errMsg, result.Data))
+		}
+	})
+
+	t.Run("canceled by user", func(t *testing.T) {
+		resp := deleteWallet(t, api, nickname)
+
+		verifyStatusCode(t, resp, 204)
+
+		prompterApp.App().CtrlChan <- walletapp.Cancel
+
+		_, err = wallet.Load(nickname)
+		if err != nil {
+			t.Fatalf("Wallet should not have been deleted: " + err.Error())
+		}
+	})
+
+	t.Run("delete success", func(t *testing.T) {
+		resp := deleteWallet(t, api, nickname)
+
+		verifyStatusCode(t, resp, 204)
+
+		prompterApp.App().PasswordChan <- password
+
+		result := <-resChan
+
+		if !result.Success {
+			t.Fatalf("Expected success, got error")
+		}
+
+		if result.Data != "Delete Success" {
+			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", "Delete Success", result.Data))
+		}
+
+		_, err = wallet.Load(nickname)
+		if err == nil {
+			t.Fatalf("Wallet should have been deleted")
+		}
+	})
 }
