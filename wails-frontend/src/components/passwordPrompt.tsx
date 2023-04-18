@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks";
 import { AbortAction, ApplyPassword, Hide } from "../../wailsjs/go/walletapp/WalletApp";
-import { EventsOnce, WindowReloadApp } from "../../wailsjs/runtime";
+import { EventsOnce, WindowReloadApp } from "../../wailsjs/runtime/runtime";
 import { h } from 'preact';
 import { events, promptAction, promptRequest } from "../events/events";
 import { useLocation, useNavigate } from "react-router-dom";

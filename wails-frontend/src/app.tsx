@@ -1,7 +1,8 @@
 import './App.css'
 import { h } from 'preact';
 import { EventsOn } from "../wailsjs/runtime";
-import PasswordPrompt from './pages/passwordPrompt';
+import { useState } from "preact/hooks";
+import PasswordPrompt from './components/passwordPrompt';
 import { events, promptRequest } from './events/events';
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Success from './pages/success';

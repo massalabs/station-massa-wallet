@@ -46,4 +46,3 @@ runs:
       shell: bash
       run: |
         go generate ./...
-        
