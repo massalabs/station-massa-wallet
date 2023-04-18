@@ -19,7 +19,7 @@ export function App(props: any) {
         <>
             <div id="App">
             <img src={logo} id="logo" alt="logo" />
-             <PasswordPrompt eventData={eventData}/>
+                <PasswordPrompt eventData={eventData}/>
             </div>
         </>
     )
