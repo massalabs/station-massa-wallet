@@ -7,8 +7,8 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-func (w *Wallet) Unlock(walletApp *walletapp.WalletApp) {
-	msg := fmt.Sprintf("Signing with wallet %s:", w.Nickname)
+func (w *Wallet) UnprotectWalletAskingPassword(walletApp *walletapp.WalletApp) bool {
+	msg := fmt.Sprintf("Unprotect wallet %s", w.Nickname)
 	walletApp.PromptRequest(walletapp.Sign, msg, interface{}(nil))
 
 	for {
@@ -23,13 +23,12 @@ func (w *Wallet) Unlock(walletApp *walletapp.WalletApp) {
 				continue
 			}
 
-			// sign the operation:
-
 			runtime.EventsEmit(walletApp.Ctx, walletapp.PasswordResultEvent,
-				walletapp.EventData{Success: true, Data: "Sign Success"})
+				walletapp.EventData{Success: true, Data: "Unprotect Success"})
+			return true
 		case <-walletApp.CtrlChan:
 			fmt.Println("Action canceled by user")
-			return
+			return false
 		}
 	}
 }

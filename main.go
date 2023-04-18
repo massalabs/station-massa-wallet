@@ -19,6 +19,8 @@ func main() {
 	wailApp := wails.NewWailsApp(walletApp, wailsAssets)
 	go walletServer.StartServer(walletApp)
 
-	wailApp.Run()
-
+	err := wailApp.Run()
+	if err != nil {
+		panic(err)
+	}
 }

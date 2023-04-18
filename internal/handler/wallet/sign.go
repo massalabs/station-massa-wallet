@@ -45,9 +45,12 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		resp = unprotectWalletAskingPassword(wlt, s.walletApp, params.Nickname)
-		if resp != nil {
-			return resp
+		if !wlt.UnprotectWalletAskingPassword(s.walletApp) {
+			return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+				&models.Error{
+					Code:    errorCanceledAction,
+					Message: "Unable to unprotect wallet",
+				})
 		}
 		if params.Body.Batch {
 			correlationId, resp = handleBatch(wlt, params, s, s.gc)
@@ -186,12 +189,6 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 	}
 
 	return w, nil
-}
-
-// unprotectWalletAskingPassword asks for a password and unprotects the wallet.
-func unprotectWalletAskingPassword(wallet *wallet.Wallet, walletApp *walletApp.WalletApp, nickname string) middleware.Responder {
-	wallet.Unlock(walletApp)
-	return nil
 }
 
 // digestOperationAndPubKey prepares the digest for signature.

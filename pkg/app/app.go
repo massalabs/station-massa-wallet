@@ -48,6 +48,7 @@ func (a *WalletApp) Startup(ctx context.Context) {
 }
 
 func (a *WalletApp) BeforeClose(ctx context.Context) bool {
+	fmt.Println("BeforeClose")
 
 	a.Hide()
 	if a.Shutdown {
@@ -65,7 +66,13 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 func (a *WalletApp) ApplyPassword(password string) {
 	fmt.Println("Received password input:" + password)
 	a.PasswordChan <- password
-	return
+}
+
+// AbortAction is binded to the frontend
+// It sends a cancel message to the prompt
+func (a *WalletApp) AbortAction() {
+	fmt.Println("Abort action")
+	a.CtrlChan <- Cancel
 }
 
 func (a *WalletApp) PromptRequest(req PromptRequest, msg string, data interface{}) {
