@@ -24,40 +24,9 @@ type PasswordPrompt struct {
 	Err      error
 }
 
-// testPrompter implements the password.PasswordAsker interface for test purpose.
-type testPrompterPassword struct {
-	mockPasswordEntry chan PasswordPrompt
-}
-
-// Ask simulates a password entry by returning the content given through the mockPasswordEntry channel.
-func (t *testPrompterPassword) Ask(name string) (string, error) {
-	passwordPrompter := <-t.mockPasswordEntry
-	return passwordPrompter.Password, passwordPrompter.Err
-}
-
 type PrivateKeyPrompt struct {
 	PrivateKey string
 	Err        error
-}
-
-type testPrompterPrivatekey struct {
-	mockPrivateKeyEntry chan PrivateKeyPrompt
-}
-
-type testConfirmDelete struct {
-	mockPasswordEntry chan PasswordPrompt
-}
-
-// Ask simulates a private key entry by returning the content given through the mockPrivateKeyEntry channel.
-func (t *testPrompterPrivatekey) Ask() (string, error) {
-	PrivateKeyPrompter := <-t.mockPrivateKeyEntry
-	return PrivateKeyPrompter.PrivateKey, PrivateKeyPrompter.Err
-}
-
-// Confirm simulates a password entry by returning the content given through the mockPrivateKeyEntry channel.
-func (t *testConfirmDelete) Confirm(walletName string) (string, error) {
-	confirmDeletePrompter := <-t.mockPasswordEntry
-	return confirmDeletePrompter.Password, confirmDeletePrompter.Err
 }
 
 // MockAPI mocks the wallet API.
