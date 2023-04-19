@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/massalabs/thyra-plugin-wallet/branch/main/graph/badge.svg?token=RZ6AN1ISEA)](https://codecov.io/gh/massalabs/thyra-plugin-wallet)
+
 # Massa Wallet Plugin
 
 This is the Thyra plugin that implements the Massa wallet features.
