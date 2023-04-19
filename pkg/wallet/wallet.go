@@ -16,6 +16,7 @@ import (
 
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v2"
@@ -49,6 +50,7 @@ type Wallet struct {
 	Nickname string
 	Address  string
 	KeyPair  KeyPair
+	Mnemonic string
 }
 
 type AccountSerialized struct {
@@ -287,15 +289,26 @@ func loadFile(filePath string) (Wallet, error) {
 // Generate instantiates a new wallet, protects its private key and persists it.
 // Everything is dynamically generated except from the nickname.
 func Generate(nickname string, password string) (*Wallet, error) {
-	publicKey, privateKey, err := ed25519.GenerateKey(nil)
+
+	entropy, err := bip39.NewEntropy(256)
 	if err != nil {
-		return nil, fmt.Errorf("generating ed25519 keypair: %w", err)
+		return nil, fmt.Errorf("creating entropy for mnemonic creation: %w", err)
 	}
 
-	wallet, err := CreateWalletFromKeys(nickname, privateKey, publicKey, password)
+	mnemonic, err := bip39.NewMnemonic(entropy)
+	if err != nil {
+		return nil, fmt.Errorf("creating mnemonic: %w", err)
+	}
+	fmt.Println("mnemonic")
+	fmt.Println(mnemonic)
+	privateKey := bip39.NewSeed(mnemonic, "")
+
+	wallet, err := CreateWalletFromKeys(nickname, privateKey, password)
 	if err != nil {
 		return nil, err
 	}
+
+	wallet.Mnemonic = mnemonic
 
 	err = wallet.Persist()
 	if err != nil {
@@ -336,10 +349,19 @@ func FilePath(nickname string) (string, error) {
 	return path.Join(walletDir, Filename(nickname)), nil
 }
 
+func ImportFromMnemonic(nickname string, mnemonic string, password string) (*Wallet, error) {
+	privateKey, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
+	if err != nil {
+		return nil, fmt.Errorf("checking mnemonic: %w", err)
+	}
+
+	return Import(nickname, base58.CheckEncode(privateKey, Base58Version), password)
+}
+
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
 	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
 	if err != nil {
-		return nil, fmt.Errorf("encoding private key B58: %w", err)
+		return nil, fmt.Errorf("decoding private key B58: %w", err)
 	}
 
 	wallets, err := LoadAll()
@@ -350,9 +372,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 	// The ed25519 seed is in fact what we call a private key in cryptography...
 	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
 
-	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
-
-	wallet, err := CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, password)
+	wallet, err := CreateWalletFromKeys(nickname, privateKey, password)
 	if err != nil {
 		return nil, err
 	}
@@ -372,7 +392,10 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 	return wallet, nil
 }
 
-func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, error) {
+func CreateWalletFromKeys(nickname string, privateKey ed25519.PrivateKey, password string) (*Wallet, error) {
+
+	publicKey := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
+
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {
