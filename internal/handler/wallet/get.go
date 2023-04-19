@@ -52,7 +52,7 @@ func HandleList(params operations.RestWalletListParams) middleware.Responder {
 
 func createModelWallet(wlt wallet.Wallet) models.Wallet {
 	return models.Wallet{
-		Nickname: wlt.Nickname,
+		Nickname: models.Nickname(wlt.Nickname),
 		Address:  wlt.Address,
 		KeyPair:  models.WalletKeyPair{},
 	}

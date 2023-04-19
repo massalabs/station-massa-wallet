@@ -15,4 +15,5 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp wallet.WalletPr
 	api.RestWalletListHandler = operations.RestWalletListHandlerFunc(HandleList)
 	api.RestWalletSignOperationHandler = NewSign(prompterApp, gc)
 	api.RestWalletGetHandler = operations.RestWalletGetHandlerFunc(HandleGet)
+	api.RestWalletExportFileHandler = operations.RestWalletExportFileHandlerFunc(HandleExportFile)
 }

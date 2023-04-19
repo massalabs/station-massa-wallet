@@ -27,7 +27,7 @@ func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder
 			})
 	}
 
-	newWallet, err := wallet.Generate(params.Body.Nickname, params.Body.Password)
+	newWallet, err := wallet.Generate(string(params.Body.Nickname), params.Body.Password)
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
@@ -42,7 +42,7 @@ func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder
 func New(newWallet *wallet.Wallet) middleware.Responder {
 	return operations.NewRestWalletCreateOK().WithPayload(
 		&models.Wallet{
-			Nickname: newWallet.Nickname,
+			Nickname: models.Nickname(newWallet.Nickname),
 			Address:  newWallet.Address,
 			KeyPair: models.WalletKeyPair{
 				PrivateKey: "",
