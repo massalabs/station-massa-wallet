@@ -13,18 +13,6 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-type want struct {
-	statusCode int
-}
-
-type TestSign struct {
-	name     string
-	nickname string
-	body     string
-	password string
-	want     want
-}
-
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/rest/wallet/{nickname}/signOperation")
 	if !exist {
@@ -87,17 +75,20 @@ func Test_walletSign_Handle(t *testing.T) {
 	t.Run("invalid password try, then valid password", func(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
+		//nolint:staticcheck
 		go func(res chan walletapp.EventData) {
 			// Send wrong password to prompter app and wait for result
 			prompterApp.App().PasswordChan <- "this is not the password"
 			// forward test result to test goroutine
 			failRes := <-resChan
 			if failRes.Success {
+				//nolint:govet
 				t.Fatalf("Expected error, got success")
 			}
 
 			msg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
 			if failRes.Data != msg {
+				//nolint:govet
 				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, failRes.Data))
 			}
 
@@ -124,18 +115,20 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
-
+		//nolint:staticcheck
 		go func() {
 			// Send wrong password to prompter app and wait for result
 			prompterApp.App().PasswordChan <- "this is not the password"
 			// forward test result to test goroutine
 			failRes := <-resChan
 			if failRes.Success {
+				//nolint:govet
 				t.Fatalf("Expected error, got success")
 			}
 
 			msg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
 			if failRes.Data != msg {
+				//nolint:govet
 				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, failRes.Data))
 			}
 
