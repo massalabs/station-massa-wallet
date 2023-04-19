@@ -3,116 +3,191 @@ package wallet
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 type want struct {
 	statusCode int
 }
 
-var (
-	PasswordPromptOK    PasswordPrompt = PasswordPrompt{Password: "1234", Err: nil}
-	PasswordPromptKO    PasswordPrompt = PasswordPrompt{Password: "4321", Err: nil}
-	PasswordPromptError PasswordPrompt = PasswordPrompt{Password: "1234", Err: errors.New("Error while getting password PasswordPrompt")}
-)
-
 type TestSign struct {
-	name         string
-	nickname     string
-	body         string
-	promptResult PasswordPrompt
-	want         want
+	name     string
+	nickname string
+	body     string
+	password string
+	want     want
 }
 
-func Test_walletSign_Handle(t *testing.T) {
-	t.Skip("Skipping Test_walletSign_Handle")
-
-	api, _, _, err := MockAPI()
-	if err != nil {
-		panic(err)
-	}
-
-	// let's create a new wallet.
-	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
-
-	testsSign := []TestSign{
-		{"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 200}},
-		{"wrong password", "precondition_wallet", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptKO, want{statusCode: 500}},
-		{"wrong nickname", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptOK, want{statusCode: 500}},
-		{"password prompt error", "titi", `{"operation":"MjIzM3QyNHQ="}`, PasswordPromptError, want{statusCode: 500}},
-	}
-	for _, tt := range testsSign {
-		t.Run(tt.name, func(t *testing.T) {
-			// if nil != &tt.promptResult {
-			// 	channel <- tt.promptResult // non blocking call as channel is buffered
-			// }
-
-			handler, exist := api.HandlerFor("post", "/rest/wallet/{nickname}/signOperation")
-			if !exist {
-				panic("Endpoint doesn't exist")
-			}
-
-			resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", tt.nickname), tt.body)
-			if err != nil {
-				t.Fatalf("while serving HTTP request: %s", err)
-			}
-
-			verifyStatusCode(t, resp, tt.want.statusCode)
-		})
-	}
-
-	err = cleanupTestData([]string{"precondition_wallet"})
-	if err != nil {
-		t.Fatalf("while cleaning up TestData: %s", err)
-	}
-}
-
-func Test_walletSign_Handle_Batch(t *testing.T) {
-	t.Skip("Skipping Test_walletSign_Handle_Batch")
-
-	api, _, _, err := MockAPI()
-	if err != nil {
-		panic(err)
-	}
-	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
-
-	testSignNewBatch := TestSign{
-		"passing", "precondition_wallet", `{"operation":"MjIzM3QyNHQ=","batch":true}`, PasswordPromptOK, want{statusCode: 200},
-	}
-
-	// channel <- testSignNewBatch.promptResult
-
+func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/rest/wallet/{nickname}/signOperation")
 	if !exist {
-		panic("Endpoint doesn't exist")
+		t.Fatalf("Endpoint doesn't exist")
 	}
 
-	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", testSignNewBatch.nickname), testSignNewBatch.body)
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", nickname), body)
 	if err != nil {
 		t.Fatalf("while serving HTTP request: %s", err)
 	}
+	return resp
+}
 
-	verifyStatusCode(t, resp, testSignNewBatch.want.statusCode)
+func Test_walletSign_Handle(t *testing.T) {
 
-	var body models.Signature
-	err = json.Unmarshal(resp.Body.Bytes(), &body)
+	api, prompterApp, resChan, err := MockAPI()
 	if err != nil {
-		t.Fatalf("while unmarshalling: %s", err)
+		panic(err)
 	}
 
-	correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
-
-	testSignBatchItem := TestSign{
-		"passing", "precondition_wallet", fmt.Sprintf(`{"operation":"MjIzM3QyNHQ=","correlationId":"%s"}`, correlationId), PasswordPromptOK, want{statusCode: 200},
-	}
-
-	resp, err = handleHTTPRequest(handler, "POST", fmt.Sprintf("/rest/wallet/%s/signOperation", testSignBatchItem.nickname), testSignBatchItem.body)
+	transactionData := `{"operation":"MjIzM3QyNHQ="}`
+	nickname := "walletToDelete"
+	password := "zePassword"
+	_, err = wallet.Generate(nickname, password)
 	if err != nil {
-		t.Fatalf("while serving HTTP request (2nd): %s", err)
+		t.Fatalf(err.Error())
 	}
-	verifyStatusCode(t, resp, testSignBatchItem.want.statusCode)
+
+	t.Run("invalid nickname", func(t *testing.T) {
+		resp := signTransaction(t, api, "Johnny", transactionData)
+		verifyStatusCode(t, resp, 500)
+	})
+
+	t.Run("sign transation OK", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PasswordChan <- password
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, 200)
+
+		result := <-testResult
+
+		if !result.Success {
+			t.Fatalf("Expected success, got error")
+		}
+
+		msg := "Unprotect Success"
+		if result.Data != msg {
+			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
+		}
+	})
+
+	// The handler will not return until a the good password is sent or the action is canceled
+	t.Run("invalid password try, then valid password", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		go func(res chan walletapp.EventData) {
+			// Send wrong password to prompter app and wait for result
+			prompterApp.App().PasswordChan <- "this is not the password"
+			// forward test result to test goroutine
+			failRes := <-resChan
+			if failRes.Success {
+				t.Fatalf("Expected error, got success")
+			}
+
+			msg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
+			if failRes.Data != msg {
+				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, failRes.Data))
+			}
+
+			// Send password to prompter app to unlock the handler
+			prompterApp.App().PasswordChan <- password
+
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, 200)
+
+		result := <-testResult
+
+		if !result.Success {
+			t.Fatalf("Expected success, got error")
+		}
+
+		msg := "Unprotect Success"
+		if result.Data != msg {
+			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
+		}
+	})
+
+	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
+
+		go func() {
+			// Send wrong password to prompter app and wait for result
+			prompterApp.App().PasswordChan <- "this is not the password"
+			// forward test result to test goroutine
+			failRes := <-resChan
+			if failRes.Success {
+				t.Fatalf("Expected error, got success")
+			}
+
+			msg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
+			if failRes.Data != msg {
+				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, failRes.Data))
+			}
+
+			// Send cancel to prompter app to unlock the handler
+			prompterApp.App().CtrlChan <- walletapp.Cancel
+		}()
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, 500)
+	})
+
+	t.Run("sign transation batch OK", func(t *testing.T) {
+		transactionDataBatch := `{"operation":"MjIzM3QyNHQ=","batch":true}`
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PasswordChan <- password
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionDataBatch)
+		verifyStatusCode(t, resp, 200)
+
+		result := <-testResult
+
+		if !result.Success {
+			t.Fatalf("Expected success, got error")
+		}
+
+		msg := "Unprotect Success"
+		if result.Data != msg {
+			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
+		}
+
+		var body models.Signature
+		err = json.Unmarshal(resp.Body.Bytes(), &body)
+		if err != nil {
+			t.Fatalf("while unmarshalling: %s", err)
+		}
+
+		correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
+
+		transactionDataBatch = fmt.Sprintf(`{"operation":"MjIzM3QyNHQ=","correlationId":"%s"}`, correlationId)
+		// Send new transaction without password prompt
+		resp = signTransaction(t, api, nickname, transactionDataBatch)
+		verifyStatusCode(t, resp, 200)
+	})
+
+	err = cleanupTestData([]string{nickname})
+	if err != nil {
+		t.Fatalf("while cleaning up TestData: %s", err)
+	}
 }
