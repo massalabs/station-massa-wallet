@@ -29,6 +29,16 @@ type PrivateKeyPrompt struct {
 	Err        error
 }
 
+type testPrompterPrivatekey struct {
+	mockPrivateKeyEntry chan PrivateKeyPrompt
+}
+
+// Ask simulates a private key entry by returning the content given through the mockPrivateKeyEntry channel.
+func (t *testPrompterPrivatekey) Ask() (string, error) {
+	PrivateKeyPrompter := <-t.mockPrivateKeyEntry
+	return PrivateKeyPrompter.PrivateKey, PrivateKeyPrompter.Err
+}
+
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
 func MockAPI() (*operations.MassaWalletAPI, wallet.WalletPrompterInterface, chan walletapp.EventData, error) {
