@@ -136,6 +136,10 @@ paths:
           description: Bad request
           schema:
             $ref: "#/definitions/Error"
+        404:
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
@@ -157,7 +161,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "404":
-          description: Bad request.
+          description: Not found.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -171,7 +175,7 @@ paths:
     get:
       operationId: restWalletGet
       parameters:
-       - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/nickname"
       produces:
         - application/json
       responses:

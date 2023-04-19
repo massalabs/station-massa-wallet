@@ -14,10 +14,6 @@ export function Hide() {
   return window['go']['walletapp']['WalletApp']['Hide']();
 }
 
-export function PromptRequest(arg1, arg2, arg3) {
-  return window['go']['walletapp']['WalletApp']['PromptRequest'](arg1, arg2, arg3);
-}
-
 export function Show() {
   return window['go']['walletapp']['WalletApp']['Show']();
 }

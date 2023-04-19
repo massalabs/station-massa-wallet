@@ -324,8 +324,8 @@ func (w *Wallet) DeleteFile() (err error) {
 	return nil
 }
 
-// Filename returns the wallet Filename based on the given nickname.
-func Filename(nickname string) string {
+// filename returns the wallet filename based on the given nickname.
+func filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.yml", nickname)
 }
 
@@ -337,7 +337,17 @@ func FilePath(nickname string) (string, error) {
 		return "", fmt.Errorf("getting wallet directory: %w", err)
 	}
 
-	return path.Join(walletDir, Filename(nickname)), nil
+	return path.Join(walletDir, filename(nickname)), nil
+}
+
+// Filename returns the wallet filename.
+func (w *Wallet) Filename() string {
+	return filename(w.Nickname)
+}
+
+// FilePath returns the wallet file path base.
+func (w *Wallet) FilePath() (string, error) {
+	return FilePath(w.Nickname)
 }
 
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {

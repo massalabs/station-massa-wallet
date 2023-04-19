@@ -66,7 +66,7 @@ func Test_getWallets_handler(t *testing.T) {
 		}
 
 		for idx, nickname := range nicknames {
-			if wallet[idx].Nickname != nickname {
+			if wallet[idx].Nickname != models.Nickname(nickname) {
 				t.Fatalf("the wallet nickname was: %s, want %s", wallet[idx].Nickname, nickname)
 			}
 		}
