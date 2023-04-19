@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 )
 
-func Test_walletGet_HandleList(t *testing.T) {
-	t.Skip("Skipping Test_walletGet_HandleList")
+func Test_getWallets_handler(t *testing.T) {
 	api, _, _, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
 
 	// test empty configuration first.
-	t.Run("Passed_list_empty", func(t *testing.T) {
+	t.Run("Get empty list", func(t *testing.T) {
 		resp, err := processHTTPRequest(api, "GET", "/rest/wallet", "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
@@ -37,10 +38,17 @@ func Test_walletGet_HandleList(t *testing.T) {
 		}
 	})
 
-	// test with one wallet configuration.
-	t.Run("Passed_list_with_wallets", func(t *testing.T) {
-		// let's create the wallet first.
-		createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
+	// Create wallets
+	nicknames := []string{"wallet1", "wallet2", "wallet3"}
+	for _, nickname := range nicknames {
+		password := "zePassword"
+		_, err = wallet.Generate(nickname, password)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+	}
+
+	t.Run("Get multiple wallets", func(t *testing.T) {
 
 		resp, err := processHTTPRequest(api, "GET", "/rest/wallet", "")
 		if err != nil {
@@ -57,18 +65,21 @@ func Test_walletGet_HandleList(t *testing.T) {
 			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
 		}
 
-		if wallet[0].Nickname != "precondition_wallet" {
-			t.Fatalf("the wallet nickname was: %s, want %s", wallet[0].Nickname, "precondition_wallet")
+		for idx, nickname := range nicknames {
+			if wallet[idx].Nickname != nickname {
+				t.Fatalf("the wallet nickname was: %s, want %s", wallet[idx].Nickname, nickname)
+			}
 		}
+
 	})
 
-	err = cleanupTestData([]string{"precondition_wallet"})
+	err = cleanupTestData(nicknames)
 	if err != nil {
 		t.Fatalf("while cleaning up TestData: %s", err)
 	}
 }
 
-func Test_walletGet_HandleGet(t *testing.T) {
+func Test_getWallet_handler(t *testing.T) {
 	api, _, _, err := MockAPI()
 	if err != nil {
 		panic(err)
@@ -80,7 +91,7 @@ func Test_walletGet_HandleGet(t *testing.T) {
 	}
 
 	// test empty configuration first.
-	t.Run("Passed_list_not_found", func(t *testing.T) {
+	t.Run("Get unknown wallet", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", "nobody"), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
@@ -91,14 +102,23 @@ func Test_walletGet_HandleGet(t *testing.T) {
 
 	// test with one wallet configuration.
 	t.Run("Passed_list", func(t *testing.T) {
-		// let's create the wallet first.
-		createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
+		nickname := "trololol"
+		password := "zePassword"
+		_, err = wallet.Generate(nickname, password)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
 
-		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", "precondition_wallet"), "")
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", nickname), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
 
 		verifyStatusCode(t, resp, 200)
+
+		err = cleanupTestData([]string{nickname})
+		if err != nil {
+			t.Fatalf("while cleaning up TestData: %s", err)
+		}
 	})
 }

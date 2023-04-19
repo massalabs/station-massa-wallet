@@ -26,14 +26,14 @@ func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 func Test_walletDelete_Handle(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
 	if err != nil {
-		panic(err)
+		t.Fatalf(err.Error())
 	}
 
 	nickname := "walletToDelete"
 	password := "zePassword"
 	_, err = wallet.Generate(nickname, password)
 	if err != nil {
-		panic(err)
+		t.Fatalf(err.Error())
 	}
 
 	t.Run("invalid nickname", func(t *testing.T) {
