@@ -7,7 +7,6 @@ import (
 )
 
 func (w *Wallet) Delete(prompterApp WalletPrompterInterface) {
-
 	msg := fmt.Sprintf("Deleting wallet %s:", w.Nickname)
 	prompterApp.PromptRequest(walletapp.Password, msg, interface{}(nil))
 
