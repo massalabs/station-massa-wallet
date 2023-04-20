@@ -50,6 +50,7 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 			Data: nil,
 		}
+
 		_, err := wlt.PromptPassword(s.prompterApp, walletapp.Sign, promptData)
 		if err != nil {
 			return operations.NewRestWalletSignOperationInternalServerError().WithPayload(

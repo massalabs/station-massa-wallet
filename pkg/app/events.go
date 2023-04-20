@@ -8,6 +8,7 @@ const (
 type EventData struct {
 	Success bool
 	Data    interface{}
+	Error   string
 }
 
 type PromptCtrl int
