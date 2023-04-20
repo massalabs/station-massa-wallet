@@ -426,8 +426,10 @@ func (wallet *Wallet) GetPupKey() string {
 }
 
 // GetPrivKey returns the private key of the wallet.
+// This function requires that the private key is not protected.
 func (wallet *Wallet) GetPrivKey() string {
-	return PrivateKeyPrefix + base58.CheckEncode(wallet.KeyPair.PrivateKey, Base58Version)
+	seed := ed25519.PrivateKey(wallet.KeyPair.PrivateKey).Seed()
+	return PrivateKeyPrefix + base58.CheckEncode(seed, Base58Version)
 }
 
 func (wallet *Wallet) GetSalt() string {
