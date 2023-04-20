@@ -430,6 +430,14 @@ func (wallet *Wallet) GetPrivKey() string {
 	return PrivateKeyPrefix + base58.CheckEncode(wallet.KeyPair.PrivateKey, Base58Version)
 }
 
+func (wallet *Wallet) GetSalt() string {
+	return base58.CheckEncode(wallet.KeyPair.Salt[:], Base58Version)
+}
+
+func (wallet *Wallet) GetNonce() string {
+	return base58.CheckEncode(wallet.KeyPair.Nonce[:], Base58Version)
+}
+
 func addressFromPublicKey(pubKeyBytes []byte) string {
 	addr := blake3.Sum256(pubKeyBytes)
 	return UserAddressPrefix + base58.CheckEncode(addr[:], Base58Version)

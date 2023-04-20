@@ -3,7 +3,6 @@ package wallet
 import (
 	"fmt"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
@@ -58,13 +57,11 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 		g.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: true, Data: "Unprotect Success"})
 
-		salt := base58.CheckEncode(wlt.KeyPair.Salt[:], wallet.Base58Version)
-		nonce := base58.CheckEncode(wlt.KeyPair.Nonce[:], wallet.Base58Version)
 		modelWallet.KeyPair = models.WalletKeyPair{
 			PrivateKey: wlt.GetPrivKey(),
 			PublicKey:  wlt.GetPupKey(),
-			Salt:       salt,
-			Nonce:      nonce,
+			Salt:       wlt.GetSalt(),
+			Nonce:      wlt.GetNonce(),
 		}
 	}
 
