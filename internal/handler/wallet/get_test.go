@@ -3,8 +3,11 @@ package wallet
 import (
 	"encoding/json"
 	"fmt"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
@@ -80,7 +83,7 @@ func Test_getWallets_handler(t *testing.T) {
 }
 
 func Test_getWallet_handler(t *testing.T) {
-	api, _, _, err := MockAPI()
+	api, prompterApp, resChan, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +104,7 @@ func Test_getWallet_handler(t *testing.T) {
 	})
 
 	// test with one wallet configuration.
-	t.Run("Passed_list", func(t *testing.T) {
+	t.Run("Passed_get_ciphered", func(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
 		_, err = wallet.Generate(nickname, password)
@@ -115,10 +118,84 @@ func Test_getWallet_handler(t *testing.T) {
 		}
 
 		verifyStatusCode(t, resp, 200)
+		verifyBodyWallet(t, resp, nickname)
+		verifyPublicKeyIsNotPresent(t, resp, nickname)
 
 		err = cleanupTestData([]string{nickname})
 		if err != nil {
 			t.Fatalf("while cleaning up TestData: %s", err)
 		}
 	})
+
+	// test with un-ciphered data.
+	t.Run("Passed_get_un-ciphered", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+		nickname := "trololol"
+		password := "zePassword"
+		_, err = wallet.Generate(nickname, password)
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PasswordChan <- password
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s?ciphered=false", nickname), "")
+		if err != nil {
+			t.Fatalf("while serving HTTP request: %s", err)
+		}
+
+		verifyStatusCode(t, resp, 200)
+		verifyBodyWallet(t, resp, nickname)
+		verifyPublicKeyIsPresent(t, resp, nickname)
+
+		err = cleanupTestData([]string{nickname})
+		if err != nil {
+			t.Fatalf("while cleaning up TestData: %s", err)
+		}
+	})
+}
+
+func verifyBodyWallet(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
+	body := resp.Body.String()
+	if body == "" {
+		t.Fatalf("the body was empty")
+	}
+
+	fmt.Println("debug start")
+	fmt.Println(body)
+	fmt.Println("debug stop")
+
+	// check the first line
+	if !strings.Contains(body, "\"nickname\":\""+nickname+"\"") {
+		t.Fatalf("the body doesn't contain the wallet nickname")
+	}
+}
+
+func verifyPublicKeyIsPresent(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
+	body := resp.Body.String()
+	if body == "" {
+		t.Fatalf("the body was empty")
+	}
+
+	// check the first line
+	if !strings.Contains(body, "publicKey\":\"P") {
+		t.Fatalf("the body doesn't contain the wallet public key")
+	}
+}
+
+func verifyPublicKeyIsNotPresent(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
+	body := resp.Body.String()
+	if body == "" {
+		t.Fatalf("the body was empty")
+	}
+
+	// check the first line
+	if !strings.Contains(body, "publicKey\":\"\"") {
+		t.Fatalf("the body contains the wallet public key")
+	}
 }

@@ -46,7 +46,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		verifyStatusCode(t, resp, 500)
 	})
 
-	t.Run("sign transation OK", func(t *testing.T) {
+	t.Run("sign transaction OK", func(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
 		// Send password to prompter app and wait for result

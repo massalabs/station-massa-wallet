@@ -47,7 +47,7 @@ func Test_exportFileWallet_handler(t *testing.T) {
 		verifyStatusCode(t, resp, 200)
 		verifyHeader(t, resp, "Content-Type", "application/octet-stream")
 		verifyHeader(t, resp, "Content-Disposition", fmt.Sprintf("attachment; filename=%q", "wallet_trololol.yml"))
-		verifyBody(t, resp, nickname)
+		verifyBodyWalletBackup(t, resp, nickname)
 
 		err = cleanupTestData([]string{nickname})
 		if err != nil {
@@ -62,7 +62,7 @@ func verifyHeader(t *testing.T, resp *httptest.ResponseRecorder, headerName, hea
 	}
 }
 
-func verifyBody(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
+func verifyBodyWalletBackup(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
 	body := resp.Body.String()
 	if body == "" {
 		t.Fatalf("the body was empty")
