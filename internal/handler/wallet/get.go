@@ -1,11 +1,14 @@
 package wallet
 
 import (
+	"fmt"
+
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -39,22 +42,25 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 
 	// if request not ciphered data, ask for password and unprotect the wallet
 	if params.Ciphered != nil && !*params.Ciphered {
-		unprotected := wlt.UnprotectWalletAskingPassword(g.prompterApp)
-		if unprotected {
-			salt := base58.CheckEncode(wlt.KeyPair.Salt[:], wallet.Base58Version)
-			nonce := base58.CheckEncode(wlt.KeyPair.Nonce[:], wallet.Base58Version)
-			modelWallet.KeyPair = models.WalletKeyPair{
-				PrivateKey: wlt.GetPrivKey(),
-				PublicKey:  wlt.GetPupKey(),
-				Salt:       salt,
-				Nonce:      nonce,
-			}
-		} else {
+		promptData := &wallet.PromptRequestData{
+			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+			Data: nil,
+		}
+		_, err := wlt.PromptPassword(g.prompterApp, walletapp.Export, promptData)
+		if err != nil {
 			return operations.NewRestWalletGetLocked().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
-					Message: wallet.ActionCanceledText,
+					Message: "Unable to unprotect wallet",
 				})
+		}
+		salt := base58.CheckEncode(wlt.KeyPair.Salt[:], wallet.Base58Version)
+		nonce := base58.CheckEncode(wlt.KeyPair.Nonce[:], wallet.Base58Version)
+		modelWallet.KeyPair = models.WalletKeyPair{
+			PrivateKey: wlt.GetPrivKey(),
+			PublicKey:  wlt.GetPupKey(),
+			Salt:       salt,
+			Nonce:      nonce,
 		}
 	}
 

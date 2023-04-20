@@ -27,7 +27,6 @@ func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname stri
 }
 
 func Test_walletSign_Handle(t *testing.T) {
-
 	api, prompterApp, resChan, err := MockAPI()
 	if err != nil {
 		panic(err)

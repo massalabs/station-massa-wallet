@@ -52,7 +52,6 @@ func Test_getWallets_handler(t *testing.T) {
 	}
 
 	t.Run("Get multiple wallets", func(t *testing.T) {
-
 		resp, err := processHTTPRequest(api, "GET", "/rest/wallet", "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
@@ -73,7 +72,6 @@ func Test_getWallets_handler(t *testing.T) {
 				t.Fatalf("the wallet nickname was: %s, want %s", wallet[idx].Nickname, nickname)
 			}
 		}
-
 	})
 
 	err = cleanupTestData(nicknames)
