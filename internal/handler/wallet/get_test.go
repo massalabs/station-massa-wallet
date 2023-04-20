@@ -151,6 +151,17 @@ func Test_getWallet_handler(t *testing.T) {
 		verifyBodyWallet(t, resp, nickname)
 		verifyPublicKeyIsPresent(t, resp, nickname)
 
+		result := <-testResult
+
+		if !result.Success {
+			t.Fatalf("Expected success, got error")
+		}
+
+		msg := "Unprotect Success"
+		if result.Data != msg {
+			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
+		}
+
 		err = cleanupTestData([]string{nickname})
 		if err != nil {
 			t.Fatalf("while cleaning up TestData: %s", err)
