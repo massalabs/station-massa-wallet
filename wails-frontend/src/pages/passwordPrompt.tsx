@@ -34,6 +34,9 @@ const PasswordPrompt = ({ eventData }: Props) => {
             setTimeout(hideAndReload, 2000);
         } else {
             updatePasswordResult(result.Data);
+            if(result.Error === "timeoutError") {
+                setTimeout(hideAndReload, 2000);
+            }
         }
     };
 

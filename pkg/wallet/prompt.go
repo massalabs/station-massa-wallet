@@ -1,7 +1,9 @@
 package wallet
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -42,11 +44,15 @@ type PromptRequestData struct {
 	Data interface{}
 }
 
-func (w *Wallet) PromptPassword(prompterApp WalletPrompterInterface,
+func (w *Wallet) PromptPassword(
+	prompterApp WalletPrompterInterface,
 	action walletapp.PromptRequest,
 	data *PromptRequestData,
 ) (string, error) {
 	prompterApp.PromptRequest(action, data.Msg, data.Data)
+
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
 
 	for {
 		select {
@@ -62,9 +68,17 @@ func (w *Wallet) PromptPassword(prompterApp WalletPrompterInterface,
 
 			return password, nil
 		case <-prompterApp.App().CtrlChan:
-			fmt.Println("Action canceled by user")
-			return "", fmt.Errorf("Action canceled by user")
+			msg := "Action canceled by user"
+			fmt.Println(msg)
+			return "", fmt.Errorf(msg)
+		case <-ctxTimeout.Done():
+			errStr := "Password prompt reached timeout"
+			fmt.Println(errStr)
+			prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+				walletapp.EventData{Success: false, Data: errStr, Error: "timeoutError"})
+			return "", fmt.Errorf(errStr)
 		}
+
 	}
 }
 
