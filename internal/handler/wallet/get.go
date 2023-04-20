@@ -54,6 +54,10 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 					Message: "Unable to unprotect wallet",
 				})
 		}
+
+		g.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+			walletapp.EventData{Success: true, Data: "Unprotect Success"})
+
 		salt := base58.CheckEncode(wlt.KeyPair.Salt[:], wallet.Base58Version)
 		nonce := base58.CheckEncode(wlt.KeyPair.Nonce[:], wallet.Base58Version)
 		modelWallet.KeyPair = models.WalletKeyPair{
