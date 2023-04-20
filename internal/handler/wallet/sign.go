@@ -6,6 +6,7 @@ import (
 	cryptorand "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
+	"fmt"
 	"io"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
@@ -44,13 +46,22 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		if !wlt.UnprotectWalletAskingPassword(s.prompterApp) {
+		promptData := &wallet.PromptRequestData{
+			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+			Data: nil,
+		}
+		_, err := wlt.PromptPassword(s.prompterApp, walletapp.Sign, promptData)
+		if err != nil {
 			return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 				&models.Error{
 					Code:    errorCanceledAction,
 					Message: "Unable to unprotect wallet",
 				})
 		}
+
+		s.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+			walletapp.EventData{Success: true, Data: "Unprotect Success"})
+
 		if params.Body.Batch {
 			correlationId, resp = handleBatch(wlt, params, s, s.gc)
 		}

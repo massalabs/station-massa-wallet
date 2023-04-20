@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"fmt"
+
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -33,6 +35,37 @@ type WalletPrompterInterface interface {
 	PromptRequest(req walletapp.PromptRequest, msg string, data interface{})
 	EmitEvent(eventId string, data walletapp.EventData)
 	App() *walletapp.WalletApp
+}
+
+type PromptRequestData struct {
+	Msg  string
+	Data interface{}
+}
+
+func (w *Wallet) PromptPassword(prompterApp WalletPrompterInterface,
+	action walletapp.PromptRequest,
+	data *PromptRequestData,
+) (string, error) {
+	prompterApp.PromptRequest(action, data.Msg, data.Data)
+
+	for {
+		select {
+		case password := <-prompterApp.App().PasswordChan:
+			err := w.Unprotect(password)
+			if err != nil {
+				errStr := "error unprotecting wallet:" + err.Error()
+				fmt.Println(errStr)
+				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+					walletapp.EventData{Success: false, Data: errStr})
+				continue
+			}
+
+			return password, nil
+		case <-prompterApp.App().CtrlChan:
+			fmt.Println("Action canceled by user")
+			return "", fmt.Errorf("Action canceled by user")
+		}
+	}
 }
 
 // Verifies at compilation time that WalletPrompter implements WalletPrompterInterface interface.
