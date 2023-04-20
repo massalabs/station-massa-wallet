@@ -1,5 +1,5 @@
-import {render} from 'preact';
+import { h, render } from 'preact';
 import {App} from './app';
-import './style.css';
+import { BrowserRouter } from "react-router-dom";
 
-render(<App/>, document.getElementById('app')!);
+render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('app')!);

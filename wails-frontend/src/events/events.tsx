@@ -5,7 +5,7 @@ export type promptResult = {
 }
 
 export enum promptAction {
-    passwordReq = 0,
+    deleteReq = 0,
     newPasswordReq = 1,
     signReq = 2,
     importReq = 3,

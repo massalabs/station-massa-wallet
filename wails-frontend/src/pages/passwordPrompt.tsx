@@ -2,19 +2,26 @@ import { useState } from "preact/hooks";
 import { AbortAction, ApplyPassword, Hide } from "../../wailsjs/go/walletapp/WalletApp";
 import { EventsOnce, WindowReloadApp } from "../../wailsjs/runtime";
 import { h } from 'preact';
-import { events, promptRequest } from "../events/events";
+import { events, promptAction, promptRequest } from "../events/events";
+import { useLocation, useNavigate } from "react-router-dom";
 
-type Props = {
-    eventData: promptRequest
-};
+const PasswordPrompt = () => {
 
+    const navigate = useNavigate();
 
-const PasswordPrompt = ({ eventData }: Props) => {
+    const { state } = useLocation();
+    const req: promptRequest = state.req;
+
+    const applyStr = (req: promptRequest) => {
+        switch (req.Action) {
+            case promptAction.deleteReq:
+                return "Delete";
+            default: return "Apply";
+        }
+    }
 
     const [applyResultMsg, setPasswordResult] = useState("do it!");
     const [password, setPassword] = useState("");
-
-    const updatePasswordResult = (result: string) => setPasswordResult(result);
 
     const hideAndReload = () => {
         Hide();
@@ -30,11 +37,11 @@ const PasswordPrompt = ({ eventData }: Props) => {
     const handleApplyResult = (result: any) => {
         console.log("result", result);
         if (result.Success) {
-            updatePasswordResult("Password applied successfully!");
+            navigate("/success", { state: { msg: "Password applied successfully!" } })
             setTimeout(hideAndReload, 2000);
         } else {
-            updatePasswordResult(result.Data);
-            if(result.Error === "timeoutError") {
+            setPasswordResult(result.Data);
+            if (result.Error === "timeoutError") {
                 setTimeout(hideAndReload, 2000);
             }
         }
@@ -50,9 +57,9 @@ const PasswordPrompt = ({ eventData }: Props) => {
     const updatePassword = (e: any) => setPassword(e.target.value);
 
     return (
-        <div id="App">
+        <section class="PasswordPrompt">
             <div>
-                {eventData.Msg}
+                {req.Msg}
             </div>
             <div id="result" className="result">
                 Enter your password below to validate 👇
@@ -66,17 +73,19 @@ const PasswordPrompt = ({ eventData }: Props) => {
                     name="input"
                     type="password"
                 />
-                <button className="btn" onClick={applyPassword}>
-                    Ok
-                </button>
+            </div>
+            <div>
                 <button className="btn" onClick={handleCancel}>
                     Cancel
+                </button>
+                <button className="btn" onClick={applyPassword}>
+                    {applyStr(req)}
                 </button>
             </div>
             <div id="result" className="result">
                 {applyResultMsg}
             </div>
-        </div>
+        </section>
     );
 };
 

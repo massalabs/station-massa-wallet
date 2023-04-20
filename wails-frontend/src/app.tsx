@@ -1,26 +1,27 @@
 import './App.css'
 import { h } from 'preact';
-import logo from "./assets/images/logo_massa.webp"
 import { EventsOn } from "../wailsjs/runtime";
-import { useState } from "preact/hooks";
 import PasswordPrompt from './pages/passwordPrompt';
 import { events, promptRequest } from './events/events';
+import { Routes, Route, useNavigate } from "react-router-dom";
+import Success from './pages/success';
 
-export function App(props: any) {
-    const [eventData, setEventData] = useState<promptRequest>({} as promptRequest);
-    const handlePromptRequest = (data: promptRequest) => {
-        console.log("prompt request event received: ", data)
-        setEventData(data)
+export function App() {
+
+    const navigate = useNavigate();
+
+    const handlePromptRequest = (req: promptRequest) => {
+        navigate("/password", { state: { req } } )
     }
 
     EventsOn(events.promptRequest, handlePromptRequest)
 
     return (
-        <>
-            <div id="App">
-                <img src={logo} id="logo" alt="logo" />
-                <PasswordPrompt eventData={eventData} />
-            </div>
-        </>
+        <div id="App">
+            <Routes>
+                <Route path="/password" element={<PasswordPrompt />} />
+                <Route path="/success" element={<Success />} />
+            </Routes>
+        </div>
     )
 }

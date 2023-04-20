@@ -12,9 +12,9 @@ import (
 func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application {
 	// Create a new Wails application
 	return application.NewWithOptions(&options.App{
-		Title:       "wallet-prompt",
-		Width:       1024,
-		Height:      768,
+		Title:       "Massa Station Wallet",
+		Width:       513,
+		Height:      440,
 		StartHidden: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
