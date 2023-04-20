@@ -176,6 +176,7 @@ paths:
       operationId: restWalletGet
       parameters:
         - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/ciphered"
       produces:
         - application/json
       responses:
@@ -193,6 +194,10 @@ paths:
             $ref: "#/definitions/Error"
         "422":
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "423":
+          description: Locked - The resource that is being accessed is locked
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -238,6 +243,14 @@ parameters:
     required: true
     description: Wallet's short name.
     x-nullable: false
+  ciphered:
+    in: query
+    name: ciphered
+    type: boolean
+    required: false
+    default: true
+    description: whether to return the data ciphered or not
+    x-nullable: true
 definitions:
   Error:
     type: object

@@ -31,6 +31,7 @@ const (
 	Base58Version             = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
+	PrivateKeyPrefix          = "S"
 )
 
 var ErrorAccountNotFound = errors.New("Account not found")
@@ -419,8 +420,14 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 	return &wallet, nil
 }
 
+// GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
 	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, Base58Version)
+}
+
+// GetPrivKey returns the private key of the wallet.
+func (wallet *Wallet) GetPrivKey() string {
+	return PrivateKeyPrefix + base58.CheckEncode(wallet.KeyPair.PrivateKey, Base58Version)
 }
 
 func addressFromPublicKey(pubKeyBytes []byte) string {

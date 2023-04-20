@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
@@ -8,7 +9,17 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func HandleGet(params operations.RestWalletGetParams) middleware.Responder {
+// NewGet instantiates a Get Handler
+// The "classical" way is not possible because we need to pass to the handler a wallet.WalletPrompterInterface.
+func NewGet(prompterApp wallet.WalletPrompterInterface) operations.RestWalletGetHandler {
+	return &walletGet{prompterApp: prompterApp}
+}
+
+type walletGet struct {
+	prompterApp wallet.WalletPrompterInterface
+}
+
+func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Responder {
 	wlt, err := wallet.Load(params.Nickname)
 	if err == wallet.ErrorAccountNotFound {
 		return operations.NewRestWalletGetNotFound().WithPayload(
@@ -25,6 +36,27 @@ func HandleGet(params operations.RestWalletGetParams) middleware.Responder {
 	}
 
 	modelWallet := createModelWallet(*wlt)
+
+	// if request not ciphered data, ask for password and unprotect the wallet
+	if params.Ciphered != nil && !*params.Ciphered {
+		unprotected := wlt.UnprotectWalletAskingPassword(g.prompterApp)
+		if unprotected {
+			salt := base58.CheckEncode(wlt.KeyPair.Salt[:], wallet.Base58Version)
+			nonce := base58.CheckEncode(wlt.KeyPair.Nonce[:], wallet.Base58Version)
+			modelWallet.KeyPair = models.WalletKeyPair{
+				PrivateKey: wlt.GetPrivKey(),
+				PublicKey:  wlt.GetPupKey(),
+				Salt:       salt,
+				Nonce:      nonce,
+			}
+		} else {
+			return operations.NewRestWalletGetLocked().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: wallet.ActionCanceledText,
+				})
+		}
+	}
 
 	return operations.NewRestWalletGetOK().WithPayload(&modelWallet)
 }
