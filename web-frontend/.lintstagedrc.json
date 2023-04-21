@@ -1,0 +1,3 @@
+{
+  "*.{js,ts,jsx,tsx,json,cjs,css,html}": ["npm run fmt"]
+}
