@@ -31,6 +31,7 @@ const (
 	Base58Version             = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
+	PrivateKeyPrefix          = "S"
 )
 
 var ErrorAccountNotFound = errors.New("Account not found")
@@ -324,8 +325,8 @@ func (w *Wallet) DeleteFile() (err error) {
 	return nil
 }
 
-// Filename returns the wallet Filename based on the given nickname.
-func Filename(nickname string) string {
+// filename returns the wallet filename based on the given nickname.
+func filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.yml", nickname)
 }
 
@@ -337,7 +338,17 @@ func FilePath(nickname string) (string, error) {
 		return "", fmt.Errorf("getting wallet directory: %w", err)
 	}
 
-	return path.Join(walletDir, Filename(nickname)), nil
+	return path.Join(walletDir, filename(nickname)), nil
+}
+
+// Filename returns the wallet filename.
+func (w *Wallet) Filename() string {
+	return filename(w.Nickname)
+}
+
+// FilePath returns the wallet file path base.
+func (w *Wallet) FilePath() (string, error) {
+	return FilePath(w.Nickname)
 }
 
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
@@ -409,8 +420,24 @@ func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, 
 	return &wallet, nil
 }
 
+// GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
 	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, Base58Version)
+}
+
+// GetPrivKey returns the private key of the wallet.
+// This function requires that the private key is not protected.
+func (wallet *Wallet) GetPrivKey() string {
+	seed := ed25519.PrivateKey(wallet.KeyPair.PrivateKey).Seed()
+	return PrivateKeyPrefix + base58.CheckEncode(seed, Base58Version)
+}
+
+func (wallet *Wallet) GetSalt() string {
+	return base58.CheckEncode(wallet.KeyPair.Salt[:], Base58Version)
+}
+
+func (wallet *Wallet) GetNonce() string {
+	return base58.CheckEncode(wallet.KeyPair.Nonce[:], Base58Version)
 }
 
 func addressFromPublicKey(pubKeyBytes []byte) string {

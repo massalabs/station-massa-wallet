@@ -18,4 +18,5 @@ const (
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
 	errorImportWallet
+	errorExportWallet
 )

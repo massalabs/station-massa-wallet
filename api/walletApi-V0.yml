@@ -4,6 +4,7 @@ info:
   description: Thyra plugin - Massa wallet
   title: massa-wallet
   version: 0.0.1
+host: localhost:8080
 produces:
   - application/json
 schemes:
@@ -73,9 +74,7 @@ paths:
               - password
             properties:
               nickname:
-                description: Wallet's short name.
-                type: string
-                x-nullable: false
+                $ref: "#/definitions/Nickname"
               password:
                 description: Private key password.
                 type: string
@@ -105,12 +104,7 @@ paths:
       produces:
         - application/json   
       parameters:
-        - in: path
-          name: nickname
-          type: string
-          required: true
-          x-nullable : false
-          description: Wallet nickname.
+        - $ref: "#/parameters/nickname"
       responses:
         "204":
           description: Wallet imported.
@@ -126,15 +120,35 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+  /rest/wallet/export/file/{nickname}:
+    get:
+      operationId: restWalletExportFile
+      produces:
+        - application/octet-stream
+      parameters:
+        - $ref: "#/parameters/nickname"
+      responses:
+        200:
+          description: Downlad the account file
+          schema:
+            type: file
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
   /rest/wallet/{nickname}:
     delete:
       operationId: restWalletDelete
       parameters:
-        - in: path
-          name: nickname
-          type: string
-          required: true
-          description: Wallet's short name.
+        - $ref: "#/parameters/nickname"
       produces:
         - application/json
       responses:
@@ -147,7 +161,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "404":
-          description: Bad request.
+          description: Not found.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -161,11 +175,8 @@ paths:
     get:
       operationId: restWalletGet
       parameters:
-        - in: path
-          name: nickname
-          type: string
-          required: true
-          description: Wallet's short name.
+        - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/ciphered"
       produces:
         - application/json
       responses:
@@ -185,6 +196,10 @@ paths:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
+        "423":
+          description: Locked - The resource that is being accessed is locked
+          schema:
+            $ref: "#/definitions/Error"
         "500":
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
@@ -193,11 +208,7 @@ paths:
     post:
       operationId: restWalletSignOperation
       parameters:
-        - in: path
-          name: nickname
-          type: string
-          required: true
-          description: Wallet's short name.
+        - $ref: "#/parameters/nickname"
         - in: body
           name: body
           required: true
@@ -223,6 +234,23 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+
+parameters:
+  nickname:
+    in: path
+    name: nickname
+    type: string
+    required: true
+    description: Wallet's short name.
+    x-nullable: false
+  ciphered:
+    in: query
+    name: ciphered
+    type: boolean
+    required: false
+    default: true
+    description: whether to return the data ciphered or not
+    x-nullable: true
 definitions:
   Error:
     type: object
@@ -275,6 +303,10 @@ definitions:
     description: Correlation id of the operation batch
     type: string
     format: byte
+  Nickname:
+    description: Wallet's short name.
+    type: string
+    x-nullable: false
   Wallet:
     type: object
     description: Wallet object (V0).
@@ -284,9 +316,7 @@ definitions:
       - keyPair
     properties:
       nickname:
-        description: wallet's nickname.
-        type: string
-        x-nullable: false
+        $ref: "#/definitions/Nickname"
       address:
         description: wallet's address.
         type: string

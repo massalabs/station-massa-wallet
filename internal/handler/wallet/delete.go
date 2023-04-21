@@ -55,5 +55,4 @@ func handleDelete(wlt *wallet.Wallet, prompterApp wallet.WalletPrompterInterface
 
 	prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 		walletapp.EventData{Success: true, Data: "Delete Success"})
-
 }

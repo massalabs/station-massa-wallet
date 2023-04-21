@@ -78,7 +78,6 @@ func (w *Wallet) PromptPassword(
 				walletapp.EventData{Success: false, Data: errStr, Error: "timeoutError"})
 			return "", fmt.Errorf(errStr)
 		}
-
 	}
 }
 
