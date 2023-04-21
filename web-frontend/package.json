@@ -17,8 +17,12 @@
     "prepare": "cd .. && husky install web-frontend/.husky"
   },
   "dependencies": {
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0",
+    "sort-by": "^0.0.2"
   },
   "devDependencies": {
     "@massalabs/eslint-config": "^0.0.9",
