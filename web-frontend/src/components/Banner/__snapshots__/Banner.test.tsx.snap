@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Banner should render a banner with the given text 1`] = `
+<h1
+  className="text-center text-4xl font-semibold text-black leading-10 tracking-massa"
+>
+  Welcome to My Awesome React TypeScript App!
+</h1>
+`;
