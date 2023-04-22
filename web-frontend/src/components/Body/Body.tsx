@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface BodyProps {
+export interface BodyProps {
   children: React.ReactNode;
 }
 
