@@ -4,7 +4,8 @@ exports[`Body should render a body with the given text 1`] = `
 <p
   className="text-base font-medium text-black leading-6 tracking-massa"
 >
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc consequat aliquam felis, ac vestibulum nisl
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc consequat aliquam felis,
+			ac vestibulum nisl
 			placerat in. In hac habitasse platea dictumst. Pellentesque convallis erat eu enim tincidunt, a consectetur
 			elit efficitur.
 </p>
