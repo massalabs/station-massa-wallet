@@ -1,12 +1,17 @@
+import Banner from '../components/Banner/Banner';
 import LandingPage from '../layouts/LandingPage/LandingPage';
 
 export default function Welcome() {
   return (
     <LandingPage>
-      <div>
-        <h1>Welcome to the web-frontend!</h1>
-        <p>Here you can find the web-frontend of the project.</p>
-        <p></p>
+      <div className="">
+        <Banner>
+          Welcome on
+          <br />
+          Massa<span className="text-green">wallet</span>
+        </Banner>
+        <button>Create an account</button>
+        <button>Import an existing account</button>
       </div>
     </LandingPage>
   );

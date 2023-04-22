@@ -1,13 +1,11 @@
-import Banner from '../components/Banner/Banner';
+import Banner from '../components/Banner';
 import LandingPage from '../layouts/LandingPage/LandingPage';
-import Body from '../components/Body';
 
 export default function CreateAccount() {
   return (
     <LandingPage>
       <div className="">
-        <Banner>Hey!</Banner>
-        <Body>Select an account</Body>
+        <Banner>Add an account</Banner>
         <button>Create an account</button>
         <button>Import an existing account</button>
       </div>

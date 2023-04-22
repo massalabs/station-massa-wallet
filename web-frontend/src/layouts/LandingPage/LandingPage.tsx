@@ -9,7 +9,7 @@ interface LandingPageProps {
 
 export default function LandingPage(props: LandingPageProps) {
   return (
-    <div className="bg-landing-page bg-no-repeat bg-cover bg-center min-h-screen">
+    <div className="bg-green bg-landing-page bg-no-repeat bg-cover bg-center min-h-screen">
       {props.children}
     </div>
   );
