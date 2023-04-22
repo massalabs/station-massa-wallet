@@ -9,6 +9,10 @@ export default {
     },
     colors: {
       'bg-primary': '#151A26',
+      green: '#1AE19D',
+    },
+    letterSpacing: {
+      massa: '-0.01em',
     },
   },
   plugins: [],
