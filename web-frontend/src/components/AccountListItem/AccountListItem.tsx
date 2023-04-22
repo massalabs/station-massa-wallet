@@ -1,14 +1,14 @@
-import MenuActive from './MenuActive';
-import AccountDefaultThumbnail from '../assets/account-default-thumbnail.svg';
-import IcoAmountDark from '../assets/ico-amount-dark.svg';
-import Amount from './Amount';
+import MenuActive from '../MenuActive';
+import AccountDefaultThumbnail from '../../assets/account-thumbnail-default.svg';
+import IcoAmountDark from '../../assets/ico-amount-dark.svg';
+import Amount from '../Amount';
 
-interface AccountListProps {
+export interface AccountListItemProps {
   name: string;
   amount: number;
 }
 
-export default function AccountListItem(props: AccountListProps) {
+export default function AccountListItem(props: AccountListItemProps) {
   return (
     <div className="flex flex-row justify-between align-center py-2 px-3 gap-48">
       <img src={AccountDefaultThumbnail} alt="account default thumbnail" />
