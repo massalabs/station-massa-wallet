@@ -124,7 +124,7 @@ paths:
         - $ref: "#/parameters/nickname"
       responses:
         200:
-          description: Downlad the account file
+          description: Download the account file
           schema:
             type: file
         400:

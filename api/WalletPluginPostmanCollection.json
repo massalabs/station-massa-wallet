@@ -491,12 +491,7 @@
 			"name": "rest Wallet Get",
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json"
-					}
-				],
+				"header": [],
 				"url": {
 					"raw": "{{baseURL}}/rest/wallet/{{nickname}}",
 					"host": [
@@ -608,6 +603,403 @@
 					},
 					"status": "Not Found",
 					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				}
+			]
+		},
+		{
+			"name": "rest Wallet Get decrytped",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/rest/wallet/{{nickname}}?ciphered=false",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"wallet",
+						"{{nickname}}"
+					],
+					"query": [
+						{
+							"key": "ciphered",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Wallet retrieved.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"nickname\": \"eu Lorem dolor non nulla\",\n  \"address\": \"labore id nulla\",\n  \"keyPairs\": [\n    {\n      \"privateKey\": \"adipisicing nulla aute\",\n      \"publicKey\": \"cupidatat sint incididunt\",\n      \"salt\": \"laboris dolor culpa Duis Lorem\",\n      \"nonce\": \"incididunt Ut\"\n    },\n    {\n      \"privateKey\": \"reprehenderit esse quis dolor\",\n      \"publicKey\": \"ipsum pariatur in\",\n      \"salt\": \"commodo magna\",\n      \"nonce\": \"ut occaecat ex\"\n    }\n  ]\n}"
+				},
+				{
+					"name": "Bad request.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Bad request.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				}
+			]
+		},
+		{
+			"name": "rest Wallet Export File",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/rest/wallet/export/file/{{nickname}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"rest",
+						"wallet",
+						"export",
+						"file",
+						"{{nickname}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Download the file",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/rest/wallet/export/file/{{nickname}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								"export",
+								"file",
+								"{{nickname}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "raw",
+					"header": [
+						{
+							"key": "Content-Disposition",
+							"value": "attachment; filename=\"wallet_created.yml\""
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/octet-stream"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 24 Apr 2023 12:52:52 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "Version: 0\nNickname: created\nAddress: AU...\nSalt: [248, ...]\nNonce: [19, ...]\nCipheredData: [166, ...]\nPublicKey: [25, ...]\n"
+				},
+				{
+					"name": "Bad request.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"wallet",
+								":nickname"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
 					"_postman_previewlanguage": "json",
 					"header": [
 						{
@@ -931,7 +1323,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"operation\":\"MjIzM3QyNHQ=\",\"correlationId\": \"4rWDT3mUYeaR2eZCk6I5cYaQ5dX2G67+bzRkX2y96z+OuJmnncH9QuXrFCkCb/dcIiIeCFwoMQ2NENdG6tmaqw==\"}",
+					"raw": "{\"operation\":\"MjIzM3QyNHQ=\",\"correlationId\": \"+mzVD4A9ZswOGylOp8aaVUnlEaaTa/ewub3cHUC8M3T0FCtszclHSRzqbcKbzCXxcwmDmaiRinIBFrtMWwnDcw==\"}",
 					"options": {
 						"raw": {
 							"language": "json"
