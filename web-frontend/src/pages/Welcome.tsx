@@ -4,7 +4,7 @@ import LandingPage from '../layouts/LandingPage/LandingPage';
 export default function Welcome() {
   return (
     <LandingPage>
-      <div className="">
+      <div>
         <Banner>
           Welcome on
           <br />
