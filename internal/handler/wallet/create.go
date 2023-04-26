@@ -6,28 +6,35 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-// HandleCreate handles a create request
-func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder {
-	if len(params.Body.Nickname) == 0 {
-		return operations.NewRestWalletCreateBadRequest().WithPayload(
+func NewCreateWallet(prompterApp wallet.WalletPrompterInterface) operations.CreateWalletHandler {
+	return &walletCreate{prompterApp: prompterApp}
+}
+
+type walletCreate struct {
+	prompterApp wallet.WalletPrompterInterface
+}
+
+func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.Responder {
+
+	nickname := string(params.Body.Nickname)
+	//nolint:gosimple
+	password, err := wallet.PromptCreatePassword(w.prompterApp, nickname)
+	if err != nil {
+		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorCreateNoNickname,
-				Message: "Error: nickname field is mandatory.",
+				Code:    errorCanceledAction,
+				Message: "Unable to unprotect wallet",
 			})
 	}
 
-	if len(params.Body.Password) == 0 {
-		return operations.NewRestWalletCreateBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorCreateNoPassword,
-				Message: "Error: password field is mandatory.",
-			})
-	}
+	w.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		walletapp.EventData{Success: true, Data: "New password created"})
 
-	newWallet, err := wallet.Generate(string(params.Body.Nickname), params.Body.Password)
+	newWallet, err := wallet.Generate(nickname, password)
 	if err != nil {
 		return operations.NewRestWalletCreateInternalServerError().WithPayload(
 			&models.Error{
@@ -40,7 +47,7 @@ func HandleCreate(params operations.RestWalletCreateParams) middleware.Responder
 }
 
 func New(newWallet *wallet.Wallet) middleware.Responder {
-	return operations.NewRestWalletCreateOK().WithPayload(
+	return operations.NewCreateWalletOK().WithPayload(
 		&models.Wallet{
 			Nickname: models.Nickname(newWallet.Nickname),
 			Address:  newWallet.Address,
