@@ -62,7 +62,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     post:
-      operationId: restWalletCreate
+      operationId: createWallet
       parameters:
         - in: body
           name: body
@@ -71,14 +71,9 @@ paths:
             type: object
             required:
               - nickname
-              - password
             properties:
               nickname:
                 $ref: "#/definitions/Nickname"
-              password:
-                description: Private key password.
-                type: string
-                x-nullable: false
       produces:
         - application/json
       responses:

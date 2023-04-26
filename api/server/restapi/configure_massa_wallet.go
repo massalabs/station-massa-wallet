@@ -57,11 +57,6 @@ func configureAPI(api *operations.MassaWalletAPI) http.Handler {
 			return middleware.NotImplemented("operation operations.DefaultPage has not yet been implemented")
 		})
 	}
-	if api.RestWalletCreateHandler == nil {
-		api.RestWalletCreateHandler = operations.RestWalletCreateHandlerFunc(func(params operations.RestWalletCreateParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestWalletCreate has not yet been implemented")
-		})
-	}
 	if api.RestWalletDeleteHandler == nil {
 		api.RestWalletDeleteHandler = operations.RestWalletDeleteHandlerFunc(func(params operations.RestWalletDeleteParams) middleware.Responder {
 			return middleware.NotImplemented("operation operations.RestWalletDelete has not yet been implemented")

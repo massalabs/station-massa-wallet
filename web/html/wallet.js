@@ -59,12 +59,10 @@ async function getWallets() {
 // Create a wallet through POST query
 function createWallet() {
     const nicknameCreate = document.getElementById("nicknameCreate").value;
-    const password = document.getElementById("password").value;
 
     axios
         .post(addPrefixUrl("rest/wallet"), {
             nickname: nicknameCreate,
-            password: password,
         })
         .then((resp) => {
             tableInsert(resp.data);
