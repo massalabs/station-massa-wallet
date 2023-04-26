@@ -46,6 +46,7 @@
   padding: 0 10px;
   background-color: rgba(240, 240, 240, 1);
   -webkit-font-smoothing: antialiased;
+  margin-bottom: 8px;
 }
 
 .input-box .input:hover {
