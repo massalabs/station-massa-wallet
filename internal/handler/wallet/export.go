@@ -18,18 +18,21 @@ import (
 // It will serve the yaml file so that the client can download it.
 func HandleExportFile(params operations.RestWalletExportFileParams) middleware.Responder {
 	wlt, err := wallet.Load(params.Nickname)
-	if err == wallet.ErrorAccountNotFound {
-		return operations.NewRestWalletExportFileNotFound().WithPayload(
-			&models.Error{
-				Code:    errorExportWallet,
-				Message: err.Error(),
-			})
-	} else if err != nil {
-		return operations.NewRestWalletExportFileBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorExportWallet,
-				Message: err.Error(),
-			})
+
+	if err != nil {
+		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
+			return operations.NewRestWalletExportFileNotFound().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: err.Error(),
+				})
+		} else {
+			return operations.NewRestWalletExportFileBadRequest().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: err.Error(),
+				})
+		}
 	}
 
 	pathToWallet, err := wlt.FilePath()

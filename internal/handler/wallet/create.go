@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"strings"
+
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
@@ -20,11 +22,20 @@ type walletCreate struct {
 
 func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.Responder {
 
-	nickname := string(params.Body.Nickname)
+	nickname := strings.TrimSpace(string(params.Body.Nickname))
+
+	if len(nickname) == 0 {
+		return operations.NewCreateWalletBadRequest().WithPayload(
+			&models.Error{
+				Code:    errorCreateNoNickname,
+				Message: "Error: nickname field is mandatory.",
+			})
+	}
+
 	//nolint:gosimple
 	password, err := wallet.PromptCreatePassword(w.prompterApp, nickname)
 	if err != nil {
-		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
+		return operations.NewCreateWalletInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCanceledAction,
 				Message: "Unable to unprotect wallet",
@@ -36,7 +47,7 @@ func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.R
 
 	newWallet, err := wallet.Generate(nickname, password)
 	if err != nil {
-		return operations.NewRestWalletCreateInternalServerError().WithPayload(
+		return operations.NewCreateWalletInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCreateNew,
 				Message: err.Error(),

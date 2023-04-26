@@ -6,7 +6,6 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
-	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -34,7 +33,9 @@ const (
 	PrivateKeyPrefix          = "S"
 )
 
-var ErrorAccountNotFound = errors.New("Account not found")
+func ErrorAccountNotFound(nickname string) error {
+	return fmt.Errorf("account '%s'not found", nickname)
+}
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
@@ -259,7 +260,7 @@ func Load(nickname string) (*Wallet, error) {
 	}
 
 	if _, err := os.Stat(filePath); err != nil {
-		return nil, ErrorAccountNotFound
+		return nil, ErrorAccountNotFound(nickname)
 	}
 
 	wallet, err := loadFile(filePath)
