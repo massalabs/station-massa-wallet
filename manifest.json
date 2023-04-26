@@ -1,0 +1,9 @@
+{
+    "author" : "Massalabs",
+    "name" : "wallet",
+    "description" : "wallet plugin",
+    "logo" : "wallet.svg",
+    "home" : "",
+    "version" : "0.0.12",
+    "apispec":""
+}
