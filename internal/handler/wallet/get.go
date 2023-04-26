@@ -23,18 +23,21 @@ type walletGet struct {
 
 func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Responder {
 	wlt, err := wallet.Load(params.Nickname)
-	if err == wallet.ErrorAccountNotFound {
-		return operations.NewRestWalletGetNotFound().WithPayload(
-			&models.Error{
-				Code:    errorGetWallets,
-				Message: err.Error(),
-			})
-	} else if err != nil {
-		return operations.NewRestWalletGetBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorGetWallets,
-				Message: err.Error(),
-			})
+
+	if err != nil {
+		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
+			return operations.NewRestWalletGetNotFound().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: err.Error(),
+				})
+		} else {
+			return operations.NewRestWalletGetBadRequest().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: err.Error(),
+				})
+		}
 	}
 
 	modelWallet := createModelWallet(*wlt)
