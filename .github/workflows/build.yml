@@ -64,15 +64,20 @@ jobs:
           export GOARCH=${{ matrix.arch }}
           export CGO_ENABLED=1
           CC=${{ matrix.cc }} go build -o $TARGET_NAME${{ matrix.ext }} cmd/massa-wallet/thyra-plugin-wallet.go
+      - name: copy the logo
+        run: cp web/html/wallet.svg .
       - name: Upload artifacts
         if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.TARGET_NAME }}
-          path: ${{ env.TARGET_NAME }}${{ matrix.ext }}
+          path: |
+            ${{ env.TARGET_NAME }}${{ matrix.ext }}
+            wallet.svg
+            manifest.json
       - name: Zip binary
         if: ${{ inputs.tag_name != '' }}
-        run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }}
+        run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }} wallet.svg manifest.json
       - name: Create release and upload binaries
         if: ${{ inputs.tag_name != '' }}
         uses: softprops/action-gh-release@v1
