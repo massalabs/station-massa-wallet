@@ -34,8 +34,7 @@ runs:
       shell: bash
       run: |
         sudo apt update
-        sudo apt install -y libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64
-        sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev
+        sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev gcc-mingw-w64-x86-64
 
     - name: installing Go Swagger and wails
       shell: bash
