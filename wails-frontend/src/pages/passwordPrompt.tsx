@@ -19,13 +19,27 @@ const PasswordPrompt = () => {
     switch (req.Action) {
       case promptAction.deleteReq:
         return 'Delete';
+      case promptAction.newPasswordReq:
+        return 'Define a password';
       default:
         return 'Apply';
     }
   };
 
-  const [applyResultMsg, setPasswordResult] = useState('do it!');
+  const baselineStr = (req: promptRequest) => {
+    switch (req.Action) {
+      case promptAction.deleteReq:
+        return 'Enter your password to delete your wallet';
+      case promptAction.newPasswordReq:
+        return 'Enter a secure password';
+      default:
+        return 'Enter your password below to validate';
+    }
+  };
+
+  const [resultMsg, setResultMsg] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConf] = useState(undefined);
 
   const hideAndReload = () => {
     Hide();
@@ -46,27 +60,33 @@ const PasswordPrompt = () => {
       });
       setTimeout(hideAndReload, 2000);
     } else {
-      setPasswordResult(result.Data);
+      setResultMsg(result.Data);
       if (result.Error === 'timeoutError') {
         setTimeout(hideAndReload, 2000);
       }
     }
   };
 
-  const applyPassword = () => {
+  const applyPassword = (event: any) => {
+    console.log('event', event);
     if (password.length) {
+      if (passwordConfirm && password !== passwordConfirm) {
+        setResultMsg("Passwords don't match");
+        return;
+      }
       EventsOnce(events.passwordResult, handleApplyResult);
       ApplyPassword(password);
     }
   };
 
   const updatePassword = (e: any) => setPassword(e.target.value);
+  const updatePasswordConfirm = (e: any) => setPasswordConf(e.target.value);
 
   return (
     <section class="PasswordPrompt">
       <div>{req.Msg}</div>
       <div id="result" className="result">
-        Enter your password below to validate 👇
+        {baselineStr(req)}
       </div>
       <div id="input" className="input-box">
         <input
@@ -76,8 +96,22 @@ const PasswordPrompt = () => {
           autoComplete="off"
           name="input"
           type="password"
+          placeholder="Enter your password"
         />
       </div>
+      {req.Action === promptAction.newPasswordReq && (
+        <div id="input" className="input-box">
+          <input
+            id="name"
+            className="input"
+            onChange={updatePasswordConfirm}
+            autoComplete="off"
+            name="input"
+            type="password"
+            placeholder="Confirm your password"
+          />
+        </div>
+      )}
       <div>
         <button className="btn" onClick={handleCancel}>
           Cancel
@@ -87,7 +121,7 @@ const PasswordPrompt = () => {
         </button>
       </div>
       <div id="result" className="result">
-        {applyResultMsg}
+        {resultMsg}
       </div>
     </section>
   );

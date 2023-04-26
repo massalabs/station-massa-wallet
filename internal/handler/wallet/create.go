@@ -38,7 +38,7 @@ func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.R
 		return operations.NewCreateWalletInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCanceledAction,
-				Message: "Unable to unprotect wallet",
+				Message: "Unable to create wallet",
 			})
 	}
 
