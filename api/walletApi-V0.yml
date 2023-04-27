@@ -88,6 +88,32 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+    put:
+      operationId: restImportAccount
+      description: Import a new account
+      produces:
+        - application/json  
+      responses:
+        "200":
+          description: Account imported.
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
   /api/accounts/{nickname}:
     get:
       operationId: restAccountGet
@@ -164,29 +190,6 @@ paths:
             $ref: "#/definitions/Error"
         "404":
           description: Not found.
-          schema:
-            $ref: "#/definitions/Error"
-        "500":
-          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
-          schema:
-            $ref: "#/definitions/Error"
-  /api/accounts/{nickname}/import:
-    post:
-      operationId: restAccountImport
-      description: Import a new account (not implemented, see https://github.com/massalabs/thyra-plugin-wallet/pull/120)
-      produces:
-        - application/json   
-      parameters:
-        - $ref: "#/parameters/nickname"
-      responses:
-        "204":
-          description: Account imported.
-        "400":
-          description: Bad request.
-          schema:
-            $ref: "#/definitions/Error"
-        "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
         "500":

@@ -1,19 +1,18 @@
 import { useState } from 'preact/hooks';
-import {
-  AbortAction,
-  ApplyPassword,
-  Hide,
-} from '../../wailsjs/go/walletapp/WalletApp';
-import { EventsOnce, WindowReloadApp } from '../../wailsjs/runtime';
+import { ApplyPassword } from '../../wailsjs/go/walletapp/WalletApp';
+import { EventsOnce } from '../../wailsjs/runtime';
 import { h } from 'preact';
 import { events, promptAction, promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { handleApplyResult, handleCancel, hideAndReload } from '../utils/utils';
 
 const PasswordPrompt = () => {
-  const navigate = useNavigate();
+  const nav = useNavigate();
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
+
+  const successMsg = 'Password applied successfully!';
 
   const applyStr = (req: promptRequest) => {
     switch (req.Action) {
@@ -41,32 +40,6 @@ const PasswordPrompt = () => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConf] = useState(undefined);
 
-  const hideAndReload = () => {
-    Hide();
-    // Reload the wails frontend
-    WindowReloadApp();
-  };
-
-  const handleCancel = () => {
-    AbortAction();
-    hideAndReload();
-  };
-
-  const handleApplyResult = (result: any) => {
-    console.log('result', result);
-    if (result.Success) {
-      navigate('/success', {
-        state: { msg: 'Password applied successfully!' },
-      });
-      setTimeout(hideAndReload, 2000);
-    } else {
-      setResultMsg(result.Data);
-      if (result.Error === 'timeoutError') {
-        setTimeout(hideAndReload, 2000);
-      }
-    }
-  };
-
   const applyPassword = (event: any) => {
     console.log('event', event);
     if (password.length) {
@@ -74,7 +47,10 @@ const PasswordPrompt = () => {
         setResultMsg("Passwords don't match");
         return;
       }
-      EventsOnce(events.passwordResult, handleApplyResult);
+      EventsOnce(
+        events.passwordResult,
+        handleApplyResult(nav, successMsg, setResultMsg),
+      );
       ApplyPassword(password);
     }
   };
@@ -85,9 +61,7 @@ const PasswordPrompt = () => {
   return (
     <section class="PasswordPrompt">
       <div>{req.Msg}</div>
-      <div id="result" className="result">
-        {baselineStr(req)}
-      </div>
+      <div className="baseline">{baselineStr(req)}</div>
       <div id="input" className="input-box">
         <input
           id="name"
@@ -120,9 +94,7 @@ const PasswordPrompt = () => {
           {applyStr(req)}
         </button>
       </div>
-      <div id="result" className="result">
-        {resultMsg}
-      </div>
+      <div className="baseline">{resultMsg}</div>
     </section>
   );
 };

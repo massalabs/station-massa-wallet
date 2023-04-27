@@ -235,7 +235,7 @@ func LoadAll() ([]Wallet, error) {
 		filePath := path.Join(walletDir, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yml") {
-			wallet, err := loadFile(filePath)
+			wallet, err := LoadFile(filePath)
 			if err != nil {
 				return nil, err
 			}
@@ -263,7 +263,7 @@ func Load(nickname string) (*Wallet, error) {
 		return nil, ErrorAccountNotFound(nickname)
 	}
 
-	wallet, err := loadFile(filePath)
+	wallet, err := LoadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +271,7 @@ func Load(nickname string) (*Wallet, error) {
 	return &wallet, nil
 }
 
-func loadFile(filePath string) (Wallet, error) {
+func LoadFile(filePath string) (Wallet, error) {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return Wallet{}, fmt.Errorf("reading file '%s': %w", filePath, err)

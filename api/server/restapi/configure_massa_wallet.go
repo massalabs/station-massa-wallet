@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
-	"github.com/go-openapi/runtime/middleware"
 	"github.com/rs/cors"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
@@ -51,49 +50,6 @@ func configureAPI(api *operations.MassaWalletAPI) http.Handler {
 	api.TextWebpProducer = runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
 		return errors.NotImplemented("textWebp producer has not yet been implemented")
 	})
-
-	if api.DefaultPageHandler == nil {
-		api.DefaultPageHandler = operations.DefaultPageHandlerFunc(func(params operations.DefaultPageParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.DefaultPage has not yet been implemented")
-		})
-	}
-	if api.RestAccountDeleteHandler == nil {
-		api.RestAccountDeleteHandler = operations.RestAccountDeleteHandlerFunc(func(params operations.RestAccountDeleteParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestAccountDelete has not yet been implemented")
-		})
-	}
-	if api.RestAccountGetHandler == nil {
-		api.RestAccountGetHandler = operations.RestAccountGetHandlerFunc(func(params operations.RestAccountGetParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestAccountGet has not yet been implemented")
-		})
-	}
-	if api.RestAccountImportHandler == nil {
-		api.RestAccountImportHandler = operations.RestAccountImportHandlerFunc(func(params operations.RestAccountImportParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestAccountImport has not yet been implemented")
-		})
-	}
-	if api.RestAccountListHandler == nil {
-		api.RestAccountListHandler = operations.RestAccountListHandlerFunc(func(params operations.RestAccountListParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestAccountList has not yet been implemented")
-		})
-	}
-	if api.RestAccountSignOperationHandler == nil {
-		api.RestAccountSignOperationHandler = operations.RestAccountSignOperationHandlerFunc(func(params operations.RestAccountSignOperationParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestAccountSignOperation has not yet been implemented")
-		})
-	}
-	// route for the legacy wallet frontend
-	if api.WebHandler == nil {
-		api.WebHandler = operations.WebHandlerFunc(func(params operations.WebParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.Web has not yet been implemented")
-		})
-	}
-	// route for the ReactJS wallet frontend
-	if api.WebAppHandler == nil {
-		api.WebAppHandler = operations.WebAppHandlerFunc(func(params operations.WebAppParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.WebApp has not yet been implemented")
-		})
-	}
 
 	api.PreServerShutdown = func() {}
 

@@ -7,15 +7,18 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
 type WalletApp struct {
-	Ctx          context.Context
-	CtrlChan     chan PromptCtrl
-	PasswordChan chan string
-	Shutdown     bool
+	Ctx            context.Context
+	CtrlChan       chan PromptCtrl
+	PasswordChan   chan string
+	PrivateKeyChan chan string
+	WalletFileChan chan string
+	Shutdown       bool
 }
 
 func (a *WalletApp) cleanExit() {
@@ -29,9 +32,11 @@ func (a *WalletApp) cleanExit() {
 
 func NewWalletApp() *WalletApp {
 	app := &WalletApp{
-		CtrlChan:     make(chan PromptCtrl),
-		PasswordChan: make(chan string),
-		Shutdown:     false,
+		CtrlChan:       make(chan PromptCtrl),
+		PasswordChan:   make(chan string),
+		PrivateKeyChan: make(chan string),
+		WalletFileChan: make(chan string),
+		Shutdown:       false,
 	}
 	go app.cleanExit()
 	return app
@@ -78,4 +83,33 @@ func (a *WalletApp) Show() {
 
 func (a *WalletApp) Hide() {
 	runtime.WindowHide(a.Ctx)
+}
+
+// App struct
+type selectFileResult struct {
+	Err      string `json:"err"`
+	FilePath string `json:"filePath"`
+	Nickname string `json:"nickname"`
+}
+
+func (a *WalletApp) SelectAccountFile() selectFileResult {
+	filePath, err := runtime.OpenFileDialog(a.Ctx, runtime.OpenDialogOptions{})
+	if err != nil {
+		return selectFileResult{Err: err.Error()}
+	}
+	wallet, err := wallet.LoadFile(filePath)
+	if err != nil {
+		return selectFileResult{Err: err.Error()}
+	}
+
+	return selectFileResult{FilePath: filePath, Nickname: wallet.Nickname}
+}
+
+func (a *WalletApp) ImportWalletFile(filePath string) {
+	a.WalletFileChan <- filePath
+}
+
+func (a *WalletApp) ImportPrivateKey(pkey string) {
+	fmt.Println("Received password input!")
+	a.PrivateKeyChan <- pkey
 }

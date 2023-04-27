@@ -14,6 +14,18 @@ export function Hide() {
   return window['go']['walletapp']['WalletApp']['Hide']();
 }
 
+export function ImportPrivateKey(arg1) {
+  return window['go']['walletapp']['WalletApp']['ImportPrivateKey'](arg1);
+}
+
+export function ImportWalletFile(arg1) {
+  return window['go']['walletapp']['WalletApp']['ImportWalletFile'](arg1);
+}
+
+export function SelectAccountFile() {
+  return window['go']['walletapp']['WalletApp']['SelectAccountFile']();
+}
+
 export function Show() {
   return window['go']['walletapp']['WalletApp']['Show']();
 }
