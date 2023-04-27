@@ -9,15 +9,16 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewCreateWallet(prompterApp wallet.WalletPrompterInterface) operations.CreateWalletHandler {
+func NewCreateWallet(prompterApp prompt.WalletPrompterInterface) operations.CreateWalletHandler {
 	return &walletCreate{prompterApp: prompterApp}
 }
 
 type walletCreate struct {
-	prompterApp wallet.WalletPrompterInterface
+	prompterApp prompt.WalletPrompterInterface
 }
 
 func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.Responder {
@@ -33,7 +34,7 @@ func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.R
 	}
 
 	//nolint:gosimple
-	password, err := wallet.PromptCreatePassword(w.prompterApp, nickname)
+	password, err := prompt.PromptCreatePassword(w.prompterApp, nickname)
 	if err != nil {
 		return operations.NewCreateWalletInternalServerError().WithPayload(
 			&models.Error{

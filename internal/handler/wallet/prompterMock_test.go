@@ -2,7 +2,7 @@ package wallet
 
 import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
 type walletPrompterMock struct {
@@ -30,4 +30,4 @@ func NewWalletPrompterMock(app *walletapp.WalletApp, resultChannel chan walletap
 }
 
 // Verifies at compilation time that walletPrompterMock implements WalletPrompterInterface interface.
-var _ wallet.WalletPrompterInterface = &walletPrompterMock{}
+var _ prompt.WalletPrompterInterface = &walletPrompterMock{}

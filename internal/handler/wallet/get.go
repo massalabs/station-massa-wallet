@@ -8,17 +8,18 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // NewGet instantiates a Get Handler
 // The "classical" way is not possible because we need to pass to the handler a wallet.WalletPrompterInterface.
-func NewGet(prompterApp wallet.WalletPrompterInterface) operations.RestWalletGetHandler {
+func NewGet(prompterApp prompt.WalletPrompterInterface) operations.RestWalletGetHandler {
 	return &walletGet{prompterApp: prompterApp}
 }
 
 type walletGet struct {
-	prompterApp wallet.WalletPrompterInterface
+	prompterApp prompt.WalletPrompterInterface
 }
 
 func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Responder {
@@ -44,11 +45,11 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 
 	// if request not ciphered data, ask for password and unprotect the wallet
 	if params.Ciphered != nil && !*params.Ciphered {
-		promptData := &wallet.PromptRequestData{
+		promptData := &prompt.PromptRequestData{
 			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 			Data: nil,
 		}
-		_, err := wlt.PromptPassword(g.prompterApp, walletapp.Export, promptData)
+		_, err := prompt.PromptPassword(g.prompterApp, wlt, walletapp.Export, promptData)
 		if err != nil {
 			return operations.NewRestWalletGetLocked().WithPayload(
 				&models.Error{

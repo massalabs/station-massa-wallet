@@ -3,12 +3,12 @@ package wallet
 import (
 	"github.com/bluele/gcache"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
 // AppendEndpoints appends wallet endpoints to the API
 // Note: the password prompter is mandatory for sign endpoint
-func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp wallet.WalletPrompterInterface, gc gcache.Cache) {
+func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) {
 	api.CreateWalletHandler = NewCreateWallet(prompterApp)
 	api.RestWalletDeleteHandler = NewDelete(prompterApp)
 	api.RestWalletImportHandler = NewImport()

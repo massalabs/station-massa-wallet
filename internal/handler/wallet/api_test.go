@@ -11,7 +11,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
 // Prompt struct will be used to drive the password prompter externally
@@ -31,7 +31,7 @@ type PrivateKeyPrompt struct {
 
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
-func MockAPI() (*operations.MassaWalletAPI, wallet.WalletPrompterInterface, chan walletapp.EventData, error) {
+func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, chan walletapp.EventData, error) {
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
