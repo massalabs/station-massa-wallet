@@ -67,7 +67,6 @@ jobs:
       - name: copy the logo
         run: cp web/html/wallet.svg .
       - name: Upload artifacts
-        if: ${{ inputs.tag_name == '' && github.ref_name == 'main' }}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.TARGET_NAME }}
