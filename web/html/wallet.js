@@ -1,7 +1,3 @@
-document
-    .getElementById("import-wallet")
-    .addEventListener("click", openNickNameModal);
-
 closeModalOnClickOn("close-button");
 closeModalOnClickOn("nicknameCancelBtn");
 getWallets();
@@ -27,23 +23,20 @@ function closeModalOnClickOn(elementID) {
 
 let wallets = [];
 
-// Import a wallet through PUT query
 async function importWallet() {
-    let nickname = document.getElementById("nicknameInput").value;
     axios
-        .post(addPrefixUrl(`rest/accounts/import/${nickname}`))
+        .put(addPrefixUrl(`api/accounts`))
         .then((resp) => {
             tableInsert(resp.data);
             wallets.push(resp.data);
         })
         .catch(handleAPIError);
-    closeModal();
 }
 
 // Create a wallet through POST query
 async function getWallets() {
     axios
-        .get(addPrefixUrl("rest/accounts"))
+        .get(addPrefixUrl("api/accounts"))
         .then((resp) => {
             if (resp) {
                 const data = resp.data;
@@ -61,7 +54,7 @@ function createAccount() {
     const nicknameCreate = document.getElementById("nicknameCreate").value;
 
     axios
-        .post(addPrefixUrl("rest/accounts"), {
+        .post(addPrefixUrl("api/accounts"), {
             nickname: nicknameCreate,
         })
         .then((resp) => {
@@ -113,7 +106,7 @@ function deleteRow(element) {
     const nickname = tBody.rows[rowIndex - 1].cells[1].innerHTML;
 
     axios
-        .delete(addPrefixUrl(`rest/accounts/${nickname}`))
+        .delete(addPrefixUrl(`api/accounts/${nickname}`))
         .then((_) => {
             wallets = wallets.filter((wallet) => wallet.nickname != nickname);
             document.getElementById("user-wallet-table").deleteRow(rowIndex);

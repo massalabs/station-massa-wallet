@@ -11,7 +11,7 @@ import (
 func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) {
 	api.RestCreateAccountHandler = NewCreateAccount(prompterApp)
 	api.RestAccountDeleteHandler = NewDelete(prompterApp)
-	api.RestAccountImportHandler = NewImport()
+	api.RestImportAccountHandler = NewImport(prompterApp)
 	api.RestAccountListHandler = operations.RestAccountListHandlerFunc(HandleList)
 	api.RestAccountSignOperationHandler = NewSign(prompterApp, gc)
 	api.RestAccountGetHandler = NewGet(prompterApp)

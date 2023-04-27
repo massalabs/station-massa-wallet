@@ -11,7 +11,7 @@ import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 )
 
-func Test_walletCreate_validation(t *testing.T) {
+func Test_walletCreate_Handle(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
 	if err != nil {
 		panic(err)

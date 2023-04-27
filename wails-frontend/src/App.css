@@ -15,7 +15,7 @@
   background-origin: content-box;
 }
 
-.result {
+.baseline {
   height: 20px;
   line-height: 20px;
   margin: 1.5rem auto;
