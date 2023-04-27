@@ -18,6 +18,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
@@ -26,12 +27,12 @@ const passwordExpirationTime = time.Second * 60 * 30
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(prompterApp wallet.WalletPrompterInterface, gc gcache.Cache) operations.RestWalletSignOperationHandler {
+func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.RestWalletSignOperationHandler {
 	return &walletSign{gc: gc, prompterApp: prompterApp}
 }
 
 type walletSign struct {
-	prompterApp wallet.WalletPrompterInterface
+	prompterApp prompt.WalletPrompterInterface
 	gc          gcache.Cache
 }
 
@@ -46,12 +47,12 @@ func (s *walletSign) Handle(params operations.RestWalletSignOperationParams) mid
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		promptData := &wallet.PromptRequestData{
+		promptData := &prompt.PromptRequestData{
 			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 			Data: nil,
 		}
 
-		_, err := wlt.PromptPassword(s.prompterApp, walletapp.Sign, promptData)
+		_, err := prompt.PromptPassword(s.prompterApp, wlt, walletapp.Sign, promptData)
 		if err != nil {
 			return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 				&models.Error{

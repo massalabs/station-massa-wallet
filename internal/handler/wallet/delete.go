@@ -8,15 +8,16 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewDelete(prompterApp wallet.WalletPrompterInterface) operations.RestWalletDeleteHandler {
+func NewDelete(prompterApp prompt.WalletPrompterInterface) operations.RestWalletDeleteHandler {
 	return &walletDelete{prompterApp: prompterApp}
 }
 
 type walletDelete struct {
-	prompterApp wallet.WalletPrompterInterface
+	prompterApp prompt.WalletPrompterInterface
 }
 
 // HandleDelete handles a delete request
@@ -35,13 +36,13 @@ func (w *walletDelete) Handle(params operations.RestWalletDeleteParams) middlewa
 	return operations.NewRestWalletDeleteNoContent()
 }
 
-func handleDelete(wlt *wallet.Wallet, prompterApp wallet.WalletPrompterInterface) {
-	promptData := &wallet.PromptRequestData{
+func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface) {
+	promptData := &prompt.PromptRequestData{
 		Msg:  fmt.Sprintf("Deleting wallet %s:", wlt.Nickname),
 		Data: nil,
 	}
 
-	_, err := wlt.PromptPassword(prompterApp, walletapp.Password, promptData)
+	_, err := prompt.PromptPassword(prompterApp, wlt, walletapp.Password, promptData)
 	if err != nil {
 		return
 	}
