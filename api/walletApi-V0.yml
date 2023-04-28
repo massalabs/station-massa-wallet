@@ -1,7 +1,7 @@
 consumes:
   - application/json
 info:
-  description: Thyra plugin - Massa wallet
+  description: Thyra plugin - Massa Wallet
   title: massa-wallet
   version: 0.0.1
 host: localhost:8080
@@ -41,18 +41,19 @@ paths:
           description: Resource not found.
           schema:
             $ref: "#/definitions/Error"
-  /rest/wallet:
+  /rest/accounts:
     get:
-      operationId: restWalletList
+      operationId: restAccountList
+      description: Get all the accounts.
       produces:
         - application/json
       responses:
         "200":
-          description: Wallets retrieved
+          description: Accounts retrieved
           schema:
             type: array
             items:
-              $ref: "#/definitions/Wallet"
+              $ref: "#/definitions/Account"
         "400":
           description: Bad request.
           schema:
@@ -62,7 +63,8 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     post:
-      operationId: createWallet
+      operationId: createAccount
+      description: Generate a new account with new random keys
       parameters:
         - in: body
           name: body
@@ -78,9 +80,9 @@ paths:
         - application/json
       responses:
         "200":
-          description: New wallet created.
+          description: New account created.
           schema:
-            $ref: "#/definitions/Wallet"
+            $ref: "#/definitions/Account"
         "400":
           description: Bad request.
           schema:
@@ -93,16 +95,17 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /rest/wallet/import/{nickname}:
+  /rest/accounts/{nickname}/import:
     post:
-      operationId: restWalletImport
+      operationId: restAccountImport
+      description: Import a new account (not implemented, see https://github.com/massalabs/thyra-plugin-wallet/pull/120)
       produces:
         - application/json   
       parameters:
         - $ref: "#/parameters/nickname"
       responses:
         "204":
-          description: Wallet imported.
+          description: Account imported.
         "400":
           description: Bad request.
           schema:
@@ -115,9 +118,10 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /rest/wallet/export/file/{nickname}:
+  /rest/accounts/{nickname}/exportFile:
     get:
-      operationId: restWalletExportFile
+      operationId: restAccountExportFile
+      description: Download the account file corresponding to the nickname given in path.
       produces:
         - application/octet-stream
       parameters:
@@ -139,36 +143,10 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /rest/wallet/{nickname}:
-    delete:
-      operationId: restWalletDelete
-      parameters:
-        - $ref: "#/parameters/nickname"
-      produces:
-        - application/json
-      responses:
-        "204":
-          description: Wallet removed.
-          schema:
-            $ref: "#/definitions/Wallet"
-        "400":
-          description: Bad request.
-          schema:
-            $ref: "#/definitions/Error"
-        "404":
-          description: Not found.
-          schema:
-            $ref: "#/definitions/Error"
-        "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
-          schema:
-            $ref: "#/definitions/Error"
-        "500":
-          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
-          schema:
-            $ref: "#/definitions/Error"
+  /rest/accounts/{nickname}:
     get:
-      operationId: restWalletGet
+      operationId: restAccountGet
+      description: Get the account by nickname given in path, with the option to return the ciphered private key.
       parameters:
         - $ref: "#/parameters/nickname"
         - $ref: "#/parameters/ciphered"
@@ -176,9 +154,9 @@ paths:
         - application/json
       responses:
         "200":
-          description: Wallet retrieved.
+          description: Account retrieved.
           schema:
-            $ref: "#/definitions/Wallet"
+            $ref: "#/definitions/Account"
         "400":
           description: Bad request.
           schema:
@@ -199,9 +177,38 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /rest/wallet/{nickname}/signOperation:
+    delete:
+      operationId: restAccountDelete
+      description: Delete the account by nickname given in path.
+      parameters:
+        - $ref: "#/parameters/nickname"
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Account removed.
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /rest/accounts/{nickname}/signOperation:
     post:
-      operationId: restWalletSignOperation
+      operationId: restAccountSignOperation
+      description: Sign an operation with the account by nickname given in path.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -236,7 +243,7 @@ parameters:
     name: nickname
     type: string
     required: true
-    description: Wallet's short name.
+    description: Account's short name.
     x-nullable: false
   ciphered:
     in: query
@@ -299,12 +306,12 @@ definitions:
     type: string
     format: byte
   Nickname:
-    description: Wallet's short name.
+    description: Account's short name.
     type: string
     x-nullable: false
-  Wallet:
+  Account:
     type: object
-    description: Wallet object (V0).
+    description: Account object (V0).
     required:
       - nickname
       - address
@@ -313,11 +320,11 @@ definitions:
       nickname:
         $ref: "#/definitions/Nickname"
       address:
-        description: wallet's address.
+        description: Account's address.
         type: string
         x-nullable: false
       keyPair:
-        description: wallet's key pair.
+        description: Account's key pair.
         type: object
         x-nullable: false
         required:

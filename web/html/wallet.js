@@ -57,7 +57,7 @@ async function getWallets() {
 }
 
 // Create a wallet through POST query
-function createWallet() {
+function createAccount() {
     const nicknameCreate = document.getElementById("nicknameCreate").value;
 
     axios

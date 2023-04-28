@@ -16,18 +16,17 @@ import (
 
 // HandleExportFile handles a export file request
 // It will serve the yaml file so that the client can download it.
-func HandleExportFile(params operations.RestWalletExportFileParams) middleware.Responder {
+func HandleExportFile(params operations.RestAccountExportFileParams) middleware.Responder {
 	wlt, err := wallet.Load(params.Nickname)
-
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewRestWalletExportFileNotFound().WithPayload(
+			return operations.NewRestAccountExportFileNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
 				})
 		} else {
-			return operations.NewRestWalletExportFileBadRequest().WithPayload(
+			return operations.NewRestAccountExportFileBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
@@ -37,7 +36,7 @@ func HandleExportFile(params operations.RestWalletExportFileParams) middleware.R
 
 	pathToWallet, err := wlt.FilePath()
 	if err != nil {
-		return operations.NewRestWalletExportFileInternalServerError().WithPayload(
+		return operations.NewRestAccountExportFileInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorExportWallet,
 				Message: err.Error(),

@@ -298,7 +298,7 @@ func Generate(nickname string, password string) (*Wallet, error) {
 		return nil, fmt.Errorf("generating ed25519 keypair: %w", err)
 	}
 
-	wallet, err := CreateWalletFromKeys(nickname, privateKey, publicKey, password)
+	wallet, err := createAccountFromKeys(nickname, privateKey, publicKey, password)
 	if err != nil {
 		return nil, err
 	}
@@ -368,7 +368,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
 
-	wallet, err := CreateWalletFromKeys(nickname, privateKey, pubKeyBytes, password)
+	wallet, err := createAccountFromKeys(nickname, privateKey, pubKeyBytes, password)
 	if err != nil {
 		return nil, err
 	}
@@ -388,7 +388,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 	return wallet, nil
 }
 
-func CreateWalletFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, error) {
+func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, error) {
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {

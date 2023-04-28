@@ -13,7 +13,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewCreateWallet(prompterApp prompt.WalletPrompterInterface) operations.CreateWalletHandler {
+func NewCreateAccount(prompterApp prompt.WalletPrompterInterface) operations.CreateAccountHandler {
 	return &walletCreate{prompterApp: prompterApp}
 }
 
@@ -21,12 +21,11 @@ type walletCreate struct {
 	prompterApp prompt.WalletPrompterInterface
 }
 
-func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.Responder {
-
+func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.Responder {
 	nickname := strings.TrimSpace(string(params.Body.Nickname))
 
 	if len(nickname) == 0 {
-		return operations.NewCreateWalletBadRequest().WithPayload(
+		return operations.NewCreateAccountBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorCreateNoNickname,
 				Message: "Error: nickname field is mandatory.",
@@ -36,7 +35,7 @@ func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.R
 	//nolint:gosimple
 	password, err := prompt.PromptCreatePassword(w.prompterApp, nickname)
 	if err != nil {
-		return operations.NewCreateWalletInternalServerError().WithPayload(
+		return operations.NewCreateAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCanceledAction,
 				Message: "Unable to create wallet",
@@ -48,7 +47,7 @@ func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.R
 
 	newWallet, err := wallet.Generate(nickname, password)
 	if err != nil {
-		return operations.NewCreateWalletInternalServerError().WithPayload(
+		return operations.NewCreateAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCreateNew,
 				Message: err.Error(),
@@ -59,11 +58,11 @@ func (w *walletCreate) Handle(params operations.CreateWalletParams) middleware.R
 }
 
 func New(newWallet *wallet.Wallet) middleware.Responder {
-	return operations.NewCreateWalletOK().WithPayload(
-		&models.Wallet{
+	return operations.NewCreateAccountOK().WithPayload(
+		&models.Account{
 			Nickname: models.Nickname(newWallet.Nickname),
 			Address:  newWallet.Address,
-			KeyPair: models.WalletKeyPair{
+			KeyPair: models.AccountKeyPair{
 				PrivateKey: "",
 				PublicKey:  newWallet.GetPupKey(),
 				Salt:       "",

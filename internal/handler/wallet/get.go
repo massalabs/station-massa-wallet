@@ -14,7 +14,7 @@ import (
 
 // NewGet instantiates a Get Handler
 // The "classical" way is not possible because we need to pass to the handler a wallet.WalletPrompterInterface.
-func NewGet(prompterApp prompt.WalletPrompterInterface) operations.RestWalletGetHandler {
+func NewGet(prompterApp prompt.WalletPrompterInterface) operations.RestAccountGetHandler {
 	return &walletGet{prompterApp: prompterApp}
 }
 
@@ -22,18 +22,17 @@ type walletGet struct {
 	prompterApp prompt.WalletPrompterInterface
 }
 
-func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Responder {
+func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Responder {
 	wlt, err := wallet.Load(params.Nickname)
-
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewRestWalletGetNotFound().WithPayload(
+			return operations.NewRestAccountGetNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
 				})
 		} else {
-			return operations.NewRestWalletGetBadRequest().WithPayload(
+			return operations.NewRestAccountGetBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
@@ -51,7 +50,7 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 		}
 		_, err := prompt.PromptPassword(g.prompterApp, wlt, walletapp.Export, promptData)
 		if err != nil {
-			return operations.NewRestWalletGetLocked().WithPayload(
+			return operations.NewRestAccountGetLocked().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: "Unable to unprotect wallet",
@@ -61,7 +60,7 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 		g.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: true, Data: "Unprotect Success"})
 
-		modelWallet.KeyPair = models.WalletKeyPair{
+		modelWallet.KeyPair = models.AccountKeyPair{
 			PrivateKey: wlt.GetPrivKey(),
 			PublicKey:  wlt.GetPupKey(),
 			Salt:       wlt.GetSalt(),
@@ -69,34 +68,34 @@ func (g *walletGet) Handle(params operations.RestWalletGetParams) middleware.Res
 		}
 	}
 
-	return operations.NewRestWalletGetOK().WithPayload(&modelWallet)
+	return operations.NewRestAccountGetOK().WithPayload(&modelWallet)
 }
 
 // HandleList handles a list request
-func HandleList(params operations.RestWalletListParams) middleware.Responder {
+func HandleList(params operations.RestAccountListParams) middleware.Responder {
 	wallets, err := wallet.LoadAll()
 	if err != nil {
-		return operations.NewRestWalletListBadRequest().WithPayload(
+		return operations.NewRestAccountListBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: err.Error(),
 			})
 	}
 
-	var wlts []*models.Wallet
+	var wlts []*models.Account
 
 	for i := 0; i < len(wallets); i++ {
 		modelWallet := createModelWallet(wallets[i])
 		wlts = append(wlts, &modelWallet)
 	}
 
-	return operations.NewRestWalletListOK().WithPayload(wlts)
+	return operations.NewRestAccountListOK().WithPayload(wlts)
 }
 
-func createModelWallet(wlt wallet.Wallet) models.Wallet {
-	return models.Wallet{
+func createModelWallet(wlt wallet.Wallet) models.Account {
+	return models.Account{
 		Nickname: models.Nickname(wlt.Nickname),
 		Address:  wlt.Address,
-		KeyPair:  models.WalletKeyPair{},
+		KeyPair:  models.AccountKeyPair{},
 	}
 }
