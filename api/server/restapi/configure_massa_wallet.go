@@ -57,29 +57,29 @@ func configureAPI(api *operations.MassaWalletAPI) http.Handler {
 			return middleware.NotImplemented("operation operations.DefaultPage has not yet been implemented")
 		})
 	}
-	if api.RestWalletDeleteHandler == nil {
-		api.RestWalletDeleteHandler = operations.RestWalletDeleteHandlerFunc(func(params operations.RestWalletDeleteParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestWalletDelete has not yet been implemented")
+	if api.RestAccountDeleteHandler == nil {
+		api.RestAccountDeleteHandler = operations.RestAccountDeleteHandlerFunc(func(params operations.RestAccountDeleteParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RestAccountDelete has not yet been implemented")
 		})
 	}
-	if api.RestWalletGetHandler == nil {
-		api.RestWalletGetHandler = operations.RestWalletGetHandlerFunc(func(params operations.RestWalletGetParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestWalletGet has not yet been implemented")
+	if api.RestAccountGetHandler == nil {
+		api.RestAccountGetHandler = operations.RestAccountGetHandlerFunc(func(params operations.RestAccountGetParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RestAccountGet has not yet been implemented")
 		})
 	}
-	if api.RestWalletImportHandler == nil {
-		api.RestWalletImportHandler = operations.RestWalletImportHandlerFunc(func(params operations.RestWalletImportParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestWalletImport has not yet been implemented")
+	if api.RestAccountImportHandler == nil {
+		api.RestAccountImportHandler = operations.RestAccountImportHandlerFunc(func(params operations.RestAccountImportParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RestAccountImport has not yet been implemented")
 		})
 	}
-	if api.RestWalletListHandler == nil {
-		api.RestWalletListHandler = operations.RestWalletListHandlerFunc(func(params operations.RestWalletListParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestWalletList has not yet been implemented")
+	if api.RestAccountListHandler == nil {
+		api.RestAccountListHandler = operations.RestAccountListHandlerFunc(func(params operations.RestAccountListParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RestAccountList has not yet been implemented")
 		})
 	}
-	if api.RestWalletSignOperationHandler == nil {
-		api.RestWalletSignOperationHandler = operations.RestWalletSignOperationHandlerFunc(func(params operations.RestWalletSignOperationParams) middleware.Responder {
-			return middleware.NotImplemented("operation operations.RestWalletSignOperation has not yet been implemented")
+	if api.RestAccountSignOperationHandler == nil {
+		api.RestAccountSignOperationHandler = operations.RestAccountSignOperationHandlerFunc(func(params operations.RestAccountSignOperationParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.RestAccountSignOperation has not yet been implemented")
 		})
 	}
 	if api.WebHandler == nil {

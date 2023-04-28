@@ -12,7 +12,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewDelete(prompterApp prompt.WalletPrompterInterface) operations.RestWalletDeleteHandler {
+func NewDelete(prompterApp prompt.WalletPrompterInterface) operations.RestAccountDeleteHandler {
 	return &walletDelete{prompterApp: prompterApp}
 }
 
@@ -21,10 +21,10 @@ type walletDelete struct {
 }
 
 // HandleDelete handles a delete request
-func (w *walletDelete) Handle(params operations.RestWalletDeleteParams) middleware.Responder {
+func (w *walletDelete) Handle(params operations.RestAccountDeleteParams) middleware.Responder {
 	wallet, err := wallet.Load(params.Nickname)
 	if err != nil {
-		return operations.NewRestWalletDeleteBadRequest().WithPayload(
+		return operations.NewRestAccountDeleteBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorGetWallet,
 				Message: "Error cannot load wallet: " + err.Error(),
@@ -33,7 +33,7 @@ func (w *walletDelete) Handle(params operations.RestWalletDeleteParams) middlewa
 
 	go handleDelete(wallet, w.prompterApp)
 
-	return operations.NewRestWalletDeleteNoContent()
+	return operations.NewRestAccountDeleteNoContent()
 }
 
 func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface) {

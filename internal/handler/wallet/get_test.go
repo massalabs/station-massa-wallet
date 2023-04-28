@@ -30,10 +30,10 @@ func Test_getWallets_handler(t *testing.T) {
 			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, 200)
 		}
 
-		var wallets []models.Wallet
+		var wallets []models.Account
 		err = json.Unmarshal(resp.Body.Bytes(), &wallets)
 		if err != nil {
-			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
+			t.Fatalf("impossible to hydrate models.Account: %s", err)
 		}
 
 		if len(wallets) != 0 {
@@ -61,10 +61,10 @@ func Test_getWallets_handler(t *testing.T) {
 			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, 200)
 		}
 
-		var wallet []models.Wallet
+		var wallet []models.Account
 		err = json.Unmarshal(resp.Body.Bytes(), &wallet)
 		if err != nil {
-			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
+			t.Fatalf("impossible to hydrate models.Account: %s", err)
 		}
 
 		for idx, nickname := range nicknames {

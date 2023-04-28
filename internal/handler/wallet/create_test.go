@@ -84,16 +84,16 @@ func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, name string,
 			return
 		}
 
-		var wallet models.Wallet
+		var wallet models.Account
 		err = json.Unmarshal(resp.Body.Bytes(), &wallet)
 		if err != nil {
-			t.Fatalf("impossible to hydrate models.Wallet: %s", err)
+			t.Fatalf("impossible to hydrate models.Account: %s", err)
 		}
 
-		var body operations.CreateWalletBody
+		var body operations.CreateAccountBody
 		err = json.Unmarshal([]byte(inputBody), &body)
 		if err != nil {
-			t.Fatalf("impossible to hydrate operations.CreateWalletBody: %s", err)
+			t.Fatalf("impossible to hydrate operations.CreateAccountBody: %s", err)
 		}
 
 		if wallet.Nickname != body.Nickname {
