@@ -43,13 +43,22 @@
 			},
 			"response": [
 				{
-					"name": "New wallet created.",
+					"name": "rest Account Create",
 					"originalRequest": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"nickname\": \"tempor in laboris\",\n  \"password\": \"non ea Ut\"\n}",
+							"raw": "{\n  \"nickname\": \"{{nickname}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -57,13 +66,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "http://{{baseURL}}/rest/accounts",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -74,10 +84,26 @@
 						{
 							"key": "Content-Type",
 							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Apr 2023 14:08:01 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "204"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
 						}
 					],
 					"cookie": [],
-					"body": "{\n  \"nickname\": \"ut incididunt\",\n  \"address\": \"voluptate elit\",\n  \"keyPairs\": [\n    {\n      \"privateKey\": \"dolor in incididunt nostrud\",\n      \"publicKey\": \"exercitation\",\n      \"salt\": \"pariatur exercitation occaecat consect\",\n      \"nonce\": \"deserunt Excepteur\"\n    },\n    {\n      \"privateKey\": \"dolore exercitation mollit\",\n      \"publicKey\": \"commodo Ut sed\",\n      \"salt\": \"laboris amet\",\n      \"nonce\": \"ut Excepteur aliqua\"\n    }\n  ]\n}"
+					"body": "{\n    \"address\": \"AU...\",\n    \"keyPair\": {\n        \"nonce\": \"\",\n        \"privateKey\": \"\",\n        \"publicKey\": \"P...\",\n        \"salt\": \"\"\n    },\n    \"nickname\": \"created\"\n}"
 				},
 				{
 					"name": "Bad request.",
@@ -94,13 +120,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "{{baseUrl}}/rest/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -131,13 +157,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "{{baseUrl}}/rest/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -168,13 +194,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "{{baseUrl}}/rest/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -216,18 +242,24 @@
 			},
 			"response": [
 				{
-					"name": "Wallets retrieved",
+					"name": "rest Account List",
 					"originalRequest": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "http://{{baseURL}}/rest/accounts",
+							"protocol": "http",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -238,10 +270,26 @@
 						{
 							"key": "Content-Type",
 							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Apr 2023 14:08:47 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "155"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
 						}
 					],
 					"cookie": [],
-					"body": "[\n  {\n    \"nickname\": \"magna\",\n    \"address\": \"consequat laboris\",\n    \"keyPairs\": [\n      {\n        \"privateKey\": \"sint est anim mollit minim\",\n        \"publicKey\": \"id nisi dolore esse enim\",\n        \"salt\": \"aute culpa veniam\",\n        \"nonce\": \"ipsum esse velit sint sed\"\n      },\n      {\n        \"privateKey\": \"dolore consequat nisi elit\",\n        \"publicKey\": \"officia ea\",\n        \"salt\": \"enim ea sint\",\n        \"nonce\": \"proident dolor labore cupidatat\"\n      }\n    ]\n  },\n  {\n    \"nickname\": \"exercitation aliqua ad\",\n    \"address\": \"adipisicing in\",\n    \"keyPairs\": [\n      {\n        \"privateKey\": \"consequat velit\",\n        \"publicKey\": \"velit in cillum mollit\",\n        \"salt\": \"aute incididunt exercitation aliqua\",\n        \"nonce\": \"des\"\n      },\n      {\n        \"privateKey\": \"enim et ea\",\n        \"publicKey\": \"ex voluptate minim dolor\",\n        \"salt\": \"veniam\",\n        \"nonce\": \"dolore occaecat\"\n      }\n    ]\n  }\n]"
+					"body": "[\n    {\n        \"address\": \"AU...\",\n        \"keyPair\": {\n            \"nonce\": \"\",\n            \"privateKey\": \"\",\n            \"publicKey\": \"\",\n            \"salt\": \"\"\n        },\n        \"nickname\": \"created\"\n    }\n]"
 				},
 				{
 					"name": "Bad request.",
@@ -249,13 +297,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "{{baseUrl}}/rest/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -277,13 +325,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet",
+							"raw": "{{baseUrl}}/rest/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet"
+								"accounts"
 							]
 						}
 					},
@@ -320,26 +368,19 @@
 			},
 			"response": [
 				{
-					"name": "Wallet retrieved.",
+					"name": "rest Account Get",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseURL}}/rest/accounts/{{nickname}}",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
-								":nickname"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
+								"accounts",
+								"{{nickname}}"
 							]
 						}
 					},
@@ -350,10 +391,26 @@
 						{
 							"key": "Content-Type",
 							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Apr 2023 14:09:08 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "153"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
 						}
 					],
 					"cookie": [],
-					"body": "{\n  \"nickname\": \"eu Lorem dolor non nulla\",\n  \"address\": \"labore id nulla\",\n  \"keyPairs\": [\n    {\n      \"privateKey\": \"adipisicing nulla aute\",\n      \"publicKey\": \"cupidatat sint incididunt\",\n      \"salt\": \"laboris dolor culpa Duis Lorem\",\n      \"nonce\": \"incididunt Ut\"\n    },\n    {\n      \"privateKey\": \"reprehenderit esse quis dolor\",\n      \"publicKey\": \"ipsum pariatur in\",\n      \"salt\": \"commodo magna\",\n      \"nonce\": \"ut occaecat ex\"\n    }\n  ]\n}"
+					"body": "{\n    \"address\": \"AU...\",\n    \"keyPair\": {\n        \"nonce\": \"\",\n        \"privateKey\": \"\",\n        \"publicKey\": \"\",\n        \"salt\": \"\"\n    },\n    \"nickname\": \"created\"\n}"
 				},
 				{
 					"name": "Bad request.",
@@ -361,13 +418,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -392,54 +449,18 @@
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				},
 				{
-					"name": "Bad request.",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								":nickname"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Not Found",
-					"code": 404,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
-				},
-				{
 					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -469,13 +490,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -526,25 +547,24 @@
 			},
 			"response": [
 				{
-					"name": "Wallet retrieved.",
+					"name": "rest Account Get decrytped",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseURL}}/rest/accounts/{{nickname}}?ciphered=false",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
-								":nickname"
+								"accounts",
+								"{{nickname}}"
 							],
-							"variable": [
+							"query": [
 								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
+									"key": "ciphered",
+									"value": "false"
 								}
 							]
 						}
@@ -556,46 +576,26 @@
 						{
 							"key": "Content-Type",
 							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"nickname\": \"eu Lorem dolor non nulla\",\n  \"address\": \"labore id nulla\",\n  \"keyPairs\": [\n    {\n      \"privateKey\": \"adipisicing nulla aute\",\n      \"publicKey\": \"cupidatat sint incididunt\",\n      \"salt\": \"laboris dolor culpa Duis Lorem\",\n      \"nonce\": \"incididunt Ut\"\n    },\n    {\n      \"privateKey\": \"reprehenderit esse quis dolor\",\n      \"publicKey\": \"ipsum pariatur in\",\n      \"salt\": \"commodo magna\",\n      \"nonce\": \"ut occaecat ex\"\n    }\n  ]\n}"
-				},
-				{
-					"name": "Bad request.",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								":nickname"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Bad Request",
-					"code": 400,
-					"_postman_previewlanguage": "json",
-					"header": [
+						},
 						{
-							"key": "Content-Type",
-							"value": "application/json"
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Apr 2023 14:10:10 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "307"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
 						}
 					],
 					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+					"body": "{\n    \"address\": \"AU...\",\n    \"keyPair\": {\n        \"nonce\": \"...\",\n        \"privateKey\": \"S...\",\n        \"publicKey\": \"P...\",\n        \"salt\": \"...\"\n    },\n    \"nickname\": \"created\"\n}"
 				},
 				{
 					"name": "Bad request.",
@@ -603,13 +603,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -639,13 +639,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -675,13 +675,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -742,13 +742,13 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}/rest/wallet/export/file/{{nickname}}",
+							"raw": "{{baseURL}}/rest/accounts/export/file/{{nickname}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								"export",
 								"file",
 								"{{nickname}}"
@@ -793,13 +793,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -829,13 +829,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -865,13 +865,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -949,13 +949,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -995,13 +995,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -1041,13 +1041,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -1087,13 +1087,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -1158,6 +1158,70 @@
 			},
 			"response": [
 				{
+					"name": "Signature and new correlationId",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operation\":\"MjIzM3QyNHQ=\", \"batch\": true}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"rest",
+								"accounts",
+								"{{nickname}}",
+								"signOperation"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 21 Mar 2023 10:56:02 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "278"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"correlationId\": \"WUOeMbUxvOR/7w2x6jnvikrhg8UmFkvQk/LQHgXjvnOtFyFKISQuCI4zcn1cMahPuR8jUklkjMUoGZxi8ERncg==\",\n    \"publicKey\": \"P1tU5s96f92RaNS59e4kGw9G7b7RbdKTNjFFeLaWTbWcd49U7wS\",\n    \"signature\": \"viLLnIhGrBwr7+CgMr3j9zaotWL0eK1caCXgRIMZ8ogsXiEwUpjftXBQ9NGbbaWr5IXdP1ZbqWQ/i5l3eFZNAw==\"\n}"
+				},
+				{
 					"name": "Bad request.",
 					"originalRequest": {
 						"method": "POST",
@@ -1172,13 +1236,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -1218,13 +1282,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -1264,13 +1328,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname",
 								"signOperation"
 							],
@@ -1294,70 +1358,6 @@
 					],
 					"cookie": [],
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
-				},
-				{
-					"name": "Signature and new correlationId",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operation\":\"MjIzM3QyNHQ=\", \"batch\": true}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/rest/wallet/{{nickname}}/signOperation",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								"{{nickname}}",
-								"signOperation"
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Origin"
-						},
-						{
-							"key": "Date",
-							"value": "Tue, 21 Mar 2023 10:56:02 GMT"
-						},
-						{
-							"key": "Content-Length",
-							"value": "278"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"correlationId\": \"WUOeMbUxvOR/7w2x6jnvikrhg8UmFkvQk/LQHgXjvnOtFyFKISQuCI4zcn1cMahPuR8jUklkjMUoGZxi8ERncg==\",\n    \"publicKey\": \"P1tU5s96f92RaNS59e4kGw9G7b7RbdKTNjFFeLaWTbWcd49U7wS\",\n    \"signature\": \"viLLnIhGrBwr7+CgMr3j9zaotWL0eK1caCXgRIMZ8ogsXiEwUpjftXBQ9NGbbaWr5IXdP1ZbqWQ/i5l3eFZNAw==\"\n}"
 				}
 			]
 		},
@@ -1399,144 +1399,6 @@
 			},
 			"response": [
 				{
-					"name": "Bad request.",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"operation\": \"labore Lorem nostrud culpa\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								":nickname",
-								"signOperation"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Bad Request",
-					"code": 400,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
-				},
-				{
-					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"operation\": \"labore Lorem nostrud culpa\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								":nickname",
-								"signOperation"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
-					"code": 422,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
-				},
-				{
-					"name": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"operation\": \"labore Lorem nostrud culpa\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname/signOperation",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								":nickname",
-								"signOperation"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Internal Server Error",
-					"code": 500,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
-				},
-				{
 					"name": "Signature and correlation id",
 					"originalRequest": {
 						"method": "POST",
@@ -1560,13 +1422,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/rest/wallet/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								"{{nickname}}",
 								"signOperation"
 							]
@@ -1599,6 +1461,144 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"correlationId\": \"u0xfG4EQEQIj3x/qiawTJMcD1irzKj2VONOBKQPXJ5QNGE+3ifZPmIk0gk/Mn9KeRLTIUhkykgfdBrZmHxIytg==\",\n    \"publicKey\": \"P1tU5s96f92RaNS59e4kGw9G7b7RbdKTNjFFeLaWTbWcd49U7wS\",\n    \"signature\": \"viLLnIhGrBwr7+CgMr3j9zaotWL0eK1caCXgRIMZ8ogsXiEwUpjftXBQ9NGbbaWr5IXdP1ZbqWQ/i5l3eFZNAw==\"\n}"
+				},
+				{
+					"name": "Bad request.",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operation\": \"labore Lorem nostrud culpa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"accounts",
+								":nickname",
+								"signOperation"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operation\": \"labore Lorem nostrud culpa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"accounts",
+								":nickname",
+								"signOperation"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"operation\": \"labore Lorem nostrud culpa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rest",
+								"accounts",
+								":nickname",
+								"signOperation"
+							],
+							"variable": [
+								{
+									"key": "nickname",
+									"value": "mollit ma",
+									"description": "(Required) Wallet's short name."
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				}
 			]
 		},
@@ -1626,26 +1626,24 @@
 			},
 			"response": [
 				{
-					"name": "Wallet removed.",
+					"name": "rest Account Delete",
 					"originalRequest": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseURL}}/rest/accounts/{{nickname}}",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseURL}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
-								":nickname"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
+								"accounts",
+								"{{nickname}}"
 							]
 						}
 					},
@@ -1656,46 +1654,22 @@
 						{
 							"key": "Content-Type",
 							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"nickname\": \"eu Lorem dolor non nulla\",\n  \"address\": \"labore id nulla\",\n  \"keyPairs\": [\n    {\n      \"privateKey\": \"adipisicing nulla aute\",\n      \"publicKey\": \"cupidatat sint incididunt\",\n      \"salt\": \"laboris dolor culpa Duis Lorem\",\n      \"nonce\": \"incididunt Ut\"\n    },\n    {\n      \"privateKey\": \"reprehenderit esse quis dolor\",\n      \"publicKey\": \"ipsum pariatur in\",\n      \"salt\": \"commodo magna\",\n      \"nonce\": \"ut occaecat ex\"\n    }\n  ]\n}"
-				},
-				{
-					"name": "Bad request.",
-					"originalRequest": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"rest",
-								"wallet",
-								":nickname"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Bad Request",
-					"code": 400,
-					"_postman_previewlanguage": "json",
-					"header": [
+						},
 						{
-							"key": "Content-Type",
-							"value": "application/json"
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 28 Apr 2023 14:12:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
 						}
 					],
 					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+					"body": null
 				},
 				{
 					"name": "Bad request.",
@@ -1703,13 +1677,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -1739,13 +1713,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
@@ -1775,13 +1749,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/wallet/:nickname",
+							"raw": "{{baseUrl}}/rest/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"rest",
-								"wallet",
+								"accounts",
 								":nickname"
 							],
 							"variable": [
