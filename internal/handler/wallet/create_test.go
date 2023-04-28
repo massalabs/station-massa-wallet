@@ -71,7 +71,7 @@ func Test_walletCreate_validation(t *testing.T) {
 // createTestWallet tests the creation of a wallet.
 func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, name string, inputBody string, statusCode int) {
 	t.Run(name, func(t *testing.T) {
-		resp, err := processHTTPRequest(api, "POST", "/rest/wallet", inputBody)
+		resp, err := processHTTPRequest(api, "POST", "/rest/accounts", inputBody)
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}

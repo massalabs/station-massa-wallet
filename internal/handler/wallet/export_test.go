@@ -15,14 +15,14 @@ func Test_exportFileWallet_handler(t *testing.T) {
 		panic(err)
 	}
 
-	handler, exist := api.HandlerFor("get", "/rest/wallet/export/file/{nickname}")
+	handler, exist := api.HandlerFor("get", "/rest/accounts/{nickname}/exportFile")
 	if !exist {
 		panic("Endpoint doesn't exist")
 	}
 
 	// test empty configuration first.
 	t.Run("Export file of unknown wallet", func(t *testing.T) {
-		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/export/file/%s", "nobody"), "")
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/accounts/%s/exportFile", "nobody"), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
@@ -39,7 +39,7 @@ func Test_exportFileWallet_handler(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 
-		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/export/file/%s", nickname), "")
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/accounts/%s/exportFile", nickname), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
