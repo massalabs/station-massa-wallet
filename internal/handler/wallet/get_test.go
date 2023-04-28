@@ -21,7 +21,7 @@ func Test_getWallets_handler(t *testing.T) {
 
 	// test empty configuration first.
 	t.Run("Get empty list", func(t *testing.T) {
-		resp, err := processHTTPRequest(api, "GET", "/rest/wallet", "")
+		resp, err := processHTTPRequest(api, "GET", "/rest/accounts", "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
@@ -52,7 +52,7 @@ func Test_getWallets_handler(t *testing.T) {
 	}
 
 	t.Run("Get multiple wallets", func(t *testing.T) {
-		resp, err := processHTTPRequest(api, "GET", "/rest/wallet", "")
+		resp, err := processHTTPRequest(api, "GET", "/rest/accounts", "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
@@ -86,14 +86,14 @@ func Test_getWallet_handler(t *testing.T) {
 		panic(err)
 	}
 
-	handler, exist := api.HandlerFor("get", "/rest/wallet/{nickname}")
+	handler, exist := api.HandlerFor("get", "/rest/accounts/{nickname}")
 	if !exist {
 		panic("Endpoint doesn't exist")
 	}
 
 	// test empty configuration first.
 	t.Run("Get unknown wallet", func(t *testing.T) {
-		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", "nobody"), "")
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/accounts/%s", "nobody"), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
@@ -110,7 +110,7 @@ func Test_getWallet_handler(t *testing.T) {
 			t.Fatalf(err.Error())
 		}
 
-		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s", nickname), "")
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/accounts/%s", nickname), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
@@ -142,7 +142,7 @@ func Test_getWallet_handler(t *testing.T) {
 			res <- (<-resChan)
 		}(testResult)
 
-		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/wallet/%s?ciphered=false", nickname), "")
+		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/rest/accounts/%s?ciphered=false", nickname), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
