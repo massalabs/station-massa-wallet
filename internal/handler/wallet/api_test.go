@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"testing"
 
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/loads"
@@ -77,4 +78,18 @@ func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string,
 	handler.ServeHTTP(resp, httpRequest)
 
 	return resp, nil
+}
+
+func checkResultChannel(t *testing.T, result walletapp.EventData, success bool, msg string) {
+	if result.Success != success {
+		if success {
+			t.Fatalf("Expected success, got error")
+		} else {
+			t.Fatalf("Expected error, got success")
+		}
+	}
+
+	if !strings.HasPrefix(fmt.Sprint(result.Data), msg) {
+		t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
+	}
 }

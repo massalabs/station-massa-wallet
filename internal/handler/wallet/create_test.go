@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 func Test_walletCreate_Handle(t *testing.T) {
@@ -50,13 +51,10 @@ func Test_walletCreate_Handle(t *testing.T) {
 
 		if len(test.password) > 0 && test.statusCode == http.StatusOK {
 			result := <-testResult
-			if !result.Success {
-				t.Fatalf("Expected success, got error")
-			}
-			msg := "New password created"
-			if result.Data != msg {
-				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
-			}
+
+			checkResultChannel(t, result, true, "New password created")
+
+			checkWallet(t, nickname)
 
 			err = cleanupTestData([]string{nickname})
 			if err != nil {
@@ -97,4 +95,24 @@ func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, testName str
 			t.Fatalf("the wallet nickname was: %s, want %s", wallet.Nickname, `toto`)
 		}
 	})
+}
+
+func checkWallet(t *testing.T, nickname string) {
+	wallet, err := wallet.Load(nickname)
+	if err != nil {
+		t.Fatalf("unable to load wallet %s: %s", nickname, err)
+	}
+
+	if wallet.Version != 0 {
+		t.Fatalf(fmt.Sprintf("Expected version to be 0, got %d", wallet.Version))
+	}
+
+	if wallet.Nickname != nickname {
+		t.Fatalf(fmt.Sprintf("Expected nickanme to be %s, got %s", nickname, wallet.Nickname))
+	}
+
+	minAddrLen := 52
+	if len(wallet.Address) < minAddrLen {
+		t.Fatalf(fmt.Sprintf("Expected address length to be %d, got %d", minAddrLen, len(wallet.Address)))
+	}
 }
