@@ -9,7 +9,7 @@ import Welcome from './pages/Welcome.tsx';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/web-app/index',
     element: <Welcome />,
     errorElement: <ErrorPage />,
   },

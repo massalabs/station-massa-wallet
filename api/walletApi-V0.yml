@@ -17,9 +17,35 @@ paths:
       responses:
         "301":
           description: Move to the default endpoint
+  /web-app/{resource}:
+    get:
+      operationId: webApp
+      description: Route for the ReactJS front-end web application (in /web-frontend)
+      produces:
+        - application/json
+        - text/javascript
+        - text/html
+        - text/css
+        - text/webp
+        - image/png
+      parameters:
+        - in: path
+          name: resource
+          type: string
+          default: index.html
+          required: true
+          description: Website resource.
+      responses:
+        "200":
+          description: Page found
+        "404":
+          description: Resource not found.
+          schema:
+            $ref: "#/definitions/Error"
   /web/{resource}:
     get:
       operationId: web
+      description: Route for legacy web application (in /web directory)
       produces:
         - application/json
         - text/javascript
