@@ -21,14 +21,13 @@ func Test_walletCreate_validation(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		body       string
+		nickname   string
 		password   string
 		statusCode int
 	}{
-		{"create success", fmt.Sprintf(`{"Nickname": "%s"}`, nickname), "GoodPassword", http.StatusOK},
-		{"invalid Nickname", `{"Nickname": "  "}`, "", http.StatusBadRequest},
-		{"Nickname Missing", `{}`, "", http.StatusUnprocessableEntity},
-		{"Prompt action canceled by user", fmt.Sprintf(`{"Nickname": "%s"}`, nickname), "cancel", http.StatusInternalServerError},
+		{"create success", nickname, "GoodPassword", http.StatusOK},
+		{"invalid Nickname", " ", "", http.StatusBadRequest},
+		{"Prompt action canceled by user", nickname, "cancel", http.StatusInternalServerError},
 	}
 	for _, test := range tests {
 		testResult := make(chan walletapp.EventData)
@@ -47,7 +46,7 @@ func Test_walletCreate_validation(t *testing.T) {
 			}(testResult)
 		}
 
-		createTestWallet(t, api, test.name, test.body, test.statusCode)
+		createTestWallet(t, api, test.name, test.nickname, test.statusCode)
 
 		if len(test.password) > 0 && test.statusCode == http.StatusOK {
 			result := <-testResult
@@ -69,9 +68,13 @@ func Test_walletCreate_validation(t *testing.T) {
 }
 
 // createTestWallet tests the creation of a wallet.
-func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, name string, inputBody string, statusCode int) {
-	t.Run(name, func(t *testing.T) {
-		resp, err := processHTTPRequest(api, "POST", "/api/accounts", inputBody)
+func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, testName string, nickname string, statusCode int) {
+	t.Run(testName, func(t *testing.T) {
+		handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}")
+		if !exist {
+			panic("Endpoint doesn't exist")
+		}
+		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s", nickname), "")
 		if err != nil {
 			t.Fatalf("while serving HTTP request: %s", err)
 		}
@@ -90,13 +93,7 @@ func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, name string,
 			t.Fatalf("impossible to hydrate models.Account: %s", err)
 		}
 
-		var body operations.RestCreateAccountBody
-		err = json.Unmarshal([]byte(inputBody), &body)
-		if err != nil {
-			t.Fatalf("impossible to hydrate operations.RestCreateAccountBody: %s", err)
-		}
-
-		if wallet.Nickname != body.Nickname {
+		if wallet.Nickname != models.Nickname(nickname) {
 			t.Fatalf("the wallet nickname was: %s, want %s", wallet.Nickname, `toto`)
 		}
 	})

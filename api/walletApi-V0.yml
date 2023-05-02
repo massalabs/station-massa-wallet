@@ -62,20 +62,45 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+  /api/accounts/{nickname}:
+    get:
+      operationId: restAccountGet
+      description: Get the account by nickname given in path, with the option to return the ciphered private key.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/ciphered"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Account retrieved.
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "423":
+          description: Locked - The resource that is being accessed is locked
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
     post:
       operationId: restCreateAccount
       description: Generate a new account with new random keys
       parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            type: object
-            required:
-              - nickname
-            properties:
-              nickname:
-                $ref: "#/definitions/Nickname"
+        - $ref: "#/parameters/nickname"
       produces:
         - application/json
       responses:
@@ -85,6 +110,34 @@ paths:
             $ref: "#/definitions/Account"
         "400":
           description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      operationId: restAccountDelete
+      description: Delete the account by nickname given in path.
+      parameters:
+        - $ref: "#/parameters/nickname"
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Account removed.
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Not found.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -140,68 +193,6 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         500:
-          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
-          schema:
-            $ref: "#/definitions/Error"
-  /api/accounts/{nickname}:
-    get:
-      operationId: restAccountGet
-      description: Get the account by nickname given in path, with the option to return the ciphered private key.
-      parameters:
-        - $ref: "#/parameters/nickname"
-        - $ref: "#/parameters/ciphered"
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: Account retrieved.
-          schema:
-            $ref: "#/definitions/Account"
-        "400":
-          description: Bad request.
-          schema:
-            $ref: "#/definitions/Error"
-        "404":
-          description: Not found.
-          schema:
-            $ref: "#/definitions/Error"
-        "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
-          schema:
-            $ref: "#/definitions/Error"
-        "423":
-          description: Locked - The resource that is being accessed is locked
-          schema:
-            $ref: "#/definitions/Error"
-        "500":
-          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
-          schema:
-            $ref: "#/definitions/Error"
-    delete:
-      operationId: restAccountDelete
-      description: Delete the account by nickname given in path.
-      parameters:
-        - $ref: "#/parameters/nickname"
-      produces:
-        - application/json
-      responses:
-        "204":
-          description: Account removed.
-          schema:
-            $ref: "#/definitions/Account"
-        "400":
-          description: Bad request.
-          schema:
-            $ref: "#/definitions/Error"
-        "404":
-          description: Not found.
-          schema:
-            $ref: "#/definitions/Error"
-        "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
-          schema:
-            $ref: "#/definitions/Error"
-        "500":
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"

@@ -12,7 +12,7 @@ func Test_walletImport_Handle(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	createTestWallet(t, api, "precondition_wallet", `{"Nickname": "precondition_wallet", "Password": "1234"}`, 200)
+	createTestWallet(t, api, "precondition_wallet", "precondition_wallet", 200)
 
 	type want struct {
 		statusCode int

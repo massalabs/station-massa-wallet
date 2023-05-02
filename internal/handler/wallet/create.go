@@ -22,7 +22,7 @@ type walletCreate struct {
 }
 
 func (w *walletCreate) Handle(params operations.RestCreateAccountParams) middleware.Responder {
-	nickname := strings.TrimSpace(string(params.Body.Nickname))
+	nickname := strings.TrimSpace(string(params.Nickname))
 
 	if len(nickname) == 0 {
 		return operations.NewRestCreateAccountBadRequest().WithPayload(
