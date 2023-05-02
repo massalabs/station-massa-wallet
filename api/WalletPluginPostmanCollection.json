@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "rest Account Create",
+			"name": "api Account Create",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -30,20 +30,20 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{baseURL}}/rest/accounts",
+					"raw": "http://{{baseURL}}/api/accounts",
 					"protocol": "http",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts"
 					]
 				}
 			},
 			"response": [
 				{
-					"name": "rest Account Create",
+					"name": "api Account Create",
 					"originalRequest": {
 						"method": "POST",
 						"header": [
@@ -66,13 +66,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{baseURL}}/rest/accounts",
+							"raw": "http://{{baseURL}}/api/accounts",
 							"protocol": "http",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -120,12 +120,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts",
+							"raw": "{{baseUrl}}/api/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -157,12 +157,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts",
+							"raw": "{{baseUrl}}/api/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -194,12 +194,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts",
+							"raw": "{{baseUrl}}/api/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -219,7 +219,7 @@
 			]
 		},
 		{
-			"name": "rest Account List",
+			"name": "api Account List",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -229,20 +229,20 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{baseURL}}/rest/accounts",
+					"raw": "http://{{baseURL}}/api/accounts",
 					"protocol": "http",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts"
 					]
 				}
 			},
 			"response": [
 				{
-					"name": "rest Account List",
+					"name": "api Account List",
 					"originalRequest": {
 						"method": "GET",
 						"header": [
@@ -252,13 +252,13 @@
 							}
 						],
 						"url": {
-							"raw": "http://{{baseURL}}/rest/accounts",
+							"raw": "http://{{baseURL}}/api/accounts",
 							"protocol": "http",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -297,12 +297,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts",
+							"raw": "{{baseUrl}}/api/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -325,12 +325,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts",
+							"raw": "{{baseUrl}}/api/accounts",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts"
 							]
 						}
@@ -350,17 +350,17 @@
 			]
 		},
 		{
-			"name": "rest Account Get",
+			"name": "api Account Get",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}"
 					]
@@ -368,17 +368,17 @@
 			},
 			"response": [
 				{
-					"name": "rest Account Get",
+					"name": "api Account Get",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/rest/accounts/{{nickname}}",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								"{{nickname}}"
 							]
@@ -418,12 +418,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -454,12 +454,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -490,12 +490,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -523,17 +523,17 @@
 			]
 		},
 		{
-			"name": "rest Account Get decrytped",
+			"name": "api Account Get decrytped",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}?ciphered=false",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}?ciphered=false",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}"
 					],
@@ -547,17 +547,17 @@
 			},
 			"response": [
 				{
-					"name": "rest Account Get decrytped",
+					"name": "api Account Get decrytped",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/rest/accounts/{{nickname}}?ciphered=false",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}?ciphered=false",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								"{{nickname}}"
 							],
@@ -603,12 +603,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -639,12 +639,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -675,12 +675,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -708,7 +708,7 @@
 			]
 		},
 		{
-			"name": "rest Account Export File",
+			"name": "api Account Export File",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -718,12 +718,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}/exportFile",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/exportFile",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}",
 						"exportFile"
@@ -742,12 +742,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}/rest/accounts/export/file/{{nickname}}",
+							"raw": "{{baseURL}}/api/accounts/export/file/{{nickname}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								"export",
 								"file",
@@ -793,12 +793,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -829,12 +829,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -865,12 +865,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -898,7 +898,7 @@
 			]
 		},
 		{
-			"name": "rest Account Sign Operation",
+			"name": "api Account Sign Operation",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -921,12 +921,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}",
 						"signOperation"
@@ -949,12 +949,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -995,12 +995,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1041,12 +1041,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1087,12 +1087,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1121,7 +1121,7 @@
 			]
 		},
 		{
-			"name": "rest Account Sign Operation New Batch",
+			"name": "api Account Sign Operation New Batch",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -1144,12 +1144,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}",
 						"signOperation"
@@ -1181,12 +1181,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								"{{nickname}}",
 								"signOperation"
@@ -1236,12 +1236,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1282,12 +1282,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1328,12 +1328,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1362,7 +1362,7 @@
 			]
 		},
 		{
-			"name": "rest Account Sign Operation Batch item",
+			"name": "api Account Sign Operation Batch item",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -1385,12 +1385,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}",
 						"signOperation"
@@ -1422,12 +1422,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/rest/accounts/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								"{{nickname}}",
 								"signOperation"
@@ -1477,12 +1477,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1523,12 +1523,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1569,12 +1569,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname",
 								"signOperation"
@@ -1603,7 +1603,7 @@
 			]
 		},
 		{
-			"name": "rest Account Delete",
+			"name": "api Account Delete",
 			"request": {
 				"method": "DELETE",
 				"header": [
@@ -1613,12 +1613,12 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseURL}}/rest/accounts/{{nickname}}",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
-						"rest",
+						"api",
 						"accounts",
 						"{{nickname}}"
 					]
@@ -1626,7 +1626,7 @@
 			},
 			"response": [
 				{
-					"name": "rest Account Delete",
+					"name": "api Account Delete",
 					"originalRequest": {
 						"method": "DELETE",
 						"header": [
@@ -1636,12 +1636,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}/rest/accounts/{{nickname}}",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								"{{nickname}}"
 							]
@@ -1677,12 +1677,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -1713,12 +1713,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
@@ -1749,12 +1749,12 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/rest/accounts/:nickname",
+							"raw": "{{baseUrl}}/api/accounts/:nickname",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"rest",
+								"api",
 								"accounts",
 								":nickname"
 							],
