@@ -153,14 +153,7 @@ func Test_getWallet_handler(t *testing.T) {
 
 		result := <-testResult
 
-		if !result.Success {
-			t.Fatalf("Expected success, got error")
-		}
-
-		msg := "Unprotect Success"
-		if result.Data != msg {
-			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
-		}
+		checkResultChannel(t, result, true, "Unprotect Success")
 
 		err = cleanupTestData([]string{nickname})
 		if err != nil {
@@ -174,10 +167,6 @@ func verifyBodyWallet(t *testing.T, resp *httptest.ResponseRecorder, nickname st
 	if body == "" {
 		t.Fatalf("the body was empty")
 	}
-
-	fmt.Println("debug start")
-	fmt.Println(body)
-	fmt.Println("debug stop")
 
 	// check the first line
 	if !strings.Contains(body, "\"nickname\":\""+nickname+"\"") {

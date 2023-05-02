@@ -51,14 +51,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		result := <-resChan
 
-		if result.Success {
-			t.Fatalf("Expected error, got success")
-		}
-
-		want := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
-		if result.Data != want {
-			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", want, result.Data))
-		}
+		checkResultChannel(t, result, false, "error unprotecting wallet:opening the private key seal: cipher: message authentication failed")
 	})
 
 	t.Run("canceled by user", func(t *testing.T) {
@@ -83,14 +76,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		result := <-resChan
 
-		if !result.Success {
-			t.Fatalf("Expected success, got error")
-		}
-
-		want := "Delete Success"
-		if result.Data != want {
-			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", want, result.Data))
-		}
+		checkResultChannel(t, result, true, "Delete Success")
 
 		_, err = wallet.Load(nickname)
 		if err == nil {

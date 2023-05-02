@@ -81,16 +81,8 @@ func Test_walletSign_Handle(t *testing.T) {
 			prompterApp.App().PasswordChan <- "this is not the password"
 			// forward test result to test goroutine
 			failRes := <-resChan
-			if failRes.Success {
-				//nolint:govet
-				t.Fatalf("Expected error, got success")
-			}
 
-			msg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
-			if failRes.Data != msg {
-				//nolint:govet
-				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, failRes.Data))
-			}
+			checkResultChannel(t, failRes, false, "error unprotecting wallet:opening the private key seal: cipher: message authentication failed")
 
 			// Send password to prompter app to unlock the handler
 			prompterApp.App().PasswordChan <- password
@@ -121,16 +113,8 @@ func Test_walletSign_Handle(t *testing.T) {
 			prompterApp.App().PasswordChan <- "this is not the password"
 			// forward test result to test goroutine
 			failRes := <-resChan
-			if failRes.Success {
-				//nolint:govet
-				t.Fatalf("Expected error, got success")
-			}
 
-			msg := "error unprotecting wallet:opening the private key seal: cipher: message authentication failed"
-			if failRes.Data != msg {
-				//nolint:govet
-				t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, failRes.Data))
-			}
+			checkResultChannel(t, failRes, false, "error unprotecting wallet:opening the private key seal: cipher: message authentication failed")
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel
@@ -156,14 +140,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		if !result.Success {
-			t.Fatalf("Expected success, got error")
-		}
-
-		msg := "Unprotect Success"
-		if result.Data != msg {
-			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
-		}
+		checkResultChannel(t, result, true, "Unprotect Success")
 
 		var body models.Signature
 		err = json.Unmarshal(resp.Body.Bytes(), &body)
