@@ -20,15 +20,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"nickname\": \"{{nickname}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "http://{{baseURL}}/api/accounts/{{nickname}}",
 					"protocol": "http",
@@ -450,57 +441,6 @@
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				},
 				{
-					"name": "api Account Get",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/api/accounts/{{nickname}}?ciphered=false",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"api",
-								"accounts",
-								"{{nickname}}"
-							],
-							"query": [
-								{
-									"key": "ciphered",
-									"value": "false"
-								}
-							]
-						}
-					},
-					"status": "Unauthorized",
-					"code": 401,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Vary",
-							"value": "Origin"
-						},
-						{
-							"key": "Date",
-							"value": "Tue, 02 May 2023 13:44:18 GMT"
-						},
-						{
-							"key": "Content-Length",
-							"value": "62"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": \"Wallet-0009\",\n    \"message\": \"Unable to unprotect wallet\"\n}"
-				},
-				{
 					"name": "api Account Get Not Found",
 					"originalRequest": {
 						"method": "GET",
@@ -693,6 +633,57 @@
 					],
 					"cookie": [],
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "api Account Get Unauthorized",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}?ciphered=false",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{nickname}}"
+							],
+							"query": [
+								{
+									"key": "ciphered",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 02 May 2023 13:44:18 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "62"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": \"Wallet-0009\",\n    \"message\": \"Unable to unprotect wallet\"\n}"
 				},
 				{
 					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
