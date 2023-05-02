@@ -11,12 +11,11 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// App struct
 type WalletApp struct {
 	Ctx            context.Context
 	CtrlChan       chan PromptCtrl
 	PasswordChan   chan string
-	PrivateKeyChan chan string
+	PrivateKeyChan chan ImportFromPKey
 	WalletFileChan chan string
 	Shutdown       bool
 }
@@ -34,7 +33,7 @@ func NewWalletApp() *WalletApp {
 	app := &WalletApp{
 		CtrlChan:       make(chan PromptCtrl),
 		PasswordChan:   make(chan string),
-		PrivateKeyChan: make(chan string),
+		PrivateKeyChan: make(chan ImportFromPKey),
 		WalletFileChan: make(chan string),
 		Shutdown:       false,
 	}
@@ -66,7 +65,6 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 
 // ApplyPassword is binded to the frontend
 func (a *WalletApp) ApplyPassword(password string) {
-	fmt.Println("Received password input!")
 	a.PasswordChan <- password
 }
 
@@ -85,7 +83,6 @@ func (a *WalletApp) Hide() {
 	runtime.WindowHide(a.Ctx)
 }
 
-// App struct
 type selectFileResult struct {
 	Err      string `json:"err"`
 	FilePath string `json:"filePath"`
@@ -109,7 +106,12 @@ func (a *WalletApp) ImportWalletFile(filePath string) {
 	a.WalletFileChan <- filePath
 }
 
-func (a *WalletApp) ImportPrivateKey(pkey string) {
-	fmt.Println("Received password input!")
-	a.PrivateKeyChan <- pkey
+type ImportFromPKey struct {
+	PrivateKey string
+	Password   string
+	Nickname   string
+}
+
+func (a *WalletApp) ImportPrivateKey(pkey string, nickname string, password string) {
+	a.PrivateKeyChan <- ImportFromPKey{PrivateKey: pkey, Nickname: nickname, Password: password}
 }

@@ -14,8 +14,8 @@ export function Hide() {
   return window['go']['walletapp']['WalletApp']['Hide']();
 }
 
-export function ImportPrivateKey(arg1) {
-  return window['go']['walletapp']['WalletApp']['ImportPrivateKey'](arg1);
+export function ImportPrivateKey(arg1, arg2, arg3) {
+  return window['go']['walletapp']['WalletApp']['ImportPrivateKey'](arg1, arg2, arg3);
 }
 
 export function ImportWalletFile(arg1) {

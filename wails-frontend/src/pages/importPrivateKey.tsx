@@ -1,60 +1,67 @@
 import { useState } from 'preact/hooks';
-import { ImportPrivateKey } from '../../wailsjs/go/walletapp/WalletApp';
-import { EventsOnce } from '../../wailsjs/runtime/runtime';
 import { h } from 'preact';
-import { events, promptRequest } from '../events/events';
+import { promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { handleCancel, hideAndReload } from '../utils/utils';
+import { handleCancel } from '../utils/utils';
 
 const ImportPrivatekey = () => {
   const navigate = useNavigate();
 
-  const [pkey, setPkey] = useState('');
-  const [resultMsg, setResultMsg] = useState('');
+  const [input, setInput] = useState<string | undefined>(undefined);
+  const [privateKey, setPkey] = useState<string | undefined>(undefined);
 
-  const { state } = useLocation();
+  let { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const applyStr = 'Import';
+  const applyStr = 'Next';
 
-  const title = 'Import';
-  const baselineStr = 'Choose an import method';
-
-  const handleApplyResult = (result: any) => {
-    if (result.Success) {
-      navigate('/success', {
-        state: { msg: 'Account imported successfully!' },
-      });
-      setTimeout(hideAndReload, 2000);
-    } else {
-      setResultMsg(result.Data);
-      if (result.Error === 'timeoutError') {
-        setTimeout(hideAndReload, 2000);
-      }
+  const baselineStr = () => {
+    if (privateKey) {
+      return 'Choose a username';
     }
+    return 'To import enter your private key';
   };
 
-  const handleApply = async () => {
-    if (pkey.length) {
-      EventsOnce(events.passwordResult, handleApplyResult);
-      await ImportPrivateKey(pkey);
+  const placeholder = () => {
+    if (privateKey) {
+      return 'Username';
     }
+    return 'Private key';
   };
 
-  const updatePkey = (e: any) => setPkey(e.target.value);
+  const handleApply = () => {
+    if (!input || !input.length) {
+      return;
+    }
+
+    if (!privateKey) {
+      // TODO: validate private key
+      setPkey(input);
+      setInput('');
+      return;
+    }
+
+    state = { ...state, pkey: privateKey, nickname: input };
+
+    navigate('/password', { state });
+  };
+
+  const updateInput = (e: any) => setInput(e.target.value);
 
   return (
-    <section class="PasswordPrompt">
-      <div>{title}</div>
-      <div className="baseline">{baselineStr}</div>
+    <section>
+      <div>{req.Msg}</div>
+      <div className="baseline">{baselineStr()}</div>
       <div id="input" className="input-box">
         <input
-          id="name"
+          id="input"
           className="input"
-          onChange={updatePkey}
+          onChange={updateInput}
           autoComplete="off"
           name="input"
-          placeholder="Enter your private key"
+          type={privateKey ? 'text' : 'password'}
+          placeholder={placeholder()}
+          value={input}
         />
       </div>
       <div className="flex">
@@ -65,7 +72,6 @@ const ImportPrivatekey = () => {
           {applyStr}
         </button>
       </div>
-      <div className="baseline">{resultMsg}</div>
     </section>
   );
 };

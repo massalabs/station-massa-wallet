@@ -8,7 +8,7 @@ export function ApplyPassword(arg1:string):Promise<void>;
 
 export function Hide():Promise<void>;
 
-export function ImportPrivateKey(arg1:string):Promise<void>;
+export function ImportPrivateKey(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function ImportWalletFile(arg1:string):Promise<void>;
 

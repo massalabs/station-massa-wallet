@@ -1,6 +1,7 @@
-import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { NavigateFunction } from 'react-router-dom';
 import { Hide, AbortAction } from '../../wailsjs/go/walletapp/WalletApp';
 import { WindowReloadApp } from '../../wailsjs/runtime';
+import { promptResult, promptRequest } from '../events/events';
 
 export const handleCancel = () => {
   AbortAction();
@@ -15,19 +16,21 @@ export const hideAndReload = () => {
 
 export const handleApplyResult = (
   navigate: NavigateFunction,
-  successMsg: string,
+  req: promptRequest,
   errMsgCb: (msg: any) => void,
+  quitOnError = false,
 ) => {
-  return (result: any) => {
+  return (result: promptResult) => {
     if (result.Success) {
       navigate('/success', {
-        state: { msg: successMsg },
+        state: { req },
       });
       setTimeout(hideAndReload, 2000);
     } else {
       errMsgCb(result.Data);
-      if (result.Error === 'timeoutError') {
+      if (quitOnError || result.Error === 'timeoutError') {
         setTimeout(hideAndReload, 2000);
+        return;
       }
     }
   };

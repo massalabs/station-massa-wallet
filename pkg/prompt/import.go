@@ -16,14 +16,13 @@ func PromptImport(
 	prompterApp WalletPrompterInterface,
 ) (*wallet.Wallet, error) {
 	data := &PromptRequestData{
-		Msg:  "Import a new account",
+		Msg:  "Import",
 		Data: nil,
 	}
 	prompterApp.PromptRequest(walletapp.Import, data.Msg, data.Data)
 
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
 	defer cancel()
-	fmt.Println("waiting for prompt res!!: ")
 
 	for {
 		select {
@@ -46,6 +45,17 @@ func PromptImport(
 				continue
 			}
 			return &wallet, nil
+
+		case walletInfo := <-prompterApp.App().PrivateKeyChan:
+			wallet, err := wallet.Import(walletInfo.Nickname, walletInfo.PrivateKey, walletInfo.Password)
+			if err != nil {
+				errStr := "unable to import private key: " + err.Error()
+				fmt.Println(errStr)
+				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+					walletapp.EventData{Success: false, Data: errStr})
+				return nil, fmt.Errorf(errStr)
+			}
+			return wallet, nil
 
 		case <-prompterApp.App().CtrlChan:
 			msg := "Action canceled by user"

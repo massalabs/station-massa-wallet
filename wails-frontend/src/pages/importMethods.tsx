@@ -8,15 +8,14 @@ const ImportMethods = () => {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const title = 'Import';
   const baselineStr = 'Choose an import method';
 
   const handleYml = () => navigate('/import-file', { state: { req } });
-  const handlePkey = () => navigate('/import-methods', { state: { req } });
+  const handlePkey = () => navigate('/import-pkey', { state: { req } });
 
   return (
-    <section class="PasswordPrompt">
-      <div>{title}</div>
+    <section>
+      <div>{req.Msg}</div>
       <div className="baseline">{baselineStr}</div>
       <div className="flex flex-col">
         <button className="btn" onClick={handleYml}>

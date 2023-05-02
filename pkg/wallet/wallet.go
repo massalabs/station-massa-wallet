@@ -353,9 +353,14 @@ func (w *Wallet) FilePath() (string, error) {
 }
 
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
+	// TODO: check if the private key is valid
+	if len(privateKeyB58V) < 3 {
+		return nil, fmt.Errorf("invalid private key")
+	}
+
 	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
 	if err != nil {
-		return nil, fmt.Errorf("encoding private key B58: %w", err)
+		return nil, fmt.Errorf("decoding private key: %w", err)
 	}
 
 	wallets, err := LoadAll()
