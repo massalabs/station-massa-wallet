@@ -35,7 +35,7 @@ func (w *walletCreate) Handle(params operations.RestCreateAccountParams) middlew
 	//nolint:gosimple
 	password, err := prompt.PromptCreatePassword(w.prompterApp, nickname)
 	if err != nil {
-		return operations.NewRestCreateAccountInternalServerError().WithPayload(
+		return operations.NewRestCreateAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    errorCanceledAction,
 				Message: "Unable to create wallet",

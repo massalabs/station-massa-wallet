@@ -80,16 +80,12 @@ paths:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication. Only possible if ciphered is false.
+          schema:
+            $ref: "#/definitions/Error"
         "404":
           description: Not found.
-          schema:
-            $ref: "#/definitions/Error"
-        "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
-          schema:
-            $ref: "#/definitions/Error"
-        "423":
-          description: Locked - The resource that is being accessed is locked
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -112,6 +108,10 @@ paths:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          schema:
+            $ref: "#/definitions/Error"
         "422":
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
@@ -129,7 +129,7 @@ paths:
         - application/json
       responses:
         "204":
-          description: Account removed.
+          description: Account deletion request has been taken into account, the user will be prompt to confirm the deletion.
           schema:
             $ref: "#/definitions/Account"
         "400":
@@ -138,10 +138,6 @@ paths:
             $ref: "#/definitions/Error"
         "404":
           description: Not found.
-          schema:
-            $ref: "#/definitions/Error"
-        "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -217,6 +213,14 @@ paths:
             $ref: "#/definitions/Signature"
         "400":
           description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Account Not found.
           schema:
             $ref: "#/definitions/Error"
         "422":

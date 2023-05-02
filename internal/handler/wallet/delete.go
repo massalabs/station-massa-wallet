@@ -22,16 +22,25 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (w *walletDelete) Handle(params operations.RestAccountDeleteParams) middleware.Responder {
-	wallet, err := wallet.Load(params.Nickname)
+	// params.Nickname length is already checked by go swagger
+	account, err := wallet.Load(params.Nickname)
 	if err != nil {
-		return operations.NewRestAccountDeleteBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorGetWallet,
-				Message: "Error cannot load wallet: " + err.Error(),
-			})
+		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
+			return operations.NewRestAccountDeleteNotFound().WithPayload(
+				&models.Error{
+					Code:    errorGetWallet,
+					Message: "Error cannot load account: " + err.Error(),
+				})
+		} else {
+			return operations.NewRestAccountDeleteInternalServerError().WithPayload(
+				&models.Error{
+					Code:    errorGetWallet,
+					Message: "Error cannot load account: " + err.Error(),
+				})
+		}
 	}
 
-	go handleDelete(wallet, w.prompterApp)
+	go handleDelete(account, w.prompterApp)
 
 	return operations.NewRestAccountDeleteNoContent()
 }

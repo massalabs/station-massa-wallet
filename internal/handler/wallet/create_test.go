@@ -27,7 +27,7 @@ func Test_walletCreate_validation(t *testing.T) {
 	}{
 		{"create success", nickname, "GoodPassword", http.StatusOK},
 		{"invalid Nickname", " ", "", http.StatusBadRequest},
-		{"Prompt action canceled by user", nickname, "cancel", http.StatusInternalServerError},
+		{"Prompt action canceled by user", nickname, "cancel", http.StatusUnauthorized},
 	}
 	for _, test := range tests {
 		testResult := make(chan walletapp.EventData)
