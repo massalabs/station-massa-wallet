@@ -23,6 +23,7 @@ type walletGet struct {
 }
 
 func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Responder {
+	// params.Nickname length is already checked by go swagger
 	wlt, err := wallet.Load(params.Nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
@@ -50,7 +51,7 @@ func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Re
 		}
 		_, err := prompt.PromptPassword(g.prompterApp, wlt, walletapp.Export, promptData)
 		if err != nil {
-			return operations.NewRestAccountGetLocked().WithPayload(
+			return operations.NewRestAccountGetUnauthorized().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: "Unable to unprotect wallet",
@@ -75,7 +76,7 @@ func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Re
 func HandleList(params operations.RestAccountListParams) middleware.Responder {
 	wallets, err := wallet.LoadAll()
 	if err != nil {
-		return operations.NewRestAccountListBadRequest().WithPayload(
+		return operations.NewRestAccountListInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: err.Error(),

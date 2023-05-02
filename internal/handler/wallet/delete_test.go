@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -38,13 +39,13 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := deleteWallet(t, api, "toto")
-		verifyStatusCode(t, resp, 400)
+		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 
 	t.Run("invalid password", func(t *testing.T) {
 		resp := deleteWallet(t, api, nickname)
 
-		verifyStatusCode(t, resp, 204)
+		verifyStatusCode(t, resp, http.StatusNoContent)
 
 		prompterApp.App().PasswordChan <- "invalid password"
 
@@ -63,7 +64,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("canceled by user", func(t *testing.T) {
 		resp := deleteWallet(t, api, nickname)
 
-		verifyStatusCode(t, resp, 204)
+		verifyStatusCode(t, resp, http.StatusNoContent)
 
 		prompterApp.App().CtrlChan <- walletapp.Cancel
 
@@ -76,7 +77,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("delete success", func(t *testing.T) {
 		resp := deleteWallet(t, api, nickname)
 
-		verifyStatusCode(t, resp, 204)
+		verifyStatusCode(t, resp, http.StatusNoContent)
 
 		prompterApp.App().PasswordChan <- password
 

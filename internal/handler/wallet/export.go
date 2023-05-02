@@ -17,6 +17,7 @@ import (
 // HandleExportFile handles a export file request
 // It will serve the yaml file so that the client can download it.
 func HandleExportFile(params operations.RestAccountExportFileParams) middleware.Responder {
+	// params.Nickname length is already checked by go swagger
 	wlt, err := wallet.Load(params.Nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -42,7 +43,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := signTransaction(t, api, "Johnny", transactionData)
-		verifyStatusCode(t, resp, 500)
+		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 
 	t.Run("sign transaction OK", func(t *testing.T) {
@@ -56,7 +57,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData)
-		verifyStatusCode(t, resp, 200)
+		verifyStatusCode(t, resp, http.StatusOK)
 
 		result := <-testResult
 
@@ -99,7 +100,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData)
-		verifyStatusCode(t, resp, 200)
+		verifyStatusCode(t, resp, http.StatusOK)
 
 		result := <-testResult
 
@@ -136,7 +137,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		}()
 
 		resp := signTransaction(t, api, nickname, transactionData)
-		verifyStatusCode(t, resp, 500)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
 	t.Run("sign transation batch OK", func(t *testing.T) {
@@ -151,7 +152,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionDataBatch)
-		verifyStatusCode(t, resp, 200)
+		verifyStatusCode(t, resp, http.StatusOK)
 
 		result := <-testResult
 
@@ -175,7 +176,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		transactionDataBatch = fmt.Sprintf(`{"operation":"MjIzM3QyNHQ=","correlationId":"%s"}`, correlationId)
 		// Send new transaction without password prompt
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
-		verifyStatusCode(t, resp, 200)
+		verifyStatusCode(t, resp, http.StatusOK)
 	})
 
 	err = cleanupTestData([]string{nickname})

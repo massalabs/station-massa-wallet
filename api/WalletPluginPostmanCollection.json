@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7de9eda6-1035-4292-9b14-9add62c9be2f",
+		"_postman_id": "8d77d727-216a-4e79-ac66-ce954240bc49",
 		"name": "Wallet plugin",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "7885963"
@@ -30,14 +30,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{baseURL}}/api/accounts",
+					"raw": "http://{{baseURL}}/api/accounts/{{nickname}}",
 					"protocol": "http",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
 						"api",
-						"accounts"
+						"accounts",
+						"{{nickname}}"
 					]
 				}
 			},
@@ -449,40 +450,100 @@
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				},
 				{
-					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+					"name": "api Account Get",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}?ciphered=false",
 							"host": [
-								"{{baseUrl}}"
+								"{{baseURL}}"
 							],
 							"path": [
 								"api",
 								"accounts",
-								":nickname"
+								"{{nickname}}"
 							],
-							"variable": [
+							"query": [
 								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
+									"key": "ciphered",
+									"value": "false"
 								}
 							]
 						}
 					},
-					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
-					"code": 422,
+					"status": "Unauthorized",
+					"code": 401,
 					"_postman_previewlanguage": "json",
 					"header": [
 						{
 							"key": "Content-Type",
 							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 02 May 2023 13:44:18 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "62"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
 						}
 					],
 					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+					"body": "{\n    \"code\": \"Wallet-0009\",\n    \"message\": \"Unable to unprotect wallet\"\n}"
+				},
+				{
+					"name": "api Account Get Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{nickname}}"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 02 May 2023 13:43:53 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "64"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": \"Wallet-0009\",\n    \"message\": \"account '{{nicknam'not found\"\n}"
 				},
 				{
 					"name": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
@@ -1027,6 +1088,70 @@
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				},
 				{
+					"name": "api Account Sign Operation Unauthorized",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operation\":\"MjIzM3QyNHQ=\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{nickname}}",
+								"signOperation"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 02 May 2023 13:45:06 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "62"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": \"Wallet-0003\",\n    \"message\": \"Unable to unprotect wallet\"\n}"
+				},
+				{
 					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
 					"originalRequest": {
 						"method": "POST",
@@ -1266,6 +1391,70 @@
 					],
 					"cookie": [],
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "api Account Sign Operation New Batch Unauthorized",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operation\":\"MjIzM3QyNHQ=\", \"batch\": true}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"accounts",
+								"{{nickname}}",
+								"signOperation"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 02 May 2023 13:46:14 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "62"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": \"Wallet-0003\",\n    \"message\": \"Unable to unprotect wallet\"\n}"
 				},
 				{
 					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
@@ -1669,7 +1858,7 @@
 						}
 					],
 					"cookie": [],
-					"body": null
+					"body": ""
 				},
 				{
 					"name": "Bad request.",
@@ -1697,42 +1886,6 @@
 					},
 					"status": "Not Found",
 					"code": 404,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						}
-					],
-					"cookie": [],
-					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
-				},
-				{
-					"name": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-					"originalRequest": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"accounts",
-								":nickname"
-							],
-							"variable": [
-								{
-									"key": "nickname",
-									"value": "mollit ma",
-									"description": "(Required) Wallet's short name."
-								}
-							]
-						}
-					},
-					"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
-					"code": 422,
 					"_postman_previewlanguage": "json",
 					"header": [
 						{

@@ -38,6 +38,7 @@ type walletSign struct {
 
 // Handle handles a sign request.
 func (s *walletSign) Handle(params operations.RestAccountSignOperationParams) middleware.Responder {
+	// params.Nickname length is already checked by go swagger
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
@@ -54,7 +55,7 @@ func (s *walletSign) Handle(params operations.RestAccountSignOperationParams) mi
 
 		_, err := prompt.PromptPassword(s.prompterApp, wlt, walletapp.Sign, promptData)
 		if err != nil {
-			return operations.NewRestAccountSignOperationInternalServerError().WithPayload(
+			return operations.NewRestAccountSignOperationUnauthorized().WithPayload(
 				&models.Error{
 					Code:    errorCanceledAction,
 					Message: "Unable to unprotect wallet",
@@ -183,21 +184,21 @@ func generateCorrelationId() (models.CorrelationID, error) {
 
 // loadWallet loads a wallet from the file system or returns an error.
 func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
-	if len(nickname) == 0 {
-		return nil, operations.NewRestAccountSignOperationBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorSignOperationEmptyNickname,
-				Message: "Error: nickname field is mandatory.",
-			})
-	}
-
 	w, err := wallet.Load(nickname)
 	if err != nil {
-		return nil, operations.NewRestAccountSignOperationInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorGetWallet,
-				Message: "Error cannot load wallet: " + err.Error(),
-			})
+		if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
+			return nil, operations.NewRestAccountSignOperationNotFound().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: err.Error(),
+				})
+		} else {
+			return nil, operations.NewRestAccountSignOperationBadRequest().WithPayload(
+				&models.Error{
+					Code:    errorGetWallets,
+					Message: err.Error(),
+				})
+		}
 	}
 
 	return w, nil
