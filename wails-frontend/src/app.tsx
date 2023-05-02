@@ -7,6 +7,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import Success from './pages/success';
 import ImportMethods from './pages/importMethods';
 import ImportFile from './pages/importFile';
+import ImportPrivatekey from './pages/importPrivateKey';
 
 export function App() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export function App() {
         <Route path="/success" element={<Success />} />
         <Route path="/import-methods" element={<ImportMethods />} />
         <Route path="/import-file" element={<ImportFile />} />
+        <Route path="/import-pkey" element={<ImportPrivatekey />} />
       </Routes>
     </div>
   );

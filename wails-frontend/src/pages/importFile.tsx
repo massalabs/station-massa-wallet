@@ -21,8 +21,6 @@ const ImportFile = () => {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const title = 'Import';
-  const successMsg = 'The account has been imported';
   const baselineStr = () =>
     account
       ? `Importing account ${account.nickname}`
@@ -32,7 +30,6 @@ const ImportFile = () => {
   const handleApply = async () => {
     if (!account) {
       const res = await SelectAccountFile();
-      console.log('res', res);
       if (!Object.keys(res).length) {
         return;
       }
@@ -40,20 +37,19 @@ const ImportFile = () => {
         setErrorMsg(res.err);
         return;
       }
-      console.log('file', res.filePath);
       setAccount(res);
     } else {
       EventsOnce(
         events.passwordResult,
-        handleApplyResult(nav, successMsg, setErrorMsg),
+        handleApplyResult(nav, req, setErrorMsg, true),
       );
       await ImportWalletFile(account.filePath);
     }
   };
 
   return (
-    <section class="PasswordPrompt">
-      <div>{title}</div>
+    <section>
+      <div>{req.Msg}</div>
       <div className="baseline">{baselineStr()}</div>
       <div className="flex">
         <button className="btn" onClick={handleCancel}>
