@@ -11,12 +11,12 @@ import (
 )
 
 func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string) *httptest.ResponseRecorder {
-	handler, exist := api.HandlerFor("DELETE", "/rest/accounts/{nickname}")
+	handler, exist := api.HandlerFor("DELETE", "/api/accounts/{nickname}")
 	if !exist {
 		t.Fatalf("Endpoint doesn't exist")
 	}
 
-	resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/rest/accounts/%s", nickname), "")
+	resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/api/accounts/%s", nickname), "")
 	if err != nil {
 		t.Fatalf("while serving HTTP request: %s", err)
 	}
