@@ -82,9 +82,16 @@ func configureAPI(api *operations.MassaWalletAPI) http.Handler {
 			return middleware.NotImplemented("operation operations.RestAccountSignOperation has not yet been implemented")
 		})
 	}
+	// route for the legacy wallet frontend
 	if api.WebHandler == nil {
 		api.WebHandler = operations.WebHandlerFunc(func(params operations.WebParams) middleware.Responder {
 			return middleware.NotImplemented("operation operations.Web has not yet been implemented")
+		})
+	}
+	// route for the ReactJS wallet frontend
+	if api.WebAppHandler == nil {
+		api.WebAppHandler = operations.WebAppHandlerFunc(func(params operations.WebAppParams) middleware.Responder {
+			return middleware.NotImplemented("operation operations.WebApp has not yet been implemented")
 		})
 	}
 
