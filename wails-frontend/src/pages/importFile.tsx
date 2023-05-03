@@ -24,7 +24,7 @@ const ImportFile = () => {
   const baselineStr = () =>
     account
       ? `Importing account ${account.nickname}`
-      : 'Select an accound file to import';
+      : 'Select an account file to import';
   const applyStr = () => (account ? 'Import' : 'Select a file');
 
   const handleApply = async () => {

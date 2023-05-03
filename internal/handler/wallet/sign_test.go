@@ -11,6 +11,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -82,7 +83,7 @@ func Test_walletSign_Handle(t *testing.T) {
 			// forward test result to test goroutine
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, "error unprotecting wallet:opening the private key seal: cipher: message authentication failed")
+			checkResultChannel(t, failRes, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
 
 			// Send password to prompter app to unlock the handler
 			prompterApp.App().PasswordChan <- password
@@ -114,7 +115,7 @@ func Test_walletSign_Handle(t *testing.T) {
 			// forward test result to test goroutine
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, "error unprotecting wallet:opening the private key seal: cipher: message authentication failed")
+			checkResultChannel(t, failRes, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel

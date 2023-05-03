@@ -25,7 +25,7 @@ func PromptPassword(
 		case password := <-prompterApp.App().PasswordChan:
 			err := wallet.Unprotect(password)
 			if err != nil {
-				errStr := "error unprotecting wallet:" + err.Error()
+				errStr := UnprotectErr + ": " + err.Error()
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 					walletapp.EventData{Success: false, Data: errStr})
@@ -34,15 +34,13 @@ func PromptPassword(
 
 			return password, nil
 		case <-prompterApp.App().CtrlChan:
-			msg := "Action canceled by user"
-			fmt.Println(msg)
-			return "", fmt.Errorf(msg)
+			fmt.Println(ActionCanceledErr)
+			return "", fmt.Errorf(ActionCanceledErr)
 		case <-ctxTimeout.Done():
-			errStr := "Password prompt reached timeout"
-			fmt.Println(errStr)
+			fmt.Println(TimeoutErr)
 			prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-				walletapp.EventData{Success: false, Data: errStr, Error: "timeoutError"})
-			return "", fmt.Errorf(errStr)
+				walletapp.EventData{Success: false, Data: TimeoutErr, Error: "timeoutError"})
+			return "", fmt.Errorf(TimeoutErr)
 		}
 	}
 }

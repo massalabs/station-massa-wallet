@@ -12,8 +12,10 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/web"
 )
 
-const indexHTML = "index.html"
-const basePathWebApp = "dist/"
+const (
+	indexHTML      = "index.html"
+	basePathWebApp = "dist/"
+)
 
 //nolint:typecheck,nolintlint
 //go:embed dist

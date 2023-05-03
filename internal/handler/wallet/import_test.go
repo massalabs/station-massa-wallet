@@ -9,6 +9,7 @@ import (
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
 func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.ResponseRecorder {
@@ -102,13 +103,13 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			prompterApp.App().WalletFileChan <- "invalidFilename"
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, "invalid account file")
+			checkResultChannel(t, failRes, false, prompt.InvalidAccountFileErr)
 
 			// Send invalid filename to prompter app and wait for result
 			prompterApp.App().WalletFileChan <- filePath
 			failRes = <-resChan
 
-			checkResultChannel(t, failRes, false, `unable to load account file: unmarshalling file`)
+			checkResultChannel(t, failRes, false, prompt.AccountLoadErr+": unmarshalling file")
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel
@@ -116,7 +117,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 
 		resp := importWallet(t, api)
 
-		verifyStatusCode(t, resp, http.StatusInternalServerError)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
 	t.Run("import private key", func(t *testing.T) {
@@ -125,7 +126,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		password := "aGoodPassword"
 		testResult := make(chan walletapp.EventData)
 
-		// Send filepath to prompter app and wait for result
+		// Send account credentials to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PrivateKeyChan <- walletapp.ImportFromPKey{PrivateKey: privateKey, Nickname: nickname, Password: password}
 			// forward test result to test goroutine
@@ -163,10 +164,10 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 
 		resp := importWallet(t, api)
 
-		verifyStatusCode(t, resp, http.StatusInternalServerError)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
 
 		result := <-testResult
 
-		checkResultChannel(t, result, false, "unable to import private key: decoding private key: invalid format: version and/or checksum bytes missing")
+		checkResultChannel(t, result, false, prompt.ImportPrivateKeyErr+": decoding private key: invalid format: version and/or checksum bytes missing")
 	})
 }

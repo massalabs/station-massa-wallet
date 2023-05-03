@@ -8,6 +8,7 @@ import (
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -51,7 +52,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		result := <-resChan
 
-		checkResultChannel(t, result, false, "error unprotecting wallet:opening the private key seal: cipher: message authentication failed")
+		checkResultChannel(t, result, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
 	})
 
 	t.Run("canceled by user", func(t *testing.T) {
