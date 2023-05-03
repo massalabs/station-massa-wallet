@@ -16,18 +16,18 @@ import (
 
 // HandleExportFile handles a export file request
 // It will serve the yaml file so that the client can download it.
-func HandleExportFile(params operations.RestAccountExportFileParams) middleware.Responder {
+func HandleExportFile(params operations.ExportAccountFileParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
 	wlt, err := wallet.Load(params.Nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewRestAccountExportFileNotFound().WithPayload(
+			return operations.NewExportAccountFileNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
 				})
 		} else {
-			return operations.NewRestAccountExportFileBadRequest().WithPayload(
+			return operations.NewExportAccountFileBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
@@ -37,7 +37,7 @@ func HandleExportFile(params operations.RestAccountExportFileParams) middleware.
 
 	pathToWallet, err := wlt.FilePath()
 	if err != nil {
-		return operations.NewRestAccountExportFileInternalServerError().WithPayload(
+		return operations.NewExportAccountFileInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorExportWallet,
 				Message: err.Error(),

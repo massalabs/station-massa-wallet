@@ -8,7 +8,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
-func NewImport(prompterApp prompt.WalletPrompterInterface) operations.RestImportAccountHandler {
+func NewImport(prompterApp prompt.WalletPrompterInterface) operations.ImportAccountHandler {
 	return &wImport{prompterApp: prompterApp}
 }
 
@@ -16,10 +16,10 @@ type wImport struct {
 	prompterApp prompt.WalletPrompterInterface
 }
 
-func (h *wImport) Handle(_ operations.RestImportAccountParams) middleware.Responder {
+func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder {
 	wallet, err := prompt.PromptImport(h.prompterApp)
 	if err != nil {
-		return operations.NewRestImportAccountUnauthorized().WithPayload(
+		return operations.NewImportAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
 				Message: "Unable to import account",
@@ -28,7 +28,7 @@ func (h *wImport) Handle(_ operations.RestImportAccountParams) middleware.Respon
 
 	err = wallet.Persist()
 	if err != nil {
-		return operations.NewRestImportAccountInternalServerError().WithPayload(
+		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
 				Message: "Unable to persist imported account",
@@ -37,7 +37,7 @@ func (h *wImport) Handle(_ operations.RestImportAccountParams) middleware.Respon
 
 	h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 		walletapp.EventData{Success: true, Data: "Import Success"})
-	return operations.NewRestImportAccountOK().WithPayload(
+	return operations.NewImportAccountOK().WithPayload(
 		&models.Account{
 			Nickname: models.Nickname(wallet.Nickname),
 			Address:  wallet.Address,

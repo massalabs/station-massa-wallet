@@ -12,7 +12,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewDelete(prompterApp prompt.WalletPrompterInterface) operations.RestAccountDeleteHandler {
+func NewDelete(prompterApp prompt.WalletPrompterInterface) operations.DeleteAccountHandler {
 	return &walletDelete{prompterApp: prompterApp}
 }
 
@@ -21,18 +21,18 @@ type walletDelete struct {
 }
 
 // HandleDelete handles a delete request
-func (w *walletDelete) Handle(params operations.RestAccountDeleteParams) middleware.Responder {
+func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
 	account, err := wallet.Load(params.Nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewRestAccountDeleteNotFound().WithPayload(
+			return operations.NewDeleteAccountNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallet,
 					Message: "Error cannot load account: " + err.Error(),
 				})
 		} else {
-			return operations.NewRestAccountDeleteInternalServerError().WithPayload(
+			return operations.NewDeleteAccountInternalServerError().WithPayload(
 				&models.Error{
 					Code:    errorGetWallet,
 					Message: "Error cannot load account: " + err.Error(),
@@ -42,7 +42,7 @@ func (w *walletDelete) Handle(params operations.RestAccountDeleteParams) middlew
 
 	go handleDelete(account, w.prompterApp)
 
-	return operations.NewRestAccountDeleteNoContent()
+	return operations.NewDeleteAccountNoContent()
 }
 
 func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface) {

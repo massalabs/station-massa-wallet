@@ -9,11 +9,11 @@ import (
 // AppendEndpoints appends wallet endpoints to the API
 // Note: the password prompter is mandatory for sign endpoint
 func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) {
-	api.RestCreateAccountHandler = NewCreateAccount(prompterApp)
-	api.RestAccountDeleteHandler = NewDelete(prompterApp)
-	api.RestImportAccountHandler = NewImport(prompterApp)
-	api.RestAccountListHandler = operations.RestAccountListHandlerFunc(HandleList)
-	api.RestAccountSignOperationHandler = NewSign(prompterApp, gc)
-	api.RestAccountGetHandler = NewGet(prompterApp)
-	api.RestAccountExportFileHandler = operations.RestAccountExportFileHandlerFunc(HandleExportFile)
+	api.CreateAccountHandler = NewCreateAccount(prompterApp)
+	api.DeleteAccountHandler = NewDelete(prompterApp)
+	api.ImportAccountHandler = NewImport(prompterApp)
+	api.AccountListHandler = operations.AccountListHandlerFunc(HandleList)
+	api.SignOperationHandler = NewSign(prompterApp, gc)
+	api.GetAccountHandler = NewGet(prompterApp)
+	api.ExportAccountFileHandler = operations.ExportAccountFileHandlerFunc(HandleExportFile)
 }

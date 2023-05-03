@@ -14,7 +14,7 @@ import (
 
 // NewGet instantiates a Get Handler
 // The "classical" way is not possible because we need to pass to the handler a wallet.WalletPrompterInterface.
-func NewGet(prompterApp prompt.WalletPrompterInterface) operations.RestAccountGetHandler {
+func NewGet(prompterApp prompt.WalletPrompterInterface) operations.GetAccountHandler {
 	return &walletGet{prompterApp: prompterApp}
 }
 
@@ -22,18 +22,18 @@ type walletGet struct {
 	prompterApp prompt.WalletPrompterInterface
 }
 
-func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Responder {
+func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
 	wlt, err := wallet.Load(params.Nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewRestAccountGetNotFound().WithPayload(
+			return operations.NewGetAccountNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
 				})
 		} else {
-			return operations.NewRestAccountGetBadRequest().WithPayload(
+			return operations.NewGetAccountBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
@@ -51,7 +51,7 @@ func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Re
 		}
 		_, err := prompt.PromptPassword(g.prompterApp, wlt, walletapp.Export, promptData)
 		if err != nil {
-			return operations.NewRestAccountGetUnauthorized().WithPayload(
+			return operations.NewGetAccountUnauthorized().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: "Unable to unprotect wallet",
@@ -69,14 +69,14 @@ func (g *walletGet) Handle(params operations.RestAccountGetParams) middleware.Re
 		}
 	}
 
-	return operations.NewRestAccountGetOK().WithPayload(&modelWallet)
+	return operations.NewGetAccountOK().WithPayload(&modelWallet)
 }
 
 // HandleList handles a list request
-func HandleList(params operations.RestAccountListParams) middleware.Responder {
+func HandleList(params operations.AccountListParams) middleware.Responder {
 	wallets, err := wallet.LoadAll()
 	if err != nil {
-		return operations.NewRestAccountListInternalServerError().WithPayload(
+		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: err.Error(),
@@ -90,7 +90,7 @@ func HandleList(params operations.RestAccountListParams) middleware.Responder {
 		wlts = append(wlts, &modelWallet)
 	}
 
-	return operations.NewRestAccountListOK().WithPayload(wlts)
+	return operations.NewAccountListOK().WithPayload(wlts)
 }
 
 func createModelWallet(wlt wallet.Wallet) models.Account {
