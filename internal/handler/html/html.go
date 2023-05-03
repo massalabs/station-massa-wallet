@@ -15,6 +15,7 @@ import (
 const indexHTML = "index.html"
 const basePathWebApp = "dist/"
 
+//nolint:typecheck,nolintlint
 //go:embed dist
 var contentWebApp embed.FS
 
