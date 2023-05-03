@@ -69,7 +69,7 @@ paths:
             $ref: "#/definitions/Error"
   /api/accounts:
     get:
-      operationId: restAccountList
+      operationId: AccountList
       description: Get all the accounts.
       produces:
         - application/json
@@ -89,7 +89,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     put:
-      operationId: restImportAccount
+      operationId: ImportAccount
       description: Import a new account
       produces:
         - application/json  
@@ -116,7 +116,7 @@ paths:
             $ref: "#/definitions/Error"
   /api/accounts/{nickname}:
     get:
-      operationId: restAccountGet
+      operationId: GetAccount
       description: Get the account by nickname given in path, with the option to return the ciphered private key.
       parameters:
         - $ref: "#/parameters/nickname"
@@ -145,7 +145,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     post:
-      operationId: restCreateAccount
+      operationId: CreateAccount
       description: Generate a new account with new random keys
       parameters:
         - $ref: "#/parameters/nickname"
@@ -173,7 +173,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     delete:
-      operationId: restAccountDelete
+      operationId: DeleteAccount
       description: Delete the account by nickname given in path.
       parameters:
         - $ref: "#/parameters/nickname"
@@ -198,7 +198,7 @@ paths:
             $ref: "#/definitions/Error"
   /api/accounts/{nickname}/exportFile:
     get:
-      operationId: restAccountExportFile
+      operationId: ExportAccountFile
       description: Download the account file corresponding to the nickname given in path.
       produces:
         - application/octet-stream
@@ -223,7 +223,7 @@ paths:
             $ref: "#/definitions/Error"
   /api/accounts/{nickname}/signOperation:
     post:
-      operationId: restAccountSignOperation
+      operationId: SignOperation
       description: Sign an operation with the account by nickname given in path.
       parameters:
         - $ref: "#/parameters/nickname"
