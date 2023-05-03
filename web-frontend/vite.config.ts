@@ -8,6 +8,8 @@ export default defineConfig({
   build: {
     outDir: '../internal/handler/html/dist',
     emptyOutDir: true,
+    manifest: true,
+    sourcemap: true,
     assetsDir: './', // put the assets next to the index.html file
   },
 });
