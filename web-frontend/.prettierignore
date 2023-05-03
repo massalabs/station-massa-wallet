@@ -6,3 +6,4 @@ public
 .eslintcache
 *.md
 *.mdx
+package-lock.json

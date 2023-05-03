@@ -2,7 +2,7 @@
 
 # Massa Wallet Plugin
 
-This is the Thyra plugin that implements the Massa wallet features.
+This is the MassaStation plugin that implements the Massa wallet features.
 
 ## Developer guide
 
@@ -24,21 +24,36 @@ apt install libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
 
 ### Build
 
+Generate the projects: go-swagger, wails, web-frontend:
+
 ```shell
-./build.sh
+go generate ./...
+```
+
+On macos:
+
+```shell
+./build_darwin.sh .sh
 ```
 
 This will create a binary file `thyra-plugin-wallet` in `build/wallet-plugin` folder.
 
-### Run
-
-For development purpose, you can run the plugin in standalone mode: it will not try to register against Thyra.
+### Test
 
 ```shell
-STANDALONE=1 go run cmd/massa-wallet/thyra-plugin-wallet.go
+go test ./...
 ```
 
-The `STANDALONE` environment variable is to run the plugin without Thyra.
+### Run
+
+For development purpose, you can run the plugin in standalone mode: it will not try to register against MassaStation.
+
+```shell
+cd web-frontend && npm run build:standalone && cd ..
+STANDALONE=1 wails dev
+```
+
+The `STANDALONE` environment variable is to run the plugin without MassaStation.
 
 Now navigate into <http://localhost:8080>. Note that some features will not work if
 [thyra-server](https://github.com/massalabs/thyra) is not running.
@@ -51,8 +66,8 @@ For development purpose, you can install the plugin manually:
 ./manual-install.sh
 ```
 
-This will create Thyra plugin directories and copy the binary file created in the previous step so that
-Thyra can detect the plugin and launch it.
+This will create MassaStation plugin directories and copy the binary file created in the previous step so that
+MassaStation can detect the plugin and launch it.
 
 ### Postman collection
 
