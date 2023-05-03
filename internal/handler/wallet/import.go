@@ -19,7 +19,7 @@ type wImport struct {
 func (h *wImport) Handle(_ operations.RestImportAccountParams) middleware.Responder {
 	wallet, err := prompt.PromptImport(h.prompterApp)
 	if err != nil {
-		return operations.NewRestImportAccountInternalServerError().WithPayload(
+		return operations.NewRestImportAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
 				Message: "Unable to import account",

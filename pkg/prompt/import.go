@@ -30,15 +30,14 @@ func PromptImport(
 		case filePath := <-prompterApp.App().WalletFileChan:
 			fmt.Println("filePath received: ", filePath)
 			if !strings.HasSuffix(filePath, ".yml") {
-				errStr := "invalid account file"
-				fmt.Println(errStr)
+				fmt.Println(InvalidAccountFileErr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-					walletapp.EventData{Success: false, Data: errStr})
+					walletapp.EventData{Success: false, Data: InvalidAccountFileErr})
 				continue
 			}
 			wallet, err := wallet.LoadFile(filePath)
 			if err != nil {
-				errStr := "unable to load account file: " + err.Error()
+				errStr := AccountLoadErr + ": " + err.Error()
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 					walletapp.EventData{Success: false, Data: errStr})
@@ -49,7 +48,7 @@ func PromptImport(
 		case walletInfo := <-prompterApp.App().PrivateKeyChan:
 			wallet, err := wallet.Import(walletInfo.Nickname, walletInfo.PrivateKey, walletInfo.Password)
 			if err != nil {
-				errStr := "unable to import private key: " + err.Error()
+				errStr := ImportPrivateKeyErr + ": " + err.Error()
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 					walletapp.EventData{Success: false, Data: errStr})
@@ -58,15 +57,13 @@ func PromptImport(
 			return wallet, nil
 
 		case <-prompterApp.App().CtrlChan:
-			msg := "Action canceled by user"
-			fmt.Println(msg)
-			return nil, fmt.Errorf(msg)
+			fmt.Println(ActionCanceledErr)
+			return nil, fmt.Errorf(ActionCanceledErr)
 		case <-ctxTimeout.Done():
-			errStr := "Password prompt reached timeout"
-			fmt.Println(errStr)
+			fmt.Println(TimeoutErr)
 			prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-				walletapp.EventData{Success: false, Data: errStr, Error: "timeoutError"})
-			return nil, fmt.Errorf(errStr)
+				walletapp.EventData{Success: false, Data: TimeoutErr, Error: "timeoutError"})
+			return nil, fmt.Errorf(TimeoutErr)
 		}
 	}
 }

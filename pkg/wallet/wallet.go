@@ -353,8 +353,7 @@ func (w *Wallet) FilePath() (string, error) {
 }
 
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
-	// TODO: check if the private key is valid
-	if len(privateKeyB58V) < 3 {
+	if len(privateKeyB58V) < 2 {
 		return nil, fmt.Errorf("invalid private key")
 	}
 
