@@ -7,12 +7,12 @@ on:
         description: "Version to produce"
         required: true
       draft:
-        description: "Whether it's a draft or not"
+        description: "Draft"
         required: true
         type: boolean
         default: true
       prerelease:
-        description: "Whether it's a prerelease or not"
+        description: "Pre-release"
         required: true
         type: boolean
         default: false
