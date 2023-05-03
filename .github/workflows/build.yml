@@ -86,6 +86,7 @@ jobs:
         if: ${{ inputs.tag_name != '' }}
         uses: softprops/action-gh-release@v1
         with:
+          target_commitish: ${{ github.sha }}
           tag_name: ${{ inputs.tag_name }}
           draft: ${{ inputs.draft }}
           prerelease: ${{ inputs.prerelease }}
