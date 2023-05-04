@@ -14,3 +14,38 @@ jobs:
         with:
           version: v1.50.1
           args: --timeout=3m
+
+  lint-web-frontend:
+    defaults:
+      run:
+        working-directory: ./web-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: ./web-frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run code formating and linting
+        run: npm run fmt:check
+
+  lint-wails-frontend:
+    defaults:
+      run:
+        working-directory: ./wails-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: ./wails-frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run code formating and linting
+        run: npm run fmt:check
+      
