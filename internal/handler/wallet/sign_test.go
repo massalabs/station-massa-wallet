@@ -16,12 +16,12 @@ import (
 )
 
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
-	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/signOperation")
+	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
 	if !exist {
 		t.Fatalf("Endpoint doesn't exist")
 	}
 
-	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/signOperation", nickname), body)
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body)
 	if err != nil {
 		t.Fatalf("while serving HTTP request: %s", err)
 	}

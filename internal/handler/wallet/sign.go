@@ -27,7 +27,7 @@ const passwordExpirationTime = time.Second * 60 * 30
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignOperationHandler {
+func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignHandler {
 	return &walletSign{gc: gc, prompterApp: prompterApp}
 }
 
@@ -37,7 +37,7 @@ type walletSign struct {
 }
 
 // Handle handles a sign request.
-func (s *walletSign) Handle(params operations.SignOperationParams) middleware.Responder {
+func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
@@ -55,7 +55,7 @@ func (s *walletSign) Handle(params operations.SignOperationParams) middleware.Re
 
 		_, err := prompt.PromptPassword(s.prompterApp, wlt, walletapp.Sign, promptData)
 		if err != nil {
-			return operations.NewSignOperationUnauthorized().WithPayload(
+			return operations.NewSignUnauthorized().WithPayload(
 				&models.Error{
 					Code:    errorCanceledAction,
 					Message: "Unable to unprotect wallet",
@@ -78,15 +78,15 @@ func (s *walletSign) Handle(params operations.SignOperationParams) middleware.Re
 		return resp
 	}
 
-	return operations.NewSignOperationOK().WithPayload(
-		&models.Signature{
+	return operations.NewSignOK().WithPayload(
+		&models.SignResponse{
 			PublicKey:     wlt.GetPupKey(),
 			Signature:     signature,
 			CorrelationID: correlationId,
 		})
 }
 
-func sign(wlt *wallet.Wallet, params operations.SignOperationParams) ([]byte, []byte, middleware.Responder) {
+func sign(wlt *wallet.Wallet, params operations.SignParams) ([]byte, []byte, middleware.Responder) {
 	pubKey := wlt.KeyPair.PublicKey
 	privKey := wlt.KeyPair.PrivateKey
 
@@ -99,14 +99,14 @@ func sign(wlt *wallet.Wallet, params operations.SignOperationParams) ([]byte, []
 	return pubKey, signature, nil
 }
 
-func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignOperationParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
+func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
 	cacheKey := getCacheKey(params.Body.CorrelationID)
 
 	value, err := gc.Get(cacheKey)
 	if err != nil {
-		return nil, operations.NewSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationLoadCache,
+				Code:    errorSignLoadCache,
 				Message: "Error cannot get data from cache: " + err.Error(),
 			})
 	}
@@ -115,9 +115,9 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignOperation
 	buf := new(bytes.Buffer)
 	err = binary.Write(buf, binary.LittleEndian, value)
 	if err != nil {
-		return nil, operations.NewSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationLoadCache,
+				Code:    errorSignLoadCache,
 				Message: "Error cannot convert cache value: " + err.Error(),
 			})
 	}
@@ -126,9 +126,9 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignOperation
 	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
 
 	if err != nil {
-		return nil, operations.NewSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationLoadCache,
+				Code:    errorSignLoadCache,
 				Message: "Error cannot unprotect from cache: " + err.Error(),
 			})
 	}
@@ -140,12 +140,12 @@ func getCacheKey(correlationId models.CorrelationID) [32]byte {
 	return blake3.Sum256(correlationId)
 }
 
-func handleBatch(wlt *wallet.Wallet, params operations.SignOperationParams, s *walletSign, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
+func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
 	correlationId, err := generateCorrelationId()
 	if err != nil {
-		return nil, operations.NewSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationGenerateCorrelationId,
+				Code:    errorSignGenerateCorrelationId,
 				Message: "Error cannot generate correlation id: " + err.Error(),
 			})
 	}
@@ -153,17 +153,17 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignOperationParams, s *w
 	cacheKey := getCacheKey(correlationId)
 	cacheValue, err := wallet.Xor(wlt.KeyPair.PrivateKey, correlationId)
 	if err != nil {
-		return nil, operations.NewSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationGenerateCorrelationId,
+				Code:    errorSignGenerateCorrelationId,
 				Message: "Error cannot XOR correlation id: " + err.Error(),
 			})
 	}
 	err = gc.SetWithExpire(cacheKey, cacheValue, passwordExpirationTime)
 	if err != nil {
-		return nil, operations.NewSignOperationInternalServerError().WithPayload(
+		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationGenerateCorrelationId,
+				Code:    errorSignGenerateCorrelationId,
 				Message: "Error set correlation id in cache: " + err.Error(),
 			})
 	}
@@ -187,13 +187,13 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 	w, err := wallet.Load(nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
-			return nil, operations.NewSignOperationNotFound().WithPayload(
+			return nil, operations.NewSignNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
 				})
 		} else {
-			return nil, operations.NewSignOperationBadRequest().WithPayload(
+			return nil, operations.NewSignBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorGetWallets,
 					Message: err.Error(),
@@ -210,9 +210,9 @@ func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]b
 
 	op, err := base64.StdEncoding.DecodeString(operation.String())
 	if err != nil {
-		return [32]byte{}, operations.NewSignOperationInternalServerError().WithPayload(
+		return [32]byte{}, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorSignOperationRead,
+				Code:    errorSignRead,
 				Message: "Error: while reading operation.",
 			})
 	}
