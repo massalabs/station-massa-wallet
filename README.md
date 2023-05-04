@@ -36,7 +36,7 @@ On macos:
 ./build_darwin.sh .sh
 ```
 
-This will create a binary file `thyra-plugin-wallet` in `build/wallet-plugin` folder.
+This will create a binary file `wallet-plugin` in `build/wallet-plugin` folder.
 
 ### Test
 
@@ -46,7 +46,7 @@ go test ./...
 
 ### Run
 
-For development purpose, you can run the plugin in standalone mode: it will not try to register against MassaStation.
+For development purpose, you can run the plugin in standalone mode: it will not try to register with MassaStation.
 
 ```shell
 cd web-frontend && npm run build:standalone && cd ..
