@@ -950,7 +950,7 @@
 			]
 		},
 		{
-			"name": "api Account Sign Operation",
+			"name": "api Account Sign",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -973,7 +973,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 					"host": [
 						"{{baseURL}}"
 					],
@@ -981,7 +981,7 @@
 						"api",
 						"accounts",
 						"{{nickname}}",
-						"signOperation"
+						"sign"
 					]
 				}
 			},
@@ -1001,7 +1001,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1009,7 +1009,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1047,7 +1047,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1055,7 +1055,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1079,7 +1079,7 @@
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				},
 				{
-					"name": "api Account Sign Operation Unauthorized",
+					"name": "api Account Sign Unauthorized",
 					"originalRequest": {
 						"method": "POST",
 						"header": [
@@ -1102,7 +1102,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -1110,7 +1110,7 @@
 								"api",
 								"accounts",
 								"{{nickname}}",
-								"signOperation"
+								"sign"
 							]
 						}
 					},
@@ -1157,7 +1157,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1165,7 +1165,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1203,7 +1203,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1211,7 +1211,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1237,7 +1237,7 @@
 			]
 		},
 		{
-			"name": "api Account Sign Operation New Batch",
+			"name": "api Account Sign New Batch",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -1260,7 +1260,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 					"host": [
 						"{{baseURL}}"
 					],
@@ -1268,7 +1268,7 @@
 						"api",
 						"accounts",
 						"{{nickname}}",
-						"signOperation"
+						"sign"
 					]
 				}
 			},
@@ -1297,7 +1297,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -1305,7 +1305,7 @@
 								"api",
 								"accounts",
 								"{{nickname}}",
-								"signOperation"
+								"sign"
 							]
 						}
 					},
@@ -1352,7 +1352,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1360,7 +1360,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1384,7 +1384,7 @@
 					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
 				},
 				{
-					"name": "api Account Sign Operation New Batch Unauthorized",
+					"name": "api Account Sign New Batch Unauthorized",
 					"originalRequest": {
 						"method": "POST",
 						"header": [
@@ -1407,7 +1407,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -1415,7 +1415,7 @@
 								"api",
 								"accounts",
 								"{{nickname}}",
-								"signOperation"
+								"sign"
 							]
 						}
 					},
@@ -1462,7 +1462,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1470,7 +1470,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1508,7 +1508,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1516,7 +1516,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1542,7 +1542,7 @@
 			]
 		},
 		{
-			"name": "api Account Sign Operation Batch item",
+			"name": "api Account Sign Batch item",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -1565,7 +1565,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+					"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 					"host": [
 						"{{baseURL}}"
 					],
@@ -1573,7 +1573,7 @@
 						"api",
 						"accounts",
 						"{{nickname}}",
-						"signOperation"
+						"sign"
 					]
 				}
 			},
@@ -1602,7 +1602,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/accounts/{{nickname}}/signOperation",
+							"raw": "{{baseURL}}/api/accounts/{{nickname}}/sign",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -1610,7 +1610,7 @@
 								"api",
 								"accounts",
 								"{{nickname}}",
-								"signOperation"
+								"sign"
 							]
 						}
 					},
@@ -1657,7 +1657,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1665,7 +1665,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1703,7 +1703,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1711,7 +1711,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{
@@ -1749,7 +1749,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/accounts/:nickname/signOperation",
+							"raw": "{{baseUrl}}/api/accounts/:nickname/sign",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1757,7 +1757,7 @@
 								"api",
 								"accounts",
 								":nickname",
-								"signOperation"
+								"sign"
 							],
 							"variable": [
 								{

@@ -11,10 +11,10 @@ const (
 	errorDeleteNoNickname
 	errorDeleteFile
 	errorGetWallets
-	errorSignOperationEmptyNickname
-	errorSignOperationRead
-	errorSignOperationLoadCache
-	errorSignOperationGenerateCorrelationId
+	errorSignEmptyNickname
+	errorSignRead
+	errorSignLoadCache
+	errorSignGenerateCorrelationId
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
 	errorImportWallet

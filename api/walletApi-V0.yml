@@ -103,7 +103,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "401":
-          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -161,7 +161,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "401":
-          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -221,10 +221,10 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /api/accounts/{nickname}/signOperation:
+  /api/accounts/{nickname}/sign:
     post:
-      operationId: SignOperation
-      description: Sign an operation with the account by nickname given in path.
+      operationId: Sign
+      description: Sign an operation or a message with the account by nickname given in path. Will ask the user to enter its account password.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -232,14 +232,14 @@ paths:
           required: true
           x-nullable: false
           schema:
-            $ref: "#/definitions/Operation"
+            $ref: "#/definitions/SignRequest"
       produces:
         - application/json
       responses:
         "200":
-          description: Signature.
+          description: Signature, public key, and correlationId if provided.
           schema:
-            $ref: "#/definitions/Signature"
+            $ref: "#/definitions/SignResponse"
         "400":
           description: Bad request.
           schema:
@@ -293,7 +293,7 @@ definitions:
         description: error message.
         type: string
         x-nullable: false
-  Operation:
+  SignRequest:
     type: object
     required:
       - operation
@@ -307,7 +307,7 @@ definitions:
         type: boolean
       correlationId:
         $ref: "#/definitions/CorrelationId"
-  Signature:
+  SignResponse:
     type: object
     description: Signature of a sent operation.
     required:

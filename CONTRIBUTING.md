@@ -69,3 +69,14 @@ If you have any questions, feel free to open an issue in the
 [issue tracker](https://github.com/massalabs/thyra-plugin-wallet/issues).
 
 *Thank you for taking the time to contribute to our project! We look forward to seeing your contributions!*
+
+# Massa concepts
+
+## Operation vs Transaction
+
+In massa blockchain, an operation is include in blocks. Here in the wallet we call it a transaction.
+
+## Transaction vs Transfer
+
+In massa blockchain, a transaction is an special king of operation that allow to send MAS coins
+from one account to another. Here in the wallet we call it a transfer.

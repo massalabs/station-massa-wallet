@@ -17,10 +17,10 @@ import (
 )
 
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
-	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/signOperation")
+	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
 	assert.True(t, exist)
 
-	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/signOperation", nickname), body)
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body)
 	assert.NoError(t, err)
 	return resp
 }
