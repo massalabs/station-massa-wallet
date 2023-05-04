@@ -84,20 +84,20 @@ const PasswordPrompt = () => {
           placeholder="Enter your password"
         />
       </div>
-      {req.Action === promptAction.newPasswordReq ||
-        (req.Action === promptAction.importReq && (
-          <div id="input" className="input-box">
-            <input
-              id="name"
-              className="input"
-              onChange={updatePasswordConfirm}
-              autoComplete="off"
-              name="input"
-              type="password"
-              placeholder="Confirm your password"
-            />
-          </div>
-        ))}
+      {(req.Action === promptAction.newPasswordReq ||
+        req.Action === promptAction.importReq) && (
+        <div id="input" className="input-box">
+          <input
+            id="name"
+            className="input"
+            onChange={updatePasswordConfirm}
+            autoComplete="off"
+            name="input"
+            type="password"
+            placeholder="Confirm your password"
+          />
+        </div>
+      )}
       <div>
         <button className="btn" onClick={handleCancel}>
           Cancel
