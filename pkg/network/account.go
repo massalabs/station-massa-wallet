@@ -6,7 +6,6 @@ import (
 )
 
 func newMassaClient() (*node.Client, error) {
-
 	networkInfo, err := GetNetworkInfo()
 	if err != nil {
 		return nil, err
@@ -16,7 +15,6 @@ func newMassaClient() (*node.Client, error) {
 }
 
 func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]node.Address, error) {
-
 	client, err := newMassaClient()
 	if err != nil {
 		return nil, err

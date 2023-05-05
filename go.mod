@@ -40,7 +40,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
-	github.com/ybbus/jsonrpc/v3 v3.1.0 // indirect
+	github.com/ybbus/jsonrpc/v3 v3.1.4 // indirect
 )
 
 require (
@@ -68,3 +68,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.7
 )
+
+replace github.com/massalabs/thyra => ../thyra
