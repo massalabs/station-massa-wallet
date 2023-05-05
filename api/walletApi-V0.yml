@@ -260,6 +260,41 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/transfer:
+    post:
+      operationId: TransferCoin
+      description: Transfer coins from the account by nickname given in path. Will ask the user to enter its account password.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/TransferRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Operation id
+          schema:
+            $ref: "#/definitions/TransferResponse"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
 
 parameters:
   nickname:
@@ -307,6 +342,26 @@ definitions:
         type: boolean
       correlationId:
         $ref: "#/definitions/CorrelationId"
+  TransferRequest:
+    type: object
+    properties:
+      fee:
+        type: string
+      amount:
+        type: string
+      recipientAddress:
+        type: string
+    required:
+      - fee
+      - amount
+      - recipientAddress
+  TransferResponse:
+    type: object
+    properties:
+      operationId:
+        type: string
+    required:
+      - operationId
   SignResponse:
     type: object
     description: Signature of a sent operation.

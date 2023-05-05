@@ -18,6 +18,7 @@ export function App() {
       case promptAction.newPasswordReq:
       case promptAction.signReq:
       case promptAction.exportReq:
+      case promptAction.transferReq:
         navigate('/password', { state: { req } });
         return;
       case promptAction.importReq:

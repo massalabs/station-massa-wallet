@@ -25,6 +25,7 @@ const (
 	Sign
 	Import
 	Export
+	Transfer
 )
 
 type PromptRequestData struct {
