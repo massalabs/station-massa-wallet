@@ -2,9 +2,7 @@ package wallet
 
 import (
 	"bytes"
-	"crypto/ed25519"
 	cryptorand "crypto/rand"
-	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -12,7 +10,6 @@ import (
 
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt"
 	"lukechampine.com/blake3"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
@@ -39,7 +36,7 @@ type walletSign struct {
 // Handle handles a sign request.
 func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWallet(params.Nickname)
+	wlt, resp := loadWalletForSign(params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -73,9 +70,13 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	_, signature, resp := sign(wlt, params)
-	if resp != nil {
-		return resp
+	signature, err := wlt.Sign(params.Body.Operation)
+	if err != nil {
+		return operations.NewSignInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorSignRead,
+				Message: "Error: while reading operation.",
+			})
 	}
 
 	return operations.NewSignOK().WithPayload(
@@ -84,19 +85,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			Signature:     signature,
 			CorrelationID: correlationId,
 		})
-}
-
-func sign(wlt *wallet.Wallet, params operations.SignParams) ([]byte, []byte, middleware.Responder) {
-	pubKey := wlt.KeyPair.PublicKey
-	privKey := wlt.KeyPair.PrivateKey
-
-	digest, resp := digestOperationAndPubKey(params.Body.Operation, pubKey)
-	if resp != nil {
-		return nil, nil, resp
-	}
-
-	signature := ed25519.Sign(privKey, digest[:])
-	return pubKey, signature, nil
 }
 
 func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
@@ -182,8 +170,8 @@ func generateCorrelationId() (models.CorrelationID, error) {
 	return correlationId, nil
 }
 
-// loadWallet loads a wallet from the file system or returns an error.
-func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
+// loadWalletForSign loads a wallet from the file system or returns an error.
+func loadWalletForSign(nickname string) (*wallet.Wallet, middleware.Responder) {
 	w, err := wallet.Load(nickname)
 	if err != nil {
 		if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
@@ -202,23 +190,4 @@ func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
 	}
 
 	return w, nil
-}
-
-// digestOperationAndPubKey prepares the digest for signature.
-func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]byte, middleware.Responder) {
-	// reads operation to sign
-
-	op, err := base64.StdEncoding.DecodeString(operation.String())
-	if err != nil {
-		return [32]byte{}, operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignRead,
-				Message: "Error: while reading operation.",
-			})
-	}
-
-	// signs operation
-	digest := blake3.Sum256(append(publicKey, op...))
-
-	return digest, nil
 }
