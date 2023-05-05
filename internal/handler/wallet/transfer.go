@@ -12,7 +12,6 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/massalabs/thyra/pkg/node"
-	"github.com/massalabs/thyra/pkg/node/base58"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
 	"github.com/massalabs/thyra/pkg/node/sendoperation/transaction"
 )
@@ -69,14 +68,8 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 
 func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperation.OperationResponse, error) {
 	recipientAddress := *body.RecipientAddress
-	url := ""
+	url := "https://buildernet.massa.net/api/v2"
 	client := node.NewClient(url)
-
-	// convert address to bytes
-	addr, _, err := base58.VersionedCheckDecode(recipientAddress[2:])
-	if err != nil {
-		return nil, fmt.Errorf("checking address '%s': %w", recipientAddress, err)
-	}
 
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(*body.Amount, 10, 64)
@@ -84,22 +77,18 @@ func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperatio
 		return nil, fmt.Errorf("Error during conversion")
 	}
 
-	operation := transaction.New(addr, amount)
-	msg, msgB64, err := sendOperation.MakeOperation(client, sendOperation.DefaultSlotsDuration, sendOperation.NoFee, operation)
+	operation, err := transaction.New(recipientAddress, amount)
+	if err != nil {
+		return nil, fmt.Errorf("Error during transaction creation: %w", err)
+	}
+	msg, _, err := sendOperation.MakeOperation(client, sendOperation.DefaultSlotsDuration, sendOperation.NoFee, operation)
 	if err != nil {
 		return nil, fmt.Errorf("Error during operation creation: %w", err)
 	}
-	// msg: for the RPC call
-	// msgB64: for the signature
 
 	// sign the msg in base64
-	// we do not implement the handling of the correlation id for now
-	data := []byte("")
-	byteMsgB64 := strfmt.Base64(data)
-	err = byteMsgB64.UnmarshalText([]byte(msgB64))
-	if err != nil {
-		return nil, fmt.Errorf("Error during unmarshal: %w", err)
-	}
+	// TODO: we do not implement the handling of the correlation id for now
+	byteMsgB64 := strfmt.Base64(msg)
 	signature, err := wlt.Sign(&byteMsgB64)
 	if err != nil {
 		return nil, fmt.Errorf("Error sign: %w", err)
