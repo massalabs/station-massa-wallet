@@ -33,10 +33,13 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 
 	err = wlt.Persist()
 	if err != nil {
+		errStr := "Unable to persist imported account: " + err.Error()
+		h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
-				Message: "Unable to persist imported account",
+				Message: errStr,
 			})
 	}
 
