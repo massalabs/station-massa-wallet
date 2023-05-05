@@ -1,7 +1,7 @@
 package walletapp
 
 const (
-	PasswordResultEvent string = "passwordResult"
+	PasswordResultEvent string = "passwordResult" // TODO: rename to ResultEvent
 	PromptRequesEvent   string = "promptRequest"
 )
 
