@@ -19,4 +19,5 @@ const (
 	errorImportNickNameAlreadyTaken
 	errorImportWallet
 	errorExportWallet
+	errorTransferCoin
 )

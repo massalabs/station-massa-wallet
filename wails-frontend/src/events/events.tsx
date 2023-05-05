@@ -11,6 +11,7 @@ export enum promptAction {
   signReq = 2,
   importReq = 3,
   exportReq = 4,
+  transferReq = 5,
 }
 
 export type promptRequest = {
