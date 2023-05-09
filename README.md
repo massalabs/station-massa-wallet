@@ -14,6 +14,7 @@ If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) g
 
 ```shell
 go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+go install github.com/wailsapp/wails/v2/cmd/wails@latest
 ```
 
 #### On Linux
@@ -33,7 +34,7 @@ go generate ./...
 On macos:
 
 ```shell
-./build_darwin.sh .sh
+./build_darwin.sh
 ```
 
 This will create a binary file `wallet-plugin` in `build/wallet-plugin` folder.
@@ -49,7 +50,7 @@ go test ./...
 For development purpose, you can run the plugin in standalone mode: it will not try to register with MassaStation.
 
 ```shell
-cd web-frontend && npm run build:standalone && cd ..
+cd web-frontend && npm i && npm run build:standalone && cd ..
 STANDALONE=1 wails dev
 ```
 
