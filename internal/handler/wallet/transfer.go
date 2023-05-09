@@ -83,11 +83,17 @@ func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperatio
 		return nil, fmt.Errorf("Error during conversion")
 	}
 
+	// convert fee to uint64
+	fee, err := strconv.ParseUint(*body.Fee, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("Error during conversion")
+	}
+
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
 		return nil, fmt.Errorf("Error during transaction creation: %w", err)
 	}
-	msg, _, err := sendOperation.MakeOperation(client, sendOperation.DefaultSlotsDuration, sendOperation.NoFee, operation)
+	msg, _, err := sendOperation.MakeOperation(client, sendOperation.DefaultSlotsDuration, fee, operation)
 	if err != nil {
 		return nil, fmt.Errorf("Error during operation creation: %w", err)
 	}
