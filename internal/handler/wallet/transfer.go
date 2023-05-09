@@ -33,7 +33,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	}
 
 	promptData := &prompt.PromptRequestData{
-		Msg:  fmt.Sprintf("Transfer %s MAS from %s to %s, with fee %s", *params.Body.Amount, wlt.Nickname, *params.Body.RecipientAddress, *params.Body.Fee),
+		Msg:  fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", *params.Body.Amount, wlt.Nickname, *params.Body.RecipientAddress, *params.Body.Fee),
 		Data: nil,
 	}
 
@@ -49,7 +49,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	// create the transaction and send it to the network
 	operation, err := doTransfer(wlt, params.Body)
 	if err != nil {
-		errStr := "error transfering coin:" + err.Error()
+		errStr := "error transferring coin:" + err.Error()
 		h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
