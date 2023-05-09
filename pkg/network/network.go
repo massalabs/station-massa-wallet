@@ -11,7 +11,7 @@ import (
 const (
 	massaStationNodeEndpoint = "http://my.massa/massa/node"
 	defaultNetwork           = "buildnet"
-	defaultNodeUrl           = "https://buildernet.massa.net/api/v2"
+	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
 )
 
 type NetworkInfo struct {
