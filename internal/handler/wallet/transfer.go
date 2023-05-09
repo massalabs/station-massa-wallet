@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/massalabs/thyra/pkg/node"
@@ -68,7 +69,12 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 
 func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperation.OperationResponse, error) {
 	recipientAddress := *body.RecipientAddress
-	url := "https://buildernet.massa.net/api/v2"
+	netWorkInfo, err := network.GetNetworkInfo()
+	if err != nil {
+		return nil, fmt.Errorf("Error during network info retrieval: %w", err)
+	}
+
+	url := netWorkInfo.URL
 	client := node.NewClient(url)
 
 	// convert amount to uint64
