@@ -278,7 +278,7 @@ paths:
         "200":
           description: Operation id
           schema:
-            $ref: "#/definitions/TransferResponse"
+            $ref: "#/definitions/OperationResponse"
         "400":
           description: Bad request.
           schema:
@@ -355,7 +355,7 @@ definitions:
       - fee
       - amount
       - recipientAddress
-  TransferResponse:
+  OperationResponse:
     type: object
     properties:
       operationId:

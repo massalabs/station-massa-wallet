@@ -61,7 +61,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 		walletapp.EventData{Success: true, Data: "Transfer Success"})
 	return operations.NewTransferCoinOK().WithPayload(
-		&models.TransferResponse{
+		&models.OperationResponse{
 			OperationID: &operation.OperationID,
 		})
 }
