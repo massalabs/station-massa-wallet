@@ -347,8 +347,10 @@ definitions:
     properties:
       fee:
         type: string
+        description: Amount of fees to pay in nanoMassa.
       amount:
         type: string
+        description: Amount of coins to transfer in nanoMassa.
       recipientAddress:
         type: string
     required:
