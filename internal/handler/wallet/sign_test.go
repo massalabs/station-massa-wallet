@@ -143,7 +143,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		checkResultChannel(t, result, true, "Unprotect Success")
 
-		var body models.Signature
+		var body models.SignResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &body)
 		if err != nil {
 			t.Fatalf("while unmarshalling: %s", err)
