@@ -224,7 +224,7 @@ paths:
   /api/accounts/{nickname}/sign:
     post:
       operationId: Sign
-      description: Sign an operation or a message with the account by nickname given in path. Will ask the user to enter its account password.
+      description: Sign an operation or a message with the account by nickname given in path. Will ask the user to enter its account password if no correlationId is provided.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body

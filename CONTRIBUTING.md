@@ -78,5 +78,5 @@ In massa blockchain, an operation is include in blocks. Here in the wallet we ca
 
 ## Transaction vs Transfer
 
-In massa blockchain, a transaction is an special king of operation that allow to send MAS coins
+In massa blockchain, a transaction is an special kind of operation that allow to send MAS coins.
 from one account to another. Here in the wallet we call it a transfer.
