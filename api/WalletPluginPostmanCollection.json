@@ -342,6 +342,137 @@
 			]
 		},
 		{
+			"name": "api Account import",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseURL}}/api/accounts",
+					"protocol": "http",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"accounts"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "api Account import",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://{{baseURL}}/api/accounts",
+							"protocol": "http",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"accounts"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 10 May 2023 08:18:36 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "211"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"address\": \"AU1uS1bBcunnxYKbBe6CwMA9Dj1RaSQdhxZXWBAKKqDKNtZejQ1a\",\n    \"keyPair\": {\n        \"nonce\": \"\",\n        \"privateKey\": \"\",\n        \"publicKey\": \"P121K3mr1kmq37tZB874M6JY52BXDS1iywGB6Y3Sv5qkoaUw695h\",\n        \"salt\": \"\"\n    },\n    \"nickname\": \"Buildnetnathan\"\n}"
+				},
+				{
+					"name": "Bad request.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				},
+				{
+					"name": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/accounts",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"accounts"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"code\": \"dolore eiusmod in cillum velit\",\n  \"message\": \"do anim volupt\"\n}"
+				}
+			]
+		},
+		{
 			"name": "api Account Get",
 			"request": {
 				"method": "GET",
@@ -1941,7 +2072,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"fee\": \"0\",\n    \"amount\": \"100\",\n    \"recipientAddress\": \"AU1eQkRhZZBa5VNc24fCejxgFDpe1FHChpwiUksQB9StNb3rWm6i\"\n}",
+					"raw": "{\n    \"fee\": \"0\",\n    \"amount\": \"1\",\n    \"recipientAddress\": \"AU1eQkRhZZBa5VNc24fCejxgFDpe1FHChpwiUksQB9StNb3rWm6i\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
