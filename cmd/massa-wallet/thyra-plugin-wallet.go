@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/internal/handler"
 	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	constants "github.com/massalabs/thyra-plugin-wallet/pkg/plugin"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
@@ -19,9 +20,12 @@ func StartServer(walletApp *walletApp.WalletApp) {
 		LRU().
 		Build()
 
+	massaClient := network.NewNodeFetcher()
+
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
 		prompt.NewWalletPrompter(walletApp),
+		massaClient,
 		gc,
 	)
 	if err != nil {

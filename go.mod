@@ -6,6 +6,7 @@ require (
 	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
+	github.com/massalabs/thyra v0.1.14
 	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503
 	github.com/rs/cors v1.8.3
 	github.com/wailsapp/wails/v2 v2.4.1
@@ -31,11 +32,13 @@ require (
 	github.com/pkg/browser v0.0.0-20210706143420-7d21f8c997e2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/samber/lo v1.27.1 // indirect
+	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/tkrajina/go-reflector v0.5.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
+	github.com/ybbus/jsonrpc/v3 v3.1.0 // indirect
 )
 
 require (

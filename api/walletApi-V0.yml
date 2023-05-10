@@ -333,6 +333,10 @@ definitions:
     description: Account's short name.
     type: string
     x-nullable: false
+  Amount:
+    description: Mas amount.
+    type: string
+    x-nullable: false
   Account:
     type: object
     description: Account object (V0).
@@ -340,9 +344,15 @@ definitions:
       - nickname
       - address
       - keyPair
+      - balance
+      - candidateBalance
     properties:
       nickname:
         $ref: "#/definitions/Nickname"
+      candidateBalance:
+        $ref: "#/definitions/Amount"
+      balance:
+        $ref: "#/definitions/Amount"
       address:
         description: Account's address.
         type: string
