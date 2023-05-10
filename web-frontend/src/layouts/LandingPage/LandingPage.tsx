@@ -11,7 +11,7 @@ export default function LandingPage(props: LandingPageProps) {
   return (
     <div
       className={`bg-brand bg-landing-page bg-no-repeat bg-cover
-     bg-center min-h-screen flex justify-center items-center`}
+     bg-center min-h-screen`}
     >
       {props.children}
     </div>
