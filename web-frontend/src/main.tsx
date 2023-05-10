@@ -16,6 +16,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path={import.meta.env.VITE_BASE_PATH}>
       <Route path="index" element={<Welcome />} />
+      <Route path="dev" element={<Welcome />} />
       <Route path="*" element={<Error />} />
     </Route>,
   ),
