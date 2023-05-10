@@ -51,12 +51,10 @@ async function getWallets() {
 
 // Create a wallet through POST query
 function createAccount() {
-    const nicknameCreate = document.getElementById("nicknameCreate").value;
+    const nickname = document.getElementById("nicknameCreate").value;
 
     axios
-        .post(addPrefixUrl("api/accounts"), {
-            nickname: nicknameCreate,
-        })
+        .post(addPrefixUrl(`api/accounts/${nickname}`))
         .then((resp) => {
             tableInsert(resp.data);
             wallets.push(resp.data);
