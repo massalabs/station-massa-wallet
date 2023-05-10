@@ -8,18 +8,20 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // NewGet instantiates a Get Handler
 // The "classical" way is not possible because we need to pass to the handler a wallet.WalletPrompterInterface.
-func NewGet(prompterApp prompt.WalletPrompterInterface) operations.GetAccountHandler {
-	return &walletGet{prompterApp: prompterApp}
+func NewGet(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.GetAccountHandler {
+	return &walletGet{prompterApp: prompterApp, massaClient: massaClient}
 }
 
 type walletGet struct {
 	prompterApp prompt.WalletPrompterInterface
+	massaClient network.NodeFetcherInterface
 }
 
 func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
@@ -69,28 +71,19 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		}
 	}
 
-	return operations.NewGetAccountOK().WithPayload(&modelWallet)
-}
-
-// HandleList handles a list request
-func HandleList(params operations.AccountListParams) middleware.Responder {
-	wallets, err := wallet.LoadAll()
+	infos, err := g.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
 	if err != nil {
-		return operations.NewAccountListInternalServerError().WithPayload(
+		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
-				Message: err.Error(),
+				Message: "Unable to retrieve account infos",
 			})
 	}
 
-	var wlts []*models.Account
+	modelWallet.CandidateBalance = models.Amount(infos[0].CandidateBalance)
+	modelWallet.Balance = models.Amount(infos[0].FinalBalance)
 
-	for i := 0; i < len(wallets); i++ {
-		modelWallet := createModelWallet(wallets[i])
-		wlts = append(wlts, &modelWallet)
-	}
-
-	return operations.NewAccountListOK().WithPayload(wlts)
+	return operations.NewGetAccountOK().WithPayload(&modelWallet)
 }
 
 func createModelWallet(wlt wallet.Wallet) models.Account {

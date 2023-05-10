@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -33,6 +34,9 @@ type PrivateKeyPrompt struct {
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
 func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, chan walletapp.EventData, error) {
+
+	os.Setenv("STANDALONE", "1")
+
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
@@ -45,8 +49,9 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, chan
 
 	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
+	massaNodeMock := NewNodeFetcherMock()
 	// Set wallet API endpoints
-	AppendEndpoints(massaWalletAPI, prompterApp, gcache.New(20).LRU().Build())
+	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, gcache.New(20).LRU().Build())
 
 	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)

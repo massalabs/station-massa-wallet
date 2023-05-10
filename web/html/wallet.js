@@ -5,7 +5,7 @@ getWallets();
 function addPrefixUrl(relativeURL) {
     return `/${relativeURL}`
 
-//    return `/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
+    //    return `/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
 }
 
 function openNickNameModal() {
@@ -63,17 +63,18 @@ function createAccount() {
 }
 
 // Fetch a wallet's pending balance through GET query
-async function fetchBalanceOf(address) {
+async function fetchBalanceOf(nickname) {
     try {
-        const getBalance = await axios.get(
-            `/massa/addresses?attributes=balance&addresses=${address}`
+        const resp = await axios.get(
+            `/api/accounts/${nickname}`
         );
-        return getBalance.data.addressesAttributes[address].balance.pending;
+        return resp.data.candidateBalance;
     } catch (error) {
         console.error(error)
         return '-'
     }
 }
+
 
 async function tableInsert(resp) {
     const tBody = document
@@ -90,7 +91,15 @@ async function tableInsert(resp) {
 
     cell1.innerHTML = resp.nickname;
 
-    cell2.innerHTML = await fetchBalanceOf(resp.address);
+    cell2.innerHTML = resp.candidateBalance ? resp.candidateBalance : 0;
+
+    // Fetch balance and update every 5 seconds
+    // I know this is really nasty :)
+    setInterval(async () => {
+        const updatedResp = await fetchBalanceOf(resp.nickname);
+        cell2.innerHTML = updatedResp.candidateBalance ? updatedResp.candidateBalance : 0;
+    }, 5000);
+
     cell3.innerHTML =
         '<svg class="quit-button" onclick="deleteRow(this)" xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line> <line x1="6" y1="6" x2="18" y2="18"></line></svg>';
 }

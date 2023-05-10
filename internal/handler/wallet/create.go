@@ -9,16 +9,18 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-func NewCreateAccount(prompterApp prompt.WalletPrompterInterface) operations.CreateAccountHandler {
-	return &walletCreate{prompterApp: prompterApp}
+func NewCreateAccount(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.CreateAccountHandler {
+	return &walletCreate{prompterApp: prompterApp, massaClient: massaClient}
 }
 
 type walletCreate struct {
 	prompterApp prompt.WalletPrompterInterface
+	massaClient network.NodeFetcherInterface
 }
 
 func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.Responder {
@@ -45,7 +47,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 	w.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 		walletapp.EventData{Success: true, Data: "New password created"})
 
-	newWallet, err := wallet.Generate(nickname, password)
+	wlt, err := wallet.Generate(nickname, password)
 	if err != nil {
 		return operations.NewCreateAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -54,17 +56,24 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			})
 	}
 
-	return New(newWallet)
-}
+	infos, err := w.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	if err != nil {
+		return operations.NewCreateAccountInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorGetWallets,
+				Message: "Unable to retrieve accounts infos",
+			})
+	}
 
-func New(newWallet *wallet.Wallet) middleware.Responder {
 	return operations.NewCreateAccountOK().WithPayload(
 		&models.Account{
-			Nickname: models.Nickname(newWallet.Nickname),
-			Address:  newWallet.Address,
+			Nickname:         models.Nickname(wlt.Nickname),
+			Address:          wlt.Address,
+			CandidateBalance: models.Amount(infos[0].CandidateBalance),
+			Balance:          models.Amount(infos[0].FinalBalance),
 			KeyPair: models.AccountKeyPair{
 				PrivateKey: "",
-				PublicKey:  newWallet.GetPupKey(),
+				PublicKey:  wlt.GetPupKey(),
 				Salt:       "",
 				Nonce:      "",
 			},
