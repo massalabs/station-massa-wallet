@@ -12,12 +12,16 @@ import '@massalabs/react-ui-kit/src/global.css';
 import Welcome from './pages/Welcome.tsx';
 import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
+import AddAccount from './pages/AddAccount/AddAccount.tsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path={import.meta.env.VITE_BASE_PATH}>
       <Route path="index" element={<Welcome />} />
-      <Route path="dev" element={<SelectAccount />} />
+      <Route path="account">
+        <Route path="select" element={<SelectAccount />} />
+        <Route path="add" element={<AddAccount />} />
+      </Route>
       <Route path="*" element={<Error />} />
     </Route>,
   ),
