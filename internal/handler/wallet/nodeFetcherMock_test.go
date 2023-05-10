@@ -16,6 +16,7 @@ func NewNodeFetcherMock() *NodeFetcherMock {
 	return &NodeFetcherMock{client: nil}
 }
 
+// returns dummy balances
 func (n *NodeFetcherMock) GetAccountsInfos(wlt []wallet.Wallet) ([]node.Address, error) {
 	infos := make([]node.Address, len(wlt))
 	for i, addr := range wlt {
