@@ -3,42 +3,33 @@ package wallet
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_getWallets_handler(t *testing.T) {
 	api, _, _, err := MockAPI()
-	if err != nil {
-		panic(err)
-	}
+	assert.NoError(t, err)
 
 	// test empty configuration first.
 	t.Run("Get empty list", func(t *testing.T) {
 		resp, err := processHTTPRequest(api, "GET", "/api/accounts", "")
-		if err != nil {
-			t.Fatalf("while serving HTTP request: %s", err)
-		}
+		assert.NoError(t, err)
 
-		if resp.Result().StatusCode != 200 {
-			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, 200)
-		}
+		assert.Equal(t, resp.Result().StatusCode, http.StatusOK)
 
 		var wallets []models.Account
 		err = json.Unmarshal(resp.Body.Bytes(), &wallets)
-		if err != nil {
-			t.Fatalf("impossible to hydrate models.Account: %s", err)
-		}
+		assert.NoError(t, err)
 
-		if len(wallets) != 0 {
-			t.Fatalf("the wallets list should be empty")
-		}
+		assert.Len(t, wallets, 0, "the wallets list should be empty")
 	})
 
 	// Create wallets
@@ -46,59 +37,42 @@ func Test_getWallets_handler(t *testing.T) {
 	for _, nickname := range nicknames {
 		password := "zePassword"
 		_, err = wallet.Generate(nickname, password)
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
+		assert.NoError(t, err)
 	}
 
 	t.Run("Get multiple wallets", func(t *testing.T) {
 		resp, err := processHTTPRequest(api, "GET", "/api/accounts", "")
-		if err != nil {
-			t.Fatalf("while serving HTTP request: %s", err)
-		}
+		assert.NoError(t, err)
 
-		if resp.Result().StatusCode != 200 {
-			t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, 200)
-		}
+		assert.Equal(t, resp.Result().StatusCode, http.StatusOK)
 
-		var wallet []models.Account
-		err = json.Unmarshal(resp.Body.Bytes(), &wallet)
-		if err != nil {
-			t.Fatalf("impossible to hydrate models.Account: %s", err)
-		}
+		var wallets []models.Account
+		err = json.Unmarshal(resp.Body.Bytes(), &wallets)
+		assert.NoError(t, err)
 
 		for idx, nickname := range nicknames {
-			if wallet[idx].Nickname != models.Nickname(nickname) {
-				t.Fatalf("the wallet nickname was: %s, want %s", wallet[idx].Nickname, nickname)
-			}
+			assert.Equal(t, wallets[idx].Nickname, models.Nickname(nickname))
 		}
+
+		assertWalletsBody(t, resp, true)
 	})
 
 	err = cleanupTestData(nicknames)
-	if err != nil {
-		t.Fatalf("while cleaning up TestData: %s", err)
-	}
+	assert.NoError(t, err, fmt.Sprintf("while cleaning up TestData: %s", err))
 }
 
 func Test_getWallet_handler(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
-	if err != nil {
-		panic(err)
-	}
+	assert.NoError(t, err)
 
 	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}")
-	if !exist {
-		panic("Endpoint doesn't exist")
-	}
+	assert.True(t, exist, "Endpoint doesn't exist")
 
 	// test empty configuration first.
 	t.Run("Get unknown wallet", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s", "nobody"), "")
-		if err != nil {
-			t.Fatalf("while serving HTTP request: %s", err)
-		}
-
-		verifyStatusCode(t, resp, 404)
+		assert.NoError(t, err)
+		assert.Equal(t, resp.Result().StatusCode, http.StatusNotFound)
 	})
 
 	// test with one wallet configuration.
@@ -106,23 +80,16 @@ func Test_getWallet_handler(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
 		_, err = wallet.Generate(nickname, password)
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
+		assert.NoError(t, err)
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s", nickname), "")
-		if err != nil {
-			t.Fatalf("while serving HTTP request: %s", err)
-		}
+		assert.NoError(t, err)
+		assert.Equal(t, resp.Result().StatusCode, http.StatusOK)
 
-		verifyStatusCode(t, resp, 200)
-		verifyBodyWallet(t, resp, nickname)
-		verifyPublicKeyIsNotPresent(t, resp, nickname)
+		assertWalletBody(t, resp, nickname, true)
 
 		err = cleanupTestData([]string{nickname})
-		if err != nil {
-			t.Fatalf("while cleaning up TestData: %s", err)
-		}
+		assert.NoError(t, err, fmt.Sprintf("while cleaning up TestData: %s", err))
 	})
 
 	// test with un-ciphered data.
@@ -131,9 +98,7 @@ func Test_getWallet_handler(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
 		_, err = wallet.Generate(nickname, password)
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
+		assert.NoError(t, err)
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
@@ -143,57 +108,50 @@ func Test_getWallet_handler(t *testing.T) {
 		}(testResult)
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s?ciphered=false", nickname), "")
-		if err != nil {
-			t.Fatalf("while serving HTTP request: %s", err)
-		}
+		assert.NoError(t, err)
 
-		verifyStatusCode(t, resp, 200)
-		verifyBodyWallet(t, resp, nickname)
-		verifyPublicKeyIsPresent(t, resp, nickname)
+		assert.Equal(t, resp.Result().StatusCode, http.StatusOK)
+		assertWalletBody(t, resp, nickname, false)
 
 		result := <-testResult
 
 		checkResultChannel(t, result, true, "Unprotect Success")
 
 		err = cleanupTestData([]string{nickname})
-		if err != nil {
-			t.Fatalf("while cleaning up TestData: %s", err)
-		}
+		assert.NoError(t, err, fmt.Sprintf("while cleaning up TestData: %s", err))
 	})
 }
 
-func verifyBodyWallet(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
-	body := resp.Body.String()
-	if body == "" {
-		t.Fatalf("the body was empty")
-	}
+func assertWalletsBody(t *testing.T, resp *httptest.ResponseRecorder, cyphered bool) {
+	var wallets []models.Account
+	err := json.Unmarshal(resp.Body.Bytes(), &wallets)
+	assert.NoError(t, err)
 
-	// check the first line
-	if !strings.Contains(body, "\"nickname\":\""+nickname+"\"") {
-		t.Fatalf("the body doesn't contain the wallet nickname")
+	for _, wallet := range wallets {
+		assertWalletContent(t, wallet, cyphered)
 	}
 }
 
-func verifyPublicKeyIsPresent(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
-	body := resp.Body.String()
-	if body == "" {
-		t.Fatalf("the body was empty")
-	}
-
-	// check the first line
-	if !strings.Contains(body, "publicKey\":\"P") {
-		t.Fatalf("the body doesn't contain the wallet public key")
-	}
+func assertWalletBody(t *testing.T, resp *httptest.ResponseRecorder, nickname string, cyphered bool) {
+	var wallet models.Account
+	err := json.Unmarshal(resp.Body.Bytes(), &wallet)
+	assert.NoError(t, err)
+	assert.Equal(t, wallet.Nickname, models.Nickname(nickname))
+	assertWalletContent(t, wallet, cyphered)
 }
 
-func verifyPublicKeyIsNotPresent(t *testing.T, resp *httptest.ResponseRecorder, nickname string) {
-	body := resp.Body.String()
-	if body == "" {
-		t.Fatalf("the body was empty")
-	}
-
-	// check the first line
-	if !strings.Contains(body, "publicKey\":\"\"") {
-		t.Fatalf("the body contains the wallet public key")
+func assertWalletContent(t *testing.T, wallet models.Account, cyphered bool) {
+	assert.NotEmpty(t, wallet.Address)
+	assert.NotEmpty(t, wallet.Nickname)
+	assert.NotEmpty(t, wallet.CandidateBalance)
+	assert.NotEmpty(t, wallet.Balance)
+	if cyphered {
+		assert.Empty(t, wallet.KeyPair)
+	} else {
+		assert.NotEmpty(t, wallet.KeyPair)
+		assert.NotEmpty(t, wallet.KeyPair.Nonce)
+		assert.NotEmpty(t, wallet.KeyPair.PrivateKey)
+		assert.NotEmpty(t, wallet.KeyPair.PublicKey)
+		assert.NotEmpty(t, wallet.KeyPair.Salt)
 	}
 }
