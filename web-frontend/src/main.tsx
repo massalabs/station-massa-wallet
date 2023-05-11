@@ -9,7 +9,7 @@ import {
 
 import './index.css';
 import '@massalabs/react-ui-kit/src/global.css';
-import Welcome from './pages/Welcome.tsx';
+import Welcome from './pages/Welcome/Welcome.tsx';
 import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
 import AddAccount from './pages/AddAccount/AddAccount.tsx';
