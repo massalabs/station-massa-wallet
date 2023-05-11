@@ -107,7 +107,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -165,7 +165,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -253,7 +253,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -289,6 +289,10 @@ paths:
             $ref: "#/definitions/Error"
         "404":
           description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
           schema:
             $ref: "#/definitions/Error"
         "500":

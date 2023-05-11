@@ -72,7 +72,7 @@ func Test_getWallet_handler(t *testing.T) {
 	t.Run("Get unknown wallet", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s", "nobody"), "")
 		assert.NoError(t, err)
-		assert.Equal(t, resp.Result().StatusCode, http.StatusNotFound)
+		assert.Equal(t, http.StatusNotFound, resp.Result().StatusCode)
 	})
 
 	// test with one wallet configuration.
@@ -84,7 +84,7 @@ func Test_getWallet_handler(t *testing.T) {
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s", nickname), "")
 		assert.NoError(t, err)
-		assert.Equal(t, resp.Result().StatusCode, http.StatusOK)
+		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
 
 		assertWalletBody(t, resp, nickname, true)
 
@@ -110,7 +110,7 @@ func Test_getWallet_handler(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s?ciphered=false", nickname), "")
 		assert.NoError(t, err)
 
-		assert.Equal(t, resp.Result().StatusCode, http.StatusOK)
+		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
 		assertWalletBody(t, resp, nickname, false)
 
 		result := <-testResult
@@ -136,7 +136,7 @@ func assertWalletBody(t *testing.T, resp *httptest.ResponseRecorder, nickname st
 	var wallet models.Account
 	err := json.Unmarshal(resp.Body.Bytes(), &wallet)
 	assert.NoError(t, err)
-	assert.Equal(t, wallet.Nickname, models.Nickname(nickname))
+	assert.Equal(t, models.Nickname(nickname), wallet.Nickname)
 	assertWalletContent(t, wallet, cyphered)
 }
 
