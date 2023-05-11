@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@massalabs/react-ui-kit": "^0.0.4-dev",
+    "@tanstack/react-query": "^4.29.5",
+    "axios": "^1.4.0",
     "jest-environment-jsdom": "^29.5.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
@@ -32,6 +34,7 @@
     "@babel/preset-react": "^7.18.6",
     "@massalabs/eslint-config": "^0.0.9",
     "@massalabs/prettier-config-as": "^0.0.2",
+    "@tanstack/eslint-plugin-query": "^4.29.4",
     "@testing-library/react": "^14.0.0",
     "@types/jest": "^29.5.1",
     "@types/react": "^18.0.28",
