@@ -73,6 +73,7 @@ async function fetchBalanceOf(nickname) {
         console.error(error)
         return '-'
     }
+}
 
 async function tableInsert(resp) {
     const tBody = document
