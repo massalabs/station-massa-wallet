@@ -6,13 +6,15 @@ import {
   createRoutesFromElements,
   Route,
 } from 'react-router-dom';
-
 import './index.css';
 import '@massalabs/react-ui-kit/src/global.css';
 import Welcome from './pages/Welcome/Welcome.tsx';
 import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
 import AddAccount from './pages/AddAccount/AddAccount.tsx';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +29,8 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} fallbackElement={<Error />} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} fallbackElement={<Error />} />
+    </QueryClientProvider>
   </React.StrictMode>,
 );
