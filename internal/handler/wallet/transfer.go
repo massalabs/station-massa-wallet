@@ -32,12 +32,32 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 		return resp
 	}
 
+	// convert amount to uint64
+	amount, err := strconv.ParseUint(string(params.Body.Amount), 10, 64)
+	if err != nil {
+		return operations.NewTransferCoinBadRequest().WithPayload(
+			&models.Error{
+				Code:    errorTransferCoin,
+				Message: "Error during amount conversion",
+			})
+	}
+
+	// convert fee to uint64
+	fee, err := strconv.ParseUint(string(params.Body.Fee), 10, 64)
+	if err != nil {
+		return operations.NewTransferCoinBadRequest().WithPayload(
+			&models.Error{
+				Code:    errorTransferCoin,
+				Message: "Error during fee conversion",
+			})
+	}
+
 	promptData := &prompt.PromptRequestData{
 		Msg:  fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
 		Data: nil,
 	}
 
-	_, err := prompt.PromptPassword(h.prompterApp, wlt, walletapp.Transfer, promptData)
+	_, err = prompt.PromptPassword(h.prompterApp, wlt, walletapp.Transfer, promptData)
 	if err != nil {
 		return operations.NewTransferCoinUnauthorized().WithPayload(
 			&models.Error{
@@ -47,9 +67,9 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	}
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(wlt, params.Body, h.massaClient)
+	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, h.massaClient)
 	if err != nil {
-		errStr := "error transferring coin:" + err.Error()
+		errStr := "error transferring coin: " + err.Error()
 		h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
@@ -67,21 +87,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 		})
 }
 
-func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
-	recipientAddress := *body.RecipientAddress
-
-	// convert amount to uint64
-	amount, err := strconv.ParseUint(string(body.Amount), 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("Error during conversion")
-	}
-
-	// convert fee to uint64
-	fee, err := strconv.ParseUint(string(body.Fee), 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("Error during conversion")
-	}
-
+func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
 		return nil, fmt.Errorf("Error during transaction creation: %w", err)
