@@ -33,7 +33,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	}
 
 	promptData := &prompt.PromptRequestData{
-		Msg:  fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", *params.Body.Amount, wlt.Nickname, *params.Body.RecipientAddress, *params.Body.Fee),
+		Msg:  fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
 		Data: nil,
 	}
 
@@ -78,13 +78,13 @@ func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperatio
 	client := node.NewClient(url)
 
 	// convert amount to uint64
-	amount, err := strconv.ParseUint(*body.Amount, 10, 64)
+	amount, err := strconv.ParseUint(string(body.Amount), 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("Error during conversion")
 	}
 
 	// convert fee to uint64
-	fee, err := strconv.ParseUint(*body.Fee, 10, 64)
+	fee, err := strconv.ParseUint(string(body.Fee), 10, 64)
 	if err != nil {
 		return nil, fmt.Errorf("Error during conversion")
 	}

@@ -346,11 +346,9 @@ definitions:
     type: object
     properties:
       fee:
-        type: string
-        description: Amount of fees to pay in nanoMassa.
+        $ref: "#/definitions/Amount"
       amount:
-        type: string
-        description: Amount of coins to transfer in nanoMassa.
+        $ref: "#/definitions/Amount"
       recipientAddress:
         type: string
     required:
@@ -391,7 +389,7 @@ definitions:
     type: string
     x-nullable: false
   Amount:
-    description: Mas amount.
+    description: Mas amount in nanoMassa.
     type: string
     x-nullable: false
   Account:
