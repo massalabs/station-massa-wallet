@@ -7,8 +7,12 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllAccounts } from '../../api/account';
 import { accountType } from '../../api/types';
 import { toMAS } from '@massalabs/massa-web3';
+import { useNavigate } from 'react-router-dom';
+import { routeFor } from '../../utils';
 
 export default function SelectAccount() {
+  const navigate = useNavigate();
+
   const accounts = useQuery({
     queryKey: ['accounts'],
     queryFn: getAllAccounts,
@@ -21,7 +25,7 @@ export default function SelectAccount() {
 
   const buttonProps = {
     onClick: () => {
-      console.log('clicked');
+      navigate(routeFor('account-new'));
     },
     preIcon: <FiPlus />,
   };
@@ -29,13 +33,10 @@ export default function SelectAccount() {
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
   return (
     <LandingPage>
-      <div
-        className={`${defaultFlex} 
-                      h-screen`}
-      >
+      <div className={`${defaultFlex} h-screen`}>
         <div className="w-1/2">
           <div className="mb-6">
-            <p className="mas-banner text-neutral"> Hey !</p>
+            <p className="mas-banner text-neutral"> Hey!</p>
           </div>
           <div className="mb-6">
             <label className="mas-body text-neutral" htmlFor="account-select">
