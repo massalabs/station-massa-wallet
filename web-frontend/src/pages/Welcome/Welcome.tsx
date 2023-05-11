@@ -1,8 +1,23 @@
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import { FiArrowRight } from 'react-icons/fi';
+import { useQuery } from '@tanstack/react-query';
+import { getAllAccounts } from '../../api/account';
+import { useNavigate } from 'react-router-dom';
+import { routeFor } from '../../utils';
 
 export default function Welcome() {
+  const navigate = useNavigate();
+
+  const accounts = useQuery({
+    queryKey: ['accounts'],
+    queryFn: getAllAccounts,
+  });
+
+  if (accounts.data?.length > 0) {
+    navigate(routeFor('account-select'));
+  }
+
   return (
     <LandingPage>
       <div className="flex flex-col justify-center items-center h-screen">
