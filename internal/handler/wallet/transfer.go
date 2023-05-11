@@ -12,17 +12,17 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
-	"github.com/massalabs/thyra/pkg/node"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
 	"github.com/massalabs/thyra/pkg/node/sendoperation/transaction"
 )
 
-func NewTransferCoin(prompterApp prompt.WalletPrompterInterface) operations.TransferCoinHandler {
-	return &wTransferCoin{prompterApp: prompterApp}
+func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
+	return &wTransferCoin{prompterApp: prompterApp, massaClient: massaClient}
 }
 
 type wTransferCoin struct {
 	prompterApp prompt.WalletPrompterInterface
+	massaClient network.NodeFetcherInterface
 }
 
 func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
@@ -47,7 +47,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	}
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(wlt, params.Body)
+	operation, err := doTransfer(wlt, params.Body, h.massaClient)
 	if err != nil {
 		errStr := "error transferring coin:" + err.Error()
 		h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
@@ -67,15 +67,8 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 		})
 }
 
-func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperation.OperationResponse, error) {
+func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
 	recipientAddress := *body.RecipientAddress
-	netWorkInfo, err := network.GetNetworkInfo()
-	if err != nil {
-		return nil, fmt.Errorf("Error during network info retrieval: %w", err)
-	}
-
-	url := netWorkInfo.URL
-	client := node.NewClient(url)
 
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(string(body.Amount), 10, 64)
@@ -93,9 +86,10 @@ func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperatio
 	if err != nil {
 		return nil, fmt.Errorf("Error during transaction creation: %w", err)
 	}
-	msg, _, err := sendOperation.MakeOperation(client, sendOperation.DefaultSlotsDuration, fee, operation)
+
+	msg, err := massaClient.MakeOperation(fee, operation)
 	if err != nil {
-		return nil, fmt.Errorf("Error during operation creation: %w", err)
+		return nil, fmt.Errorf("Error while making operation: %w", err)
 	}
 
 	// sign the msg in base64
@@ -107,7 +101,8 @@ func doTransfer(wlt *wallet.Wallet, body *models.TransferRequest) (*sendOperatio
 	}
 
 	// send the msg to the network
-	resp, err := sendOperation.MakeRPCCall(msg, signature, wlt.GetPupKey(), client)
+
+	resp, err := massaClient.MakeRPCCall(msg, signature, wlt.GetPupKey())
 	if err != nil {
 		return nil, fmt.Errorf("Error during RPC call: %w", err)
 	}
