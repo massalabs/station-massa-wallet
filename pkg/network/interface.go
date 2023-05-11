@@ -5,8 +5,7 @@ import (
 	"github.com/massalabs/thyra/pkg/node"
 )
 
-type NodeFetcher struct {
-}
+type NodeFetcher struct{}
 
 func NewNodeFetcher() *NodeFetcher {
 	return &NodeFetcher{}

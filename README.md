@@ -13,8 +13,7 @@ If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) g
 ### Install dependencies
 
 ```shell
-go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-go install github.com/wailsapp/wails/v2/cmd/wails@latest
+make install
 ```
 
 #### On Linux
@@ -28,13 +27,13 @@ apt install libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
 Generate the projects: go-swagger, wails, web-frontend:
 
 ```shell
-go generate ./...
+make generate
 ```
 
 On macos:
 
 ```shell
-./build_darwin.sh
+make build-macos
 ```
 
 This will create a binary file `wallet-plugin` in `build/wallet-plugin` folder.
@@ -42,7 +41,7 @@ This will create a binary file `wallet-plugin` in `build/wallet-plugin` folder.
 ### Test
 
 ```shell
-go test ./...
+make test
 ```
 
 ### Run
@@ -50,8 +49,8 @@ go test ./...
 For development purpose, you can run the plugin in standalone mode: it will not try to register with MassaStation.
 
 ```shell
-cd web-frontend && npm i && npm run build:standalone && cd ..
-STANDALONE=1 wails dev
+make build-front-standalone
+make wails-dev
 ```
 
 The `STANDALONE` environment variable is to run the plugin without MassaStation.
@@ -64,7 +63,7 @@ Now navigate into <http://localhost:8080>. Note that some features will not work
 For development purpose, you can install the plugin manually:
 
 ```shell
-./manual-install.sh
+make install-plugin
 ```
 
 This will create MassaStation plugin directories and copy the binary file created in the previous step so that
