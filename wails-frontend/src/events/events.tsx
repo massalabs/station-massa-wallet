@@ -1,6 +1,6 @@
 export type promptResult = {
   Success: boolean;
-  Data: any;
+  Data: [];
   Error: string;
 };
 
@@ -15,7 +15,7 @@ export enum promptAction {
 export type promptRequest = {
   Action: promptAction;
   Msg: string;
-  Data: any;
+  Data: [];
 };
 
 export const events = {
