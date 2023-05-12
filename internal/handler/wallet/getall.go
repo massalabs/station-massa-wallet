@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"fmt"
+
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
@@ -40,8 +42,8 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 
 	for i := 0; i < len(wallets); i++ {
 		modelWallet := createModelWallet(wallets[i])
-		modelWallet.CandidateBalance = models.Amount(infos[i].CandidateBalance)
-		modelWallet.Balance = models.Amount(infos[i].FinalBalance)
+		modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[i].CandidateBalance))
+		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))
 		wlts = append(wlts, &modelWallet)
 	}
 

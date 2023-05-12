@@ -80,8 +80,8 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 			})
 	}
 
-	modelWallet.CandidateBalance = models.Amount(infos[0].CandidateBalance)
-	modelWallet.Balance = models.Amount(infos[0].FinalBalance)
+	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))
+	modelWallet.Balance = models.Amount(fmt.Sprint(infos[0].Balance))
 
 	return operations.NewGetAccountOK().WithPayload(&modelWallet)
 }

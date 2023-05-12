@@ -1,8 +1,6 @@
 package wallet
 
 import (
-	"fmt"
-
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/massalabs/thyra/pkg/node"
@@ -17,13 +15,13 @@ func NewNodeFetcherMock() *NodeFetcherMock {
 }
 
 // returns dummy balances
-func (n *NodeFetcherMock) GetAccountsInfos(wlt []wallet.Wallet) ([]node.Address, error) {
-	infos := make([]node.Address, len(wlt))
+func (n *NodeFetcherMock) GetAccountsInfos(wlt []wallet.Wallet) ([]network.AccountInfos, error) {
+	infos := make([]network.AccountInfos, len(wlt))
 	for i, addr := range wlt {
-		infos[i] = node.Address{
+		infos[i] = network.AccountInfos{
 			Address:          addr.Address,
-			CandidateBalance: fmt.Sprint(i + 1*1000000),
-			FinalBalance:     fmt.Sprint(i + 1*1000000),
+			CandidateBalance: uint64(i + 1*1000000),
+			Balance:          uint64(i + 1*1000000),
 		}
 	}
 	return infos, nil

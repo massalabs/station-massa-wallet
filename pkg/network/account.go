@@ -1,12 +1,12 @@
 package network
 
 import (
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/massalabs/thyra/pkg/node"
 )
 
 func newMassaClient() (*node.Client, error) {
-
 	networkInfo, err := GetNetworkInfo()
 	if err != nil {
 		return nil, err
@@ -15,8 +15,13 @@ func newMassaClient() (*node.Client, error) {
 	return node.NewClient(networkInfo.URL), nil
 }
 
-func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]node.Address, error) {
+type AccountInfos struct {
+	Address          string
+	CandidateBalance uint64
+	Balance          uint64
+}
 
+func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]AccountInfos, error) {
 	client, err := newMassaClient()
 	if err != nil {
 		return nil, err
@@ -32,5 +37,20 @@ func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]node.Address, err
 		return nil, err
 	}
 
-	return infos, nil
+	res := make([]AccountInfos, len(infos))
+	for i, info := range infos {
+		res[i].Address = info.Address
+		nano, err := utils.MasToNano(info.CandidateBalance)
+		if err != nil {
+			return nil, err
+		}
+		res[i].CandidateBalance = nano
+		nano, err = utils.MasToNano(info.FinalBalance)
+		if err != nil {
+			return nil, err
+		}
+		res[i].Balance = nano
+	}
+
+	return res, nil
 }

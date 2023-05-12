@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"fmt"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
@@ -53,8 +55,8 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 	return operations.NewImportAccountOK().WithPayload(
 		&models.Account{
 			Nickname:         models.Nickname(wlt.Nickname),
-			CandidateBalance: models.Amount(infos[0].CandidateBalance),
-			Balance:          models.Amount(infos[0].FinalBalance),
+			CandidateBalance: models.Amount(fmt.Sprint(infos[0].CandidateBalance)),
+			Balance:          models.Amount(fmt.Sprint(infos[0].Balance)),
 			Address:          wlt.Address,
 			KeyPair: models.AccountKeyPair{
 				PrivateKey: "",
