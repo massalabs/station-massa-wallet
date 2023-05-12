@@ -3,12 +3,12 @@ import react from '@vitejs/plugin-react';
 
 export default ({ mode }) => {
   // loadEnv(mode, process.cwd()) will load the .env files depending on the mode
-  // import.meta.env.VITE_BASE_PATH available here with: process.env.VITE_BASE_PATH
+  // import.meta.env.VITE_BASE_APP available here with: process.env.VITE_BASE_APP
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return defineConfig({
     plugins: [react()],
-    base: process.env.VITE_BASE_PATH,
+    base: process.env.VITE_BASE_APP,
     build: {
       outDir: '../internal/handler/html/dist',
       emptyOutDir: true,
