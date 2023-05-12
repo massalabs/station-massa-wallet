@@ -1,0 +1,91 @@
+version: '3'
+
+tasks:
+  install:
+    cmds:
+      - echo "Installing dependencies"
+      - cmd: sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+        platforms: [linux]
+      - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+  generate: go generate ./...
+
+  test: go test -v ./...
+
+  fmt:
+    cmds:
+      - cmd: gofumpt -w .
+      - cmd: golangci-lint run
+
+  build:
+    cmds:
+      - task: build-linux
+      - task: build-macos
+      - task: build-windows
+
+  build-linux:
+    platforms: [linux]
+    cmds:
+      - cmd: mkdir -p build/wallet-plugin
+      - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production  -ldflags "-w -s" main.go
+
+  build-macos:
+    platforms: [darwin]
+    cmds:
+      - cmd: mkdir -p build/wallet-plugin
+      - cmd: go build -tags desktop,production -ldflags "-w -s" -o build/wallet-plugin/wallet-plugin main.go
+    env:
+      CGO_LDFLAGS: -framework UniformTypeIdentifiers
+
+  build-windows:
+    platforms: [windows]
+    cmds:
+      - cmd: mkdir build\wallet-plugin
+      - cmd: go build -tags desktop,production -ldflags "-w -s -H windowsgui" -o build\wallet-plugin\wallet-plugin.exe main.go
+
+  build-webapp:
+    dir: web-frontend
+    cmds:
+      - cmd: npm run build:standalone
+
+  build-wails:
+    dir: wails-frontend
+    cmds:
+      - cmd: npm run build
+
+  wails-dev:
+    cmds:
+      - cmd: wails-dev
+    env:
+      STANDALONE: 1
+
+  install-plugin:
+    cmds:
+      - task: build
+      - cmd: mkdir -p ~/.config/thyra/plugins/wallet-plugin
+        platforms: [linux, darwin]
+      - cmd: cp build/wallet-plugin/wallet-plugin ~/.config/thyra/plugins/wallet-plugin
+        platforms: [linux, darwin]
+
+  run:
+    cmds:
+      - cmd: ./build/wallet-plugin/wallet-plugin
+        platforms: [linux, darwin]
+      - cmd: ./build/wallet-plugin/wallet-plugin.exe
+        platforms: [windows]
+    env:
+      STANDALONE: 1
+
+  build-run:
+    cmds:
+      - task: build-webapp
+      - task: build-wails
+      - task: build
+      - task: run
+
+  all:
+    cmds:
+      - task: install
+      - task: generate
+      - task: build
