@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/go-openapi/runtime/middleware"
@@ -69,8 +70,8 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 		&models.Account{
 			Nickname:         models.Nickname(wlt.Nickname),
 			Address:          wlt.Address,
-			CandidateBalance: models.Amount(infos[0].CandidateBalance),
-			Balance:          models.Amount(infos[0].FinalBalance),
+			CandidateBalance: models.Amount(fmt.Sprint(infos[0].CandidateBalance)),
+			Balance:          models.Amount(fmt.Sprint(infos[0].Balance)),
 			KeyPair: models.AccountKeyPair{
 				PrivateKey: "",
 				PublicKey:  wlt.GetPupKey(),
