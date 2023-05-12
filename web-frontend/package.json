@@ -17,6 +17,7 @@
     "prepare": "cd .. && husky install web-frontend/.husky"
   },
   "dependencies": {
+    "@massalabs/massa-web3": "^1.16.1",
     "@massalabs/react-ui-kit": "^0.0.4-dev",
     "@tanstack/react-query": "^4.29.5",
     "axios": "^1.4.0",
