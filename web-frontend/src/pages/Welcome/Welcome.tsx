@@ -4,7 +4,7 @@ import { FiArrowRight } from 'react-icons/fi';
 import { useQuery } from '@tanstack/react-query';
 import { getAllAccounts } from '../../api/account';
 import { useNavigate } from 'react-router-dom';
-import { routeFor } from '../../utils';
+import { navigateToImportAccount, routeFor } from '../../utils';
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -31,7 +31,12 @@ export default function Welcome() {
             <Button posIcon={<FiArrowRight />}>Create an account</Button>
           </div>
           <div className="pt-3.5">
-            <Button variant="secondary">Import an existing account</Button>
+            <Button
+              variant="secondary"
+              onClick={navigateToImportAccount(navigate)}
+            >
+              Import an existing account
+            </Button>
           </div>
         </div>
       </div>
