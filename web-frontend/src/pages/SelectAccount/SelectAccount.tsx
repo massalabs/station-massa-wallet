@@ -6,6 +6,7 @@ import { MassaToken } from '@massalabs/react-ui-kit/src/components/Icons/Svg/Svg
 import { useQuery } from '@tanstack/react-query';
 import { getAllAccounts } from '../../api/account';
 import { accountType } from '../../api/types';
+import { toMAS } from '@massalabs/massa-web3';
 
 export default function SelectAccount() {
   const accounts = useQuery({
@@ -47,7 +48,7 @@ export default function SelectAccount() {
                 <AccountSelectorButton
                   {...accountBaseProps}
                   accountName={account.nickname}
-                  amount={account.candidateBalance}
+                  amount={toMAS(account.candidateBalance).toString()}
                 />
               </div>
             ))}
