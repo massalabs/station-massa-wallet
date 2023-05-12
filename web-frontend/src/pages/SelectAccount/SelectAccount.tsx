@@ -3,21 +3,21 @@ import { FiUser, FiPlus } from 'react-icons/fi';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import { AccountSelector } from '@massalabs/react-ui-kit/src/components/AccountSelector/AccountSelector';
 import { MassaToken } from '@massalabs/react-ui-kit/src/components/Icons/Svg/SvgComponent/MassaToken';
-import { useQuery } from '@tanstack/react-query';
-import { getAllAccounts } from '../../api/account';
-import { accountType } from '../../api/types';
 import { toMAS } from '@massalabs/massa-web3';
 import { Link, useNavigate } from 'react-router-dom';
-import { routeFor } from '../../utils';
+import { goToErrorPage, routeFor } from '../../utils';
+import useResource from '../../custom/api/useResource';
+import { AccountObject } from '../../models/AccountModel';
 
 export default function SelectAccount() {
   // If no account, redirect to welcome page
   const navigate = useNavigate();
-  const accounts = useQuery({
-    queryKey: ['accounts'],
-    queryFn: getAllAccounts,
-  });
-  if (accounts.data?.length === 0) {
+
+  const { error, data = [] } = useResource<AccountObject[]>('accounts');
+
+  if (error) goToErrorPage(navigate);
+
+  if (!data.length) {
     navigate(routeFor('welcome'));
   }
 
@@ -35,8 +35,8 @@ export default function SelectAccount() {
             </label>
           </div>
           <div id="account-select" className="w-full flex flex-col">
-            {accounts.data?.map((account: accountType) => (
-              <div className="mb-4">
+            {data.map((account: AccountObject) => (
+              <div className="mb-4" key={account.nickname}>
                 <AccountSelector
                   avatar={<FiUser className="text-neutral h-6 w-6" />}
                   icon={<MassaToken size={24} />}

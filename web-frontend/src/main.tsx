@@ -13,15 +13,21 @@ import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
 import AddAccount from './pages/AddAccount/AddAccount.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import mockServer from './mirage/server.ts';
+
+if (import.meta.env.VITE_ENV === 'dev') {
+  mockServer();
+}
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path={import.meta.env.VITE_BASE_PATH}>
+    <Route path={import.meta.env.VITE_BASE_APP}>
       <Route path="welcome" element={<Welcome />} />
       <Route path="account-select" element={<SelectAccount />} />
       <Route path="account-create" element={<AddAccount />} />
+      <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>,
   ),

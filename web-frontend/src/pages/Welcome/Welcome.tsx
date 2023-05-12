@@ -1,20 +1,19 @@
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import { FiArrowRight } from 'react-icons/fi';
-import { useQuery } from '@tanstack/react-query';
-import { getAllAccounts } from '../../api/account';
 import { useNavigate } from 'react-router-dom';
-import { navigateToImportAccount, routeFor } from '../../utils';
+import { goToErrorPage, navigateToImportAccount, routeFor } from '../../utils';
+import useResource from '../../custom/api/useResource';
+import { AccountObject } from '../../models/AccountModel';
 
 export default function Welcome() {
   const navigate = useNavigate();
 
-  const accounts = useQuery({
-    queryKey: ['accounts'],
-    queryFn: getAllAccounts,
-  });
+  const { error, data = [] } = useResource<AccountObject[]>('accounts');
 
-  if (accounts.data?.length > 0) {
+  if (error) goToErrorPage(navigate);
+
+  if (data.length) {
     navigate(routeFor('account-select'));
   }
 
