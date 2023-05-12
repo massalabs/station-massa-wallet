@@ -19,9 +19,9 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path={import.meta.env.VITE_BASE_PATH}>
-      <Route path="index" element={<Welcome />} />
+      <Route path="welcome" element={<Welcome />} />
       <Route path="account-select" element={<SelectAccount />} />
-      <Route path="account-new" element={<AddAccount />} />
+      <Route path="account-create" element={<AddAccount />} />
       <Route path="*" element={<Error />} />
     </Route>,
   ),

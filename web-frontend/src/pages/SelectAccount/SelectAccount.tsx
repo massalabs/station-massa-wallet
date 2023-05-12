@@ -7,28 +7,19 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllAccounts } from '../../api/account';
 import { accountType } from '../../api/types';
 import { toMAS } from '@massalabs/massa-web3';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { routeFor } from '../../utils';
 
 export default function SelectAccount() {
+  // If no account, redirect to welcome page
   const navigate = useNavigate();
-
   const accounts = useQuery({
     queryKey: ['accounts'],
     queryFn: getAllAccounts,
   });
-
-  const accountBaseProps = {
-    avatar: <FiUser className="text-neutral h-6 w-6" />,
-    icon: <MassaToken size={24} />,
-  };
-
-  const buttonProps = {
-    onClick: () => {
-      navigate(routeFor('account-new'));
-    },
-    preIcon: <FiPlus />,
-  };
+  if (accounts.data?.length === 0) {
+    navigate(routeFor('welcome'));
+  }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
   return (
@@ -47,16 +38,19 @@ export default function SelectAccount() {
             {accounts.data?.map((account: accountType) => (
               <div className="mb-4">
                 <AccountSelector
-                  {...accountBaseProps}
+                  avatar={<FiUser className="text-neutral h-6 w-6" />}
+                  icon={<MassaToken size={24} />}
                   accountName={account.nickname}
                   amount={toMAS(account.candidateBalance).toString()}
                 />
               </div>
             ))}
             <div>
-              <Button variant="secondary" {...buttonProps}>
-                Add an account
-              </Button>
+              <Link to={routeFor('account-create')}>
+                <Button variant="secondary" preIcon={<FiPlus />}>
+                  Add an account
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
