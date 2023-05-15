@@ -10,17 +10,14 @@ This section helps developer getting started.
 
 If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
+### Install Task
+Follow the installation instructions here:
+[task-install](https://taskfile.dev/installation/)
+
 ### Install dependencies
 
 ```shell
-go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-go install github.com/wailsapp/wails/v2/cmd/wails@latest
-```
-
-#### On Linux
-
-```shell
-apt install libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
+task install
 ```
 
 ### Build
@@ -28,21 +25,20 @@ apt install libgl1-mesa-dev xorg-dev gcc-mingw-w64-x86-64 gcc-mingw-w64
 Generate the projects: go-swagger, wails, web-frontend:
 
 ```shell
-go generate ./...
+task generate
 ```
-
-On macos:
 
 ```shell
-./build_darwin.sh
+task build
 ```
 
-This will create a binary file `wallet-plugin` in `build/wallet-plugin` folder.
+This will create a binary file `wallet-plugin{.exe}` in `build/wallet-plugin` folder.
+
 
 ### Test
 
 ```shell
-go test ./...
+task test
 ```
 
 ### Run
@@ -50,8 +46,12 @@ go test ./...
 For development purpose, you can run the plugin in standalone mode: it will not try to register with MassaStation.
 
 ```shell
-cd web-frontend && npm i && npm run build:standalone && cd ..
-STANDALONE=1 wails dev
+task run
+```
+
+All in one build & run:
+```shell
+task build-run
 ```
 
 The `STANDALONE` environment variable is to run the plugin without MassaStation.
@@ -59,12 +59,12 @@ The `STANDALONE` environment variable is to run the plugin without MassaStation.
 Now navigate into <http://localhost:8080>. Note that some features will not work if
 [thyra-server](https://github.com/massalabs/thyra) is not running.
 
-**Install manually the plugin:**
+**Install manually the plugin for Massa Station:**
 
 For development purpose, you can install the plugin manually:
 
 ```shell
-./manual-install.sh
+task install-plugin
 ```
 
 This will create MassaStation plugin directories and copy the binary file created in the previous step so that
