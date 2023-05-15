@@ -237,7 +237,7 @@ paths:
         - application/json
       responses:
         "200":
-          description: Signature, public key, and correlationId if provided.
+          description:  Returns the signature, public key, and correlationId (if provided).
           schema:
             $ref: "#/definitions/SignResponse"
         "400":
