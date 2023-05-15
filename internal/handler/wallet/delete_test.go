@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
@@ -14,29 +16,21 @@ import (
 
 func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("DELETE", "/api/accounts/{nickname}")
-	if !exist {
-		t.Fatalf("Endpoint doesn't exist")
-	}
+	assert.True(t, exist, "Endpoint doesn't exist")
 
 	resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/api/accounts/%s", nickname), "")
-	if err != nil {
-		t.Fatalf("while serving HTTP request: %s", err)
-	}
+	assert.NoError(t, err)
 	return resp
 }
 
 func Test_walletDelete_Handle(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	assert.NoError(t, err)
 
 	nickname := "walletToDelete"
 	password := "zePassword"
 	_, err = wallet.Generate(nickname, password)
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	assert.NoError(t, err)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := deleteWallet(t, api, "toto")
@@ -63,9 +57,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 		prompterApp.App().CtrlChan <- walletapp.Cancel
 
 		_, err = wallet.Load(nickname)
-		if err != nil {
-			t.Fatalf("Wallet should not have been deleted: " + err.Error())
-		}
+		assert.NoError(t, err)
 	})
 
 	t.Run("delete success", func(t *testing.T) {
@@ -80,8 +72,6 @@ func Test_walletDelete_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, "Delete Success")
 
 		_, err = wallet.Load(nickname)
-		if err == nil {
-			t.Fatalf("Wallet should have been deleted")
-		}
+		assert.Error(t, err, "Wallet should have been deleted")
 	})
 }
