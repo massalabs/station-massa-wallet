@@ -39,14 +39,6 @@ func ErrorAccountNotFound(nickname string) error {
 	return fmt.Errorf("account '%s' not found", nickname)
 }
 
-func ErrorAccountUnauthorized(nickname string) error {
-	return fmt.Errorf("account '%s' protected", nickname)
-}
-
-func ErrorInternal() error {
-	return fmt.Errorf("internal error")
-}
-
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
 	PrivateKey []byte
@@ -466,7 +458,7 @@ func (wallet *Wallet) Sign(operation *strfmt.Base64) ([]byte, error) {
 	pubKey := wallet.KeyPair.PublicKey
 	privKey := wallet.KeyPair.PrivateKey
 
-	digest, err := digestOperationAndPubKey(operation, pubKey)
+	digest, err := hash(operation, pubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -475,16 +467,13 @@ func (wallet *Wallet) Sign(operation *strfmt.Base64) ([]byte, error) {
 	return signature, nil
 }
 
-// digestOperationAndPubKey prepares the digest for signature.
-func digestOperationAndPubKey(operation *strfmt.Base64, publicKey []byte) ([32]byte, error) {
-	// reads operation to sign
-
+// hash prepares the digest for signature.
+func hash(operation *strfmt.Base64, publicKey []byte) ([32]byte, error) {
 	op, err := base64.StdEncoding.DecodeString(operation.String())
 	if err != nil {
-		return [32]byte{}, ErrorInternal()
+		return [32]byte{}, fmt.Errorf("decoding operation: %w", err)
 	}
 
-	// signs operation
 	digest := blake3.Sum256(append(publicKey, op...))
 
 	return digest, nil
