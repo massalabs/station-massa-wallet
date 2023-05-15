@@ -13,34 +13,27 @@ import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/stretchr/testify/assert"
 )
 
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/signOperation")
-	if !exist {
-		t.Fatalf("Endpoint doesn't exist")
-	}
+	assert.True(t, exist)
 
 	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/signOperation", nickname), body)
-	if err != nil {
-		t.Fatalf("while serving HTTP request: %s", err)
-	}
+	assert.NoError(t, err)
 	return resp
 }
 
 func Test_walletSign_Handle(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
-	if err != nil {
-		panic(err)
-	}
+	assert.NoError(t, err)
 
 	transactionData := `{"operation":"MjIzM3QyNHQ="}`
 	nickname := "walletToDelete"
 	password := "zePassword"
 	_, err = wallet.Generate(nickname, password)
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	assert.NoError(t, err)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := signTransaction(t, api, "Johnny", transactionData)
@@ -62,14 +55,10 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		if !result.Success {
-			t.Fatalf("Expected success, got error")
-		}
+		assert.True(t, result.Success)
 
 		msg := "Unprotect Success"
-		if result.Data != msg {
-			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
-		}
+		assert.Equal(t, msg, result.Data)
 	})
 
 	// The handler will not return until a the good password is sent or the action is canceled
@@ -97,14 +86,10 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		if !result.Success {
-			t.Fatalf("Expected success, got error")
-		}
+		assert.True(t, result.Success)
 
 		msg := "Unprotect Success"
-		if result.Data != msg {
-			t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
-		}
+		assert.Equal(t, msg, result.Data)
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
@@ -145,9 +130,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		var body models.Signature
 		err = json.Unmarshal(resp.Body.Bytes(), &body)
-		if err != nil {
-			t.Fatalf("while unmarshalling: %s", err)
-		}
+		assert.NoError(t, err)
 
 		correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
 
@@ -158,7 +141,5 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	err = cleanupTestData([]string{nickname})
-	if err != nil {
-		t.Fatalf("while cleaning up TestData: %s", err)
-	}
+	assert.NoError(t, err)
 }
