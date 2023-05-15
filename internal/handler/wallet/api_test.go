@@ -14,6 +14,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/stretchr/testify/assert"
 )
 
 // Prompt struct will be used to drive the password prompter externally
@@ -85,15 +86,7 @@ func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string,
 }
 
 func checkResultChannel(t *testing.T, result walletapp.EventData, success bool, msg string) {
-	if result.Success != success {
-		if success {
-			t.Fatalf("Expected success, got error")
-		} else {
-			t.Fatalf("Expected error, got success")
-		}
-	}
 
-	if !strings.HasPrefix(fmt.Sprint(result.Data), msg) {
-		t.Fatalf(fmt.Sprintf("Expected error message to be %s, got %s", msg, result.Data))
-	}
+	assert.Equal(t, result.Success, success)
+	assert.Contains(t, fmt.Sprint(result.Data), msg, "Result data does not have the expected prefix")
 }
