@@ -1,5 +1,4 @@
 /* eslint-disable new-cap */
-import './App.css';
 import { EventsOn } from '../wailsjs/runtime';
 import { events, promptAction, promptRequest } from './events/events';
 import { useNavigate } from 'react-router-dom';
