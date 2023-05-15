@@ -1,10 +1,10 @@
-import { useState } from 'preact/hooks';
+/* eslint-disable new-cap */
+import { useState } from 'react';
 import {
   ApplyPassword,
   ImportPrivateKey,
 } from '../../wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '../../wailsjs/runtime';
-import { h } from 'preact';
 import { events, promptAction, promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { handleApplyResult, handleCancel } from '../utils/utils';
@@ -41,7 +41,9 @@ const PasswordPrompt = () => {
 
   const [resultMsg, setResultMsg] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConf] = useState(undefined);
+  const [passwordConfirm, setPasswordConf] = useState<string | undefined>(
+    undefined,
+  );
 
   const applyPassword = () => {
     if (password.length) {
@@ -66,11 +68,13 @@ const PasswordPrompt = () => {
     }
   };
 
-  const updatePassword = (e: any) => setPassword(e.target.value);
-  const updatePasswordConfirm = (e: any) => setPasswordConf(e.target.value);
+  const updatePassword = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
+  const updatePasswordConfirm = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPasswordConf(e.target.value);
 
   return (
-    <section class="PasswordPrompt">
+    <section className="PasswordPrompt">
       <div>{req.Msg}</div>
       <div className="baseline">{baselineStr(req)}</div>
       <div id="input" className="input-box">

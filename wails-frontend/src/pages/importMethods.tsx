@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 

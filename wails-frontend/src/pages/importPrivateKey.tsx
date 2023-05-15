@@ -1,5 +1,4 @@
-import { useState } from 'preact/hooks';
-import { h } from 'preact';
+import { useState } from 'react';
 import { promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { handleCancel } from '../utils/utils';
@@ -46,7 +45,8 @@ const ImportPrivatekey = () => {
     navigate('/password', { state });
   };
 
-  const updateInput = (e: any) => setInput(e.target.value);
+  const updateInput = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setInput(e.target.value);
 
   return (
     <section>

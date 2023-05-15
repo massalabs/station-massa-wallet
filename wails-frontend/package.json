@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "wails-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,22 +17,31 @@
     "prepare": "cd .. && husky install wails-frontend/.husky"
   },
   "dependencies": {
-    "preact": "^10.10.1",
-    "react-router-dom": "^6.10.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.1"
   },
   "devDependencies": {
     "@massalabs/eslint-config": "^0.0.9",
     "@massalabs/prettier-config-as": "^0.0.2",
-    "@preact/preset-vite": "^2.3.0",
-    "eslint": "^8.39.0",
-    "eslint-plugin-storybook": "^0.6.11",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.38.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "eslint-plugin-storybook": "^0.6.12",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
-    "lint-staged": "^13.2.1",
-    "prettier": "^2.8.8",
+    "lint-staged": "^13.2.2",
+    "prettier": "2.8.8",
     "ts-node": "^10.9.1",
-    "typescript": "^4.6.4",
-    "vite": "^3.0.7"
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
   }
 }

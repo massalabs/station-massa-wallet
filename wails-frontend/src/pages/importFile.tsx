@@ -1,9 +1,9 @@
-import { useState } from 'preact/hooks';
+/* eslint-disable new-cap */
+import { useState } from 'react';
 import {
   ImportWalletFile,
   SelectAccountFile,
 } from '../../wailsjs/go/walletapp/WalletApp';
-import { h } from 'preact';
 import { events, promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { handleApplyResult, handleCancel } from '../utils/utils';

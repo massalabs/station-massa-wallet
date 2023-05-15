@@ -1,4 +1,3 @@
-import { h } from 'preact';
 import { useLocation } from 'react-router';
 import { promptAction, promptRequest } from '../events/events';
 
@@ -22,7 +21,7 @@ const Success = () => {
   };
 
   return (
-    <section class="Success">
+    <section className="Success">
       <div>Success !!</div>
       <div>{successMsg(req)}</div>
     </section>

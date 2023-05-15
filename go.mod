@@ -9,6 +9,7 @@ require (
 	github.com/massalabs/thyra v0.1.14
 	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503
 	github.com/rs/cors v1.8.3
+	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
 	github.com/wailsapp/wails/v2 v2.4.1
 	golang.org/x/crypto v0.3.0
@@ -35,7 +36,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/samber/lo v1.27.1 // indirect
-	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/tkrajina/go-reflector v0.5.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
