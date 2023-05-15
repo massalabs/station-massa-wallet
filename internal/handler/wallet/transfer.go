@@ -27,7 +27,7 @@ type transferCoin struct {
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWalletForTransfer(params.Nickname)
+	wlt, resp := loadWalletToTransfer(params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -116,8 +116,8 @@ func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string,
 	return &sendOperation.OperationResponse{CorrelationID: "", OperationID: resp[0]}, nil
 }
 
-// loadWalletForSign loads a wallet from the file system or returns an error.
-func loadWalletForTransfer(nickname string) (*wallet.Wallet, middleware.Responder) {
+// loadWalletToTransfer loads a wallet from the file system or returns an error.
+func loadWalletToTransfer(nickname string) (*wallet.Wallet, middleware.Responder) {
 	w, err := wallet.Load(nickname)
 	if err == nil {
 		return w, nil
