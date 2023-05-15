@@ -55,7 +55,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 		if len(test.password) > 0 && test.statusCode == http.StatusOK {
 			result := <-testResult
 
-			assert.True(t, result.Success, "New password created")
+			checkResultChannel(t, result, true, "New password created")
 
 			assertWallet(t, nickname)
 

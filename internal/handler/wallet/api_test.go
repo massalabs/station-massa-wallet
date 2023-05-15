@@ -10,11 +10,12 @@ import (
 
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/loads"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
-	"github.com/stretchr/testify/assert"
 )
 
 // Prompt struct will be used to drive the password prompter externally
