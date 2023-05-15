@@ -18,6 +18,7 @@ import mockServer from './mirage/server.ts';
 if (import.meta.env.VITE_ENV === 'dev') {
   mockServer();
 }
+import StepOne from './pages/CreateAccount/StepOne.tsx';
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,8 @@ const router = createBrowserRouter(
       <Route path="account-select" element={<SelectAccount />} />
       <Route path="account-create" element={<AddAccount />} />
       <Route path="error" element={<Error />} />
+      <Route path="account-new" element={<AddAccount />} />
+      <Route path="account-create-step1" element={<StepOne />} />
       <Route path="*" element={<Error />} />
     </Route>,
   ),
