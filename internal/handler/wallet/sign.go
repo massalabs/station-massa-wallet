@@ -95,7 +95,7 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, g
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,
-				Message: "Error cannot get data from cache: " + err.Error(),
+				Message: fmt.Sprintf("Error cannot get data from cache: %v", err.Error()),
 			})
 	}
 
@@ -106,7 +106,7 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, g
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,
-				Message: "Error cannot convert cache value: " + err.Error(),
+				Message: fmt.Sprintf("Error cannot convert cache value: %v", err.Error()),
 			})
 	}
 	bytes := buf.Bytes()
@@ -117,7 +117,7 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, g
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,
-				Message: "Error cannot unprotect from cache: " + err.Error(),
+				Message: fmt.Sprintf("Error cannot unprotect from cache: %v", err.Error()),
 			})
 	}
 
@@ -134,7 +134,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignGenerateCorrelationId,
-				Message: "Error cannot generate correlation id: " + err.Error(),
+				Message: fmt.Sprintf("Error cannot generate correlation id: %v", err.Error()),
 			})
 	}
 
@@ -144,7 +144,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignGenerateCorrelationId,
-				Message: "Error cannot XOR correlation id: " + err.Error(),
+				Message: fmt.Sprintf("Error cannot XOR correlation id: %v", err.Error()),
 			})
 	}
 	err = gc.SetWithExpire(cacheKey, cacheValue, passwordExpirationTime)
@@ -152,7 +152,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignGenerateCorrelationId,
-				Message: "Error set correlation id in cache: " + err.Error(),
+				Message: fmt.Sprintf("Error set correlation id in cache: %v", err.Error()),
 			})
 	}
 

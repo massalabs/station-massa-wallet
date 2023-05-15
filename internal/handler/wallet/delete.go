@@ -29,13 +29,13 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 			return operations.NewDeleteAccountNotFound().WithPayload(
 				&models.Error{
 					Code:    errorGetWallet,
-					Message: "Error cannot load account: " + err.Error(),
+					Message: fmt.Sprintf("Error cannot load account: %v", err.Error()),
 				})
 		} else {
 			return operations.NewDeleteAccountInternalServerError().WithPayload(
 				&models.Error{
 					Code:    errorGetWallet,
-					Message: "Error cannot load account: " + err.Error(),
+					Message: fmt.Sprintf("Error cannot load account: %v", err.Error()),
 				})
 		}
 	}
@@ -57,7 +57,7 @@ func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface
 	}
 
 	if wlt.DeleteFile() != nil {
-		errStr := "error deleting wallet:" + err.Error()
+		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
 		fmt.Println(errStr)
 		prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})

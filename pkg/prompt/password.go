@@ -25,7 +25,7 @@ func PromptPassword(
 		case password := <-prompterApp.App().PasswordChan:
 			err := wallet.Unprotect(password)
 			if err != nil {
-				errStr := UnprotectErr + ": " + err.Error()
+				errStr := fmt.Sprintf("%v: %v", UnprotectErr, err.Error())
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 					walletapp.EventData{Success: false, Data: errStr})

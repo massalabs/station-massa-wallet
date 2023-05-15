@@ -37,7 +37,7 @@ func PromptImport(
 			}
 			wallet, err := wallet.LoadFile(filePath)
 			if err != nil {
-				errStr := AccountLoadErr + ": " + err.Error()
+				errStr := fmt.Sprintf("%v: %v", AccountLoadErr, err.Error())
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 					walletapp.EventData{Success: false, Data: errStr})
@@ -48,7 +48,7 @@ func PromptImport(
 		case walletInfo := <-prompterApp.App().PrivateKeyChan:
 			wallet, err := wallet.Import(walletInfo.Nickname, walletInfo.PrivateKey, walletInfo.Password)
 			if err != nil {
-				errStr := ImportPrivateKeyErr + ": " + err.Error()
+				errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, err.Error())
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 					walletapp.EventData{Success: false, Data: errStr})
