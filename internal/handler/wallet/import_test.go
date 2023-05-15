@@ -10,6 +10,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/stretchr/testify/assert"
 )
 
 func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.ResponseRecorder {
@@ -19,17 +20,13 @@ func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.Respon
 	}
 
 	resp, err := handleHTTPRequest(handler, "PUT", "/api/accounts", "")
-	if err != nil {
-		t.Fatalf("while serving HTTP request: %s", err)
-	}
+	assert.NoError(t, err)
 	return resp
 }
 
 func Test_walletImport_Handle(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
-	if err != nil {
-		panic(err)
-	}
+	assert.NoError(t, err)
 
 	t.Run("import wallet file", func(t *testing.T) {
 		nickname := "walletToBeImported"
@@ -53,9 +50,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		// Write wallet file
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
+		assert.NoError(t, err)
 
 		testResult := make(chan walletapp.EventData)
 
@@ -77,9 +72,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		assertWallet(t, nickname)
 
 		err = cleanupTestData([]string{nickname})
-		if err != nil {
-			t.Fatalf("while cleaning up TestData: %s", err)
-		}
+		assert.NoError(t, err)
 
 		os.Remove(filePath)
 	})
@@ -91,9 +84,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		// Write wallet file
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
-		if err != nil {
-			t.Fatalf(err.Error())
-		}
+		assert.NoError(t, err)
 
 		testResult := make(chan walletapp.EventData)
 
@@ -144,9 +135,8 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		assertWallet(t, nickname)
 
 		err = cleanupTestData([]string{nickname})
-		if err != nil {
-			t.Fatalf("while cleaning up TestData: %s", err)
-		}
+		assert.NoError(t, err)
+
 	})
 
 	t.Run("import invalid private key", func(t *testing.T) {
