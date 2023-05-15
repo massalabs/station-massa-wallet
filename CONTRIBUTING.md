@@ -74,9 +74,8 @@ If you have any questions, feel free to open an issue in the
 
 ## Operation vs Transaction
 
-In massa blockchain, an operation is include in blocks. Here in the wallet we call it a transaction.
+In the Massa blockchain, an operation refers to an action that is included in blocks. Operations can take various forms, such as buying a roll, selling a roll, transferring funds, executing a smart contract, or deploying a smart contract. Within the wallet, we use the term **transaction** to describe these operations.
 
 ## Transaction vs Transfer
 
-In massa blockchain, a transaction is an special kind of operation that allow to send MAS coins.
-from one account to another. Here in the wallet we call it a transfer.
+In the Massa blockchain, a transaction is a specific type of operation that enables the transfer of MAS coins from one account to another. Within the wallet, we specifically refer to this type of operation as a "transfer".
