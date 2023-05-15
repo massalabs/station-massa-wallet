@@ -1,7 +1,7 @@
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { FiUser, FiPlus } from 'react-icons/fi';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
-import { AccountSelectorButton } from '@massalabs/react-ui-kit/src/components/AccountSelector/AccountSelector';
+import { AccountSelector } from '@massalabs/react-ui-kit/src/components/AccountSelector/AccountSelector';
 import { MassaToken } from '@massalabs/react-ui-kit/src/components/Icons/Svg/SvgComponent/MassaToken';
 import { useQuery } from '@tanstack/react-query';
 import { getAllAccounts } from '../../api/account';
@@ -45,7 +45,7 @@ export default function SelectAccount() {
           <div id="account-select" className="w-full flex flex-col">
             {accounts.data?.map((account: accountType) => (
               <div className="mb-4">
-                <AccountSelectorButton
+                <AccountSelector
                   {...accountBaseProps}
                   accountName={account.nickname}
                   amount={toMAS(account.candidateBalance).toString()}
