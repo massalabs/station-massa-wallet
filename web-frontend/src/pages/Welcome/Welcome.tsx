@@ -2,9 +2,10 @@ import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import { FiArrowRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { goToErrorPage, navigateToImportAccount, routeFor } from '../../utils';
+import { goToErrorPage, routeFor } from '../../utils';
 import useResource from '../../custom/api/useResource';
 import { AccountObject } from '../../models/AccountModel';
+import usePut from '../../custom/api/usePut';
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ export default function Welcome() {
   if (data.length) {
     navigate(routeFor('account-select'));
   }
+
+  const handleImport = usePut<AccountObject>('accounts');
 
   return (
     <LandingPage>
@@ -32,7 +35,9 @@ export default function Welcome() {
           <div className="pt-3.5">
             <Button
               variant="secondary"
-              onClick={navigateToImportAccount(navigate)}
+              onClick={() => {
+                handleImport.mutate({} as AccountObject);
+              }}
             >
               Import an existing account
             </Button>
