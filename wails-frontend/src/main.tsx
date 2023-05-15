@@ -6,6 +6,7 @@ import {
   createRoutesFromElements,
   RouterProvider,
 } from 'react-router-dom';
+import './index.css';
 
 import App from './app';
 import PasswordPrompt from './pages/passwordPrompt';
