@@ -10,13 +10,13 @@ import useResource from '../../custom/api/useResource';
 import { AccountObject } from '../../models/AccountModel';
 
 export default function SelectAccount() {
-  // If no account, redirect to welcome page
   const navigate = useNavigate();
 
   const { error, data = [] } = useResource<AccountObject[]>('accounts');
 
   if (error) goToErrorPage(navigate);
 
+  // If no account, redirect to welcome page
   if (!data.length) {
     navigate(routeFor('welcome'));
   }
