@@ -17,15 +17,15 @@ import (
 )
 
 func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
-	return &wTransferCoin{prompterApp: prompterApp, massaClient: massaClient}
+	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient}
 }
 
-type wTransferCoin struct {
+type transferCoin struct {
 	prompterApp prompt.WalletPrompterInterface
 	massaClient network.NodeFetcherInterface
 }
 
-func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
+func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
 	wlt, resp := loadWalletForTransfer(params.Nickname)
 	if resp != nil {
@@ -57,7 +57,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 		Data: nil,
 	}
 
-	_, err = prompt.PromptPassword(h.prompterApp, wlt, walletapp.Transfer, promptData)
+	_, err = prompt.PromptPassword(t.prompterApp, wlt, walletapp.Transfer, promptData)
 	if err != nil {
 		return operations.NewTransferCoinUnauthorized().WithPayload(
 			&models.Error{
@@ -67,10 +67,10 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 	}
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, h.massaClient)
+	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
 	if err != nil {
 		errStr := "error transferring coin: " + err.Error()
-		h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
 			&models.Error{
@@ -79,7 +79,7 @@ func (h *wTransferCoin) Handle(params operations.TransferCoinParams) middleware.
 			})
 	}
 
-	h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+	t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 		walletapp.EventData{Success: true, Data: "Transfer Success"})
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
