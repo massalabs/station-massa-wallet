@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_walletCreate_Handle(t *testing.T) {
@@ -54,7 +55,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 		if len(test.password) > 0 && test.statusCode == http.StatusOK {
 			result := <-testResult
 
-			checkResultChannel(t, result, true, "New password created")
+			assert.True(t, result.Success, "New password created")
 
 			assertWallet(t, nickname)
 
