@@ -173,21 +173,20 @@ func generateCorrelationId() (models.CorrelationID, error) {
 // loadWalletForSign loads a wallet from the file system or returns an error.
 func loadWalletForSign(nickname string) (*wallet.Wallet, middleware.Responder) {
 	w, err := wallet.Load(nickname)
-	if err != nil {
-		if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
-			return nil, operations.NewSignNotFound().WithPayload(
-				&models.Error{
-					Code:    errorGetWallets,
-					Message: err.Error(),
-				})
-		} else {
-			return nil, operations.NewSignBadRequest().WithPayload(
-				&models.Error{
-					Code:    errorGetWallets,
-					Message: err.Error(),
-				})
-		}
+
+	if err == nil {
+		return w, nil
 	}
 
-	return w, nil
+	errorObj := &models.Error{
+		Code:    errorGetWallets,
+		Message: err.Error(),
+	}
+
+	if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
+		return nil, operations.NewSignNotFound().WithPayload(errorObj)
+
+	} else {
+		return nil, operations.NewSignBadRequest().WithPayload(errorObj)
+	}
 }

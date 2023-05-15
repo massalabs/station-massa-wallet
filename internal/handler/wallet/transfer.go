@@ -119,21 +119,18 @@ func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string,
 // loadWalletForSign loads a wallet from the file system or returns an error.
 func loadWalletForTransfer(nickname string) (*wallet.Wallet, middleware.Responder) {
 	w, err := wallet.Load(nickname)
-	if err != nil {
-		if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
-			return nil, operations.NewTransferCoinNotFound().WithPayload(
-				&models.Error{
-					Code:    errorGetWallets,
-					Message: err.Error(),
-				})
-		} else {
-			return nil, operations.NewTransferCoinBadRequest().WithPayload(
-				&models.Error{
-					Code:    errorGetWallets,
-					Message: err.Error(),
-				})
-		}
+	if err == nil {
+		return w, nil
 	}
 
-	return w, nil
+	errorObj := models.Error{
+		Code:    errorGetWallets,
+		Message: err.Error(),
+	}
+
+	if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
+		return nil, operations.NewTransferCoinNotFound().WithPayload(&errorObj)
+	} else {
+		return nil, operations.NewTransferCoinBadRequest().WithPayload(&errorObj)
+	}
 }

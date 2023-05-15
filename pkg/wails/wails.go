@@ -19,8 +19,8 @@ func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application 
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		OnStartup:        app.Startup,
-		OnBeforeClose:    app.BeforeClose,
+		OnStartup:     app.Startup,
+		OnBeforeClose: app.BeforeClose,
 		Bind: []interface{}{
 			app,
 		},
