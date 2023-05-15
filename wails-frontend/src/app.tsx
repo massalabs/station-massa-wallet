@@ -1,5 +1,4 @@
 /* eslint-disable new-cap */
-import { useEffect } from 'react';
 import './App.css';
 import { EventsOn } from '../wailsjs/runtime';
 import { events, promptAction, promptRequest } from './events/events';
@@ -23,11 +22,7 @@ export function App() {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      EventsOn(events.promptRequest, handlePromptRequest);
-    };
-  }, []);
+  EventsOn(events.promptRequest, handlePromptRequest);
 
   return <></>;
 }
