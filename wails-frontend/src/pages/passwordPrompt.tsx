@@ -39,8 +39,8 @@ const PasswordPrompt = () => {
     }
   };
 
-  const [resultMsg, setResultMsg] = useState<string | []>('');
-  const [password, setPassword] = useState<string>('');
+  const [resultMsg, setResultMsg] = useState('');
+  const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConf] = useState<string | undefined>(
     undefined,
   );

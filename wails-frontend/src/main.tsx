@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
 } from 'react-router-dom';
+
 import App from './app';
 import PasswordPrompt from './pages/passwordPrompt';
 import Success from './pages/success';

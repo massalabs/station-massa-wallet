@@ -1,4 +1,5 @@
 /* eslint-disable new-cap */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavigateFunction } from 'react-router-dom';
 import { Hide, AbortAction } from '../../wailsjs/go/walletapp/WalletApp';
 import { WindowReloadApp } from '../../wailsjs/runtime';
@@ -18,7 +19,7 @@ export const hideAndReload = () => {
 export const handleApplyResult = (
   navigate: NavigateFunction,
   req: promptRequest,
-  errMsgCb: (msg: string | []) => void,
+  errMsgCb: (msg: any) => void,
   quitOnError = false,
 ) => {
   return (result: promptResult) => {

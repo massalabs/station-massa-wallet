@@ -16,7 +16,7 @@ const ImportFile = () => {
   const [account, setAccount] = useState<
     undefined | walletapp.selectFileResult
   >(undefined);
-  const [errorMsg, setErrorMsg] = useState<string | []>('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
