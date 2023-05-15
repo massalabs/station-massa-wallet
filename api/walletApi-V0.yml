@@ -117,7 +117,7 @@ paths:
   /api/accounts/{nickname}:
     get:
       operationId: GetAccount
-      description: Get the account by nickname given in path, with the option to return the ciphered private key.
+      description: Get the account associated with the provided nickname in the path, with the option to return the ciphered private key.
       parameters:
         - $ref: "#/parameters/nickname"
         - $ref: "#/parameters/ciphered"
@@ -174,7 +174,7 @@ paths:
             $ref: "#/definitions/Error"
     delete:
       operationId: DeleteAccount
-      description: Delete the account by nickname given in path.
+      description: Delete the account associated with the provided nickname in the path.
       parameters:
         - $ref: "#/parameters/nickname"
       produces:
@@ -224,7 +224,7 @@ paths:
   /api/accounts/{nickname}/sign:
     post:
       operationId: Sign
-      description: Sign an operation or a message with the account by nickname given in path. Will ask the user to enter its account password if no correlationId is provided.
+      description: Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -263,7 +263,7 @@ paths:
   /api/accounts/{nickname}/transfer:
     post:
       operationId: TransferCoin
-      description: Transfer coins from the account by nickname given in path. Will ask the user to enter its account password.
+      description: Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
