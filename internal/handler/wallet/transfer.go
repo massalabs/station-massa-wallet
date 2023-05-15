@@ -69,7 +69,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	// create the transaction and send it to the network
 	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
 	if err != nil {
-		errStr := "error transferring coin: " + err.Error()
+		errStr := fmt.Sprintf("error transferring coin: %v", err.Error())
 		t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
