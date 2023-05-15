@@ -15,6 +15,7 @@ tasks:
 
   fmt:
     cmds:
+      - cmd: go mod tidy
       - cmd: gofumpt -w .
       - cmd: golangci-lint run
 
