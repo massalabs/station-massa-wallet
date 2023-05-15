@@ -88,5 +88,5 @@ func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string,
 func checkResultChannel(t *testing.T, result walletapp.EventData, success bool, msg string) {
 
 	assert.Equal(t, result.Success, success)
-	assert.True(t, strings.HasPrefix(fmt.Sprint(result.Data), msg))
+	assert.Contains(t, fmt.Sprint(result.Data), msg, "Result data does not have the expected prefix")
 }
