@@ -74,7 +74,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 
 		checkResultChannel(t, result, true, "Import Success")
 
-		checkWallet(t, nickname)
+		assertWallet(t, nickname)
 
 		err = cleanupTestData([]string{nickname})
 		if err != nil {
@@ -141,7 +141,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 
 		checkResultChannel(t, result, true, "Import Success")
 
-		checkWallet(t, nickname)
+		assertWallet(t, nickname)
 
 		err = cleanupTestData([]string{nickname})
 		if err != nil {
