@@ -185,7 +185,6 @@ func loadWalletForSign(nickname string) (*wallet.Wallet, middleware.Responder) {
 
 	if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
 		return nil, operations.NewSignNotFound().WithPayload(errorObj)
-
 	} else {
 		return nil, operations.NewSignBadRequest().WithPayload(errorObj)
 	}

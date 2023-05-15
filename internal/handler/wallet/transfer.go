@@ -83,7 +83,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		walletapp.EventData{Success: true, Data: "Transfer Success"})
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
-			OperationID: &operation.OperationID,
+			OperationID: operation.OperationID,
 		})
 }
 

@@ -364,24 +364,22 @@ definitions:
     properties:
       operationId:
         type: string
-    required:
-      - operationId
+        readOnly: true
   SignResponse:
     type: object
     description: Signature of a sent operation.
-    required:
-      - signature
-      - publicKey
     properties:
       publicKey:
         description: Public part of the key pair used to sign the operation.
         type: string
         x-nullable: false
+        readOnly: true
       signature:
         description: Hash of the operation attributes encrypted with the private part of the key pair.
         type: string
         format: byte
         x-nullable: false
+        readOnly: true
       correlationId:
         $ref: "#/definitions/CorrelationId"
   CorrelationId:
