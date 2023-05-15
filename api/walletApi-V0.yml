@@ -107,7 +107,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -165,7 +165,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -253,7 +253,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
         "500":
@@ -292,7 +292,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "422":
-          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions. Handled by go-swagger
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
         "500":

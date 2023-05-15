@@ -79,3 +79,11 @@ In the Massa blockchain, an operation refers to an action that is included in bl
 ## Transaction vs Transfer
 
 In the Massa blockchain, a transaction is a specific type of operation that enables the transfer of MAS coins from one account to another. Within the wallet, we specifically refer to this type of operation as a "transfer".
+
+## Swagger file
+
+The swagger file `api/walletApi-V0.yml` is the source of truth for the wallet API.
+It is used to generate the API documentation and the API client.
+
+Some endpoint responses are code 422 but the code itself never return such status code.
+Go-swagger will internally generate 422 response when the inputs are invalid.
