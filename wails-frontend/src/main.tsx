@@ -7,6 +7,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import './index.css';
+import '@massalabs/react-ui-kit/src/global.css';
 
 import App from './app';
 import PasswordPrompt from './pages/passwordPrompt';

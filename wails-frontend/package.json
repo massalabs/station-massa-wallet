@@ -17,6 +17,7 @@
     "prepare": "cd .. && husky install wails-frontend/.husky"
   },
   "dependencies": {
+    "@massalabs/react-ui-kit": "^0.0.4-dev",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1"
