@@ -11,7 +11,7 @@ export default function StepTwo() {
       >
         <div className="flex flex-col justify-center items-center w-fit h-fit max-w-sm">
           <div className=" w-full max-w-xs mb-6">
-            <Stepper step={1} steps={['Username', 'Password', 'Back-up']} />
+            <Stepper step={1} steps={['Username', 'Password', 'Backup']} />
           </div>
           <div className="w-full">
             <h1 className="mas-banner text-neutral mb-6">Create an account</h1>
