@@ -288,6 +288,11 @@ func LoadFile(filePath string) (Wallet, error) {
 		return Wallet{}, fmt.Errorf("unmarshalling file '%s': %w", filePath, err)
 	}
 
+	// Validate nickname
+	if !nicknameIsValid(accountSerialized.Nickname) {
+		return Wallet{}, fmt.Errorf("invalid nickname")
+	}
+
 	account := accountSerialized.ToAccount()
 	account.KeyPair.PrivateKey = accountSerialized.CipheredData
 
@@ -409,7 +414,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
-	// Validate nickname: not special chars, not too long, etc.
+	// Validate nickname
 	if !nicknameIsValid(nickname) {
 		return nil, fmt.Errorf("invalid nickname")
 	}
