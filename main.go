@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 
 	walletServer "github.com/massalabs/thyra-plugin-wallet/cmd/massa-wallet"
 	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
@@ -13,13 +14,19 @@ import (
 var wailsAssets embed.FS
 
 func main() {
-	walletApp := walletApp.NewWalletApp()
+	app := walletApp.NewWalletApp()
 
-	wailApp := wails.NewWailsApp(walletApp, wailsAssets)
-	go walletServer.StartServer(walletApp)
+	if walletApp.IsTestMode() {
+		fmt.Println("Wallet is running in test mode")
+		walletServer.StartServer(app)
+	} else {
+		wailApp := wails.NewWailsApp(app, wailsAssets)
 
-	err := wailApp.Run()
-	if err != nil {
-		panic(err)
+		go walletServer.StartServer(app)
+
+		err := wailApp.Run()
+		if err != nil {
+			panic(err)
+		}
 	}
 }

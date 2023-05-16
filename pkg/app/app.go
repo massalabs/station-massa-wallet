@@ -26,7 +26,9 @@ func (a *WalletApp) cleanExit() {
 	<-quit
 
 	a.Shutdown = true
-	runtime.Quit(a.Ctx)
+	if a.Ctx != nil {
+		runtime.Quit(a.Ctx)
+	}
 }
 
 func NewWalletApp() *WalletApp {
@@ -39,6 +41,10 @@ func NewWalletApp() *WalletApp {
 	}
 	go app.cleanExit()
 	return app
+}
+
+func IsTestMode() bool {
+	return os.Getenv("WALLET_PASSWORD") != ""
 }
 
 // startup is called when the app starts. The context is saved
