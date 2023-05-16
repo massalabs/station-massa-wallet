@@ -12,7 +12,7 @@ import (
 )
 
 // InitializeAPI initializes the API handlers
-func InitializeAPI(prompterApp *prompt.WalletPrompter, massaClient network.NodeFetcherInterface, gc gcache.Cache) (*operations.MassaWalletAPI, error) {
+func InitializeAPI(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface, gc gcache.Cache) (*operations.MassaWalletAPI, error) {
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {

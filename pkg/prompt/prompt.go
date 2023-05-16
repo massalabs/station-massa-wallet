@@ -30,16 +30,8 @@ func (w *WalletPrompter) App() *walletapp.WalletApp {
 	return w.app
 }
 
-// NewWalletPrompter creates a new password prompter with the given Fyne GUI application.
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
 	return &WalletPrompter{app: app}
-}
-
-// WalletPrompterInterface is used to mock the WalletPrompter struct in tests.
-type WalletPrompterInterface interface {
-	PromptRequest(req walletapp.PromptRequest, msg string, data interface{})
-	EmitEvent(eventId string, data walletapp.EventData)
-	App() *walletapp.WalletApp
 }
 
 // Verifies at compilation time that WalletPrompter implements WalletPrompterInterface interface.

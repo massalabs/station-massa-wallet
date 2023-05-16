@@ -14,7 +14,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
-func StartServer(walletApp *walletApp.WalletApp) {
+func StartServer(app *walletApp.WalletApp) {
 	// Initialize cache
 	gc := gcache.New(20).
 		LRU().
@@ -22,9 +22,14 @@ func StartServer(walletApp *walletApp.WalletApp) {
 
 	massaClient := network.NewNodeFetcher()
 
+	var promptApp prompt.WalletPrompterInterface = prompt.NewWalletPrompter(app)
+	if walletApp.IsTestMode() {
+		promptApp = prompt.NewEnvPrompter(app)
+	}
+
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
-		prompt.NewWalletPrompter(walletApp),
+		promptApp,
 		massaClient,
 		gc,
 	)
