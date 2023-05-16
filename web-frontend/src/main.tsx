@@ -27,14 +27,13 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path={import.meta.env.VITE_BASE_APP}>
-      <Route path="welcome" element={<Welcome />} />
+      <Route path="index" element={<Welcome />} />
       <Route path="account-select" element={<SelectAccount />} />
       <Route path="account-create" element={<AddAccount />} />
-      <Route path="account-create-step2" element={<StepTwo />} />
-      <Route path="error" element={<Error />} />
-      <Route path="account-new" element={<AddAccount />} />
-      <Route path="account-create-step1" element={<StepOne />} />
+      <Route path="account-create-step-one" element={<StepOne />} />
+      <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
+      <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>,
   ),
