@@ -311,13 +311,42 @@ paths:
           x-nullable: false
           schema:
             $ref: "#/definitions/RollsRequest"
-      produces:
-        - application/json
       responses:
         "200":
           description: Operation id
           schema:
             $ref: "#/definitions/OperationResponse"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/backup:
+    get:
+      operationId: BackupAccount
+      description: Export the account associated with the provided nickname in the path. Will ask the user to enter its account password.
+      parameters:
+        - $ref: "#/parameters/nickname"
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Account backup
         "400":
           description: Bad request.
           schema:
