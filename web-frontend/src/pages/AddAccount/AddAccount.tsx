@@ -18,7 +18,7 @@ export default function AddAccount() {
             <h1 className="mas-banner text-neutral">Add an account</h1>
           </div>
           <div className="mb-4">
-            <Link to={routeFor('')}>
+            <Link to={routeFor('account-create-step-one')}>
               <Button posIcon={<FiArrowRight />}>Create an account</Button>
             </Link>
           </div>
