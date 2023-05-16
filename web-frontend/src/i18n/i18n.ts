@@ -9,9 +9,11 @@ import frFR from './fr_FR.json';
 import { INTL } from '../const/intl/intl';
 import { useConfigStore } from '../store/store';
 
+type Copy = Record<string, string | object>;
+
 class I18n {
   private lang: string;
-  private copy: Record<string, string>;
+  private copy: Copy;
 
   constructor() {
     this.lang = this._getLang();
@@ -35,7 +37,7 @@ class I18n {
     return fromUrl || useConfigStore.getState().lang || INTL.EN_us;
   }
 
-  private _getCopy(): Record<string, string> {
+  private _getCopy(): Copy {
     let lang = this.lang;
 
     if (lang === INTL.EN_us) {

@@ -1,1 +1,11 @@
-{}
+{
+  "welcome": {
+    "title_first_part": "Welcome on",
+    "title_second_part": "Massa",
+    "title_third_part": "wallet"
+  },
+  "account": {
+    "create": "Create an Account",
+    "import": "Import an existing account"
+  }
+}

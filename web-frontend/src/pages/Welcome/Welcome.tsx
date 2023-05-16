@@ -1,11 +1,12 @@
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import { FiArrowRight } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { goToErrorPage, routeFor } from '../../utils';
 import useResource from '../../custom/api/useResource';
 import { AccountObject } from '../../models/AccountModel';
 import usePut from '../../custom/api/usePut';
+import Intl from '../../i18n/i18n';
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -25,12 +26,19 @@ export default function Welcome() {
       <div className="flex flex-col justify-center items-center h-screen">
         <div className="w-fit h-fit max-w-lg">
           <h1 className="mas-banner text-f-primary">
-            Welcome on
+            {Intl.t('welcome.title_first_part')}
             <br />
-            Massa<span className="text-brand">wallet</span>
+            {Intl.t('welcome.title_second_part')}
+            <span className="text-brand">
+              {Intl.t('welcome.title_third_part')}
+            </span>
           </h1>
           <div className="pt-6">
-            <Button posIcon={<FiArrowRight />}>Create an account</Button>
+            <Link to={routeFor('account-create')}>
+              <Button posIcon={<FiArrowRight />}>
+                {Intl.t('account.create')}
+              </Button>
+            </Link>
           </div>
           <div className="pt-3.5">
             <Button
@@ -39,7 +47,7 @@ export default function Welcome() {
                 handleImport.mutate({} as AccountObject);
               }}
             >
-              Import an existing account
+              {Intl.t('account.import')}
             </Button>
           </div>
         </div>
