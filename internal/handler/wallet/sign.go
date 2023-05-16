@@ -88,9 +88,9 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 }
 
 func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
-	cacheKey := getCacheKey(params.Body.CorrelationID)
+	key := CacheKey(params.Body.CorrelationID)
 
-	value, err := gc.Get(cacheKey)
+	value, err := gc.Get(key)
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
@@ -124,7 +124,7 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, g
 	return params.Body.CorrelationID, nil
 }
 
-func getCacheKey(correlationId models.CorrelationID) [32]byte {
+func CacheKey(correlationId models.CorrelationID) [32]byte {
 	return blake3.Sum256(correlationId)
 }
 
@@ -138,7 +138,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 			})
 	}
 
-	cacheKey := getCacheKey(correlationId)
+	key := CacheKey(correlationId)
 	cacheValue, err := wallet.Xor(wlt.KeyPair.PrivateKey, correlationId)
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
@@ -147,7 +147,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 				Message: fmt.Sprintf("Error cannot XOR correlation id: %v", err.Error()),
 			})
 	}
-	err = gc.SetWithExpire(cacheKey, cacheValue, passwordExpirationTime)
+	err = gc.SetWithExpire(key, cacheValue, passwordExpirationTime)
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
