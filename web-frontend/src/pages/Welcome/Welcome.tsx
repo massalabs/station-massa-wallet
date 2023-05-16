@@ -34,7 +34,7 @@ export default function Welcome() {
             </span>
           </h1>
           <div className="pt-6">
-            <Link to={routeFor('account-create')}>
+            <Link to={routeFor('account-create-step-one')}>
               <Button posIcon={<FiArrowRight />}>
                 {Intl.t('account.create')}
               </Button>
