@@ -11,14 +11,14 @@ import { useConfigStore } from '../store/store';
 
 class I18n {
   private lang: string;
-  private copy: Record<string, any>;
+  private copy: Record<string, string>;
 
   constructor() {
     this.lang = this._getLang();
     this.copy = this._getCopy();
   }
 
-  public t(key: string): any {
+  public t(key: string): string {
     let copy = this.copy;
     // we are using pick in order to make life easier when the day for plurals and copy with params arrives
     return dot.pick(key, copy);
@@ -35,7 +35,7 @@ class I18n {
     return fromUrl || useConfigStore.getState().lang || INTL.EN_us;
   }
 
-  private _getCopy(): Record<string, any> {
+  private _getCopy(): Record<string, string> {
     let lang = this.lang;
 
     if (lang === INTL.EN_us) {
