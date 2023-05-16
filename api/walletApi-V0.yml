@@ -103,7 +103,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "401":
-          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -117,7 +117,7 @@ paths:
   /api/accounts/{nickname}:
     get:
       operationId: GetAccount
-      description: Get the account by nickname given in path, with the option to return the ciphered private key.
+      description: Get the account associated with the provided nickname in the path, with the option to return the ciphered private key.
       parameters:
         - $ref: "#/parameters/nickname"
         - $ref: "#/parameters/ciphered"
@@ -161,7 +161,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         "401":
-          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         "422":
@@ -174,7 +174,7 @@ paths:
             $ref: "#/definitions/Error"
     delete:
       operationId: DeleteAccount
-      description: Delete the account by nickname given in path.
+      description: Delete the account associated with the provided nickname in the path.
       parameters:
         - $ref: "#/parameters/nickname"
       produces:
@@ -221,10 +221,10 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /api/accounts/{nickname}/signOperation:
+  /api/accounts/{nickname}/sign:
     post:
-      operationId: SignOperation
-      description: Sign an operation with the account by nickname given in path.
+      operationId: Sign
+      description: Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -232,20 +232,59 @@ paths:
           required: true
           x-nullable: false
           schema:
-            $ref: "#/definitions/Operation"
+            $ref: "#/definitions/SignRequest"
       produces:
         - application/json
       responses:
         "200":
-          description: Signature.
+          description:  Returns the signature, public key, and correlationId (if provided).
           schema:
-            $ref: "#/definitions/Signature"
+            $ref: "#/definitions/SignResponse"
         "400":
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
         "401":
           description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/transfer:
+    post:
+      operationId: TransferCoin
+      description: Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/TransferRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Operation id
+          schema:
+            $ref: "#/definitions/OperationResponse"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "401":
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         "404":
@@ -293,7 +332,7 @@ definitions:
         description: error message.
         type: string
         x-nullable: false
-  Operation:
+  SignRequest:
     type: object
     required:
       - operation
@@ -307,22 +346,40 @@ definitions:
         type: boolean
       correlationId:
         $ref: "#/definitions/CorrelationId"
-  Signature:
+  TransferRequest:
+    type: object
+    properties:
+      fee:
+        $ref: "#/definitions/Amount"
+      amount:
+        $ref: "#/definitions/Amount"
+      recipientAddress:
+        type: string
+    required:
+      - fee
+      - amount
+      - recipientAddress
+  OperationResponse:
+    type: object
+    properties:
+      operationId:
+        type: string
+        readOnly: true
+  SignResponse:
     type: object
     description: Signature of a sent operation.
-    required:
-      - signature
-      - publicKey
     properties:
       publicKey:
         description: Public part of the key pair used to sign the operation.
         type: string
         x-nullable: false
+        readOnly: true
       signature:
         description: Hash of the operation attributes encrypted with the private part of the key pair.
         type: string
         format: byte
         x-nullable: false
+        readOnly: true
       correlationId:
         $ref: "#/definitions/CorrelationId"
   CorrelationId:
@@ -334,7 +391,7 @@ definitions:
     type: string
     x-nullable: false
   Amount:
-    description: Mas amount.
+    description: Mas amount in nanoMassa.
     type: string
     x-nullable: false
   Account:

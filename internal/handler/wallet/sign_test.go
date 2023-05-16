@@ -17,10 +17,10 @@ import (
 )
 
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
-	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/signOperation")
+	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
 	assert.True(t, exist)
 
-	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/signOperation", nickname), body)
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body)
 	assert.NoError(t, err)
 	return resp
 }
@@ -128,7 +128,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		checkResultChannel(t, result, true, "Unprotect Success")
 
-		var body models.Signature
+		var body models.SignResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &body)
 		assert.NoError(t, err)
 

@@ -135,8 +135,8 @@ github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
-github.com/massalabs/thyra v0.1.14 h1:7/9kIinou3eF8AZM2difSagmBxVCNLCRAIO1Gwgs6Pc=
-github.com/massalabs/thyra v0.1.14/go.mod h1:+rk1h1bKEZNnaAFSudL5SP+R1zGvKShCrCXYDAABHOY=
+github.com/massalabs/thyra v0.1.15-0.20230509154116-6ed827ad0840 h1:KP43sQCHzGkiFxajmPDlgFVXV4tkGo+I01NTExk4ung=
+github.com/massalabs/thyra v0.1.15-0.20230509154116-6ed827ad0840/go.mod h1:swX79kVCZb89XNbWA4JMnS6XNLs4Kw3Q0n+QsdJE1N8=
 github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503 h1:SxxyLnRlSUnFJcghl2WDIj7Bny7NyT0n4fKqxzyishg=
 github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503/go.mod h1:7gjot7QNu6tm8q7uJjsGN89gOm2yMljjrxNpRh+iAXo=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
@@ -210,8 +210,8 @@ github.com/xdg-go/scram v1.0.2/go.mod h1:1WAq6h33pAW+iRreB34OORO2Nf7qel3VV3fjBj+
 github.com/xdg-go/scram v1.1.1/go.mod h1:RaEWvsqvNKKvBPvcKeFjrG2cJqOkHTiyTpzz23ni57g=
 github.com/xdg-go/stringprep v1.0.2/go.mod h1:8F9zXuvzgwmyT5DUm4GUfZGDdT3W+LCvS6+da4O5kxM=
 github.com/xdg-go/stringprep v1.0.3/go.mod h1:W3f5j4i+9rC0kuIEJL0ky1VpHXQU3ocBgklLGvcBnW8=
-github.com/ybbus/jsonrpc/v3 v3.1.0 h1:LWgb0z0nDGfO8YtKROz5KlUoM7OxU6NdBk+Be1GlImM=
-github.com/ybbus/jsonrpc/v3 v3.1.0/go.mod h1:NJ8vURh8jndl+F1dVplHr538HNnwnV89sEhcDsZL/bw=
+github.com/ybbus/jsonrpc/v3 v3.1.4 h1:pPmgfWXnqR2GdIlealyCzmV6LV3nxm3w9gwA1B3cP3Y=
+github.com/ybbus/jsonrpc/v3 v3.1.4/go.mod h1:4HQTl0UzErqWGa6bSXhp8rIjifMAMa55E4D5wdhe768=
 github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d/go.mod h1:rHwXgn7JulP+udvsHwJoVG1YGAP6VLg4y9I5dyZdqmA=
 go.mongodb.org/mongo-driver v1.7.3/go.mod h1:NqaYOwnXWr5Pm7AOpO5QFxKJ503nbMse/R79oO62zWg=
 go.mongodb.org/mongo-driver v1.7.5/go.mod h1:VXEWRZ6URJIkUq2SCAyapmhH0ZLRBP+FT4xhp5Zvxng=

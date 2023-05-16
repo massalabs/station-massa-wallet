@@ -69,3 +69,21 @@ If you have any questions, feel free to open an issue in the
 [issue tracker](https://github.com/massalabs/thyra-plugin-wallet/issues).
 
 *Thank you for taking the time to contribute to our project! We look forward to seeing your contributions!*
+
+# Massa concepts
+
+## Operation vs Transaction
+
+In the Massa blockchain, an operation refers to an action that is included in blocks. Operations can take various forms, such as buying a roll, selling a roll, transferring funds, executing a smart contract, or deploying a smart contract. Within the wallet, we use the term **transaction** to describe these operations.
+
+## Transaction vs Transfer
+
+In the Massa blockchain, a transaction is a specific type of operation that enables the transfer of MAS coins from one account to another. Within the wallet, we specifically refer to this type of operation as a "transfer".
+
+## Swagger file
+
+The swagger file `api/walletApi-V0.yml` is the source of truth for the wallet API.
+It is used to generate the API documentation and the API client.
+
+Some endpoint responses are code 422 but the code itself never return such status code.
+Go-swagger will internally generate 422 response when the inputs are invalid.
