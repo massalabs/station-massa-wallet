@@ -138,6 +138,28 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		assert.NoError(t, err)
 	})
 
+	t.Run("import invalid nickname", func(t *testing.T) {
+		nickname := "with special char: !@#$%^&*()_+"
+		privateKey := "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA"
+		password := "aWrongPassword"
+		testResult := make(chan walletapp.EventData)
+
+		// Send filepath to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PrivateKeyChan <- walletapp.ImportFromPKey{PrivateKey: privateKey, Nickname: nickname, Password: password}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := importWallet(t, api)
+
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, false, prompt.ImportPrivateKeyErr+": invalid nickname")
+	})
+
 	t.Run("import invalid private key", func(t *testing.T) {
 		nickname := "walletToBeImported"
 		privateKey := "invalidPrivateKey"

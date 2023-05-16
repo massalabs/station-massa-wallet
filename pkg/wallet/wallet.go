@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -33,6 +34,7 @@ const (
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
+	MaxNicknameLength         = 32
 )
 
 func ErrorAccountNotFound(nickname string) error {
@@ -407,6 +409,11 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
+	// Validate nickname: not special chars, not too long, etc.
+	if !nicknameIsValid(nickname) {
+		return nil, fmt.Errorf("invalid nickname")
+	}
+
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
@@ -425,6 +432,15 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	}
 
 	return &wallet, nil
+}
+
+func nicknameIsValid(nickname string) bool {
+	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
+}
+
+func CheckAlphanumeric(str string) bool {
+	regex := regexp.MustCompile("^[a-zA-Z0-9]+$")
+	return regex.MatchString(str)
 }
 
 // GetPupKey returns the public key of the wallet.
