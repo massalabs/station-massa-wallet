@@ -111,74 +111,73 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
-	t.Run("import private key", func(t *testing.T) {
-		nickname := "walletToBeImported"
-		privateKey := "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA"
-		password := "aGoodPassword"
-		testResult := make(chan walletapp.EventData)
+	tests := []struct {
+		name       string
+		nickname   string
+		privateKey string
+		password   string
+		wantStatus int
+		wantResult walletapp.EventData
+	}{
+		{
+			name:       "import private key",
+			nickname:   "walletToBeImported",
+			privateKey: "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA",
+			password:   "aGoodPassword",
+			wantStatus: http.StatusOK,
+			wantResult: walletapp.EventData{
+				Success: true,
+				Error:   "Import Success",
+			},
+		},
+		{
+			name:       "import invalid nickname",
+			nickname:   "with special char: !@#$%^&*()_+",
+			privateKey: "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA",
+			password:   "aWrongPassword",
+			wantStatus: http.StatusUnauthorized,
+			wantResult: walletapp.EventData{
+				Success: false,
+				Error:   prompt.ImportPrivateKeyErr + ": invalid nickname",
+			},
+		},
+		{
+			name:       "import invalid private key",
+			nickname:   "walletToBeImported",
+			privateKey: "invalidPrivateKey",
+			password:   "aWrongPassword",
+			wantStatus: http.StatusUnauthorized,
+			wantResult: walletapp.EventData{
+				Success: false,
+				Error:   prompt.ImportPrivateKeyErr + ": decoding private key: invalid format: version and/or checksum bytes missing",
+			},
+		},
+	}
 
-		// Send account credentials to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PrivateKeyChan <- walletapp.ImportFromPKey{PrivateKey: privateKey, Nickname: nickname, Password: password}
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			testResult := make(chan walletapp.EventData)
 
-		resp := importWallet(t, api)
+			go func(res chan walletapp.EventData) {
+				prompterApp.App().PrivateKeyChan <- walletapp.ImportFromPKey{
+					PrivateKey: tt.privateKey,
+					Nickname:   tt.nickname,
+					Password:   tt.password,
+				}
+				res <- <-resChan
+			}(testResult)
 
-		verifyStatusCode(t, resp, http.StatusOK)
+			resp := importWallet(t, api)
+			verifyStatusCode(t, resp, tt.wantStatus)
 
-		result := <-testResult
+			result := <-testResult
+			checkResultChannel(t, result, tt.wantResult.Success, tt.wantResult.Error)
 
-		checkResultChannel(t, result, true, "Import Success")
-
-		assertWallet(t, nickname)
-
-		err = cleanupTestData([]string{nickname})
-		assert.NoError(t, err)
-	})
-
-	t.Run("import invalid nickname", func(t *testing.T) {
-		nickname := "with special char: !@#$%^&*()_+"
-		privateKey := "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA"
-		password := "aWrongPassword"
-		testResult := make(chan walletapp.EventData)
-
-		// Send filepath to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PrivateKeyChan <- walletapp.ImportFromPKey{PrivateKey: privateKey, Nickname: nickname, Password: password}
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
-
-		resp := importWallet(t, api)
-
-		verifyStatusCode(t, resp, http.StatusUnauthorized)
-
-		result := <-testResult
-
-		checkResultChannel(t, result, false, prompt.ImportPrivateKeyErr+": invalid nickname")
-	})
-
-	t.Run("import invalid private key", func(t *testing.T) {
-		nickname := "walletToBeImported"
-		privateKey := "invalidPrivateKey"
-		password := "aWrongPassword"
-		testResult := make(chan walletapp.EventData)
-
-		// Send filepath to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PrivateKeyChan <- walletapp.ImportFromPKey{PrivateKey: privateKey, Nickname: nickname, Password: password}
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
-
-		resp := importWallet(t, api)
-
-		verifyStatusCode(t, resp, http.StatusUnauthorized)
-
-		result := <-testResult
-
-		checkResultChannel(t, result, false, prompt.ImportPrivateKeyErr+": decoding private key: invalid format: version and/or checksum bytes missing")
-	})
+			if tt.wantResult.Success {
+				assertWallet(t, tt.nickname)
+				err := cleanupTestData([]string{tt.nickname})
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
