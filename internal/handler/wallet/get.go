@@ -36,7 +36,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 	if params.Ciphered != nil && !*params.Ciphered {
 
 		promptRequest := prompt.PromptRequest{
-			Action: walletapp.Export,
+			Action: walletapp.Backup,
 			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 			Data:   nil,
 		}

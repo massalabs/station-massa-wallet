@@ -24,7 +24,7 @@ const (
 	NewPassword
 	Sign
 	Import
-	Export
+	Backup
 	Transfer
 	TradeRolls
 )
