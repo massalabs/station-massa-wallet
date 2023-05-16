@@ -3,7 +3,6 @@ package wallet
 import (
 	"fmt"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
@@ -54,5 +53,5 @@ func verifyBodyWalletBackup(t *testing.T, resp *httptest.ResponseRecorder, nickn
 	assert.NotEmpty(t, body)
 
 	// check the first line
-	assert.True(t, strings.Contains(body, "Nickname: "+nickname))
+	assert.Contains(t, body, "Nickname: "+nickname)
 }
