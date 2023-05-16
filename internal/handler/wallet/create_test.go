@@ -96,5 +96,4 @@ func assertWallet(t *testing.T, nickname string) {
 
 	minAddrLen := 52
 	assert.GreaterOrEqual(t, len(wallet.Address), minAddrLen)
-
 }
