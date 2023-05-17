@@ -25,22 +25,10 @@ type walletGet struct {
 }
 
 func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
-	// params.Nickname length is already checked by go swagger
-	wlt, err := wallet.Load(params.Nickname)
-	if err != nil {
-		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewGetAccountNotFound().WithPayload(
-				&models.Error{
-					Code:    errorGetWallets,
-					Message: err.Error(),
-				})
-		} else {
-			return operations.NewGetAccountBadRequest().WithPayload(
-				&models.Error{
-					Code:    errorGetWallets,
-					Message: err.Error(),
-				})
-		}
+
+	wlt, resp := loadWallet(params.Nickname)
+	if resp != nil {
+		return resp
 	}
 
 	modelWallet := createModelWallet(*wlt)

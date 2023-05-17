@@ -36,7 +36,7 @@ type walletSign struct {
 // Handle handles a sign request.
 func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWalletToSign(params.Nickname)
+	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -168,24 +168,4 @@ func generateCorrelationId() (models.CorrelationID, error) {
 	}
 
 	return correlationId, nil
-}
-
-// loadWalletToSign loads a wallet from the file system or returns an error.
-func loadWalletToSign(nickname string) (*wallet.Wallet, middleware.Responder) {
-	w, err := wallet.Load(nickname)
-
-	if err == nil {
-		return w, nil
-	}
-
-	errorObj := &models.Error{
-		Code:    errorGetWallets,
-		Message: err.Error(),
-	}
-
-	if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
-		return nil, operations.NewSignNotFound().WithPayload(errorObj)
-	} else {
-		return nil, operations.NewSignBadRequest().WithPayload(errorObj)
-	}
 }

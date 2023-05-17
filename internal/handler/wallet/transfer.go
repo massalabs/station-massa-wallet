@@ -27,7 +27,7 @@ type transferCoin struct {
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWalletToTransfer(params.Nickname)
+	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
 	}
