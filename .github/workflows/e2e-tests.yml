@@ -1,34 +1,36 @@
-  on:
-    push:
-      branches: [ main ]
-    pull_request:
+name: e2e Tests
 
-  jobs:
-    test-mode:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v3
-        - uses: ./.github/actions/install
-        - name: build
-          run: go build -tags desktop,production -ldflags "-w -s" -o tests/test_wallet main.go
-        - name: Run app
-          run:  WALLET_PASSWORD=bonjour STANDALONE=1 xvfb-run ./tests/test_wallet &
-        - name: test wallet loaded
-          run: |
-            sleep 1
-            NBWALLET=$(curl http://localhost:8080/api/accounts/ | jq '. | length')
-            if [[ "$NBWALLET" != "1" ]]; then
-              echo "wallet not loaded"
-              exit 1
-            fi
-        - name: Delete Wallet
-          run: |
-            curl -X DELETE http://localhost:8080/api/accounts/bonjour
-        - name: test wallet delete
-          run: |
-            sleep 1
-            NBWALLET=$(curl http://localhost:8080/api/accounts/ | jq '. | length')
-            if [[ "$NBWALLET" != "0" ]]; then
-              echo "wallet not deleted"
-              exit 1
-            fi
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-mode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install
+      - name: build
+        run: go build -tags desktop,production -ldflags "-w -s" -o tests/test_wallet main.go
+      - name: Run app
+        run: WALLET_PASSWORD=bonjour STANDALONE=1 xvfb-run ./tests/test_wallet &
+      - name: test wallet loaded
+        run: |
+          sleep 1
+          NBWALLET=$(curl http://localhost:8080/api/accounts/ | jq '. | length')
+          if [[ "$NBWALLET" != "1" ]]; then
+            echo "wallet not loaded"
+            exit 1
+          fi
+      - name: Delete Wallet
+        run: |
+          curl -X DELETE http://localhost:8080/api/accounts/bonjour
+      - name: test wallet delete
+        run: |
+          sleep 1
+          NBWALLET=$(curl http://localhost:8080/api/accounts/ | jq '. | length')
+          if [[ "$NBWALLET" != "0" ]]; then
+            echo "wallet not deleted"
+            exit 1
+          fi

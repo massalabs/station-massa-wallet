@@ -1,6 +1,8 @@
+name: Lint
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -42,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ./web-frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
@@ -59,10 +61,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ./wails-frontend/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run code formating and linting
         run: npm run fmt:check
-      

@@ -1,7 +1,8 @@
+name: Build
+
 on:
   push:
-    branches: [ main ]
-  pull_request:
+    branches: [main]
 
   workflow_call:
     inputs:
@@ -46,7 +47,6 @@ jobs:
             arch: arm64
             target: darwin
             cgo_ldflags: "-framework UniformTypeIdentifiers -F /System/Library/Frameworks"
-
 
     # The build job runs on the specified operating system.
     runs-on: ${{ matrix.os }}
