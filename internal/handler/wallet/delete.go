@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
@@ -22,25 +21,13 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.Responder {
-	// params.Nickname length is already checked by go swagger
-	account, err := wallet.Load(params.Nickname)
-	if err != nil {
-		if err.Error() == wallet.ErrorAccountNotFound(params.Nickname).Error() {
-			return operations.NewDeleteAccountNotFound().WithPayload(
-				&models.Error{
-					Code:    errorGetWallet,
-					Message: fmt.Sprintf("Error cannot load account: %v", err.Error()),
-				})
-		} else {
-			return operations.NewDeleteAccountInternalServerError().WithPayload(
-				&models.Error{
-					Code:    errorGetWallet,
-					Message: fmt.Sprintf("Error cannot load account: %v", err.Error()),
-				})
-		}
+
+	wlt, resp := loadWallet(params.Nickname)
+	if resp != nil {
+		return resp
 	}
 
-	go handleDelete(account, w.prompterApp)
+	go handleDelete(wlt, w.prompterApp)
 
 	return operations.NewDeleteAccountNoContent()
 }

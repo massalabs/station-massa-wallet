@@ -2,9 +2,12 @@ package wallet
 
 import (
 	"github.com/bluele/gcache"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
 // AppendEndpoints appends wallet endpoints to the API
@@ -18,4 +21,23 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.GetAccountHandler = NewGet(prompterApp, massaClient)
 	api.ExportAccountFileHandler = operations.ExportAccountFileHandlerFunc(HandleExportFile)
 	api.TransferCoinHandler = NewTransferCoin(prompterApp, massaClient)
+}
+
+// loadWallet loads a wallet from the file system or returns an error.
+func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
+	w, err := wallet.Load(nickname)
+	if err == nil {
+		return w, nil
+	}
+
+	errorObj := models.Error{
+		Code:    errorGetWallets,
+		Message: err.Error(),
+	}
+
+	if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
+		return nil, operations.NewGetAccountNotFound().WithPayload(&errorObj)
+	} else {
+		return nil, operations.NewGetAccountBadRequest().WithPayload(&errorObj)
+	}
 }
