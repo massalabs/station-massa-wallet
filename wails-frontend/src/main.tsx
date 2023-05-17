@@ -15,6 +15,7 @@ import Success from './pages/success';
 import ImportMethods from './pages/importMethods';
 import ImportFile from './pages/importFile';
 import ImportPrivatekey from './pages/importPrivateKey';
+import Failure from './pages/failure';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<App />} />
       <Route path="/password" element={<PasswordPrompt />} />
       <Route path="/success" element={<Success />} />
+      <Route path="/failure" element={<Failure />} />
       <Route path="/import-methods" element={<ImportMethods />} />
       <Route path="/import-file" element={<ImportFile />} />
       <Route path="/import-pkey" element={<ImportPrivatekey />} />
