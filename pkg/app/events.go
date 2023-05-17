@@ -26,6 +26,7 @@ const (
 	Import
 	Export
 	Transfer
+	TradeRolls
 )
 
 type PromptRequestData struct {

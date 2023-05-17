@@ -13,6 +13,7 @@ export function App() {
       case promptAction.signReq:
       case promptAction.exportReq:
       case promptAction.transferReq:
+      case promptAction.tradeRollsReq:
         navigate('/password', { state: { req } });
         return;
       case promptAction.importReq:

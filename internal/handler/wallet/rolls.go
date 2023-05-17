@@ -12,20 +12,20 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
-	"github.com/massalabs/thyra/pkg/node/sendoperation/transaction"
+	"github.com/massalabs/thyra/pkg/node/sendoperation/buyrolls"
+	"github.com/massalabs/thyra/pkg/node/sendoperation/sellrolls"
 )
 
-func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
-	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient}
+func NewTradeRolls(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TradeRollsHandler {
+	return &tradeRolls{prompterApp: prompterApp, massaClient: massaClient}
 }
 
-type transferCoin struct {
+type tradeRolls struct {
 	prompterApp prompt.WalletPrompterInterface
 	massaClient network.NodeFetcherInterface
 }
 
-func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
-	// params.Nickname length is already checked by go swagger
+func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Responder {
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
@@ -34,7 +34,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(string(params.Body.Amount), 10, 64)
 	if err != nil {
-		return operations.NewTransferCoinBadRequest().WithPayload(
+		return operations.NewTradeRollsBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
 				Message: "Error during amount conversion",
@@ -44,7 +44,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	// convert fee to uint64
 	fee, err := strconv.ParseUint(string(params.Body.Fee), 10, 64)
 	if err != nil {
-		return operations.NewTransferCoinBadRequest().WithPayload(
+		return operations.NewTradeRollsBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
 				Message: "Error during fee conversion",
@@ -52,26 +52,25 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 
 	promptData := &prompt.PromptRequestData{
-		Msg:  fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
+		Msg:  fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
 		Data: nil,
 	}
 
-	_, err = prompt.PromptPassword(t.prompterApp, wlt, walletapp.Transfer, promptData)
+	_, err = prompt.PromptPassword(t.prompterApp, wlt, walletapp.TradeRolls, promptData)
 	if err != nil {
-		return operations.NewTransferCoinUnauthorized().WithPayload(
+		return operations.NewTradeRollsUnauthorized().WithPayload(
 			&models.Error{
 				Code:    errorCanceledAction,
 				Message: "Unable to unprotect wallet",
 			})
 	}
 
-	// create the transaction and send it to the network
-	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	operation, err := doTradeRolls(wlt, amount, fee, *params.Body.Side, t.massaClient)
 	if err != nil {
-		errStr := fmt.Sprintf("error transferring coin: %v", err.Error())
+		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 		t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
-		return operations.NewTransferCoinInternalServerError().WithPayload(
+		return operations.NewTradeRollsInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
 				Message: errStr,
@@ -79,17 +78,19 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-		walletapp.EventData{Success: true, Data: "Transfer Success"})
-	return operations.NewTransferCoinOK().WithPayload(
+		walletapp.EventData{Success: true, Data: "Trade rolls Success"})
+	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,
 		})
 }
 
-func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
-	operation, err := transaction.New(recipientAddress, amount)
-	if err != nil {
-		return nil, fmt.Errorf("Error during transaction creation: %w", err)
+func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
+	var operation sendOperation.Operation
+	if side == "buy" {
+		operation = buyrolls.New(amount)
+	} else {
+		operation = sellrolls.New(amount)
 	}
 
 	return network.SendOperation(wlt, massaClient, operation, fee)

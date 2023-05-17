@@ -21,7 +21,6 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.Responder {
-
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
