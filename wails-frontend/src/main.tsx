@@ -21,12 +21,15 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/" element={<App />} />
+      <Route path="/backup-methods" element={<BackupMethods />} />
+      <Route path="/backup-file" element={<BackupFile />} />
+      <Route path="/backup-pkey" element={<BackupKeyPairs />} />
       <Route path="/password" element={<PasswordPrompt />} />
       <Route path="/success" element={<Success />} />
       <Route path="/failure" element={<Failure />} />
       <Route path="/import-methods" element={<ImportMethods />} />
       <Route path="/import-file" element={<ImportFile />} />
-      <Route path="/import-pkey" element={<ImportPrivatekey />} />
+      <Route path="/import-key-pairs" element={<ImportPrivatekey />} />
     </Route>,
   ),
 );
