@@ -8,15 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install
-      - name: running golangci-lint
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - name: install Go Swagger
+        run: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+      - name: run go generate for swagger only
+        run: |
+          go generate gen.go
+      - name: run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.50.1
           args: --timeout=3m
       - name: install gofumpt
         run: go install mvdan.cc/gofumpt@latest
-      - name: running gofumpt
+      - name: run gofumpt
         run: |
           ERRORS=$(gofumpt -l . | wc -l)
           if [[ "$ERRORS" != "0" ]]; then
