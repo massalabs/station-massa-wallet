@@ -33,10 +33,12 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 
 	infos, err := h.massaClient.GetAccountsInfos(wallets)
 	if err != nil {
+		errMsg := "Unable to retrieve accounts infos"
+		fmt.Printf("%s: %v", errMsg, err)
 		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
-				Message: "Unable to retrieve accounts infos",
+				Message: errMsg,
 			})
 	}
 
