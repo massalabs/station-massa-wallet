@@ -8,7 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/install
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - name: install Go Swagger
+        run: |
+          go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+      - name: run go generate for swagger only
+        run: |
+          mkdir internal/handler/html/dist && touch internal/handler/html/dist/yolo
+          mkdir wails-frontend/dist && touch wails-frontend/dist/yolo
+          go generate gen.go
       - name: Run coverage tests
         run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
       - name: Upload coverage to Codecov
