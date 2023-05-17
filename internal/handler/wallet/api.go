@@ -21,6 +21,7 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.GetAccountHandler = NewGet(prompterApp, massaClient)
 	api.ExportAccountFileHandler = operations.ExportAccountFileHandlerFunc(HandleExportFile)
 	api.TransferCoinHandler = NewTransferCoin(prompterApp, massaClient)
+	api.TradeRollsHandler = NewTradeRolls(prompterApp, massaClient)
 }
 
 // loadWallet loads a wallet from the file system or returns an error.

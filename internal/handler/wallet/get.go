@@ -25,7 +25,6 @@ type walletGet struct {
 }
 
 func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
-
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
