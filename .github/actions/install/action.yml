@@ -38,7 +38,6 @@ runs:
       shell: bash
       run: |
         go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-        go install github.com/wailsapp/wails/v2/cmd/wails@latest
     - name: running Go generate
       shell: bash
       run: |
