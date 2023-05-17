@@ -44,7 +44,6 @@ func Test_exportFileWallet_handler(t *testing.T) {
 }
 
 func verifyHeader(t *testing.T, resp *httptest.ResponseRecorder, headerName, headerValue string) {
-
 	assert.Equal(t, resp.Header().Get(headerName), headerValue)
 }
 

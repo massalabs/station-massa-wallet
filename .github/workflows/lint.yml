@@ -14,6 +14,16 @@ jobs:
         with:
           version: v1.50.1
           args: --timeout=3m
+      - name: install gofumpt
+        run: go install mvdan.cc/gofumpt@latest
+      - name: running gofumpt
+        run: |
+          ERRORS=$(gofumpt -l . | wc -l)
+          if [[ "$ERRORS" != "0" ]]; then
+            echo "following files are not gofumpted:"
+            gofumpt -l .
+            exit 1
+          fi
 
   lint-web-frontend:
     defaults:

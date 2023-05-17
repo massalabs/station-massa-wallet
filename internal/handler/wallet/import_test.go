@@ -136,7 +136,6 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 
 		err = cleanupTestData([]string{nickname})
 		assert.NoError(t, err)
-
 	})
 
 	t.Run("import invalid private key", func(t *testing.T) {
