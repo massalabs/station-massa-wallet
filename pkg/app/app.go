@@ -100,9 +100,9 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 	if err != nil {
 		return selectFileResult{Err: err.Error()}
 	}
-	wallet, err := wallet.LoadFile(filePath)
-	if err != nil {
-		return selectFileResult{Err: err.Error()}
+	wallet, loadErr := wallet.LoadFile(filePath)
+	if loadErr != nil {
+		return selectFileResult{Err: loadErr.Err.Error()}
 	}
 
 	return selectFileResult{FilePath: filePath, Nickname: wallet.Nickname}

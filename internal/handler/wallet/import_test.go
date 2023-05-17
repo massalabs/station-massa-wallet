@@ -10,6 +10,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -100,7 +101,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			prompterApp.App().WalletFileChan <- filePath
 			failRes = <-resChan
 
-			checkResultChannel(t, failRes, false, prompt.AccountLoadErr+": unmarshalling file")
+			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel
@@ -143,7 +144,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			prompterApp.App().WalletFileChan <- filePath
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, prompt.AccountLoadErr+": invalid nickname")
+			checkResultChannel(t, failRes, false, utils.ErrInvalidNickname)
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel
@@ -181,7 +182,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			wantStatus: http.StatusUnauthorized,
 			wantResult: walletapp.EventData{
 				Success: false,
-				Error:   prompt.ImportPrivateKeyErr + ": invalid nickname",
+				Error:   utils.ErrInvalidNickname,
 			},
 		},
 		{
@@ -192,7 +193,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			wantStatus: http.StatusUnauthorized,
 			wantResult: walletapp.EventData{
 				Success: false,
-				Error:   prompt.ImportPrivateKeyErr + ": decoding private key: invalid format: version and/or checksum bytes missing",
+				Error:   utils.ErrInvalidPrivateKey,
 			},
 		},
 	}
