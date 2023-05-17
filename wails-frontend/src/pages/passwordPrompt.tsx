@@ -1,43 +1,26 @@
 /* eslint-disable new-cap */
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ApplyPassword,
   ImportPrivateKey,
 } from '../../wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '../../wailsjs/runtime';
 import { events, promptAction, promptRequest } from '../events/events';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { handleApplyResult, handleCancel } from '../utils/utils';
 
-const PasswordPrompt = () => {
-  const nav = useNavigate();
+import { FiLock } from 'react-icons/fi';
+import { Password, Button } from '@massalabs/react-ui-kit';
+
+function PasswordPrompt() {
+  const navigate = useNavigate();
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const applyStr = (req: promptRequest) => {
-    switch (req.Action) {
-      case promptAction.deleteReq:
-        return 'Delete';
-      case promptAction.newPasswordReq:
-        return 'Define a password';
-      default:
-        return 'Apply';
-    }
-  };
-
-  const baselineStr = (req: promptRequest) => {
-    switch (req.Action) {
-      case promptAction.deleteReq:
-        return 'Enter your password to delete your wallet';
-      case promptAction.newPasswordReq:
-        return 'Enter a secure password';
-      case promptAction.importReq:
-        return 'Define a new password';
-      default:
-        return 'Enter your password below to validate';
-    }
-  };
+  const { newPasswordReq, importReq, deleteReq } = promptAction;
+  const isNewPassword = req.Action === newPasswordReq;
+  const isImport = req.Action === importReq;
 
   const [resultMsg, setResultMsg] = useState('');
   const [password, setPassword] = useState('');
@@ -45,7 +28,38 @@ const PasswordPrompt = () => {
     undefined,
   );
 
-  const applyPassword = () => {
+  function getButtonLabel() {
+    switch (req.Action) {
+      case deleteReq:
+        return 'Delete';
+      case newPasswordReq:
+        return 'Define';
+      default:
+        return 'Apply';
+    }
+  }
+
+  function getSubtitle() {
+    switch (req.Action) {
+      case deleteReq:
+        return 'Enter your password to delete your wallet';
+      case newPasswordReq:
+        return 'Enter a secure password';
+      case importReq:
+        return 'Define a new password';
+      default:
+        return 'Enter your password below to validate';
+    }
+  }
+
+  function isDisabled() {
+    if (isNewPassword || isImport) {
+      return !(password && passwordConfirm);
+    }
+    return !password;
+  }
+
+  function applyPassword() {
     if (password.length) {
       if (passwordConfirm && password !== passwordConfirm) {
         setResultMsg("Passwords don't match");
@@ -54,7 +68,7 @@ const PasswordPrompt = () => {
       EventsOnce(
         events.passwordResult,
         handleApplyResult(
-          nav,
+          navigate,
           req,
           setResultMsg,
           state.req.Action === promptAction.importReq,
@@ -66,53 +80,52 @@ const PasswordPrompt = () => {
       }
       return ApplyPassword(password);
     }
-  };
-
-  const updatePassword = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setPassword(e.target.value);
-  const updatePasswordConfirm = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setPasswordConf(e.target.value);
+  }
 
   return (
-    <section className="PasswordPrompt">
-      <div>{req.Msg}</div>
-      <div className="baseline">{baselineStr(req)}</div>
-      <div id="input" className="input-box">
-        <input
-          id="name"
-          className="input"
-          onChange={updatePassword}
-          autoComplete="off"
-          name="input"
-          type="password"
-          placeholder="Enter your password"
-        />
-      </div>
-      {(req.Action === promptAction.newPasswordReq ||
-        req.Action === promptAction.importReq) && (
-        <div id="input" className="input-box">
-          <input
-            id="name"
-            className="input"
-            onChange={updatePasswordConfirm}
-            autoComplete="off"
+    <div className="bg-primary min-h-screen">
+      <div
+        className="flex flex-col justify-center h-screen
+        max-w-xs min-w-fit text-f-primary m-auto"
+      >
+        <h1 className="mas-title">{req.Msg}</h1>
+        <p className="mas-body pt-4">{getSubtitle()}</p>
+        <div className="pt-4">
+          <Password
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             name="input"
-            type="password"
-            placeholder="Confirm your password"
+            placeholder="Enter your password"
           />
         </div>
-      )}
-      <div>
-        <button className="btn" onClick={handleCancel}>
-          Cancel
-        </button>
-        <button className="btn" onClick={applyPassword}>
-          {applyStr(req)}
-        </button>
+        {(isNewPassword || isImport) && (
+          <div className="pt-4">
+            <Password
+              onChange={(e) => setPasswordConf(e.target.value)}
+              value={passwordConfirm}
+              name="input"
+              placeholder="Confirm your password"
+            />
+          </div>
+        )}
+        <p className="pt-4 mas-body">{resultMsg}</p>
+        <div className="pt-4 flex gap-4">
+          <div className="max-w-min">
+            <Button variant={'secondary'} onClick={handleCancel}>
+              Cancel
+            </Button>
+          </div>
+          <Button
+            preIcon={<FiLock />}
+            onClick={applyPassword}
+            disabled={isDisabled()}
+          >
+            {getButtonLabel()}
+          </Button>
+        </div>
       </div>
-      <div className="baseline">{resultMsg}</div>
-    </section>
+    </div>
   );
-};
+}
 
 export default PasswordPrompt;
