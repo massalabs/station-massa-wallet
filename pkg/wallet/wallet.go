@@ -444,7 +444,7 @@ func nicknameIsValid(nickname string) bool {
 }
 
 func CheckAlphanumeric(str string) bool {
-	regex := regexp.MustCompile("^[a-zA-Z0-9]+$")
+	regex := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
 	return regex.MatchString(str)
 }
 
