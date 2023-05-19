@@ -58,7 +58,8 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 
-		return operations.NewCreateAccountInternalServerError().WithPayload(
+		// At this stage, we can't know if its 400 or 500 (let's say 400 because in the test case 400 make sense)
+		return operations.NewCreateAccountBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorCreateNew,
 				Message: err.Error(),

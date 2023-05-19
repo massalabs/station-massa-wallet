@@ -29,6 +29,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 	}{
 		{"create success", nickname, "GoodPassword", http.StatusOK},
 		{"invalid Nickname", " ", "", http.StatusBadRequest},
+		{"nickname already exists", nickname, "GoodPassword", http.StatusBadRequest},
 		{"Prompt action canceled by user", nickname, "cancel", http.StatusUnauthorized},
 	}
 
@@ -58,10 +59,14 @@ func Test_walletCreate_Handle(t *testing.T) {
 
 			assertWallet(t, nickname)
 
-			err = cleanupTestData([]string{nickname})
-			assert.NoError(t, err)
+			defer clean(t, []string{nickname})
 		}
 	}
+}
+
+func clean(t *testing.T, nicknames []string) {
+	err := cleanupTestData(nicknames)
+	assert.NoError(t, err)
 }
 
 // createTestWallet tests the creation of a wallet.
