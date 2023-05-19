@@ -7,6 +7,9 @@ const Failure = () => {
   const { req } = state;
 
   const successMsg = (req: promptRequest) => {
+    if (req.Msg) {
+      return req.Msg;
+    }
     switch (req.Action) {
       case promptAction.deleteReq:
         return 'The account could not been deleted';

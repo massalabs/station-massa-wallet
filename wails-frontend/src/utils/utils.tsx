@@ -30,6 +30,7 @@ export const handleApplyResult = (
       });
       setTimeout(hideAndReload, 2000);
     } else {
+      req.Msg = result.Error;
       if (result.Error) {
         errMsgCb(errorsEN[result.Error]);
       } else {
