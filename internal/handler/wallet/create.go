@@ -57,6 +57,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 		errStr := fmt.Sprintf("Unable to create account: %v", err)
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
+
 		return operations.NewCreateAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCreateNew,
