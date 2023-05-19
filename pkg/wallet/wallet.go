@@ -294,11 +294,6 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 
-	// Validate nickname
-	if !nicknameIsValid(accountSerialized.Nickname) {
-		return Wallet{}, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
-	}
-
 	account := accountSerialized.ToAccount()
 	account.KeyPair.PrivateKey = accountSerialized.CipheredData
 

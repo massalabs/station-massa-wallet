@@ -33,14 +33,14 @@ const ImportFile = () => {
   const importStr = () => (account ? 'Import' : 'Select a file');
 
   const handleApply = async () => {
+    setErrorMsg('');
     if (!account) {
       const res = await SelectAccountFile();
       if (!Object.keys(res).length) {
         return;
       }
       if (res.err) {
-        // setErrorMsg(res.err);
-        setErrorMsg('The file format must be .yaml');
+        setErrorMsg(res.err);
         return;
       }
       setAccount(res);

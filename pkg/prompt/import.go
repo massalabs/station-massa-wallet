@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -25,7 +26,7 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wallet.Wallet, bool, error) {
 	if !strings.HasSuffix(filePath, ".yml") {
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Error: InvalidAccountFileErr})
+			walletapp.EventData{Success: false, Error: utils.ErrAccountFile})
 		return nil, true, fmt.Errorf(InvalidAccountFileErr)
 	}
 	wallet, loadErr := wallet.LoadFile(filePath)
