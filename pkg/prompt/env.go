@@ -21,10 +21,15 @@ func (e *envPrompter) PromptRequest(req walletapp.PromptRequest, msg string, dat
 }
 
 func (e *envPrompter) EmitEvent(eventId string, data walletapp.EventData) {
+	// unused in this implementation
 }
 
 func (e *envPrompter) App() *walletapp.WalletApp {
 	return e.app
+}
+
+func (w *envPrompter) CtrlSink() {
+	// unused in this implementation
 }
 
 func NewEnvPrompter(app *walletapp.WalletApp) *envPrompter {

@@ -44,6 +44,9 @@ func PromptCreatePassword(
 			fmt.Println(TimeoutErr)
 			prompterApp.EmitEvent(walletapp.PasswordResultEvent,
 				walletapp.EventData{Success: false, Data: TimeoutErr, Error: "timeoutError"})
+
+			go prompterApp.CtrlSink()
+
 			return "", fmt.Errorf(TimeoutErr)
 		}
 	}
