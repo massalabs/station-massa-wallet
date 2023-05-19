@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -33,6 +34,7 @@ const (
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
+	MaxNicknameLength         = 32
 )
 
 func ErrorAccountNotFound(nickname string) error {
@@ -286,6 +288,11 @@ func LoadFile(filePath string) (Wallet, error) {
 		return Wallet{}, fmt.Errorf("unmarshalling file '%s': %w", filePath, err)
 	}
 
+	// Validate nickname
+	if !nicknameIsValid(accountSerialized.Nickname) {
+		return Wallet{}, fmt.Errorf("invalid nickname")
+	}
+
 	account := accountSerialized.ToAccount()
 	account.KeyPair.PrivateKey = accountSerialized.CipheredData
 
@@ -407,6 +414,11 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
+	// Validate nickname
+	if !nicknameIsValid(nickname) {
+		return nil, fmt.Errorf("invalid nickname")
+	}
+
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
@@ -425,6 +437,15 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	}
 
 	return &wallet, nil
+}
+
+func nicknameIsValid(nickname string) bool {
+	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
+}
+
+func CheckAlphanumeric(str string) bool {
+	regex := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
+	return regex.MatchString(str)
 }
 
 // GetPupKey returns the public key of the wallet.
