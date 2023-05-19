@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { handleCancel } from '../utils/utils';
+import { Password, Input, Button } from '@massalabs/react-ui-kit';
 
 const ImportPrivatekey = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const ImportPrivatekey = () => {
     if (privateKey) {
       return 'Choose a username';
     }
-    return 'To import enter your private key';
+    return 'Enter your Private Key';
   };
 
   const placeholder = () => {
@@ -45,34 +46,54 @@ const ImportPrivatekey = () => {
     navigate('/password', { state });
   };
 
-  const updateInput = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
+  };
 
   return (
-    <section>
-      <div>{req.Msg}</div>
-      <div className="baseline">{baselineStr()}</div>
-      <div id="input" className="input-box">
-        <input
-          id="input"
-          className="input"
-          onChange={updateInput}
-          autoComplete="off"
-          name="input"
-          type={privateKey ? 'text' : 'password'}
-          placeholder={placeholder()}
-          value={input}
-        />
+    <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
+      <div className="w-1/4  max-w-sm  min-w-fit">
+        <div>
+          <p className="mas-title text-neutral pb-4">{req.Msg}</p>
+        </div>
+        <div>
+          <p className="mas-body text-neutral pb-4">{baselineStr()}</p>
+        </div>
+        {privateKey ? (
+          <div className="pb-4">
+            <Input
+              id="input"
+              onChange={updateInput}
+              autoComplete="off"
+              name="input"
+              placeholder={placeholder()}
+              value={input}
+            />
+          </div>
+        ) : (
+          <div className="pb-4">
+            <Password
+              id="input"
+              onChange={updateInput}
+              autoComplete="off"
+              name="input"
+              placeholder={placeholder()}
+              value={input}
+            />
+          </div>
+        )}
+        <div className="flex flex-row gap-4 w-full pb-4">
+          <div className="min-w-fit w-full">
+            <Button variant={'secondary'} onClick={handleCancel}>
+              Cancel
+            </Button>
+          </div>
+          <div className="min-w-fit w-full">
+            <Button onClick={handleApply}>{applyStr}</Button>
+          </div>
+        </div>
       </div>
-      <div className="flex">
-        <button className="btn" onClick={handleCancel}>
-          Cancel
-        </button>
-        <button className="btn" onClick={handleApply}>
-          {applyStr}
-        </button>
-      </div>
-    </section>
+    </div>
   );
 };
 

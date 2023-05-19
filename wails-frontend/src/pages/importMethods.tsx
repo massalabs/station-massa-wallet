@@ -1,5 +1,6 @@
 import { promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '@massalabs/react-ui-kit';
 
 const ImportMethods = () => {
   const navigate = useNavigate();
@@ -13,18 +14,28 @@ const ImportMethods = () => {
   const handlePkey = () => navigate('/import-pkey', { state: { req } });
 
   return (
-    <section>
-      <div>{req.Msg}</div>
-      <div className="baseline">{baselineStr}</div>
-      <div className="flex flex-col">
-        <button className="btn" onClick={handleYml}>
-          I have a .yml file
-        </button>
-        <button className="btn" onClick={handlePkey}>
-          I have a private key
-        </button>
+    <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
+      <div className="w-1/4  max-w-xs  min-w-fit">
+        <div>
+          <div>
+            <p className="mas-title text-neutral pb-4">{req.Msg}</p>
+          </div>
+          <div>
+            <p className="mas-body text-neutral pb-4">{baselineStr}</p>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <div className="pb-4 w-full">
+            <Button variant={'secondary'} onClick={handleYml}>
+              I have a .yaml file
+            </Button>
+          </div>
+          <div className="w-full">
+            <Button onClick={handlePkey}>I have a private key</Button>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 
