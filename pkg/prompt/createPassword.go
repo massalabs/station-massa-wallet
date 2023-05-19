@@ -14,7 +14,7 @@ func PromptCreatePassword(
 	nickname string,
 ) (string, error) {
 	data := &PromptRequestData{
-		Msg:  fmt.Sprintf("Creating new password for account %s", nickname),
+		Msg:  "Define a password",
 		Data: nil,
 	}
 	prompterApp.PromptRequest(walletapp.NewPassword, data.Msg, data.Data)
