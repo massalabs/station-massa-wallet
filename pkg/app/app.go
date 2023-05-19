@@ -71,7 +71,7 @@ func (a *WalletApp) ApplyPassword(password string) {
 	a.PasswordChan <- password
 }
 
-// AbortAction is binded to the frontend
+// AbortAction is bound to the frontend
 // It sends a cancel message to the prompt
 func (a *WalletApp) AbortAction() {
 	fmt.Println("Abort action")

@@ -7,4 +7,5 @@ type WalletPrompterInterface interface {
 	PromptRequest(req walletapp.PromptRequest, msg string, data interface{})
 	EmitEvent(eventId string, data walletapp.EventData)
 	App() *walletapp.WalletApp
+	CtrlSink()
 }

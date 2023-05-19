@@ -29,5 +29,9 @@ func NewWalletPrompterMock(app *walletapp.WalletApp, resultChannel chan walletap
 	}
 }
 
+func (w *walletPrompterMock) CtrlSink() {
+	// unused in this implementation
+}
+
 // Verifies at compilation time that walletPrompterMock implements WalletPrompterInterface interface.
 var _ prompt.WalletPrompterInterface = &walletPrompterMock{}

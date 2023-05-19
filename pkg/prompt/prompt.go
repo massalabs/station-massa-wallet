@@ -30,6 +30,11 @@ func (w *WalletPrompter) App() *walletapp.WalletApp {
 	return w.app
 }
 
+// CtrlSink is a blocking function that waits for the cancel msg sended when the wails prompt is closed.
+func (w *WalletPrompter) CtrlSink() {
+	<-w.app.CtrlChan
+}
+
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
 	return &WalletPrompter{app: app}
 }
