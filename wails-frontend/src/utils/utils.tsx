@@ -30,6 +30,9 @@ export const handleApplyResult = (
       setTimeout(hideAndReload, 2000);
     } else {
       errMsgCb(result.Data);
+      navigate('/failure', {
+        state: { req },
+      });
       if (quitOnError || result.Error === 'timeoutError') {
         setTimeout(hideAndReload, 2000);
         return;
