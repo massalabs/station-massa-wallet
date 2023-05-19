@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router';
 import { promptAction, promptRequest } from '../events/events';
+import { FiCheck } from 'react-icons/fi';
 
 const Success = () => {
   const { state } = useLocation();
@@ -21,10 +22,16 @@ const Success = () => {
   };
 
   return (
-    <section className="Success">
-      <div>Success !!</div>
-      <div>{successMsg(req)}</div>
-    </section>
+    <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
+      <div className="w-1/4  max-w-xs  min-w-fit flex flex-col justify-center items-center">
+        <div className="w-12 h-12 bg-brand flex flex-col justify-center items-center rounded-full mb-6">
+          <FiCheck className="w-6 h-6" />
+        </div>
+        <div>
+          <p className="text-neutral mas-body">{successMsg(req)}</p>
+        </div>
+      </div>
+    </div>
   );
 };
 
