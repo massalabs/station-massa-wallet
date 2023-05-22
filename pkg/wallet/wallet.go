@@ -377,11 +377,6 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
 
-	wallets, err := LoadAll()
-	if err != nil {
-		return nil, &WalletError{fmt.Errorf("loading wallets: %w", err), utils.ErrAccountFile}
-	}
-
 	// The ed25519 seed is in fact what we call a private key in cryptography...
 	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
 
@@ -392,16 +387,9 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 		return nil, &WalletError{fmt.Errorf("creating account: %w", createErr.Err), createErr.CodeErr}
 	}
 
-	if slices.IndexFunc(
-		wallets,
-		func(w Wallet) bool { return w.Address == wallet.Address },
-	) != -1 {
-		return nil, &WalletError{fmt.Errorf("importing new wallet: duplicate wallet with different name (but same keys)."), utils.ErrDuplicateKey}
-	}
-
 	err = wallet.Persist()
 	if err != nil {
-		return nil, &WalletError{fmt.Errorf("persisting the new wallet: %w", err), utils.ErrAccountFile}
+		return nil, &WalletError{fmt.Errorf("persisting the new account: %w", err), utils.ErrAccountFile}
 	}
 
 	return wallet, nil
@@ -425,10 +413,18 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
+	address := addressFromPublicKey(publicKey)
+
+	// Validate unique private key
+	err = AddressIsUnique(address)
+	if err != nil {
+		return nil, &WalletError{err, utils.ErrDuplicateKey}
+	}
+
 	wallet := Wallet{
 		Version:  0,
 		Nickname: nickname,
-		Address:  addressFromPublicKey(publicKey),
+		Address:  address,
 		KeyPair: KeyPair{
 			PrivateKey: privateKey,
 			PublicKey:  publicKey,
@@ -452,6 +448,22 @@ func nicknameIsValid(nickname string) bool {
 func CheckAlphanumeric(str string) bool {
 	regex := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
 	return regex.MatchString(str)
+}
+
+func AddressIsUnique(address string) error {
+	wallets, err := LoadAll()
+	if err != nil {
+		return fmt.Errorf("loading accounts: %w", err)
+	}
+
+	if slices.IndexFunc(
+		wallets,
+		func(w Wallet) bool { return w.Address == address },
+	) != -1 {
+		return fmt.Errorf("importing new account: duplicate account with different name (but same keys).")
+	}
+
+	return nil
 }
 
 // GetPupKey returns the public key of the wallet.
