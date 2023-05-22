@@ -51,9 +51,6 @@ func IsTestMode() bool {
 // so we can call the runtime methods
 func (a *WalletApp) Startup(ctx context.Context) {
 	a.Ctx = ctx
-	// Hide the window on startup. This is a workaround for a Wails bug on Linux
-	// see: https://github.com/wailsapp/wails/issues/2605
-	a.Hide()
 }
 
 func (a *WalletApp) BeforeClose(ctx context.Context) bool {
