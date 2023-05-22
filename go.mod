@@ -11,7 +11,7 @@ require (
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
-	github.com/wailsapp/wails/v2 v2.4.1
+	github.com/wailsapp/wails/v2 v2.5.1
 	golang.org/x/crypto v0.3.0
 	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
 	gopkg.in/yaml.v2 v2.4.0
