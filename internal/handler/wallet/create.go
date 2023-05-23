@@ -35,8 +35,13 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			})
 	}
 
-	//nolint:gosimple
-	password, err := prompt.PromptCreatePassword(w.prompterApp, nickname)
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.NewPassword,
+		Msg:    "Define a password",
+		Data:   nil,
+	}
+
+	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, nil)
 	if err != nil {
 		return operations.NewCreateAccountUnauthorized().WithPayload(
 			&models.Error{
@@ -45,17 +50,22 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			})
 	}
 
-	w.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-		walletapp.EventData{Success: true, Data: "New password created"})
+	password, _ := promptOutput.(*string)
 
-	wlt, err := wallet.Generate(nickname, password)
+	wlt, err := wallet.Generate(nickname, *password)
 	if err != nil {
+		errStr := fmt.Sprintf("Unable to create account: %v", err)
+		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewCreateAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCreateNew,
 				Message: err.Error(),
 			})
 	}
+
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: true, Data: "New password created"})
 
 	infos, err := w.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
 	if err != nil {

@@ -34,11 +34,14 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 
 	// if request not ciphered data, ask for password and unprotect the wallet
 	if params.Ciphered != nil && !*params.Ciphered {
-		promptData := &prompt.PromptRequestData{
-			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-			Data: nil,
+
+		promptRequest := prompt.PromptRequest{
+			Action: walletapp.Export,
+			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+			Data:   nil,
 		}
-		_, err := prompt.PromptPassword(g.prompterApp, wlt, walletapp.Export, promptData)
+
+		_, err := prompt.WakeUpPrompt(g.prompterApp, promptRequest, wlt)
 		if err != nil {
 			return operations.NewGetAccountUnauthorized().WithPayload(
 				&models.Error{
@@ -47,7 +50,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 				})
 		}
 
-		g.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		g.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: true, Data: "Unprotect Success"})
 
 		modelWallet.KeyPair = models.AccountKeyPair{

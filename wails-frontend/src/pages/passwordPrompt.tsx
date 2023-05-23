@@ -66,7 +66,7 @@ function PasswordPrompt() {
         return;
       }
       EventsOnce(
-        events.passwordResult,
+        events.promptResult,
         handleApplyResult(
           navigate,
           req,

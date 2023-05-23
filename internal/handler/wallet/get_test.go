@@ -102,7 +102,7 @@ func Test_getWallet_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PasswordChan <- password
+			prompterApp.App().PromptInput <- password
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)

@@ -10,7 +10,7 @@ type walletPrompterMock struct {
 	resultChannel chan walletapp.EventData
 }
 
-func (w *walletPrompterMock) PromptRequest(req walletapp.PromptRequest, msg string, data interface{}) {
+func (w *walletPrompterMock) PromptRequest(req prompt.PromptRequest) {
 }
 
 func (w *walletPrompterMock) EmitEvent(eventId string, data walletapp.EventData) {

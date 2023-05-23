@@ -32,12 +32,13 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 }
 
 func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface) {
-	promptData := &prompt.PromptRequestData{
-		Msg:  fmt.Sprintf("Deleting wallet %s:", wlt.Nickname),
-		Data: nil,
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.Delete,
+		Msg:    fmt.Sprintf("Deleting wallet %s:", wlt.Nickname),
+		Data:   nil,
 	}
 
-	_, err := prompt.PromptPassword(prompterApp, wlt, walletapp.Password, promptData)
+	_, err := prompt.WakeUpPrompt(prompterApp, promptRequest, wlt)
 	if err != nil {
 		return
 	}
@@ -45,10 +46,10 @@ func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface
 	if wlt.DeleteFile() != nil {
 		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
 		fmt.Println(errStr)
-		prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 	}
 
-	prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+	prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, Data: "Delete Success"})
 }

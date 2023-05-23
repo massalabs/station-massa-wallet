@@ -22,6 +22,6 @@ export type promptRequest = {
 };
 
 export const events = {
-  passwordResult: 'passwordResult',
+  promptResult: 'promptResult',
   promptRequest: 'promptRequest',
 };

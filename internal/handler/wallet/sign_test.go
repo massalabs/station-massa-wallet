@@ -45,7 +45,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PasswordChan <- password
+			prompterApp.App().PromptInput <- password
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -68,14 +68,14 @@ func Test_walletSign_Handle(t *testing.T) {
 		//nolint:staticcheck
 		go func(res chan walletapp.EventData) {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PasswordChan <- "this is not the password"
+			prompterApp.App().PromptInput <- "this is not the password"
 			// forward test result to test goroutine
 			failRes := <-resChan
 
 			checkResultChannel(t, failRes, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
 
 			// Send password to prompter app to unlock the handler
-			prompterApp.App().PasswordChan <- password
+			prompterApp.App().PromptInput <- password
 
 			// forward test result to test goroutine
 			res <- (<-resChan)
@@ -96,7 +96,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		//nolint:staticcheck
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PasswordChan <- "this is not the password"
+			prompterApp.App().PromptInput <- "this is not the password"
 			// forward test result to test goroutine
 			failRes := <-resChan
 
@@ -116,7 +116,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PasswordChan <- password
+			prompterApp.App().PromptInput <- password
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)

@@ -51,12 +51,13 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	promptData := &prompt.PromptRequestData{
-		Msg:  fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
-		Data: nil,
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.TradeRolls,
+		Msg:    fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
+		Data:   nil,
 	}
 
-	_, err = prompt.PromptPassword(t.prompterApp, wlt, walletapp.TradeRolls, promptData)
+	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
 	if err != nil {
 		return operations.NewTradeRollsUnauthorized().WithPayload(
 			&models.Error{
@@ -68,7 +69,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	operation, err := doTradeRolls(wlt, amount, fee, *params.Body.Side, t.massaClient)
 	if err != nil {
 		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
-		t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewTradeRollsInternalServerError().WithPayload(
 			&models.Error{
@@ -77,7 +78,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, Data: "Trade rolls Success"})
 	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{

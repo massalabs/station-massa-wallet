@@ -45,12 +45,14 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		promptData := &prompt.PromptRequestData{
-			Msg:  fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-			Data: nil,
+
+		promptRequest := prompt.PromptRequest{
+			Action: walletapp.Sign,
+			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+			Data:   nil,
 		}
 
-		_, err := prompt.PromptPassword(s.prompterApp, wlt, walletapp.Sign, promptData)
+		_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
 		if err != nil {
 			return operations.NewSignUnauthorized().WithPayload(
 				&models.Error{
@@ -59,7 +61,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 				})
 		}
 
-		s.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: true, Data: "Unprotect Success"})
 
 		if params.Body.Batch {
