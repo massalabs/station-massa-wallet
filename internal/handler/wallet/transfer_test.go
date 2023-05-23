@@ -19,10 +19,8 @@ func Test_transfer_handler(t *testing.T) {
 
 	nickname := "wallet1"
 	password := "password"
-	_, err = wallet.Generate(nickname, password)
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	t.Run("Transfer with unprocessable entity", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/transfer", "nobody"), "")

@@ -10,6 +10,7 @@ import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
 	"github.com/massalabs/thyra/pkg/node/sendoperation/buyrolls"
@@ -70,7 +71,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	if err != nil {
 		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Data: errStr})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
 		return operations.NewTradeRollsInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
@@ -79,7 +80,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, Data: "Trade rolls Success"})
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgRollTradeSuccess})
 	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,

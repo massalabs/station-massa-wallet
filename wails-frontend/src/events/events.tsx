@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type promptResult = {
   Success: boolean;
-  Data: any;
-  Error: string;
+  CodeMessage: string;
 };
 
 export enum promptAction {

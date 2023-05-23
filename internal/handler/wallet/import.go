@@ -9,6 +9,7 @@ import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -44,7 +45,7 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 	if err != nil {
 		errStr := fmt.Sprintf("Unable to persist imported account: %v", err)
 		h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Data: errStr})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
 		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
@@ -53,7 +54,7 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 	}
 
 	h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, Data: "Import Success"})
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountImported})
 
 	infos, err := h.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
 	if err != nil {

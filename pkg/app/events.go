@@ -6,9 +6,8 @@ const (
 )
 
 type EventData struct {
-	Success bool
-	Data    interface{}
-	Error   string
+	Success     bool
+	CodeMessage string
 }
 
 type PromptCtrl int

@@ -11,7 +11,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
@@ -32,8 +32,8 @@ func Test_walletSign_Handle(t *testing.T) {
 	transactionData := `{"operation":"MjIzM3QyNHQ="}`
 	nickname := "walletToDelete"
 	password := "zePassword"
-	_, err = wallet.Generate(nickname, password)
-	assert.NoError(t, err)
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := signTransaction(t, api, "Johnny", transactionData)
@@ -57,8 +57,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		assert.True(t, result.Success)
 
-		msg := "Unprotect Success"
-		assert.Equal(t, msg, result.Data)
+		assert.Equal(t, utils.MsgAccountUnprotected, result.CodeMessage)
 	})
 
 	// The handler will not return until a the good password is sent or the action is canceled
@@ -72,7 +71,7 @@ func Test_walletSign_Handle(t *testing.T) {
 			// forward test result to test goroutine
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
+			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send password to prompter app to unlock the handler
 			prompterApp.App().PromptInput <- password
@@ -88,8 +87,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		assert.True(t, result.Success)
 
-		msg := "Unprotect Success"
-		assert.Equal(t, msg, result.Data)
+		assert.Equal(t, utils.MsgAccountUnprotected, result.CodeMessage)
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
@@ -100,7 +98,7 @@ func Test_walletSign_Handle(t *testing.T) {
 			// forward test result to test goroutine
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
+			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel

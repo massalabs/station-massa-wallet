@@ -27,8 +27,8 @@ func Test_exportFileWallet_handler(t *testing.T) {
 	t.Run("Export file of created wallet", func(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
-		_, err = wallet.Generate(nickname, password)
-		assert.NoError(t, err)
+		_, errGenerate := wallet.Generate(nickname, password)
+		assert.Nil(t, errGenerate)
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/exportFile", nickname), "")
 		assert.NoError(t, err)

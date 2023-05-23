@@ -36,8 +36,8 @@ func Test_getWallets_handler(t *testing.T) {
 	nicknames := []string{"wallet1", "wallet2", "wallet3"}
 	for _, nickname := range nicknames {
 		password := "zePassword"
-		_, err = wallet.Generate(nickname, password)
-		assert.NoError(t, err)
+		_, errGenerate := wallet.Generate(nickname, password)
+		assert.Nil(t, errGenerate)
 	}
 
 	t.Run("Get multiple wallets", func(t *testing.T) {
@@ -79,8 +79,8 @@ func Test_getWallet_handler(t *testing.T) {
 	t.Run("Passed_get_ciphered", func(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
-		_, err = wallet.Generate(nickname, password)
-		assert.NoError(t, err)
+		_, errGenerate := wallet.Generate(nickname, password)
+		assert.Nil(t, errGenerate)
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s", nickname), "")
 		assert.NoError(t, err)
@@ -97,8 +97,8 @@ func Test_getWallet_handler(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 		nickname := "trololol"
 		password := "zePassword"
-		_, err = wallet.Generate(nickname, password)
-		assert.NoError(t, err)
+		_, errGenerate := wallet.Generate(nickname, password)
+		assert.Nil(t, errGenerate)
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {

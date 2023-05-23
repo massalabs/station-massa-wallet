@@ -26,19 +26,37 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wallet.Wallet, bool, error) {
 	if !strings.HasSuffix(filePath, ".yml") {
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Error: utils.ErrAccountFile})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
 		return nil, true, fmt.Errorf(InvalidAccountFileErr)
 	}
-	wallet, loadErr := wallet.LoadFile(filePath)
+	account, loadErr := wallet.LoadFile(filePath)
 	if loadErr != nil {
-		errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err.Error())
+		errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Error: loadErr.CodeErr})
+			walletapp.EventData{Success: false, CodeMessage: loadErr.CodeErr})
 		return nil, true, fmt.Errorf(errStr)
-
 	}
 
-	return &wallet, false, nil
+	// Validate nickname
+	if !wallet.NicknameIsValid(account.Nickname) {
+		errorCode := utils.ErrInvalidNickname
+		fmt.Println(errorCode)
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: errorCode})
+		return nil, true, fmt.Errorf(errorCode)
+	}
+
+	// Validate nickname uniqueness
+	err := wallet.NicknameIsUnique(account.Nickname)
+	if err != nil {
+		errorCode := utils.ErrDuplicateNickname
+		fmt.Println(errorCode)
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: errorCode})
+		return nil, true, fmt.Errorf(errorCode)
+	}
+
+	return &account, false, nil
 }
 
 func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportFromPKey) (*wallet.Wallet, bool, error) {
@@ -46,7 +64,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 	if importErr != nil {
 		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, importErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Error: importErr.CodeErr})
+			walletapp.EventData{Success: false, CodeMessage: importErr.CodeErr})
 		return nil, false, fmt.Errorf(errStr)
 	}
 

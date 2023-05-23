@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 )
 
 func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interface{}) (*string, bool, error) {
@@ -15,9 +16,9 @@ func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interfac
 
 	trimmedPassword := strings.TrimSpace(password)
 	if len(trimmedPassword) < PASSWORD_MIN_LENGTH {
-		// TODO implement password strength check
+		// TODO implement/refactor password strength check
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Data: passwordLengthErr})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidPassword})
 		return nil, true, fmt.Errorf(passwordLengthErr)
 	}
 

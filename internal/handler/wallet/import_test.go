@@ -9,7 +9,6 @@ import (
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
@@ -95,7 +94,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			prompterApp.App().PromptInput <- "invalidFilename"
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, prompt.InvalidAccountFileErr)
+			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
 
 			// Send invalid filename to prompter app and wait for result
 			prompterApp.App().PromptInput <- filePath
@@ -170,8 +169,8 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			password:   "aGoodPassword",
 			wantStatus: http.StatusOK,
 			wantResult: walletapp.EventData{
-				Success: true,
-				Error:   "Import Success",
+				Success:     true,
+				CodeMessage: utils.MsgAccountImported,
 			},
 		},
 		{
@@ -181,8 +180,8 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			password:   "aWrongPassword",
 			wantStatus: http.StatusUnauthorized,
 			wantResult: walletapp.EventData{
-				Success: false,
-				Error:   utils.ErrInvalidNickname,
+				Success:     false,
+				CodeMessage: utils.ErrInvalidNickname,
 			},
 		},
 		{
@@ -192,8 +191,8 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			password:   "aWrongPassword",
 			wantStatus: http.StatusUnauthorized,
 			wantResult: walletapp.EventData{
-				Success: false,
-				Error:   utils.ErrInvalidPrivateKey,
+				Success:     false,
+				CodeMessage: utils.ErrInvalidPrivateKey,
 			},
 		},
 	}
@@ -215,7 +214,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			verifyStatusCode(t, resp, tt.wantStatus)
 
 			result := <-testResult
-			checkResultChannel(t, result, tt.wantResult.Success, tt.wantResult.Error)
+			checkResultChannel(t, result, tt.wantResult.Success, tt.wantResult.CodeMessage)
 
 			if tt.wantResult.Success {
 				assertWallet(t, tt.nickname)
