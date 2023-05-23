@@ -1,7 +1,13 @@
 import { BaseSyntheticEvent } from 'react';
 
-export function parseForm(e: BaseSyntheticEvent) {
-  let form = new FormData(e.target);
+interface IForm {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
 
-  return Object.fromEntries(form.entries());
+export function parseForm(e: BaseSyntheticEvent) {
+  const form = new FormData(e.target as HTMLFormElement);
+  const formObject: IForm = Object.fromEntries(form.entries());
+
+  return formObject;
 }
