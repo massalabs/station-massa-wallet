@@ -32,26 +32,26 @@ func PromptImport(
 			if !strings.HasSuffix(filePath, ".yml") {
 				fmt.Println(InvalidAccountFileErr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-					walletapp.EventData{Success: false, Data: InvalidAccountFileErr})
+					walletapp.EventData{Success: false, Error: InvalidAccountFileErr})
 				continue
 			}
-			wallet, err := wallet.LoadFile(filePath)
-			if err != nil {
-				errStr := fmt.Sprintf("%v: %v", AccountLoadErr, err.Error())
+			wallet, loadErr := wallet.LoadFile(filePath)
+			if loadErr != nil {
+				errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err.Error())
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-					walletapp.EventData{Success: false, Data: errStr})
+					walletapp.EventData{Success: false, Error: loadErr.CodeErr})
 				continue
 			}
 			return &wallet, nil
 
 		case walletInfo := <-prompterApp.App().PrivateKeyChan:
-			wallet, err := wallet.Import(walletInfo.Nickname, walletInfo.PrivateKey, walletInfo.Password)
-			if err != nil {
-				errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, err.Error())
+			wallet, importErr := wallet.Import(walletInfo.Nickname, walletInfo.PrivateKey, walletInfo.Password)
+			if importErr != nil {
+				errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, importErr.Err)
 				fmt.Println(errStr)
 				prompterApp.EmitEvent(walletapp.PasswordResultEvent,
-					walletapp.EventData{Success: false, Data: errStr})
+					walletapp.EventData{Success: false, Error: importErr.CodeErr})
 				return nil, fmt.Errorf(errStr)
 			}
 			return wallet, nil

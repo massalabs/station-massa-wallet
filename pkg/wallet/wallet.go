@@ -18,6 +18,7 @@ import (
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/go-openapi/strfmt"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v2"
@@ -39,6 +40,11 @@ const (
 
 func ErrorAccountNotFound(nickname string) error {
 	return fmt.Errorf("account '%s' not found", nickname)
+}
+
+type WalletError struct {
+	Err     error
+	CodeErr string
 }
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
@@ -239,9 +245,9 @@ func LoadAll() ([]Wallet, error) {
 		filePath := path.Join(walletDir, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yml") {
-			wallet, err := LoadFile(filePath)
-			if err != nil {
-				return nil, err
+			wallet, loadErr := LoadFile(filePath)
+			if loadErr != nil {
+				return nil, loadErr.Err
 			}
 
 			wallets = append(wallets, wallet)
@@ -267,30 +273,30 @@ func Load(nickname string) (*Wallet, error) {
 		return nil, ErrorAccountNotFound(nickname)
 	}
 
-	wallet, err := LoadFile(filePath)
-	if err != nil {
-		return nil, err
+	wallet, loadErr := LoadFile(filePath)
+	if loadErr != nil {
+		return nil, loadErr.Err
 	}
 
 	return &wallet, nil
 }
 
-func LoadFile(filePath string) (Wallet, error) {
+func LoadFile(filePath string) (Wallet, *WalletError) {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
-		return Wallet{}, fmt.Errorf("reading file '%s': %w", filePath, err)
+		return Wallet{}, &WalletError{fmt.Errorf("reading file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 
 	accountSerialized := AccountSerialized{}
 
 	err = yaml.Unmarshal(content, &accountSerialized)
 	if err != nil {
-		return Wallet{}, fmt.Errorf("unmarshalling file '%s': %w", filePath, err)
+		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 
 	// Validate nickname
 	if !nicknameIsValid(accountSerialized.Nickname) {
-		return Wallet{}, fmt.Errorf("invalid nickname")
+		return Wallet{}, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
 	account := accountSerialized.ToAccount()
@@ -307,9 +313,9 @@ func Generate(nickname string, password string) (*Wallet, error) {
 		return nil, fmt.Errorf("generating ed25519 keypair: %w", err)
 	}
 
-	wallet, err := createAccountFromKeys(nickname, privateKey, publicKey, password)
-	if err != nil {
-		return nil, err
+	wallet, createErr := createAccountFromKeys(nickname, privateKey, publicKey, password)
+	if createErr != nil {
+		return nil, createErr.Err
 	}
 
 	err = wallet.Persist()
@@ -361,19 +367,19 @@ func (w *Wallet) FilePath() (string, error) {
 	return FilePath(w.Nickname)
 }
 
-func Import(nickname string, privateKeyB58V string, password string) (*Wallet, error) {
+func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *WalletError) {
 	if len(privateKeyB58V) < 2 {
-		return nil, fmt.Errorf("invalid private key")
+		return nil, &WalletError{fmt.Errorf("invalid private key"), utils.ErrInvalidPrivateKey}
 	}
 
 	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
 	if err != nil {
-		return nil, fmt.Errorf("decoding private key: %w", err)
+		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
 
 	wallets, err := LoadAll()
 	if err != nil {
-		return nil, fmt.Errorf("loading wallets: %w", err)
+		return nil, &WalletError{fmt.Errorf("loading wallets: %w", err), utils.ErrAccountFile}
 	}
 
 	// The ed25519 seed is in fact what we call a private key in cryptography...
@@ -381,42 +387,42 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, e
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
 
-	wallet, err := createAccountFromKeys(nickname, privateKey, pubKeyBytes, password)
-	if err != nil {
-		return nil, err
+	wallet, createErr := createAccountFromKeys(nickname, privateKey, pubKeyBytes, password)
+	if createErr != nil {
+		return nil, &WalletError{fmt.Errorf("creating account: %w", createErr.Err), createErr.CodeErr}
 	}
 
 	if slices.IndexFunc(
 		wallets,
 		func(w Wallet) bool { return w.Address == wallet.Address },
 	) != -1 {
-		return nil, fmt.Errorf("importing new wallet: duplicate wallet with different name (but same keys).")
+		return nil, &WalletError{fmt.Errorf("importing new wallet: duplicate wallet with different name (but same keys)."), utils.ErrDuplicateKey}
 	}
 
 	err = wallet.Persist()
 	if err != nil {
-		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+		return nil, &WalletError{fmt.Errorf("persisting the new wallet: %w", err), utils.ErrAccountFile}
 	}
 
 	return wallet, nil
 }
 
-func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, error) {
+func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, *WalletError) {
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {
-		return nil, fmt.Errorf("generating random salt: %w", err)
+		return nil, &WalletError{fmt.Errorf("generating random salt: %w", err), utils.ErrUnknown}
 	}
 
 	var nonce [12]byte
 	_, err = rand.Read(nonce[:])
 	if err != nil {
-		return nil, fmt.Errorf("generating random nonce: %w", err)
+		return nil, &WalletError{fmt.Errorf("generating random nonce: %w", err), utils.ErrUnknown}
 	}
 
 	// Validate nickname
 	if !nicknameIsValid(nickname) {
-		return nil, fmt.Errorf("invalid nickname")
+		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
 	wallet := Wallet{
@@ -433,7 +439,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 
 	err = wallet.Protect(password)
 	if err != nil {
-		return nil, fmt.Errorf("protecting the new wallet: %w", err)
+		return nil, &WalletError{fmt.Errorf("protecting the new wallet: %w", err), utils.ErrUnknown}
 	}
 
 	return &wallet, nil

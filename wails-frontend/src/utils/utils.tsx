@@ -4,6 +4,7 @@ import { NavigateFunction } from 'react-router-dom';
 import { Hide, AbortAction } from '../../wailsjs/go/walletapp/WalletApp';
 import { WindowReloadApp } from '../../wailsjs/runtime';
 import { promptResult, promptRequest } from '../events/events';
+import { errorsEN } from './errors';
 
 export const handleCancel = () => {
   AbortAction();
@@ -29,9 +30,16 @@ export const handleApplyResult = (
       });
       setTimeout(hideAndReload, 2000);
     } else {
-      errMsgCb(result.Data);
+      if (result.Error) {
+        errMsgCb(errorsEN[result.Error]);
+      } else {
+        // we keep this errMsgCb call here until we migrate all the error
+        // for retro-compatibility
+        errMsgCb(result.Data);
+      }
       navigate('/failure', {
         state: { req },
+        // TODO: pass errorsEN[result.Error] and display it in Failure component
       });
       if (quitOnError || result.Error === 'timeoutError') {
         setTimeout(hideAndReload, 2000);

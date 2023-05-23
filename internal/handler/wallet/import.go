@@ -24,10 +24,11 @@ type wImport struct {
 func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder {
 	wlt, err := prompt.PromptImport(h.prompterApp)
 	if err != nil {
+		errStr := fmt.Sprintf("Unable to import account: %v", err)
 		return operations.NewImportAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
-				Message: "Unable to import account",
+				Message: errStr,
 			})
 	}
 
