@@ -29,8 +29,16 @@ func (e *envPrompter) App() *walletapp.WalletApp {
 	return e.app
 }
 
-func (w *envPrompter) CtrlSink() {
-	// unused in this implementation
+func (w *envPrompter) Lock() {
+	w.app.IsListening = true
+}
+
+func (w *envPrompter) Unlock() {
+	w.app.IsListening = false
+}
+
+func (w *envPrompter) IsListening() bool {
+	return w.app.IsListening
 }
 
 func NewEnvPrompter(app *walletapp.WalletApp) *envPrompter {

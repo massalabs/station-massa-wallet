@@ -21,16 +21,24 @@ func (w *walletPrompterMock) App() *walletapp.WalletApp {
 	return w.app
 }
 
+func (w *walletPrompterMock) Lock() {
+	w.app.IsListening = true
+}
+
+func (w *walletPrompterMock) Unlock() {
+	w.app.IsListening = false
+}
+
+func (w *walletPrompterMock) IsListening() bool {
+	return w.app.IsListening
+}
+
 // NewWalletPrompter creates a new password prompter with the given Fyne GUI application.
 func NewWalletPrompterMock(app *walletapp.WalletApp, resultChannel chan walletapp.EventData) *walletPrompterMock {
 	return &walletPrompterMock{
 		app:           app,
 		resultChannel: resultChannel,
 	}
-}
-
-func (w *walletPrompterMock) CtrlSink() {
-	// unused in this implementation
 }
 
 // Verifies at compilation time that walletPrompterMock implements WalletPrompterInterface interface.

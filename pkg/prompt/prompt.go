@@ -35,9 +35,16 @@ func (w *WalletPrompter) App() *walletapp.WalletApp {
 	return w.app
 }
 
-// CtrlSink is a blocking function that waits for the cancel msg sended when the wails prompt is closed.
-func (w *WalletPrompter) CtrlSink() {
-	<-w.app.CtrlChan
+func (w *WalletPrompter) Lock() {
+	w.app.IsListening = true
+}
+
+func (w *WalletPrompter) Unlock() {
+	w.app.IsListening = false
+}
+
+func (w *WalletPrompter) IsListening() bool {
+	return w.app.IsListening
 }
 
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
@@ -52,6 +59,14 @@ func WakeUpPrompt(
 	req PromptRequest,
 	wallet *wallet.Wallet,
 ) (interface{}, error) {
+	isListening := prompterApp.IsListening()
+	if isListening {
+		fmt.Println(AlreadyListeningErr)
+		return nil, fmt.Errorf(AlreadyListeningErr)
+	}
+	prompterApp.Lock()
+	defer prompterApp.Unlock()
+
 	prompterApp.PromptRequest(req)
 
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
@@ -92,8 +107,6 @@ func WakeUpPrompt(
 			prompterApp.EmitEvent(walletapp.PromptResultEvent,
 				walletapp.EventData{Success: false, Data: TimeoutErr, Error: "timeoutError"})
 
-			go prompterApp.CtrlSink()
-
 			return nil, fmt.Errorf(TimeoutErr)
 		}
 	}
@@ -103,8 +116,6 @@ func InputTypeError(prompterApp WalletPrompterInterface) error {
 	fmt.Println("invalid prompt input type")
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: false, Data: InputTypeErr, Error: "InputTypeErr"})
-
-	go prompterApp.CtrlSink()
 
 	return fmt.Errorf(InputTypeErr)
 }

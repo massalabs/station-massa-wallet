@@ -16,6 +16,7 @@ type WalletApp struct {
 	CtrlChan    chan PromptCtrl
 	PromptInput chan interface{}
 	Shutdown    bool
+	IsListening bool
 }
 
 func (a *WalletApp) cleanExit() {
@@ -34,6 +35,7 @@ func NewWalletApp() *WalletApp {
 		CtrlChan:    make(chan PromptCtrl),
 		PromptInput: make(chan interface{}),
 		Shutdown:    false,
+		IsListening: false,
 	}
 	go app.cleanExit()
 	return app
@@ -56,7 +58,9 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	}
 
 	// Send a cancel message to the prompt and do NOT shutdown
-	a.CtrlChan <- Cancel
+	if a.IsListening {
+		a.CtrlChan <- Cancel
+	}
 	runtime.WindowReloadApp(a.Ctx)
 
 	return true
