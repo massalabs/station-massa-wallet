@@ -4,3 +4,9 @@
 
 @tailwind components;
 @tailwind utilities;
+
+/* global css */
+
+input:focus {
+  outline: none;
+}
