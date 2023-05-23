@@ -7,4 +7,5 @@ const (
 	ErrDuplicateKey      = "DuplicateKey-0001"
 	ErrDuplicateNickname = "DuplicateNickname-0001"
 	ErrUnknown           = "Unknown-0001"
+	ErrDuplicateNickname = "DuplicateNickname-001"
 )
