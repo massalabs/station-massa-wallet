@@ -6,8 +6,8 @@ import (
 )
 
 type walletPrompterMock struct {
-	app           *walletapp.WalletApp
 	resultChannel chan walletapp.EventData
+	prompt.PromptLocker
 }
 
 func (w *walletPrompterMock) PromptRequest(req prompt.PromptRequest) {
@@ -17,20 +17,14 @@ func (w *walletPrompterMock) EmitEvent(eventId string, data walletapp.EventData)
 	w.resultChannel <- data
 }
 
-func (w *walletPrompterMock) App() *walletapp.WalletApp {
-	return w.app
-}
-
 // NewWalletPrompter creates a new password prompter with the given Fyne GUI application.
 func NewWalletPrompterMock(app *walletapp.WalletApp, resultChannel chan walletapp.EventData) *walletPrompterMock {
 	return &walletPrompterMock{
-		app:           app,
 		resultChannel: resultChannel,
+		PromptLocker: prompt.PromptLocker{
+			PromptApp: app,
+		},
 	}
-}
-
-func (w *walletPrompterMock) CtrlSink() {
-	// unused in this implementation
 }
 
 // Verifies at compilation time that walletPrompterMock implements WalletPrompterInterface interface.

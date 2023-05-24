@@ -14,6 +14,7 @@ const (
 	PasswordLengthErr     = "password length must be %d characters minimum"
 	UnprotectErr          = "error unprotecting wallet"
 	InputTypeErr          = "Invalid prompt input type"
+	AlreadyListeningErr   = "prompter is already listening"
 )
 
 var passwordLengthErr = fmt.Sprintf(PasswordLengthErr, PASSWORD_MIN_LENGTH)
