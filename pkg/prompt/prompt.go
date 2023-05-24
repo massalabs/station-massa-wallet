@@ -19,36 +19,24 @@ type PromptRequest struct {
 
 // WalletPrompter is a struct that wraps a Fyne GUI application and implements the delete.Confirmer interface.
 type WalletPrompter struct {
-	app *walletapp.WalletApp
+	PromptLocker
 }
 
 func (w *WalletPrompter) PromptRequest(req PromptRequest) {
-	runtime.EventsEmit(w.app.Ctx, walletapp.PromptRequestEvent, walletapp.PromptRequestData{Action: req.Action, Msg: req.Msg, Data: req.Data})
-	w.app.Show()
+	runtime.EventsEmit(w.PromptApp.Ctx, walletapp.PromptRequestEvent, walletapp.PromptRequestData{Action: req.Action, Msg: req.Msg, Data: req.Data})
+	w.PromptApp.Show()
 }
 
 func (w *WalletPrompter) EmitEvent(eventId string, data walletapp.EventData) {
-	runtime.EventsEmit(w.app.Ctx, eventId, data)
-}
-
-func (w *WalletPrompter) App() *walletapp.WalletApp {
-	return w.app
-}
-
-func (w *WalletPrompter) Lock() {
-	w.app.IsListening = true
-}
-
-func (w *WalletPrompter) Unlock() {
-	w.app.IsListening = false
-}
-
-func (w *WalletPrompter) IsListening() bool {
-	return w.app.IsListening
+	runtime.EventsEmit(w.PromptApp.Ctx, eventId, data)
 }
 
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
-	return &WalletPrompter{app: app}
+	return &WalletPrompter{
+		PromptLocker: PromptLocker{
+			PromptApp: app,
+		},
+	}
 }
 
 // Verifies at compilation time that WalletPrompter implements WalletPrompterInterface interface.
@@ -59,8 +47,7 @@ func WakeUpPrompt(
 	req PromptRequest,
 	wallet *wallet.Wallet,
 ) (interface{}, error) {
-	isListening := prompterApp.IsListening()
-	if isListening {
+	if prompterApp.IsListening() {
 		fmt.Println(AlreadyListeningErr)
 		return nil, fmt.Errorf(AlreadyListeningErr)
 	}

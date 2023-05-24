@@ -7,7 +7,7 @@ import (
 )
 
 type envPrompter struct {
-	app *walletapp.WalletApp
+	PromptLocker
 }
 
 func (e *envPrompter) PromptRequest(req PromptRequest) {
@@ -16,7 +16,7 @@ func (e *envPrompter) PromptRequest(req PromptRequest) {
 		password := os.Getenv("WALLET_PASSWORD")
 		switch req.Action {
 		case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.NewPassword, walletapp.Export:
-			e.app.PromptInput <- password
+			e.PromptApp.PromptInput <- password
 		}
 	}()
 }
@@ -25,25 +25,11 @@ func (e *envPrompter) EmitEvent(eventId string, data walletapp.EventData) {
 	// unused in this implementation
 }
 
-func (e *envPrompter) App() *walletapp.WalletApp {
-	return e.app
-}
-
-func (w *envPrompter) Lock() {
-	w.app.IsListening = true
-}
-
-func (w *envPrompter) Unlock() {
-	w.app.IsListening = false
-}
-
-func (w *envPrompter) IsListening() bool {
-	return w.app.IsListening
-}
-
 func NewEnvPrompter(app *walletapp.WalletApp) *envPrompter {
 	return &envPrompter{
-		app: app,
+		PromptLocker: PromptLocker{
+			PromptApp: app,
+		},
 	}
 }
 

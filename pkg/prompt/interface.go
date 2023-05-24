@@ -1,6 +1,10 @@
 package prompt
 
-import walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+import (
+	"sync"
+
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+)
 
 // WalletPrompterInterface is used to mock the WalletPrompter struct in tests.
 type WalletPrompterInterface interface {
@@ -10,4 +14,31 @@ type WalletPrompterInterface interface {
 	IsListening() bool
 	Unlock()
 	Lock()
+}
+
+type PromptLocker struct {
+	mutex     sync.Mutex
+	PromptApp *walletapp.WalletApp
+}
+
+func (w *PromptLocker) Lock() {
+	w.mutex.Lock()
+	w.PromptApp.IsListening = true
+	w.mutex.Unlock()
+}
+
+func (w *PromptLocker) Unlock() {
+	w.mutex.Lock()
+	w.PromptApp.IsListening = false
+	w.mutex.Unlock()
+}
+
+func (w *PromptLocker) IsListening() bool {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+	return w.PromptApp.IsListening
+}
+
+func (w *PromptLocker) App() *walletapp.WalletApp {
+	return w.PromptApp
 }
