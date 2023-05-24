@@ -27,14 +27,14 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 	if !strings.HasSuffix(filePath, ".yml") {
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
-		return nil, true, fmt.Errorf(InvalidAccountFileErr)
+		return nil, false, fmt.Errorf(InvalidAccountFileErr)
 	}
 	account, loadErr := wallet.LoadFile(filePath)
 	if loadErr != nil {
 		errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: loadErr.CodeErr})
-		return nil, true, fmt.Errorf(errStr)
+		return nil, false, fmt.Errorf(errStr)
 	}
 
 	// Validate nickname
@@ -43,7 +43,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 		fmt.Println(errorCode)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
-		return nil, true, fmt.Errorf(errorCode)
+		return nil, false, fmt.Errorf(errorCode)
 	}
 
 	// Validate nickname uniqueness
@@ -53,7 +53,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 		fmt.Println(errorCode)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
-		return nil, true, fmt.Errorf(errorCode)
+		return nil, false, fmt.Errorf(errorCode)
 	}
 
 	return &account, false, nil
