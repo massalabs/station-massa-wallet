@@ -42,7 +42,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		verifyStatusCode(t, resp, http.StatusNoContent)
 
-		prompterApp.App().PasswordChan <- "invalid password"
+		prompterApp.App().PromptInput <- "invalid password"
 
 		result := <-resChan
 
@@ -65,7 +65,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		verifyStatusCode(t, resp, http.StatusNoContent)
 
-		prompterApp.App().PasswordChan <- password
+		prompterApp.App().PromptInput <- password
 
 		result := <-resChan
 

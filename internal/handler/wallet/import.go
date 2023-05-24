@@ -22,7 +22,13 @@ type wImport struct {
 }
 
 func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder {
-	wlt, err := prompt.PromptImport(h.prompterApp)
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.Import,
+		Msg:    "Import",
+		Data:   nil,
+	}
+
+	promptOutput, err := prompt.WakeUpPrompt(h.prompterApp, promptRequest, nil)
 	if err != nil {
 		errStr := fmt.Sprintf("Unable to import account: %v", err)
 		return operations.NewImportAccountUnauthorized().WithPayload(
@@ -32,10 +38,12 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 			})
 	}
 
+	wlt, _ := promptOutput.(*wallet.Wallet)
+
 	err = wlt.Persist()
 	if err != nil {
 		errStr := fmt.Sprintf("Unable to persist imported account: %v", err)
-		h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -44,7 +52,7 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 			})
 	}
 
-	h.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+	h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, Data: "Import Success"})
 
 	infos, err := h.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})

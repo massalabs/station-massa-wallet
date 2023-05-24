@@ -12,12 +12,10 @@ import (
 )
 
 type WalletApp struct {
-	Ctx            context.Context
-	CtrlChan       chan PromptCtrl
-	PasswordChan   chan string
-	PrivateKeyChan chan ImportFromPKey
-	WalletFileChan chan string
-	Shutdown       bool
+	Ctx         context.Context
+	CtrlChan    chan PromptCtrl
+	PromptInput chan interface{}
+	Shutdown    bool
 }
 
 func (a *WalletApp) cleanExit() {
@@ -33,11 +31,9 @@ func (a *WalletApp) cleanExit() {
 
 func NewWalletApp() *WalletApp {
 	app := &WalletApp{
-		CtrlChan:       make(chan PromptCtrl),
-		PasswordChan:   make(chan string),
-		PrivateKeyChan: make(chan ImportFromPKey),
-		WalletFileChan: make(chan string),
-		Shutdown:       false,
+		CtrlChan:    make(chan PromptCtrl),
+		PromptInput: make(chan interface{}),
+		Shutdown:    false,
 	}
 	go app.cleanExit()
 	return app
@@ -68,7 +64,7 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 
 // ApplyPassword is binded to the frontend
 func (a *WalletApp) ApplyPassword(password string) {
-	a.PasswordChan <- password
+	a.PromptInput <- password
 }
 
 // AbortAction is bound to the frontend
@@ -106,7 +102,7 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 }
 
 func (a *WalletApp) ImportWalletFile(filePath string) {
-	a.WalletFileChan <- filePath
+	a.PromptInput <- filePath
 }
 
 type ImportFromPKey struct {
@@ -116,5 +112,5 @@ type ImportFromPKey struct {
 }
 
 func (a *WalletApp) ImportPrivateKey(pkey string, nickname string, password string) {
-	a.PrivateKeyChan <- ImportFromPKey{PrivateKey: pkey, Nickname: nickname, Password: password}
+	a.PromptInput <- ImportFromPKey{PrivateKey: pkey, Nickname: nickname, Password: password}
 }

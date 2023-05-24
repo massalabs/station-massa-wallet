@@ -1,8 +1,8 @@
 package walletapp
 
 const (
-	PasswordResultEvent string = "passwordResult" // TODO: rename to ResultEvent
-	PromptRequesEvent   string = "promptRequest"
+	PromptResultEvent  string = "promptResult"
+	PromptRequestEvent string = "promptRequest"
 )
 
 type EventData struct {
@@ -17,10 +17,10 @@ const (
 	Cancel PromptCtrl = iota
 )
 
-type PromptRequest int
+type PromptRequestAction int
 
 const (
-	Password PromptRequest = iota
+	Delete PromptRequestAction = iota
 	NewPassword
 	Sign
 	Import
@@ -30,7 +30,7 @@ const (
 )
 
 type PromptRequestData struct {
-	Action PromptRequest
+	Action PromptRequestAction
 	Msg    string
 	Data   interface{}
 }

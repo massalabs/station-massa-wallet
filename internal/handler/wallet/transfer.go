@@ -51,12 +51,13 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 			})
 	}
 
-	promptData := &prompt.PromptRequestData{
-		Msg:  fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
-		Data: nil,
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.Transfer,
+		Msg:    fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
+		Data:   nil,
 	}
 
-	_, err = prompt.PromptPassword(t.prompterApp, wlt, walletapp.Transfer, promptData)
+	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
 	if err != nil {
 		return operations.NewTransferCoinUnauthorized().WithPayload(
 			&models.Error{
@@ -69,7 +70,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
 	if err != nil {
 		errStr := fmt.Sprintf("error transferring coin: %v", err.Error())
-		t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, Data: errStr})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
 			&models.Error{
@@ -78,7 +79,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 			})
 	}
 
-	t.prompterApp.EmitEvent(walletapp.PasswordResultEvent,
+	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, Data: "Transfer Success"})
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{

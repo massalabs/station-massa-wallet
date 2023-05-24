@@ -46,7 +46,7 @@ const ImportFile = () => {
       setAccount(res);
     } else {
       EventsOnce(
-        events.passwordResult,
+        events.promptResult,
         handleApplyResult(nav, req, setErrorMsg, true),
       );
       await ImportWalletFile(account.filePath);
