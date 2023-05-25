@@ -31,6 +31,7 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 
 	promptOutput, err := prompt.WakeUpPrompt(h.prompterApp, promptRequest, nil)
 	if err != nil {
+		// an event has been emitted during WakeUpPrompt
 		errStr := fmt.Sprintf("Unable to import account: %v", err)
 		return operations.NewImportAccountUnauthorized().WithPayload(
 			&models.Error{

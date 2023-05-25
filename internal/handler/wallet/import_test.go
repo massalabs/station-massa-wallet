@@ -144,9 +144,6 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			failRes := <-resChan
 
 			checkResultChannel(t, failRes, false, utils.ErrInvalidNickname)
-
-			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
 		}(testResult)
 
 		resp := importWallet(t, api)
@@ -207,7 +204,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 					Nickname:   tt.nickname,
 					Password:   tt.password,
 				}
-				res <- <-resChan
+				res <- (<-resChan)
 			}(testResult)
 
 			resp := importWallet(t, api)
