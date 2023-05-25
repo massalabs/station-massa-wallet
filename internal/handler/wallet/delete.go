@@ -8,6 +8,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -47,9 +48,9 @@ func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface
 		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
 		fmt.Println(errStr)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Data: errStr})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
 	}
 
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, Data: "Delete Success"})
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountDeleted})
 }

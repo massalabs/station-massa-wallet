@@ -10,7 +10,7 @@ import (
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -29,8 +29,8 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 	nickname := "walletToDelete"
 	password := "zePassword"
-	_, err = wallet.Generate(nickname, password)
-	assert.NoError(t, err)
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := deleteWallet(t, api, "toto")
@@ -46,7 +46,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		result := <-resChan
 
-		checkResultChannel(t, result, false, prompt.UnprotectErr+": opening the private key seal: cipher: message authentication failed")
+		checkResultChannel(t, result, false, utils.WrongPassword)
 	})
 
 	t.Run("canceled by user", func(t *testing.T) {

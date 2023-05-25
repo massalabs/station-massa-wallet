@@ -10,6 +10,7 @@ import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -51,7 +52,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		}
 
 		g.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: true, Data: "Unprotect Success"})
+			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
 
 		modelWallet.KeyPair = models.AccountKeyPair{
 			PrivateKey: wlt.GetPrivKey(),

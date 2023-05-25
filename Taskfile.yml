@@ -11,13 +11,36 @@ tasks:
 
   generate: go generate ./...
 
-  test: go test -v ./...
+  clean:
+    cmds:
+      # kill the zombie goroutines
+      - cmd: pgrep -f wallet.test | xargs kill -9 &>/dev/null
+        platforms: [linux, darwin]
+      - cmd: rm -f internal/handler/wallet/wallet_*.yml &>/dev/null
+        platforms: [linux, darwin]
+
+  test: 
+    cmds:
+      - task: clean
+      - cmd: go test -v -timeout 60s ./...
 
   fmt:
     cmds:
       - cmd: go mod tidy
       - cmd: gofumpt -w .
       - cmd: golangci-lint run
+      - task: fmt-wails
+      - task: fmt-web
+
+  fmt-wails:
+    dir: wails-frontend
+    cmds:
+      - cmd: npm run fmt
+
+  fmt-web:
+    dir: web-frontend
+    cmds:
+      - cmd: npm run fmt
 
   build:
     cmds:

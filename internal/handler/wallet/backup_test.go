@@ -26,8 +26,8 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 	nickname := "walletToBackup"
 	password := "zePassword"
-	_, err = wallet.Generate(nickname, password)
-	assert.NoError(t, err)
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := backupWallet(t, api, "toto")

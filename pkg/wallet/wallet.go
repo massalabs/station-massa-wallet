@@ -44,7 +44,7 @@ func ErrorAccountNotFound(nickname string) error {
 
 type WalletError struct {
 	Err     error
-	CodeErr string
+	CodeErr string // Sentinel error code from utils package, can be used as a translation key.
 }
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
@@ -138,18 +138,18 @@ func (w *Wallet) Protect(password string) error {
 	return nil
 }
 
-// Unprotect decrypts the private key using the given guiModal.
+// Unprotect decrypts the private key using the given GUI Modal.
 // The encryption algorithm used to unprotect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
-func (w *Wallet) Unprotect(password string) error {
+func (w *Wallet) Unprotect(password string) *WalletError {
 	aead, err := aead([]byte(password), w.KeyPair.Salt[:])
 	if err != nil {
-		return fmt.Errorf("while unprotecting wallet: %w", err)
+		return &WalletError{fmt.Errorf("while unprotecting wallet: %w", err), utils.ErrUnknown}
 	}
 
 	pk, err := aead.Open(nil, w.KeyPair.Nonce[:], w.KeyPair.PrivateKey, nil)
 	if err != nil {
-		return fmt.Errorf("opening the private key seal: %w", err)
+		return &WalletError{fmt.Errorf("opening the private key seal: %w", err), utils.WrongPassword}
 	}
 
 	w.KeyPair.PrivateKey = pk
@@ -294,11 +294,6 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 
-	// Validate nickname
-	if !nicknameIsValid(accountSerialized.Nickname) {
-		return Wallet{}, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
-	}
-
 	account := accountSerialized.ToAccount()
 	account.KeyPair.PrivateKey = accountSerialized.CipheredData
 
@@ -307,20 +302,20 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 
 // Generate instantiates a new wallet, protects its private key and persists it.
 // Everything is dynamically generated except from the nickname.
-func Generate(nickname string, password string) (*Wallet, error) {
+func Generate(nickname string, password string) (*Wallet, *WalletError) {
 	publicKey, privateKey, err := ed25519.GenerateKey(nil)
 	if err != nil {
-		return nil, fmt.Errorf("generating ed25519 keypair: %w", err)
+		return nil, &WalletError{fmt.Errorf("generating ed25519 keypair: %w", err), utils.ErrUnknown}
 	}
 
 	wallet, createErr := createAccountFromKeys(nickname, privateKey, publicKey, password)
 	if createErr != nil {
-		return nil, createErr.Err
+		return nil, createErr
 	}
 
 	err = wallet.Persist()
 	if err != nil {
-		return nil, fmt.Errorf("persisting the new wallet: %w", err)
+		return nil, &WalletError{fmt.Errorf("persisting the new wallet: %w", err), utils.ErrAccountFile}
 	}
 
 	return wallet, nil
@@ -409,7 +404,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	}
 
 	// Validate nickname
-	if !nicknameIsValid(nickname) {
+	if !NicknameIsValid(nickname) {
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
@@ -419,6 +414,12 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	err = AddressIsUnique(address)
 	if err != nil {
 		return nil, &WalletError{err, utils.ErrDuplicateKey}
+	}
+
+	// Validate nickname uniqueness
+	err = NicknameIsUnique(nickname)
+	if err != nil {
+		return nil, &WalletError{err, utils.ErrDuplicateNickname}
 	}
 
 	wallet := Wallet{
@@ -441,7 +442,24 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	return &wallet, nil
 }
 
-func nicknameIsValid(nickname string) bool {
+func NicknameIsUnique(nickname string) error {
+	// Load all accounts
+	wallets, err := LoadAll()
+	if err != nil {
+		return fmt.Errorf("loading wallets: %w", err)
+	}
+
+	// Check if nickname is unique
+	for _, wallet := range wallets {
+		if wallet.Nickname == nickname {
+			return fmt.Errorf("This account name already exists")
+		}
+	}
+
+	return nil
+}
+
+func NicknameIsValid(nickname string) bool {
 	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
 }
 

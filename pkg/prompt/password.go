@@ -13,13 +13,13 @@ func handlePasswordPrompt(prompterApp WalletPrompterInterface, input interface{}
 		return nil, false, InputTypeError(prompterApp)
 	}
 
-	err := wallet.Unprotect(password)
-	if err != nil {
-		errStr := fmt.Sprintf("%v: %v", UnprotectErr, err.Error())
+	errUprotect := wallet.Unprotect(password)
+	if errUprotect != nil {
+		errStr := fmt.Sprintf("%v: %v", UnprotectErr, errUprotect.Err.Error())
 		fmt.Println(errStr)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Data: errStr})
-		return nil, true, err
+			walletapp.EventData{Success: false, CodeMessage: errUprotect.CodeErr})
+		return nil, true, errUprotect.Err
 	}
 
 	return &password, false, nil

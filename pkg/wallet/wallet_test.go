@@ -12,11 +12,11 @@ func BenchmarkProtectWallet(b *testing.B) {
 
 func iteration() {
 	password := "password"
-	wlt, err := Generate("nickname", password)
-	if err != nil {
-		panic(err)
+	wlt, errGenerate := Generate("nickname", password)
+	if errGenerate != nil {
+		panic(errGenerate.Err)
 	}
-	err = wlt.Protect(password)
+	err := wlt.Protect(password)
 	if err != nil {
 		panic(err)
 	}

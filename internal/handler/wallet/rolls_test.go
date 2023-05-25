@@ -19,8 +19,8 @@ func Test_traderolls_handler(t *testing.T) {
 
 	nickname := "wallet1"
 	password := "password"
-	_, err = wallet.Generate(nickname, password)
-	assert.NoError(t, err)
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	t.Run("Trade rolls with unprocessable entity", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/rolls", nickname), "")

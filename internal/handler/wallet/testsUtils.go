@@ -1,24 +1,22 @@
 package wallet
 
 import (
+	"fmt"
 	"io"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/stretchr/testify/assert"
 )
 
 func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {
-	if resp.Result().StatusCode != statusCode {
-		// Log body to simplify failure analysis.
-		body := new(strings.Builder)
-		_, _ = io.Copy(body, resp.Result().Body)
+	// Log body to simplify failure analysis.
+	body := new(strings.Builder)
+	_, _ = io.Copy(body, resp.Result().Body)
 
-		t.Logf("the returned body is: %s", strings.TrimSpace(body.String()))
-
-		t.Fatalf("the status code was: %d, want %d", resp.Result().StatusCode, statusCode)
-	}
+	assert.Equal(t, statusCode, resp.Result().StatusCode, fmt.Sprintf("the returned body is: %s", strings.TrimSpace(body.String())))
 }
 
 // cleanupTestData cleans up wallet created file.

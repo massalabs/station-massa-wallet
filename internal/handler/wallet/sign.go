@@ -16,6 +16,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
@@ -62,7 +63,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 
 		s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: true, Data: "Unprotect Success"})
+			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
 
 		if params.Body.Batch {
 			correlationId, resp = handleBatch(wlt, params, s, s.gc)

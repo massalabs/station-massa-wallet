@@ -86,15 +86,7 @@ func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string,
 	return resp, nil
 }
 
-func checkResultChannel(t *testing.T, result walletapp.EventData, success bool, msg string) {
-	assert.Equal(t, result.Success, success)
-
-	// check if the result contains the expected message
-	// Remark: we are migrating to sentinel error
-	// old error message in result.Data are being migrated to sentinel error in result.Error
-	if result.Data != nil {
-		assert.Contains(t, fmt.Sprint(result.Data), msg)
-	} else {
-		assert.Contains(t, fmt.Sprint(result.Error), msg)
-	}
+func checkResultChannel(t *testing.T, result walletapp.EventData, success bool, expectedCodeMsg string) {
+	assert.Equal(t, success, result.Success)
+	assert.Equal(t, expectedCodeMsg, result.CodeMessage)
 }

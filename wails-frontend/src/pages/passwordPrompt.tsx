@@ -28,7 +28,6 @@ function PasswordPrompt() {
   const { newPasswordReq, importReq, deleteReq } = promptAction;
   const isNewPasswordAction = req.Action === newPasswordReq;
   const isImportAction = req.Action === importReq;
-  const isDeleteAction = req.Action === deleteReq;
 
   function getButtonLabel() {
     switch (req.Action) {
@@ -63,7 +62,10 @@ function PasswordPrompt() {
     if (!hasMoreThanFiveChars(password)) {
       setError({ password: 'Password must have at least 5 characters' });
       return false;
-    } else if (!isDeleteAction && !hasSamePassword(password, passwordConfirm)) {
+    } else if (
+      isNewPasswordAction &&
+      !hasSamePassword(password, passwordConfirm)
+    ) {
       setError({ password: "Password doesn't match" });
       return false;
     }

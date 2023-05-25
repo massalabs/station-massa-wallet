@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -92,7 +93,7 @@ func WakeUpPrompt(
 		case <-ctxTimeout.Done():
 			fmt.Println(TimeoutErr)
 			prompterApp.EmitEvent(walletapp.PromptResultEvent,
-				walletapp.EventData{Success: false, Data: TimeoutErr, Error: "timeoutError"})
+				walletapp.EventData{Success: false, CodeMessage: utils.ErrTimeout})
 
 			return nil, fmt.Errorf(TimeoutErr)
 		}
@@ -101,8 +102,9 @@ func WakeUpPrompt(
 
 func InputTypeError(prompterApp WalletPrompterInterface) error {
 	fmt.Println("invalid prompt input type")
+	// TODO: upgrade CodeMessage
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, Data: InputTypeErr, Error: "InputTypeErr"})
+		walletapp.EventData{Success: false, CodeMessage: InputTypeErr})
 
 	return fmt.Errorf(InputTypeErr)
 }

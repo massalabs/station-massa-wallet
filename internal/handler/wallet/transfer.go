@@ -10,6 +10,7 @@ import (
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
 	"github.com/massalabs/thyra/pkg/node/sendoperation/transaction"
@@ -71,7 +72,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	if err != nil {
 		errStr := fmt.Sprintf("error transferring coin: %v", err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, Data: errStr})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
@@ -80,7 +81,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, Data: "Transfer Success"})
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgTransferSuccess})
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,
