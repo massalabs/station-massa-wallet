@@ -7,6 +7,9 @@ import (
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,24 +29,110 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 	nickname := "walletToBackup"
 	password := "zePassword"
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	wlt, walletError := wallet.Generate(nickname, password)
+	assert.Nil(t, walletError)
+
+	walletError = wlt.Unprotect(password)
+	assert.Nil(t, walletError)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := backupWallet(t, api, "toto")
 		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 
-	t.Run("export success", func(t *testing.T) {
+	t.Run("invalid backup method", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		go func() {
+			prompterApp.App().PromptInput <- "unknown method"
+			testResult <- (<-resChan)
+		}()
+
+		resp := backupWallet(t, api, nickname)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, false, prompt.UserChoiceErr)
+	})
+
+	t.Run("export canceled by user", func(t *testing.T) {
+		go func() {
+			prompterApp.App().CtrlChan <- walletapp.Cancel
+		}()
+
+		resp := backupWallet(t, api, nickname)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
+	})
+
+	t.Run("export yml file", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		go func() {
+			prompterApp.App().PromptInput <- prompt.YmlFileBackup
+			testResult <- (<-resChan)
+		}()
+
 		resp := backupWallet(t, api, nickname)
 		verifyStatusCode(t, resp, http.StatusNoContent)
 
-		prompterApp.App().PromptInput <- password
-
-		result := <-resChan
+		result := <-testResult
 
 		checkResultChannel(t, result, true, "Backup Success")
 	})
+
+	t.Run("chose private backup then cancel", func(t *testing.T) {
+		go func() {
+			// send backup method
+			prompterApp.App().PromptInput <- prompt.PrivateKeyBackup
+			prompterApp.App().CtrlChan <- walletapp.Cancel
+		}()
+
+		resp := backupWallet(t, api, nickname)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
+	})
+
+	t.Run("backup private key, wrong password and cancel", func(t *testing.T) {
+		go func() {
+			// send backup method
+			prompterApp.App().PromptInput <- prompt.PrivateKeyBackup
+			// send password
+			prompterApp.App().PromptInput <- "wrong password"
+
+			result := <-resChan
+
+			checkResultChannel(t, result, false, utils.WrongPassword)
+
+			prompterApp.App().CtrlChan <- walletapp.Cancel
+		}()
+
+		resp := backupWallet(t, api, nickname)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
+	})
+
+	t.Run("backup private key success", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		go func() {
+			// send backup method
+			prompterApp.App().PromptInput <- prompt.PrivateKeyBackup
+			// send password
+			prompterApp.App().PromptInput <- password
+
+			event := <-resChan
+			assert.Equal(t, wlt.GetPrivKey(), event.Data)
+
+			testResult <- (<-resChan)
+		}()
+
+		resp := backupWallet(t, api, nickname)
+		verifyStatusCode(t, resp, http.StatusNoContent)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "Backup Success")
+	})
+
 	err = cleanupTestData([]string{nickname})
 	assert.NoError(t, err)
 }

@@ -60,29 +60,40 @@ func WakeUpPrompt(
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
 	defer cancel()
 
+	var isPrivateKeyBackup *bool = nil
+
 	for {
 		select {
 		case input := <-prompterApp.App().PromptInput:
 
 			var keepListening bool
-			var res interface{}
+			var res interface{} = nil
 			var err error
 
 			switch req.Action {
-			case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.Backup:
+			case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.Uncipher:
 				res, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
 			case walletapp.NewPassword:
 				res, keepListening, err = handleNewPasswordPrompt(prompterApp, input)
 			case walletapp.Import:
 				res, keepListening, err = handleImportPrompt(prompterApp, input)
+			case walletapp.Backup:
+				if isPrivateKeyBackup == nil {
+					keepListening, err = handleBackupMethod(prompterApp, input)
+					isPrivateKeyBackup = &keepListening
+				} else {
+					res, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
+				}
 			}
 
 			if err != nil {
 				fmt.Println(err)
-				if keepListening {
-					continue
+				if !keepListening {
+					return nil, err
 				}
-				return nil, err
+			}
+			if keepListening {
+				continue
 			}
 			return res, nil
 
@@ -107,4 +118,12 @@ func InputTypeError(prompterApp WalletPrompterInterface) error {
 		walletapp.EventData{Success: false, CodeMessage: InputTypeErr})
 
 	return fmt.Errorf(InputTypeErr)
+}
+
+func UserChoiceError(prompterApp WalletPrompterInterface) error {
+	fmt.Println("invalid user choice input")
+	prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: false, CodeMessage: UserChoiceErr})
+
+	return fmt.Errorf(UserChoiceErr)
 }

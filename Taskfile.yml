@@ -14,7 +14,7 @@ tasks:
   clean:
     cmds:
       # kill the zombie goroutines
-      - cmd: pgrep -f wallet.test | xargs kill -9 &>/dev/null
+      - cmd: pgrep -f wallet.test | xargs -r kill -9 &>/dev/null
         platforms: [linux, darwin]
       - cmd: rm -f internal/handler/wallet/wallet_*.yml &>/dev/null
         platforms: [linux, darwin]
