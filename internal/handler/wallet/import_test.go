@@ -77,7 +77,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		os.Remove(filePath)
 	})
 
-	t.Run("import invalid wallet file, then cancel", func(t *testing.T) {
+	t.Run("import invalid path file", func(t *testing.T) {
 		walletFile := "InvalidWalet"
 
 		filePath := "importMe.yml"
@@ -85,6 +85,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
 		assert.NoError(t, err)
+		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
 
@@ -94,16 +95,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			prompterApp.App().PromptInput <- "invalidFilename"
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
-
-			// Send invalid filename to prompter app and wait for result
-			prompterApp.App().PromptInput <- filePath
-			failRes = <-resChan
-
-			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
-
-			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
+			checkResultChannel(t, failRes, false, utils.ErrInvalidFileFormat)
 		}(testResult)
 
 		resp := importWallet(t, api)
@@ -111,7 +103,34 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
-	t.Run("import file with invalid nickname, then cancel", func(t *testing.T) {
+	t.Run("import invalid account file", func(t *testing.T) {
+		walletFile := "InvalidWalet"
+
+		filePath := "importMe.yml"
+		// Write wallet file
+		data := []byte(walletFile)
+		err = os.WriteFile(filePath, data, 0o644)
+		assert.NoError(t, err)
+		defer os.Remove(filePath)
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send filepath to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			// Send invalid file to prompter app and wait for result
+			prompterApp.App().PromptInput <- filePath
+			failRes := <-resChan
+
+			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
+
+		}(testResult)
+
+		resp := importWallet(t, api)
+
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
+	})
+
+	t.Run("import file with invalid nickname", func(t *testing.T) {
 		nickname := "créated"
 
 		walletFile := fmt.Sprintf(
@@ -134,6 +153,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
 		assert.NoError(t, err)
+		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
 
