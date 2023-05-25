@@ -26,4 +26,5 @@ const (
 	MsgAccountImported    = "Import Success"
 	MsgTransferSuccess    = "Transfer Success"
 	MsgRollTradeSuccess   = "Trade rolls Success"
+	MsgBackupSuccess      = "Backup Success"
 )

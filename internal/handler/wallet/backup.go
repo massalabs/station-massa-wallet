@@ -7,6 +7,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
@@ -42,5 +43,5 @@ func handleBackup(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface
 	}
 
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, Data: "Backup Success"})
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgBackupSuccess})
 }
