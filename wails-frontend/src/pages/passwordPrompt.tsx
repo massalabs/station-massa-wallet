@@ -62,7 +62,10 @@ function PasswordPrompt() {
     if (!hasMoreThanFiveChars(password)) {
       setError({ password: 'Password must have at least 5 characters' });
       return false;
-    } else if (isNewPasswordAction && !hasSamePassword(password, passwordConfirm)) {
+    } else if (
+      isNewPasswordAction &&
+      !hasSamePassword(password, passwordConfirm)
+    ) {
       setError({ password: "Password doesn't match" });
       return false;
     }

@@ -20,12 +20,12 @@ type WalletApp struct {
 }
 
 func (a *WalletApp) cleanExit() {
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	a.Shutdown = true
 	if a.Ctx != nil {
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
+
+		a.Shutdown = true
 		runtime.Quit(a.Ctx)
 	}
 }

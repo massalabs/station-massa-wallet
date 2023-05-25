@@ -63,9 +63,9 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 
 		resp := importWallet(t, api)
 
-		verifyStatusCode(t, resp, http.StatusOK)
-
 		result := <-testResult
+
+		verifyStatusCode(t, resp, http.StatusOK)
 
 		checkResultChannel(t, result, true, "Import Success")
 
@@ -122,7 +122,6 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			failRes := <-resChan
 
 			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
-
 		}(testResult)
 
 		resp := importWallet(t, api)

@@ -11,7 +11,18 @@ tasks:
 
   generate: go generate ./...
 
-  test: go test -v ./...
+  clean:
+    cmds:
+      # kill the zombie goroutines
+      - cmd: pgrep -f wallet.test | xargs kill -9 &>/dev/null
+        platforms: [linux, darwin]
+      - cmd: rm -f internal/handler/wallet/wallet_*.yml &>/dev/null
+        platforms: [linux, darwin]
+
+  test: 
+    cmds:
+      - task: clean
+      - cmd: go test -race -v -timeout 500s ./...
 
   fmt:
     cmds:
