@@ -56,6 +56,16 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
+	// Validate unique private key
+	err = wallet.AddressIsUnique(account.Address)
+	if err != nil {
+		errorCode := utils.ErrDuplicateKey
+		fmt.Println(errorCode)
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: errorCode})
+		return nil, false, fmt.Errorf(errorCode)
+	}
+
 	return &account, false, nil
 }
 

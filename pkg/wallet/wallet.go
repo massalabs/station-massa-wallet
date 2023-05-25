@@ -404,20 +404,20 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	}
 
 	// Validate nickname
-	if !nicknameIsValid(nickname) {
+	if !NicknameIsValid(nickname) {
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
 	address := addressFromPublicKey(publicKey)
 
 	// Validate unique private key
-	err = addressIsUnique(address)
+	err = AddressIsUnique(address)
 	if err != nil {
 		return nil, &WalletError{err, utils.ErrDuplicateKey}
 	}
 
 	// Validate nickname uniqueness
-	err = nicknameIsUnique(nickname)
+	err = NicknameIsUnique(nickname)
 	if err != nil {
 		return nil, &WalletError{err, utils.ErrDuplicateNickname}
 	}
@@ -442,7 +442,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	return &wallet, nil
 }
 
-func nicknameIsUnique(nickname string) error {
+func NicknameIsUnique(nickname string) error {
 	// Load all accounts
 	wallets, err := LoadAll()
 	if err != nil {
@@ -459,7 +459,7 @@ func nicknameIsUnique(nickname string) error {
 	return nil
 }
 
-func nicknameIsValid(nickname string) bool {
+func NicknameIsValid(nickname string) bool {
 	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
 }
 
@@ -468,7 +468,7 @@ func CheckAlphanumeric(str string) bool {
 	return regex.MatchString(str)
 }
 
-func addressIsUnique(address string) error {
+func AddressIsUnique(address string) error {
 	wallets, err := LoadAll()
 	if err != nil {
 		return fmt.Errorf("loading accounts: %w", err)
