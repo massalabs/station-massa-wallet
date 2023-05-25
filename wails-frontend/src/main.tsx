@@ -16,17 +16,21 @@ import ImportMethods from './pages/importMethods';
 import ImportFile from './pages/importFile';
 import ImportPrivatekey from './pages/importPrivateKey';
 import Failure from './pages/failure';
+import BackupMethods from './pages/backupMethods';
+import BackupKeyPairs from './pages/backupKeyPairs';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path="/" element={<App />} />
+      <Route path="/backup-methods" element={<BackupMethods />} />
+      <Route path="/backup-pkey" element={<BackupKeyPairs />} />
       <Route path="/password" element={<PasswordPrompt />} />
       <Route path="/success" element={<Success />} />
       <Route path="/failure" element={<Failure />} />
       <Route path="/import-methods" element={<ImportMethods />} />
       <Route path="/import-file" element={<ImportFile />} />
-      <Route path="/import-pkey" element={<ImportPrivatekey />} />
+      <Route path="/import-key-pairs" element={<ImportPrivatekey />} />
     </Route>,
   ),
 );
