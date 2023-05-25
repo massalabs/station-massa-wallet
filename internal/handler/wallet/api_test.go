@@ -87,7 +87,7 @@ func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string,
 }
 
 func checkResultChannel(t *testing.T, result walletapp.EventData, success bool, expectedCodeMsg string) {
-	assert.Equal(t, result.Success, success)
+	assert.Equal(t, success, result.Success)
 
 	// check if the result contains the expected message
 	assert.Equal(t, expectedCodeMsg, result.CodeMessage)
