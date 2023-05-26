@@ -18,7 +18,7 @@ export default function SelectAccount() {
 
   // If no account, redirect to welcome page
   if (!data.length) {
-    navigate(routeFor('welcome'));
+    navigate(routeFor('index'));
   }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
