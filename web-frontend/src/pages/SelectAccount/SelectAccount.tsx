@@ -4,6 +4,7 @@ import { goToErrorPage, routeFor } from '../../utils';
 import useResource from '../../custom/api/useResource';
 import { AccountObject } from '../../models/AccountModel';
 import { toMAS } from '@massalabs/massa-web3';
+import Intl from '../../i18n/i18n';
 
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button, AccountSelector, MassaToken } from '@massalabs/react-ui-kit';
@@ -21,16 +22,19 @@ export default function SelectAccount() {
   }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
+
   return (
     <LandingPage>
       <div className={`${defaultFlex} h-screen`}>
         <div className="w-1/2">
           <div className="mb-6">
-            <p className="mas-banner text-neutral"> Hey!</p>
+            <p className="mas-banner text-neutral">
+              {Intl.t('account.header.title')}
+            </p>
           </div>
           <div className="mb-6">
             <label className="mas-body text-neutral" htmlFor="account-select">
-              Select an account
+              {Intl.t('account.select')}
             </label>
           </div>
           <div id="account-select" className="w-full flex flex-col">
@@ -47,7 +51,7 @@ export default function SelectAccount() {
             <div>
               <Link to={routeFor('account-create')}>
                 <Button variant="secondary" preIcon={<FiPlus />}>
-                  Add an account
+                  {Intl.t('account.add')}
                 </Button>
               </Link>
             </div>

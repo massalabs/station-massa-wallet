@@ -26,17 +26,17 @@ export default function Welcome() {
       <div className="flex flex-col justify-center items-center h-screen">
         <div className="w-fit h-fit max-w-lg">
           <h1 className="mas-banner text-f-primary">
-            {Intl.t('welcome.title_first_part')}
+            {Intl.t('welcome.title-first-part')}
             <br />
-            {Intl.t('welcome.title_second_part')}
+            {Intl.t('welcome.title-second-part')}
             <span className="text-brand">
-              {Intl.t('welcome.title_third_part')}
+              {Intl.t('welcome.title-third-part')}
             </span>
           </h1>
           <div className="pt-6">
             <Link to={routeFor('account-create-step-one')}>
               <Button posIcon={<FiArrowRight />}>
-                {Intl.t('account.create')}
+                {Intl.t('account.create.title')}
               </Button>
             </Link>
           </div>

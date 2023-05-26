@@ -21,7 +21,8 @@ import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
 import mockServer from './mirage/server.ts';
 
-if ([ENV.STANDALONE, ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
+// Add ENV.STANDALONE to the array to enable MirageJS
+if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
   mockServer(import.meta.env.VITE_ENV);
 }
 
