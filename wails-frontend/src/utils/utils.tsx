@@ -1,10 +1,8 @@
-/* eslint-disable new-cap */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavigateFunction } from 'react-router-dom';
 import { Hide, AbortAction } from '../../wailsjs/go/walletapp/WalletApp';
 import { WindowReloadApp } from '../../wailsjs/runtime';
 import { promptResult, promptRequest } from '../events/events';
-import { getErrorMessage } from './errors';
+import { IErrorObject, getErrorMessage } from './errors';
 
 export const handleCancel = () => {
   AbortAction();
@@ -20,7 +18,9 @@ export const hideAndReload = () => {
 export const handleApplyResult = (
   navigate: NavigateFunction,
   req: promptRequest,
-  errMsgCb: (msg: any) => void,
+  errMsgCb:
+    | React.Dispatch<React.SetStateAction<IErrorObject | null>>
+    | ((msg: string) => void),
   quitOnError = false,
 ) => {
   return (result: promptResult) => {

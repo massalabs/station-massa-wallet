@@ -26,7 +26,6 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Import,
 		Msg:    "Import",
-		Data:   nil,
 	}
 
 	promptOutput, err := prompt.WakeUpPrompt(h.prompterApp, promptRequest, nil)

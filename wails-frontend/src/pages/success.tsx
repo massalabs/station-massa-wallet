@@ -16,6 +16,8 @@ const Success = () => {
         return 'The account has been imported';
       case promptAction.signReq:
         return 'The transaction has been signed';
+      case promptAction.backupReq:
+        return 'The account file has been saved';
       default:
         return 'Apply';
     }

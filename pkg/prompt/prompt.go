@@ -15,7 +15,6 @@ const PASSWORD_MIN_LENGTH = 5
 type PromptRequest struct {
 	Action walletapp.PromptRequestAction
 	Msg    string
-	Data   interface{}
 }
 
 // WalletPrompter is a struct that wraps a Fyne GUI application and implements the delete.Confirmer interface.
@@ -24,12 +23,20 @@ type WalletPrompter struct {
 }
 
 func (w *WalletPrompter) PromptRequest(req PromptRequest) {
-	runtime.EventsEmit(w.PromptApp.Ctx, walletapp.PromptRequestEvent, walletapp.PromptRequestData{Action: req.Action, Msg: req.Msg, Data: req.Data})
+	runtime.EventsEmit(w.PromptApp.Ctx, walletapp.PromptRequestEvent, walletapp.PromptRequestData{Action: req.Action, Msg: req.Msg})
 	w.PromptApp.Show()
 }
 
 func (w *WalletPrompter) EmitEvent(eventId string, data walletapp.EventData) {
 	runtime.EventsEmit(w.PromptApp.Ctx, eventId, data)
+}
+
+func (w *WalletPrompter) SelectBackupFilepath(nickname string) (string, error) {
+	return runtime.SaveFileDialog(w.PromptApp.Ctx, runtime.SaveDialogOptions{
+		Title:           "Backup Account File",
+		DefaultFilename: wallet.Filename(nickname),
+		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yml)", Pattern: "*.yml"}},
+	})
 }
 
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {

@@ -50,7 +50,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		promptRequest := prompt.PromptRequest{
 			Action: walletapp.Sign,
 			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-			Data:   nil,
 		}
 
 		_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)

@@ -34,5 +34,4 @@ const (
 type PromptRequestData struct {
 	Action PromptRequestAction
 	Msg    string
-	Data   interface{}
 }

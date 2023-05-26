@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
@@ -69,7 +70,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
 		go func() {
-			prompterApp.App().PromptInput <- prompt.YmlFileBackup
+			prompterApp.App().PromptInput <- string(prompt.YmlFileBackup)
 			testResult <- (<-resChan)
 		}()
 
@@ -84,7 +85,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 	t.Run("chose private backup then cancel", func(t *testing.T) {
 		go func() {
 			// send backup method
-			prompterApp.App().PromptInput <- prompt.PrivateKeyBackup
+			prompterApp.App().PromptInput <- string(prompt.PrivateKeyBackup)
 			prompterApp.App().CtrlChan <- walletapp.Cancel
 		}()
 
@@ -95,7 +96,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 	t.Run("backup private key, wrong password and cancel", func(t *testing.T) {
 		go func() {
 			// send backup method
-			prompterApp.App().PromptInput <- prompt.PrivateKeyBackup
+			prompterApp.App().PromptInput <- string(prompt.PrivateKeyBackup)
 			// send password
 			prompterApp.App().PromptInput <- "wrong password"
 
@@ -115,12 +116,9 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		go func() {
 			// send backup method
-			prompterApp.App().PromptInput <- prompt.PrivateKeyBackup
+			prompterApp.App().PromptInput <- string(prompt.PrivateKeyBackup)
 			// send password
 			prompterApp.App().PromptInput <- password
-
-			event := <-resChan
-			assert.Equal(t, wlt.GetPrivKey(), event.Data)
 
 			testResult <- (<-resChan)
 		}()
@@ -130,9 +128,14 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		result := <-testResult
 
+		assert.Equal(t, wlt.GetPrivKey(), result.Data)
+
 		checkResultChannel(t, result, true, "Backup Success")
 	})
 
 	err = cleanupTestData([]string{nickname})
+	assert.NoError(t, err)
+
+	err = os.Remove(WalletBackupFilepath)
 	assert.NoError(t, err)
 }

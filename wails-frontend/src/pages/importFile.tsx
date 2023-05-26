@@ -1,7 +1,6 @@
-/* eslint-disable new-cap */
 import { useState } from 'react';
 import {
-  ImportWalletFile,
+  SendPromptInput,
   SelectAccountFile,
 } from '../../wailsjs/go/walletapp/WalletApp';
 import { events, promptRequest } from '../events/events';
@@ -49,7 +48,7 @@ const ImportFile = () => {
         events.promptResult,
         handleApplyResult(nav, req, setErrorMsg, true),
       );
-      await ImportWalletFile(account.filePath);
+      await SendPromptInput(account.filePath);
     }
   };
 

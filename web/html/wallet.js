@@ -62,6 +62,18 @@ function createAccount() {
         .catch(handleAPIError);
 }
 
+function backupAccount() {
+    const nickname = document.getElementById("nicknameCreate").value;
+
+    axios
+        .get(addPrefixUrl(`api/accounts/${nickname}/backup`))
+        .then((resp) => {
+            tableInsert(resp.data);
+            wallets.push(resp.data);
+        })
+        .catch(handleAPIError);
+}
+
 // Fetch a wallet's pending balance through GET query
 async function fetchBalanceOf(nickname) {
     try {

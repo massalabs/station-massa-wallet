@@ -7,6 +7,7 @@ const errorsEN: Record<string, string> = {
   'DuplicateNickname-001': 'This username already exists',
   'Timeout-0001': 'Timeout error',
   'WrongPassword-0001': 'Wrong password',
+  'InvalidPromptInput-0001': 'Invalid user input',
 };
 
 export function getErrorMessage(code: string): string {
@@ -16,4 +17,9 @@ export function getErrorMessage(code: string): string {
   }
 
   return code;
+}
+
+export interface IErrorObject {
+  password?: string;
+  error?: string;
 }

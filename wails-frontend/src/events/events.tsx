@@ -2,6 +2,7 @@
 export type promptResult = {
   Success: boolean;
   CodeMessage: string;
+  Data: any;
 };
 
 export enum promptAction {
@@ -12,16 +13,21 @@ export enum promptAction {
   backupReq = 4,
   transferReq = 5,
   tradeRollsReq = 6,
-  unprotect = 7,
+  unprotectReq = 7,
 }
 
 export type promptRequest = {
   Action: promptAction;
   Msg: string;
-  Data: any;
 };
 
 export const events = {
   promptResult: 'promptResult',
+  promptData: 'promptData',
   promptRequest: 'promptRequest',
+};
+
+export const backupMethods = {
+  ymlFileBackup: 'yml',
+  privateKeyBackup: 'privateKey',
 };

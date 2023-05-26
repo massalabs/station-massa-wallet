@@ -36,7 +36,6 @@ func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Delete,
 		Msg:    fmt.Sprintf("Deleting wallet %s:", wlt.Nickname),
-		Data:   nil,
 	}
 
 	_, err := prompt.WakeUpPrompt(prompterApp, promptRequest, wlt)

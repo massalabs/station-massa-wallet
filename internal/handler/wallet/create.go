@@ -39,7 +39,6 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.NewPassword,
 		Msg:    "Define a password",
-		Data:   nil,
 	}
 
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, nil)

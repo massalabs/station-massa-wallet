@@ -1,9 +1,8 @@
-/* eslint-disable new-cap */
 import { useState, useRef, SyntheticEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  ApplyPassword,
   ImportPrivateKey,
+  SendPromptInput,
 } from '../../wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '../../wailsjs/runtime';
 import { events, promptAction, promptRequest } from '../events/events';
@@ -13,10 +12,7 @@ import { hasMoreThanFiveChars, hasSamePassword } from '../validation/password';
 
 import { FiLock } from 'react-icons/fi';
 import { Password, Button } from '@massalabs/react-ui-kit';
-
-interface IErrorObject {
-  password: string;
-}
+import { IErrorObject } from '../utils';
 
 function PasswordPrompt() {
   const navigate = useNavigate();
@@ -83,7 +79,7 @@ function PasswordPrompt() {
 
     return isImportAction
       ? ImportPrivateKey(state.pkey, state.nickname, password)
-      : ApplyPassword(password);
+      : SendPromptInput(password);
   }
 
   async function handleSubmit(e: SyntheticEvent) {

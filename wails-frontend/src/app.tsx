@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import { EventsOn } from '../wailsjs/runtime';
 import { events, promptAction, promptRequest } from './events/events';
 import { useNavigate } from 'react-router-dom';
@@ -11,14 +10,16 @@ export function App() {
       case promptAction.deleteReq:
       case promptAction.newPasswordReq:
       case promptAction.signReq:
-      case promptAction.backupReq:
       case promptAction.transferReq:
       case promptAction.tradeRollsReq:
-      case promptAction.unprotect:
+      case promptAction.unprotectReq:
         navigate('/password', { state: { req } });
         return;
       case promptAction.importReq:
         navigate('/import-methods', { state: { req } });
+        return;
+      case promptAction.backupReq:
+        navigate('/backup-methods', { state: { req } });
         return;
       default:
     }

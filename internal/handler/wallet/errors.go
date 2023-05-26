@@ -20,4 +20,5 @@ const (
 	errorImportWallet
 	errorExportWallet
 	errorTransferCoin
+	errorSaveAccount
 )
