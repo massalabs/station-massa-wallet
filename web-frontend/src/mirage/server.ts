@@ -16,6 +16,9 @@ function mockServer(environment = ENV.DEV) {
         nickname() {
           return faker.internet.userName();
         },
+        candidateBalance() {
+          return faker.number.int().toString();
+        },
       }),
     },
 
@@ -34,6 +37,13 @@ function mockServer(environment = ENV.DEV) {
         let nickname = request.params.nickname;
 
         return schema.find('account', nickname);
+      });
+
+      this.put('accounts', (schema) => {
+        return schema.create('account', {
+          nickname: 'imported',
+          candidateBalance: '117',
+        });
       });
     },
   });

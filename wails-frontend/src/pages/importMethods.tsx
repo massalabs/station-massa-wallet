@@ -11,7 +11,7 @@ const ImportMethods = () => {
   const baselineStr = 'Choose an import method';
 
   const handleYml = () => navigate('/import-file', { state: { req } });
-  const handlePkey = () => navigate('/import-pkey', { state: { req } });
+  const handlePkey = () => navigate('/import-key-pairs', { state: { req } });
 
   return (
     <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">

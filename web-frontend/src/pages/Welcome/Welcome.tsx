@@ -15,11 +15,11 @@ export default function Welcome() {
 
   if (error) goToErrorPage(navigate);
 
-  if (data.length) {
+  const { mutate, isSuccess } = usePut<AccountObject>('accounts');
+
+  if (data.length || isSuccess) {
     navigate(routeFor('account-select'));
   }
-
-  const handleImport = usePut<AccountObject>('accounts');
 
   return (
     <LandingPage>
@@ -44,7 +44,7 @@ export default function Welcome() {
             <Button
               variant="secondary"
               onClick={() => {
-                handleImport.mutate({} as AccountObject);
+                mutate({} as AccountObject);
               }}
             >
               {Intl.t('account.import')}
