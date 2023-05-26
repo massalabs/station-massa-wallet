@@ -66,9 +66,9 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	return true
 }
 
-// ApplyPassword is binded to the frontend
-func (a *WalletApp) ApplyPassword(password string) {
-	a.PromptInput <- password
+// SendPromptInput is binded to the frontend
+func (a *WalletApp) SendPromptInput(input string) {
+	a.PromptInput <- input
 }
 
 // AbortAction is bound to the frontend
@@ -103,10 +103,6 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 	}
 
 	return selectFileResult{FilePath: filePath, Nickname: wallet.Nickname}
-}
-
-func (a *WalletApp) ImportWalletFile(filePath string) {
-	a.PromptInput <- filePath
 }
 
 type ImportFromPKey struct {

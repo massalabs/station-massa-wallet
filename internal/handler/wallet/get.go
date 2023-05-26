@@ -38,7 +38,6 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		promptRequest := prompt.PromptRequest{
 			Action: walletapp.Unprotect,
 			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-			Data:   nil,
 		}
 
 		_, err := prompt.WakeUpPrompt(g.prompterApp, promptRequest, wlt)

@@ -1,21 +1,32 @@
-import { promptRequest } from '../events/events';
+import { backupMethods, events, promptRequest } from '../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
-
 import { Layout } from '../layouts/Layout/Layout';
 import { Button } from '@massalabs/react-ui-kit';
+import { EventsOnce } from '../../wailsjs/runtime/runtime';
+import { handleApplyResult } from '../utils';
+import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
+import { useState } from 'react';
 
 function BackupMethods() {
   const navigate = useNavigate();
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  function handleDownloadYml() {
-    // TODO: download a .yaml file
-    console.log('Download a .yaml file');
+  async function handleDownloadYml() {
+    setErrorMsg('');
+    EventsOnce(
+      events.promptResult,
+      handleApplyResult(navigate, req, setErrorMsg, false),
+    );
+
+    await SendPromptInput(backupMethods.ymlFileBackup);
   }
 
-  function handleKeyPairs() {
+  async function handleKeyPairs() {
+    await SendPromptInput(backupMethods.privateKeyBackup);
     navigate('/backup-pkey', { state: { req } });
   }
 
@@ -27,6 +38,9 @@ function BackupMethods() {
         <Button variant="secondary" onClick={handleDownloadYml}>
           Download a .yaml file
         </Button>
+        <div>
+          <p className="mas-body text-s-error">{errorMsg}</p>
+        </div>
         <Button onClick={handleKeyPairs}>Show key pairs</Button>
       </div>
     </Layout>

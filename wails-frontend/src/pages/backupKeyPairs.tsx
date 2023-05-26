@@ -1,20 +1,13 @@
-/* eslint-disable new-cap */
 import { useState, useRef, SyntheticEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { EventsOnce } from '../../wailsjs/runtime';
-import { events, promptAction, promptRequest } from '../events/events';
+import { ClipboardSetText, EventsOnce } from '../../wailsjs/runtime';
+import { events, promptRequest, promptResult } from '../events/events';
 import { parseForm } from '../utils/parseForm';
-import { hasMoreThanFiveChars } from '../validation/password';
-import { handleApplyResult } from '../utils/utils';
-import { ApplyPassword } from '../../wailsjs/go/walletapp/WalletApp';
-
+import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
 import { Layout } from '../layouts/Layout/Layout';
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { FiCopy } from 'react-icons/fi';
-
-interface IErrorObject {
-  password: string;
-}
+import { IErrorObject, getErrorMessage } from '../utils';
 
 function EnterKey() {
   const navigate = useNavigate();
@@ -39,10 +32,13 @@ function EnterKey() {
   );
 }
 
-function CopyKey() {
-  function handleCopy() {
-    // TODO: copy to clipboard
-    console.log('Copy to clipboard');
+interface CopyProps {
+  privateKey: string;
+}
+
+function CopyKey({ privateKey }: CopyProps) {
+  async function handleCopy() {
+    await ClipboardSetText(privateKey);
   }
 
   return (
@@ -53,72 +49,80 @@ function CopyKey() {
 }
 
 function BackupKeyPairs() {
-  const navigate = useNavigate();
   const form = useRef(null);
   const { state } = useLocation();
+  const navigate = useNavigate();
 
   const req: promptRequest = state.req;
-  const { backupReq } = promptAction;
 
-  const isExportAction = req.Action === backupReq;
-
-  const [show, setShow] = useState<boolean>(false);
+  const [privateKey, setPrivateKey] = useState<string | undefined>(undefined);
   const [error, setError] = useState<IErrorObject | null>(null);
 
   function validate(e: SyntheticEvent) {
     const formObject = parseForm(e);
     const { password } = formObject;
 
-    if (!hasMoreThanFiveChars(password)) {
-      setError({ password: 'Password must have at least 5 characters' });
-      return false;
-    } else if (!password || !password.length) {
+    if (!password || !password.length) {
       setError({ password: 'Password is required' });
       return false;
     }
     return true;
   }
 
-  function save(e: SyntheticEvent) {
-    const formObject = parseForm(e);
-    const { password } = formObject;
-
-    EventsOnce(
-      events.promptResult,
-      handleApplyResult(navigate, req, setError, isExportAction),
-    );
-
-    return ApplyPassword(password);
+  async function handleResult(result: promptResult) {
+    if (!result.Success) {
+      setError({ error: getErrorMessage(result.CodeMessage) });
+      navigate('/failure', {
+        state: { req },
+      });
+    }
+    setPrivateKey(result.Data);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
     if (!validate(e)) return;
 
-    save(e);
-    // setShow(true); when backend is ready
-    setShow(false);
+    const formObject = parseForm(e);
+    const { password } = formObject;
+
+    EventsOnce(events.promptResult, handleResult);
+    await SendPromptInput(password);
   }
 
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title text-neutral">{req.Msg}</h1>
-        {!show && (
+        {!privateKey && (
           <p className="mas-body text-neutral pt-4">
             Enter your password to show your private key
           </p>
         )}
         <div className="pt-4">
-          <Password
-            defaultValue=""
-            name="password"
-            placeholder={!show ? 'Password' : 'Private key'}
-            error={error?.password}
-          />
+          {privateKey ? (
+            <Password
+              defaultValue=""
+              name="privateKey"
+              placeholder="Private key"
+              value={privateKey}
+            />
+          ) : (
+            <Password
+              defaultValue=""
+              name="password"
+              placeholder="Password"
+              error={error?.password}
+            />
+          )}
+        </div>
+        <div>
+          <p className="flex flex-row pt-4 mas-body text-s-error">
+            {error?.error}
+          </p>
         </div>
         <div className="flex flex-row gap-4 pt-4">
-          {!show ? <EnterKey /> : <CopyKey />}
+          {privateKey ? <CopyKey privateKey={privateKey} /> : <EnterKey />}
         </div>
       </form>
     </Layout>

@@ -14,6 +14,7 @@ type WalletPrompterInterface interface {
 	IsListening() bool
 	Unlock()
 	Lock()
+	SelectBackupFilepath(nickname string) (string, error)
 }
 
 type PromptLocker struct {

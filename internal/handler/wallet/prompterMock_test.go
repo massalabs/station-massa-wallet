@@ -5,6 +5,8 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
+const WalletBackupFilepath = "walletBackup.yml"
+
 type walletPrompterMock struct {
 	resultChannel chan walletapp.EventData
 	prompt.PromptLocker
@@ -15,6 +17,10 @@ func (w *walletPrompterMock) PromptRequest(req prompt.PromptRequest) {
 
 func (w *walletPrompterMock) EmitEvent(eventId string, data walletapp.EventData) {
 	w.resultChannel <- data
+}
+
+func (w *walletPrompterMock) SelectBackupFilepath(nickname string) (string, error) {
+	return WalletBackupFilepath, nil
 }
 
 // NewWalletPrompter creates a new password prompter with the given Fyne GUI application.

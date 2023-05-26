@@ -55,7 +55,6 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.TradeRolls,
 		Msg:    fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
-		Data:   nil,
 	}
 
 	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
