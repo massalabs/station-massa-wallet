@@ -2,12 +2,18 @@ import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { FiArrowRight } from 'react-icons/fi';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import { routeFor } from '../../utils';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AccountObject } from '../../models/AccountModel';
 import usePut from '../../custom/api/usePut';
 
 export default function AddAccount() {
-  const handleImport = usePut<AccountObject>('accounts');
+  const navigate = useNavigate();
+
+  const { mutate, isSuccess } = usePut<AccountObject>('accounts');
+
+  if (isSuccess) {
+    navigate(routeFor('homepage'));
+  }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
   return (
@@ -25,9 +31,7 @@ export default function AddAccount() {
           <div className="mb-4">
             <Button
               variant="secondary"
-              onClick={() => {
-                handleImport.mutate({} as AccountObject);
-              }}
+              onClick={() => mutate({} as AccountObject)}
             >
               Import an existing account
             </Button>

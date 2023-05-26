@@ -38,6 +38,13 @@ function mockServer(environment = ENV.DEV) {
 
         return schema.find('account', nickname);
       });
+
+      this.put('accounts', (schema) => {
+        return schema.create('account', {
+          nickname: 'imported',
+          candidateBalance: '117',
+        });
+      });
     },
   });
 
