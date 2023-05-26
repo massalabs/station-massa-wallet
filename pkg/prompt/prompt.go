@@ -60,31 +60,41 @@ func WakeUpPrompt(
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
 	defer cancel()
 
+	var output interface{} = nil
+
 	for {
 		select {
 		case input := <-prompterApp.App().PromptInput:
 
 			var keepListening bool
-			var res interface{}
 			var err error
 
 			switch req.Action {
-			case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.Backup:
-				res, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
+			case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.Unprotect:
+				output, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
 			case walletapp.NewPassword:
-				res, keepListening, err = handleNewPasswordPrompt(prompterApp, input)
+				output, keepListening, err = handleNewPasswordPrompt(prompterApp, input)
 			case walletapp.Import:
-				res, keepListening, err = handleImportPrompt(prompterApp, input)
+				output, keepListening, err = handleImportPrompt(prompterApp, input)
+			case walletapp.Backup:
+				// If output is nil, it means that the user has not yet chosen a backup method.
+				if output == nil {
+					output, keepListening, err = handleBackupMethod(prompterApp, input)
+				} else {
+					output, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
+				}
 			}
 
 			if err != nil {
 				fmt.Println(err)
-				if keepListening {
-					continue
+				if !keepListening {
+					return nil, err
 				}
-				return nil, err
 			}
-			return res, nil
+			if keepListening {
+				continue
+			}
+			return output, nil
 
 		case <-prompterApp.App().CtrlChan:
 			fmt.Println(ActionCanceledErr)
@@ -101,10 +111,9 @@ func WakeUpPrompt(
 }
 
 func InputTypeError(prompterApp WalletPrompterInterface) error {
-	fmt.Println("invalid prompt input type")
-	// TODO: upgrade CodeMessage
+	fmt.Println(InputTypeErr)
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: InputTypeErr})
+		walletapp.EventData{Success: false, CodeMessage: utils.ErrPromptInputType})
 
 	return fmt.Errorf(InputTypeErr)
 }
