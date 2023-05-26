@@ -14,6 +14,7 @@ export function App() {
       case promptAction.backupReq:
       case promptAction.transferReq:
       case promptAction.tradeRollsReq:
+      case promptAction.unprotect:
         navigate('/password', { state: { req } });
         return;
       case promptAction.importReq:
