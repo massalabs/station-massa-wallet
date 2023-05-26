@@ -1,11 +1,38 @@
 {
   "welcome": {
-    "title_first_part": "Welcome on",
-    "title_second_part": "Massa",
-    "title_third_part": "wallet"
+    "title-first-part": "Welcome on",
+    "title-second-part": "Massa",
+    "title-third-part": "wallet"
   },
   "account": {
-    "create": "Create an Account",
-    "import": "Import an existing account"
+    "header": {
+      "title": "Hey!"
+    },
+    "create": {
+      "title": "Create an account",
+      "step1": {
+        "title": "Username"
+      },
+      "step2": {
+        "title": "Password",
+        "description": "Now, define your password. To maximize security, a pop up will open directly on your device via MassaStation."
+      },
+      "step3": {
+        "title": "Backup"
+      },
+      "buttons": {
+        "define_password": "Define a password",
+        "next": "Next"
+      },
+      "input": {
+        "nickname": "Enter an account name"
+      }
+    },
+    "import": "Import an existing account",
+    "add": "Add an account",
+    "select": "Select an account"
+  },
+  "errors": {
+    "required-nickname": "Nickname is required"
   }
 }

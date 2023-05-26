@@ -1,37 +1,84 @@
-import { Input } from '@massalabs/react-ui-kit/src/components/Input/Input';
-import { Stepper } from '@massalabs/react-ui-kit/src/components/Stepper/Stepper';
-import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
+import { useState, useRef, SyntheticEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Intl from '../../i18n/i18n';
+import { routeFor } from '../../utils';
+import { parseForm } from '../../utils/parseForm';
+
+import { Input, Stepper, Button } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
-import { routeFor } from '../../utils';
-import { Link } from 'react-router-dom';
-import Intl from '../../i18n/i18n';
+
+interface IErrorObject {
+  nickname: string;
+}
 
 export default function StepOne() {
+  const navigate = useNavigate();
+  const form = useRef(null);
+
+  const [error, setError] = useState<IErrorObject | null>(null);
+
+  function validate(e: SyntheticEvent) {
+    const formObject = parseForm(e);
+    const { nickname } = formObject;
+
+    if (!nickname) {
+      setError({ nickname: Intl.t('errors.nickname-required') });
+      return false;
+    }
+    return true;
+  }
+
+  function sendNickname(e: SyntheticEvent) {
+    const formObject = parseForm(e);
+    const { nickname } = formObject;
+
+    navigate(routeFor('account-create-step-two'), { state: { nickname } });
+  }
+
+  function handleSubmit(e: SyntheticEvent) {
+    e.preventDefault();
+
+    if (!validate(e)) return;
+    sendNickname(e);
+  }
+
   return (
     <LandingPage>
-      <div
-        className={`flex flex-col justify-center items-center align-center h-screen`}
-      >
-        <div className="flex flex-col justify-center content-center items-center w-fit h-fit max-w-sm">
-          <div className="w-full max-w-xs mb-6">
-            <Stepper step={0} steps={['Username', 'Password', 'Backup']} />{' '}
-          </div>
-          <h1 className="mas-banner text-neutral mb-6">
-            {Intl.t('account.create')}
-          </h1>
-          <div className="w-full mb-4">
-            <Input placeholder={'Enter an account name'} />
-          </div>
-          <div className="w-full">
-            <Link to={routeFor('account-create-step-two')}>
-              <Button posIcon={<FiArrowRight className="h-6 w-6" />}>
-                Next
+      <form ref={form} onSubmit={handleSubmit}>
+        <div
+          className={`flex flex-col justify-center items-center align-center h-screen`}
+        >
+          <div className="flex flex-col justify-center content-center items-center w-fit h-fit max-w-sm">
+            <div className="w-full max-w-xs mb-6">
+              <Stepper
+                step={0}
+                steps={[
+                  Intl.t('account.create.step1.title'),
+                  Intl.t('account.create.step2.title'),
+                  Intl.t('account.create.step3.title'),
+                ]}
+              />{' '}
+            </div>
+            <h1 className="mas-banner text-neutral mb-6">
+              {Intl.t('account.create.title')}
+            </h1>
+            <div className="w-full mb-4">
+              <Input
+                defaultValue=""
+                name="nickname"
+                placeholder={Intl.t('account.create.input.nickname')}
+                error={error?.nickname}
+              />
+            </div>
+            <div className="w-full">
+              <Button posIcon={<FiArrowRight />} type="submit">
+                {Intl.t('account.create.buttons.next')}
               </Button>
-            </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     </LandingPage>
   );
 }
