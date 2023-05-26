@@ -39,7 +39,10 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 			})
 	}
 
-	if promptOutput != nil {
+	// If the user choose to backup the wallet using the yml file, promptOutput will be a BackupMethod
+	// Else, it will be the password
+	_, ok := promptOutput.(*prompt.BackupMethod)
+	if !ok {
 		// for private key backup, send the private key to the wails frontend
 		w.prompterApp.EmitEvent(walletapp.PromptDataEvent,
 			walletapp.EventData{Data: wlt.GetPrivKey()})

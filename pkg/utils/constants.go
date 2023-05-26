@@ -12,6 +12,7 @@ const (
 	ErrDuplicateNickname = "DuplicateNickname-001"
 	ErrTimeout           = "Timeout-0001"
 	ErrNetwork           = "Network-0001"
+	ErrPromptInputType   = "invalidPromptInput-0001"
 )
 
 // Message codes

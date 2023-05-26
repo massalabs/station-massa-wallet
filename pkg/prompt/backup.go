@@ -1,21 +1,21 @@
 package prompt
 
+type BackupMethod string
+
 const (
-	YmlFileBackup    = "yml"
-	PrivateKeyBackup = "privateKey"
+	YmlFileBackup    BackupMethod = "yml"
+	PrivateKeyBackup BackupMethod = "privateKey"
 )
 
-func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) (bool, error) {
-	method, ok := input.(string)
+func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) (*BackupMethod, bool, error) {
+	method, ok := input.(BackupMethod)
 	if !ok {
-		return false, InputTypeError(prompterApp)
-	}
-	if method == YmlFileBackup {
-		return false, nil
-	}
-	if method == PrivateKeyBackup {
-		return true, nil
+		return nil, false, InputTypeError(prompterApp)
 	}
 
-	return false, UserChoiceError(prompterApp)
+	if method == YmlFileBackup {
+		return &method, false, nil
+	} else {
+		return &method, true, nil
+	}
 }

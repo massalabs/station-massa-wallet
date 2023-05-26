@@ -28,7 +28,7 @@ const (
 	Backup
 	Transfer
 	TradeRolls
-	Uncipher
+	Unprotect
 )
 
 type PromptRequestData struct {
