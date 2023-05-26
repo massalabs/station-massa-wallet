@@ -16,6 +16,9 @@ function mockServer(environment = ENV.DEV) {
         nickname() {
           return faker.internet.userName();
         },
+        candidateBalance() {
+          return faker.number.int().toString();
+        },
       }),
     },
 

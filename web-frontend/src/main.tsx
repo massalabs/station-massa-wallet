@@ -6,21 +6,24 @@ import {
   createRoutesFromElements,
   Route,
 } from 'react-router-dom';
-import './index.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import '@massalabs/react-ui-kit/src/global.css';
+
+import { ENV } from './const/env/env';
+import './index.css';
 import Welcome from './pages/Welcome/Welcome.tsx';
 import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
 import AddAccount from './pages/AddAccount/AddAccount.tsx';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import StepTwo from './pages/CreateAccount/StepTwo.tsx';
-import mockServer from './mirage/server.ts';
-
-if (import.meta.env.VITE_ENV === 'dev') {
-  mockServer();
-}
 import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
+import mockServer from './mirage/server.ts';
+
+if ([ENV.STANDALONE, ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
+  mockServer(import.meta.env.VITE_ENV);
+}
 
 const queryClient = new QueryClient();
 
