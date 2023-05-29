@@ -36,6 +36,7 @@
     "select": "Select an account"
   },
   "errors": {
-    "required-nickname": "Nickname is required"
+    "nickname-required": "Nickname is required",
+    "nickname-already-exists": "This account name already exists"
   }
 }

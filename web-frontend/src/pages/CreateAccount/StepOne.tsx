@@ -7,6 +7,9 @@ import { parseForm } from '../../utils/parseForm';
 import { Input, Stepper, Button } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
+import useResource from '../../custom/api/useResource';
+import { AccountObject } from '../../models/AccountModel';
+import { isAlreadyExists } from '../../validation/nickname';
 
 interface IErrorObject {
   nickname: string;
@@ -14,6 +17,9 @@ interface IErrorObject {
 
 export default function StepOne() {
   const navigate = useNavigate();
+
+  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
+
   const form = useRef(null);
 
   const [error, setError] = useState<IErrorObject | null>(null);
@@ -24,6 +30,11 @@ export default function StepOne() {
 
     if (!nickname) {
       setError({ nickname: Intl.t('errors.nickname-required') });
+      return false;
+    }
+
+    if (isAlreadyExists(nickname, accounts)) {
+      setError({ nickname: Intl.t('errors.nickname-already-exists') });
       return false;
     }
     return true;

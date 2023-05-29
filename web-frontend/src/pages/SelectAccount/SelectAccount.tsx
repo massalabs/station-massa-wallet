@@ -1,6 +1,6 @@
 import { FiUser, FiPlus } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
-import { goToErrorPage, routeFor } from '../../utils';
+import { routeFor } from '../../utils';
 import useResource from '../../custom/api/useResource';
 import { AccountObject } from '../../models/AccountModel';
 import { toMAS } from '@massalabs/massa-web3';
@@ -12,12 +12,10 @@ import { Button, AccountSelector, MassaToken } from '@massalabs/react-ui-kit';
 export default function SelectAccount() {
   const navigate = useNavigate();
 
-  const { error, data = [] } = useResource<AccountObject[]>('accounts');
-
-  if (error) goToErrorPage(navigate);
+  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
 
   // If no account, redirect to welcome page
-  if (!data.length) {
+  if (!accounts.length) {
     navigate(routeFor('index'));
   }
 
@@ -38,7 +36,7 @@ export default function SelectAccount() {
             </label>
           </div>
           <div id="account-select" className="w-full flex flex-col">
-            {data.map((account: AccountObject) => (
+            {accounts.map((account: AccountObject) => (
               <div className="mb-4" key={account.nickname}>
                 <AccountSelector
                   avatar={<FiUser className="text-neutral h-6 w-6" />}
