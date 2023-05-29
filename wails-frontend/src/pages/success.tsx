@@ -18,8 +18,10 @@ const Success = () => {
         return 'The transaction has been signed';
       case promptAction.backupReq:
         return 'The account file has been saved';
+      case promptAction.transferReq:
+        return 'The transaction has been sent';
       default:
-        return 'Apply';
+        return 'Success';
     }
   };
 
