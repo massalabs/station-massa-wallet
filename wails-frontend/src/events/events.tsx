@@ -28,6 +28,6 @@ export const events = {
 };
 
 export const backupMethods = {
-  ymlFileBackup: 'yml',
+  ymlFileBackup: 'yaml',
   privateKeyBackup: 'privateKey',
 };
