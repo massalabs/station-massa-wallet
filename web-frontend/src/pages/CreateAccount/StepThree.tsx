@@ -1,12 +1,30 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Intl from '../../i18n/i18n';
 import { routeFor } from '../../utils';
 
 import { Button, Stepper } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
+import { useNavigate } from 'react-router-dom';
+import { AccountObject } from '../../models/AccountModel';
+import usePost from '../../custom/api/usePost';
 
 export default function StepThree() {
+  const navigate = useNavigate();
+
+  const { state } = useLocation();
+  const nickname: string = state.nickname;
+
+  const { mutate, isSuccess } = usePost<AccountObject>(
+    'accounts',
+    nickname,
+    'backup',
+  );
+
+  if (isSuccess) {
+    navigate(routeFor('homepage'), { state: { nickname } });
+  }
+
   return (
     <LandingPage>
       <div className="flex flex-col justify-center items-center align-center h-screen">
@@ -26,14 +44,17 @@ export default function StepThree() {
             {Intl.t('account.create.step3.description')}
           </p>
           <div className="pt-4 w-full">
-            <Link to={routeFor('homepage')}>
+            <Link to={routeFor('homepage')} state={nickname}>
               <Button posIcon={<FiArrowRight />}>
                 {Intl.t('account.create.buttons.skip')}
               </Button>
             </Link>
           </div>
           <div className="pt-4 w-full">
-            <Button variant="secondary">
+            <Button
+              variant="secondary"
+              onClick={() => mutate({} as AccountObject)}
+            >
               {Intl.t('account.create.buttons.backup')}
             </Button>
           </div>

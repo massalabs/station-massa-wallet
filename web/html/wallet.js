@@ -66,7 +66,7 @@ function backupAccount() {
     const nickname = document.getElementById("nicknameCreate").value;
 
     axios
-        .get(addPrefixUrl(`api/accounts/${nickname}/backup`))
+        .post(addPrefixUrl(`api/accounts/${nickname}/backup`))
         .then((resp) => {
             tableInsert(resp.data);
             wallets.push(resp.data);

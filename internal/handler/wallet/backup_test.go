@@ -16,10 +16,10 @@ import (
 )
 
 func backupWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string) *httptest.ResponseRecorder {
-	handler, exist := api.HandlerFor("GET", "/api/accounts/{nickname}/backup")
+	handler, exist := api.HandlerFor("POST", "/api/accounts/{nickname}/backup")
 	assert.True(t, exist, "Endpoint doesn't exist")
 
-	resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/backup", nickname), "")
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/backup", nickname), "")
 	assert.NoError(t, err)
 	return resp
 }
