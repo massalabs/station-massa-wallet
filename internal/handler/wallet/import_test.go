@@ -46,7 +46,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
   4, 133, 59, 3, 213, 78, 33, 118, 49, 207, 180, 77, 78, 128, 37, 131]
 `, nickname)
 
-		filePath := "importMe.yml"
+		filePath := "importMe.yaml"
 		// Write wallet file
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
@@ -80,7 +80,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	t.Run("import invalid path file", func(t *testing.T) {
 		walletFile := "InvalidWalet"
 
-		filePath := "importMe.yml"
+		filePath := "importMe.yaml"
 		// Write wallet file
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
@@ -106,7 +106,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	t.Run("import invalid account file", func(t *testing.T) {
 		walletFile := "InvalidWalet"
 
-		filePath := "importMe.yml"
+		filePath := "importMe.yaml"
 		// Write wallet file
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
@@ -147,7 +147,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
   4, 133, 59, 3, 213, 78, 33, 118, 49, 207, 180, 77, 78, 128, 37, 131]
 `, nickname)
 
-		filePath := "importMe.yml"
+		filePath := "importMe.yaml"
 		// Write wallet file
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)

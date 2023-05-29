@@ -3,7 +3,7 @@ package prompt
 type BackupMethod string
 
 const (
-	YmlFileBackup    BackupMethod = "yml"
+	YamlFileBackup   BackupMethod = "yaml"
 	PrivateKeyBackup BackupMethod = "privateKey"
 )
 
@@ -13,7 +13,7 @@ func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) 
 		return nil, false, InputTypeError(prompterApp)
 	}
 	switch method {
-	case string(YmlFileBackup):
+	case string(YamlFileBackup):
 		res := BackupMethod(method)
 		return &res, false, nil
 	case string(PrivateKeyBackup):

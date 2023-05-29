@@ -15,7 +15,7 @@ function BackupMethods() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  async function handleDownloadYml() {
+  async function handleDownloadYaml() {
     setErrorMsg('');
     EventsOnce(
       events.promptResult,
@@ -35,7 +35,7 @@ function BackupMethods() {
       <h1 className="mas-title">{req.Msg}</h1>
       <p className="mas-body pt-4">Choose a back up method</p>
       <div className="flex flex-col gap-4 pt-4">
-        <Button variant="secondary" onClick={handleDownloadYml}>
+        <Button variant="secondary" onClick={handleDownloadYaml}>
           Download a .yaml file
         </Button>
         <div>

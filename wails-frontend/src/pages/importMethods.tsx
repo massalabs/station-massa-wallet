@@ -10,7 +10,7 @@ const ImportMethods = () => {
 
   const baselineStr = 'Choose an import method';
 
-  const handleYml = () => navigate('/import-file', { state: { req } });
+  const handleYaml = () => navigate('/import-file', { state: { req } });
   const handlePkey = () => navigate('/import-key-pairs', { state: { req } });
 
   return (
@@ -26,7 +26,7 @@ const ImportMethods = () => {
         </div>
         <div className="flex flex-col">
           <div className="pb-4 w-full">
-            <Button variant={'secondary'} onClick={handleYml}>
+            <Button variant={'secondary'} onClick={handleYaml}>
               I have a .yaml file
             </Button>
           </div>

@@ -11,5 +11,5 @@ build
 node_modules
 wails-frontend/dist
 
-internal/handler/wallet/*.yml
+internal/handler/wallet/*.yaml
 internal/handler/html/dist
