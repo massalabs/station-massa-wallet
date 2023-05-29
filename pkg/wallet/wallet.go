@@ -21,7 +21,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"lukechampine.com/blake3"
 )
 
