@@ -70,12 +70,14 @@ function BackupKeyPairs() {
   }
 
   async function handleResult(result: promptResult) {
-    if (!result.Success) {
-      if (result.CodeMessage === ErrorCode.WrongPassword) {
-        setError({ password: getErrorMessage(result.CodeMessage) });
+    let { Success, CodeMessage } = result;
+    
+    if (!Success) {
+      if (CodeMessage === ErrorCode.WrongPassword) {
+        setError({ password: getErrorMessage(CodeMessage) });
         return;
       } else {
-        req.Msg = getErrorMessage(result.CodeMessage);
+        req.Msg = getErrorMessage(CodeMessage);
         navigate('/failure', {
           state: { req },
         });
