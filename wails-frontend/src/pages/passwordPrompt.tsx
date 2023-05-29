@@ -1,10 +1,13 @@
 import { useState, useRef, SyntheticEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
+import { EventsOnce } from '../../wailsjs/runtime';
 import {
-  SendPromptInput,
-} from '../../wailsjs/go/walletapp/WalletApp';
-import { EventsOnce, LogPrint } from '../../wailsjs/runtime';
-import { events, promptAction, promptRequest, promptResult } from '../events/events';
+  events,
+  promptAction,
+  promptRequest,
+  promptResult,
+} from '../events/events';
 import { handleApplyResult, handleCancel } from '../utils/utils';
 import { parseForm } from '../utils/parseForm';
 import { hasMoreThanFiveChars } from '../validation/password';
@@ -62,10 +65,7 @@ function PasswordPrompt() {
     const form = parseForm(e);
     const { password } = form;
 
-    EventsOnce(
-      events.promptResult,
-      handleResult,
-    );
+    EventsOnce(events.promptResult, handleResult);
 
     return SendPromptInput(password);
   }
