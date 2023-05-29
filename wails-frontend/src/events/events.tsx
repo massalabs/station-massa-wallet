@@ -12,6 +12,7 @@ export enum promptAction {
   backupReq = 4,
   transferReq = 5,
   tradeRollsReq = 6,
+  unprotect = 7,
 }
 
 export type promptRequest = {

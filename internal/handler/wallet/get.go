@@ -35,7 +35,6 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 
 	// if request not ciphered data, ask for password and unprotect the wallet
 	if params.Ciphered != nil && !*params.Ciphered {
-
 		promptRequest := prompt.PromptRequest{
 			Action: walletapp.Unprotect,
 			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
