@@ -18,11 +18,14 @@
         "description": "Now, define your password. To maximize security, a pop up will open directly on your device via MassaStation."
       },
       "step3": {
-        "title": "Backup"
+        "title": "Backup",
+        "description": "Security is very important, we recommend backing up your account using a key pair or a .yaml file. Would you like to do it now or later?"
       },
       "buttons": {
         "define_password": "Define a password",
-        "next": "Next"
+        "next": "Next",
+        "backup": "Back up",
+        "skip": "Skip"
       },
       "input": {
         "nickname": "Enter an account name"
