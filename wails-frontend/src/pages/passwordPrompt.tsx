@@ -1,18 +1,17 @@
 import { useState, useRef, SyntheticEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  ImportPrivateKey,
   SendPromptInput,
 } from '../../wailsjs/go/walletapp/WalletApp';
-import { EventsOnce } from '../../wailsjs/runtime';
-import { events, promptAction, promptRequest } from '../events/events';
+import { EventsOnce, LogPrint } from '../../wailsjs/runtime';
+import { events, promptAction, promptRequest, promptResult } from '../events/events';
 import { handleApplyResult, handleCancel } from '../utils/utils';
 import { parseForm } from '../utils/parseForm';
-import { hasMoreThanFiveChars, hasSamePassword } from '../validation/password';
+import { hasMoreThanFiveChars } from '../validation/password';
 
 import { FiLock } from 'react-icons/fi';
 import { Password, Button } from '@massalabs/react-ui-kit';
-import { IErrorObject } from '../utils';
+import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
 
 function PasswordPrompt() {
   const navigate = useNavigate();
@@ -21,16 +20,12 @@ function PasswordPrompt() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const { newPasswordReq, importReq, deleteReq } = promptAction;
-  const isNewPasswordAction = req.Action === newPasswordReq;
-  const isImportAction = req.Action === importReq;
+  const { deleteReq } = promptAction;
 
   function getButtonLabel() {
     switch (req.Action) {
       case deleteReq:
         return 'Delete';
-      case newPasswordReq:
-        return 'Define';
       default:
         return 'Apply';
     }
@@ -40,10 +35,6 @@ function PasswordPrompt() {
     switch (req.Action) {
       case deleteReq:
         return 'Enter your password to delete your wallet';
-      case newPasswordReq:
-        return 'Enter a secure password';
-      case importReq:
-        return 'Define a new password';
       default:
         return 'Enter your password below to validate';
     }
@@ -51,29 +42,20 @@ function PasswordPrompt() {
 
   // error state for the input password field
   const [error, setError] = useState<IErrorObject | null>(null);
-  // error state for the input password confirm field
-  const [errorConfirm, setErrorConfirm] = useState<IErrorObject | null>(null);
 
   function validate(e: SyntheticEvent) {
-    let valid = true;
     const form = parseForm(e);
-    const { password, passwordConfirm } = form;
+    const { password } = form;
 
-    // reset error states
+    // reset error state
     setError(null);
-    setErrorConfirm(null);
 
     if (!hasMoreThanFiveChars(password)) {
       setError({ password: 'Password must have at least 5 characters' });
-      valid = false;
+      return false;
     }
 
-    if (isNewPasswordAction && !hasSamePassword(password, passwordConfirm)) {
-      setErrorConfirm({ password: "Password doesn't match" });
-      valid = false;
-    }
-
-    return valid;
+    return true;
   }
 
   function save(e: SyntheticEvent) {
@@ -82,12 +64,22 @@ function PasswordPrompt() {
 
     EventsOnce(
       events.promptResult,
-      handleApplyResult(navigate, req, setError, isImportAction),
+      handleResult,
     );
 
-    return isImportAction
-      ? ImportPrivateKey(state.pkey, state.nickname, password)
-      : SendPromptInput(password);
+    return SendPromptInput(password);
+  }
+
+  async function handleResult(result: promptResult) {
+    let { Success, CodeMessage } = result;
+
+    if (!Success) {
+      if (CodeMessage === ErrorCode.WrongPassword) {
+        setError({ password: getErrorMessage(CodeMessage) });
+      }
+    }
+
+    handleApplyResult(navigate, req, setError, false)(result);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
@@ -114,16 +106,6 @@ function PasswordPrompt() {
               error={error?.password}
             />
           </div>
-          {(isNewPasswordAction || isImportAction) && (
-            <div className="pt-4">
-              <Password
-                defaultValue=""
-                name="passwordConfirm"
-                placeholder="Confirm your password"
-                error={errorConfirm?.password}
-              />
-            </div>
-          )}
           <div className="pt-4 flex gap-4">
             <div className="max-w-min">
               <Button variant={'secondary'} onClick={handleCancel}>
