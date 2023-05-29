@@ -7,7 +7,7 @@ import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
 import { Layout } from '../layouts/Layout/Layout';
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { FiCopy } from 'react-icons/fi';
-import { IErrorObject, getErrorMessage } from '../utils';
+import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
 
 function EnterKey() {
   const navigate = useNavigate();
@@ -71,10 +71,14 @@ function BackupKeyPairs() {
 
   async function handleResult(result: promptResult) {
     if (!result.Success) {
-      setError({ error: getErrorMessage(result.CodeMessage) });
-      navigate('/failure', {
-        state: { req },
-      });
+      if(result.CodeMessage === ErrorCode.WrongPassword) {
+        setError({ error: getErrorMessage(result.CodeMessage) });
+      } else {
+        req.Msg = getErrorMessage(result.CodeMessage);
+        navigate('/failure', {
+          state: { req },
+        });
+      }
     }
     setPrivateKey(result.Data);
   }

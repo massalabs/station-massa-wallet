@@ -1,17 +1,36 @@
-const errorsEN: Record<string, string> = {
-  'Nickname-0001': 'Invalid nickname',
-  'PrivateKey-0001': 'Invalid private key',
-  'AccountFile-0001': 'Filesystem error',
-  'DuplicateKey-0001': 'Private key already exists',
-  'Unknown-0001': 'Unknown error, try again',
-  'DuplicateNickname-001': 'This username already exists',
-  'Timeout-0001': 'Timeout error',
-  'WrongPassword-0001': 'Wrong password',
-  'InvalidPromptInput-0001': 'Invalid user input',
+
+export enum ErrorCode {
+  InvalidNickname = 'Nickname-0001',
+  InvalidPrivateKey = 'PrivateKey-0001',
+  FilesystemError = 'AccountFile-0001',
+  DuplicateKey = 'DuplicateKey-0001',
+  UnknownError = 'Unknown-0001',
+  DuplicateNickname = 'DuplicateNickname-001',
+  TimeoutError = 'Timeout-0001',
+  WrongPassword = 'WrongPassword-0001',
+  InvalidPromptInput = 'InvalidPromptInput-0001',
+}
+
+const errorsEN: Record<ErrorCode, string> = {
+  [ErrorCode.InvalidNickname]: 'Invalid nickname',
+  [ErrorCode.InvalidPrivateKey]: 'Invalid private key',
+  [ErrorCode.FilesystemError]: 'Filesystem error',
+  [ErrorCode.DuplicateKey]: 'Private key already exists',
+  [ErrorCode.UnknownError]: 'Unknown error, try again',
+  [ErrorCode.DuplicateNickname]: 'This username already exists',
+  [ErrorCode.TimeoutError]: 'Timeout error',
+  [ErrorCode.WrongPassword]: 'Wrong password',
+  [ErrorCode.InvalidPromptInput]: 'Invalid user input',
 };
 
-export function getErrorMessage(code: string): string {
-  const errorMessage = errorsEN[code];
+export function getErrorMessage(code: ErrorCode | string): string {
+
+  if (typeof code === 'string' && !(code in ErrorCode)) {
+    console.log("Unknown error code", code)
+    return code;
+  }
+
+  const errorMessage = errorsEN[code as ErrorCode];
   if (errorMessage) {
     return errorMessage;
   }
