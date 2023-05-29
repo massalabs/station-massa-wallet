@@ -49,11 +49,18 @@ function PasswordPrompt() {
     }
   }
 
+  // error state for the input password field
   const [error, setError] = useState<IErrorObject | null>(null);
+  // error state for the input password confirm field
+  const [errorConfirm, setErrorConfirm] = useState<IErrorObject | null>(null);
 
   function validate(e: SyntheticEvent) {
     const form = parseForm(e);
     const { password, passwordConfirm } = form;
+
+    // reset error states
+    setError(null);
+    setErrorConfirm(null);
 
     if (!hasMoreThanFiveChars(password)) {
       setError({ password: 'Password must have at least 5 characters' });
@@ -62,7 +69,7 @@ function PasswordPrompt() {
       isNewPasswordAction &&
       !hasSamePassword(password, passwordConfirm)
     ) {
-      setError({ password: "Password doesn't match" });
+      setErrorConfirm({ password: "Password doesn't match" });
       return false;
     }
     return true;
@@ -112,6 +119,7 @@ function PasswordPrompt() {
                 defaultValue=""
                 name="passwordConfirm"
                 placeholder="Confirm your password"
+                error={errorConfirm?.password}
               />
             </div>
           )}
