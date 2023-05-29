@@ -72,7 +72,8 @@ function BackupKeyPairs() {
   async function handleResult(result: promptResult) {
     if (!result.Success) {
       if (result.CodeMessage === ErrorCode.WrongPassword) {
-        setError({ error: getErrorMessage(result.CodeMessage) });
+        setError({ password: getErrorMessage(result.CodeMessage) });
+        return;
       } else {
         req.Msg = getErrorMessage(result.CodeMessage);
         navigate('/failure', {
@@ -119,11 +120,6 @@ function BackupKeyPairs() {
               error={error?.password}
             />
           )}
-        </div>
-        <div>
-          <p className="flex flex-row pt-4 mas-body text-s-error">
-            {error?.error}
-          </p>
         </div>
         <div className="flex flex-row gap-4 pt-4">
           {privateKey ? <CopyKey privateKey={privateKey} /> : <EnterKey />}
