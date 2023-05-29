@@ -227,7 +227,7 @@ func GetWalletDir() (string, error) {
 }
 
 // LoadAll loads all the wallets in the working directory.
-// Note: a wallet must have: `wallet_` prefix and a `.yml` extension.
+// Note: a wallet must have: `wallet_` prefix and a `.yaml` extension.
 func LoadAll() ([]Wallet, error) {
 	walletDir, err := GetWalletDir()
 	if err != nil {
@@ -244,7 +244,7 @@ func LoadAll() ([]Wallet, error) {
 		fileName := f.Name()
 		filePath := path.Join(walletDir, fileName)
 
-		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yml") {
+		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			wallet, loadErr := LoadFile(filePath)
 			if loadErr != nil {
 				return nil, loadErr.Err
@@ -258,7 +258,7 @@ func LoadAll() ([]Wallet, error) {
 }
 
 // Load loads the wallet that match the given name in the working directory
-// Note: `wallet_` prefix and a `.yml` extension are automatically added.
+// Note: `wallet_` prefix and a `.yaml` extension are automatically added.
 func Load(nickname string) (*Wallet, error) {
 	if len(nickname) == 0 {
 		return nil, fmt.Errorf("nickname is required")
@@ -338,7 +338,7 @@ func (w *Wallet) DeleteFile() (err error) {
 
 // filename returns the wallet filename based on the given nickname.
 func Filename(nickname string) string {
-	return fmt.Sprintf("wallet_%s.yml", nickname)
+	return fmt.Sprintf("wallet_%s.yaml", nickname)
 }
 
 // FilePath returns the wallet file path base on the given nickname.

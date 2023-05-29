@@ -809,7 +809,7 @@
           "header": [
             {
               "key": "Content-Disposition",
-              "value": "attachment; filename=\"wallet_created.yml\""
+              "value": "attachment; filename=\"wallet_created.yaml\""
             },
             {
               "key": "Content-Type",

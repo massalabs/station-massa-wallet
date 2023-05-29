@@ -41,7 +41,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 			})
 	}
 
-	// If the user choose to backup the wallet using the yml file, promptOutput will be a BackupMethod
+	// If the user choose to backup the wallet using the yaml file, promptOutput will be a BackupMethod
 	// Else, it will be the password
 	_, ok := promptOutput.(*prompt.BackupMethod)
 	isYmlBackup := ok

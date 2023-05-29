@@ -35,7 +35,7 @@ func Test_exportFileWallet_handler(t *testing.T) {
 
 		verifyStatusCode(t, resp, 200)
 		verifyHeader(t, resp, "Content-Type", "application/octet-stream")
-		verifyHeader(t, resp, "Content-Disposition", fmt.Sprintf("attachment; filename=%q", "wallet_trololol.yml"))
+		verifyHeader(t, resp, "Content-Disposition", fmt.Sprintf("attachment; filename=%q", "wallet_trololol.yaml"))
 		verifyBodyWalletBackup(t, resp, nickname)
 
 		err = cleanupTestData([]string{nickname})

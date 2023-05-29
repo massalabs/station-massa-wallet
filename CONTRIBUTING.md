@@ -87,3 +87,9 @@ It is used to generate the API documentation and the API client.
 
 Some endpoint responses are code 422 but the code itself never return such status code.
 Go-swagger will internally generate 422 response when the inputs are invalid.
+
+## Massa account file
+
+This software implements this standard: <https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md>.
+
+For account file extension, we recommend `.yaml`. However, `.yml` is also supported in the import feature.

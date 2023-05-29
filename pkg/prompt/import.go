@@ -24,7 +24,7 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 }
 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wallet.Wallet, bool, error) {
-	if !strings.HasSuffix(filePath, ".yml") {
+	if !strings.HasSuffix(filePath, ".yaml") && !strings.HasSuffix(filePath, ".yml") {
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidFileFormat})
 		return nil, false, fmt.Errorf(InvalidAccountFileErr)

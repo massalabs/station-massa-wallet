@@ -66,11 +66,11 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
-	t.Run("export yml file", func(t *testing.T) {
+	t.Run("export yaml file", func(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
 		go func() {
-			prompterApp.App().PromptInput <- string(prompt.YmlFileBackup)
+			prompterApp.App().PromptInput <- string(prompt.YamlFileBackup)
 			testResult <- (<-resChan)
 		}()
 
