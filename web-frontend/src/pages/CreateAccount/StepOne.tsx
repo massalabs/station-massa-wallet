@@ -9,7 +9,7 @@ import { FiArrowRight } from 'react-icons/fi';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import useResource from '../../custom/api/useResource';
 import { AccountObject } from '../../models/AccountModel';
-import { isAlreadyExists } from '../../validation/nickname';
+import { isAlreadyExists, isNicknameValid } from '../../validation/nickname';
 
 interface IErrorObject {
   nickname: string;
@@ -37,6 +37,12 @@ export default function StepOne() {
       setError({ nickname: Intl.t('errors.nickname-already-exists') });
       return false;
     }
+
+    if (!isNicknameValid(nickname)) {
+      setError({ nickname: Intl.t('errors.nickname-invalid-format') });
+      return false;
+    }
+
     return true;
   }
 
@@ -69,7 +75,7 @@ export default function StepOne() {
                   Intl.t('account.create.step2.title'),
                   Intl.t('account.create.step3.title'),
                 ]}
-              />{' '}
+              />
             </div>
             <h1 className="mas-banner text-neutral mb-6">
               {Intl.t('account.create.title')}

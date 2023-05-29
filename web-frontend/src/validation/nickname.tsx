@@ -6,3 +6,7 @@ export function isAlreadyExists(
 ): boolean {
   return accounts.some((account) => account.nickname === nickname);
 }
+
+export function isNicknameValid(nickname: string): boolean {
+  return /^[a-z0-9_-]$/.test(nickname);
+}

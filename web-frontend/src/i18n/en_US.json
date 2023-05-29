@@ -37,6 +37,7 @@
   },
   "errors": {
     "nickname-required": "Nickname is required",
-    "nickname-already-exists": "This account name already exists"
+    "nickname-already-exists": "This account name already exists",
+    "nickname-invalid-format": "The account name can only contains letters, numbers, underscores and dashes"
   }
 }
