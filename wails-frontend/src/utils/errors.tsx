@@ -16,7 +16,7 @@ const errorsEN: Record<ErrorCode, string> = {
   [ErrorCode.FilesystemError]: 'Filesystem error',
   [ErrorCode.DuplicateKey]: 'Private key already exists',
   [ErrorCode.UnknownError]: 'Unknown error, try again',
-  [ErrorCode.DuplicateNickname]: 'This username already exists',
+  [ErrorCode.DuplicateNickname]: 'This account name already exists',
   [ErrorCode.TimeoutError]: 'Timeout error',
   [ErrorCode.WrongPassword]: 'Wrong password',
   [ErrorCode.InvalidPromptInput]: 'Invalid user input',
