@@ -23,17 +23,8 @@ const errorsEN: Record<ErrorCode, string> = {
 };
 
 export function getErrorMessage(code: ErrorCode | string): string {
-  if (typeof code === 'string' && !(code in ErrorCode)) {
-    console.log('Unknown error code', code);
-    return code;
-  }
-
   const errorMessage = errorsEN[code as ErrorCode];
-  if (errorMessage) {
-    return errorMessage;
-  }
-
-  return code;
+  return errorMessage ? errorMessage : code;
 }
 
 export interface IErrorObject {
