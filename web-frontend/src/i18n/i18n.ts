@@ -24,10 +24,7 @@ class I18n {
     let copy = this.copy;
     // we are using pick in order to make life easier when the day for plurals and copy with params arrives
     const result = dot.pick(key, copy);
-    if (result === undefined) {
-      return key;
-    }
-    return result;
+    return result ?? key;
   }
 
   private _getLang(): string {
