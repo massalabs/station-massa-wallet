@@ -17,7 +17,7 @@ jobs:
         run: WALLET_PASSWORD=bonjour STANDALONE=1 xvfb-run ./tests/test_wallet &
       - name: test wallet loaded
         run: |
-          sleep 1
+          sleep 5
           NBWALLET=$(curl http://localhost:8080/api/accounts/ | jq '. | length')
           if [[ "$NBWALLET" != "1" ]]; then
             echo "wallet not loaded"
