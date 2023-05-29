@@ -17,7 +17,7 @@ export default function StepTwo() {
   const { mutate, isSuccess } = usePost<AccountObject>('accounts', nickname);
 
   if (isSuccess) {
-    navigate(routeFor('account-create-step-three'));
+    navigate(routeFor('account-create-step-three'), { state: { nickname } });
   }
 
   return (

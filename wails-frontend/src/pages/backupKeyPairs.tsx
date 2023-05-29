@@ -71,7 +71,7 @@ function BackupKeyPairs() {
 
   async function handleResult(result: promptResult) {
     if (!result.Success) {
-      if(result.CodeMessage === ErrorCode.WrongPassword) {
+      if (result.CodeMessage === ErrorCode.WrongPassword) {
         setError({ error: getErrorMessage(result.CodeMessage) });
       } else {
         req.Msg = getErrorMessage(result.CodeMessage);

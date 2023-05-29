@@ -1,4 +1,3 @@
-
 export enum ErrorCode {
   InvalidNickname = 'Nickname-0001',
   InvalidPrivateKey = 'PrivateKey-0001',
@@ -24,9 +23,8 @@ const errorsEN: Record<ErrorCode, string> = {
 };
 
 export function getErrorMessage(code: ErrorCode | string): string {
-
   if (typeof code === 'string' && !(code in ErrorCode)) {
-    console.log("Unknown error code", code)
+    console.log('Unknown error code', code);
     return code;
   }
 
