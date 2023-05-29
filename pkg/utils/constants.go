@@ -6,6 +6,7 @@ const (
 	ErrInvalidPassword   = "Password-0001"
 	ErrInvalidPrivateKey = "PrivateKey-0001"
 	ErrAccountFile       = "AccountFile-0001" // for errors related to folder, read/write file, unmarshal...
+	ErrNoFile            = "NoFile-0001"
 	ErrInvalidFileFormat = "InvalidFileFormat-0001"
 	ErrDuplicateKey      = "DuplicateKey-0001"
 	ErrUnknown           = "Unknown-0001"

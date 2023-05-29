@@ -2,6 +2,7 @@ export namespace walletapp {
 	
 	export class selectFileResult {
 	    err: string;
+	    codeMessage: string;
 	    filePath: string;
 	    nickname: string;
 	
@@ -12,6 +13,7 @@ export namespace walletapp {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.err = source["err"];
+	        this.codeMessage = source["codeMessage"];
 	        this.filePath = source["filePath"];
 	        this.nickname = source["nickname"];
 	    }

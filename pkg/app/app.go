@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -87,19 +88,30 @@ func (a *WalletApp) Hide() {
 }
 
 type selectFileResult struct {
-	Err      string `json:"err"`
-	FilePath string `json:"filePath"`
-	Nickname string `json:"nickname"`
+	Err         string `json:"err"`
+	CodeMessage string `json:"codeMessage"`
+	FilePath    string `json:"filePath"`
+	Nickname    string `json:"nickname"`
 }
 
 func (a *WalletApp) SelectAccountFile() selectFileResult {
-	filePath, err := runtime.OpenFileDialog(a.Ctx, runtime.OpenDialogOptions{})
+	filePath, err := runtime.OpenFileDialog(a.Ctx, runtime.OpenDialogOptions{
+		Title:   "Import account file",
+		Filters: []runtime.FileFilter{{DisplayName: "Account File (*.yaml;*.yml)", Pattern: "*.yaml;*.yml"}},
+	})
 	if err != nil {
-		return selectFileResult{Err: err.Error()}
+		fmt.Printf("error while selecting a file: %v", err)
+		return selectFileResult{Err: err.Error(), CodeMessage: utils.ErrAccountFile}
 	}
+
+	if filePath == "" {
+		return selectFileResult{Err: utils.ErrNoFile, CodeMessage: utils.ErrNoFile}
+	}
+
 	wallet, loadErr := wallet.LoadFile(filePath)
 	if loadErr != nil {
-		return selectFileResult{Err: loadErr.Err.Error()}
+		fmt.Printf("error while loading file: %v", loadErr.Err)
+		return selectFileResult{Err: loadErr.Err.Error(), CodeMessage: utils.ErrAccountFile}
 	}
 
 	return selectFileResult{FilePath: filePath, Nickname: wallet.Nickname}
