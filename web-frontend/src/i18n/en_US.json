@@ -11,7 +11,7 @@
     "create": {
       "title": "Create an account",
       "step1": {
-        "title": "Username"
+        "title": "Account name"
       },
       "step2": {
         "title": "Password",
@@ -37,6 +37,7 @@
   },
   "errors": {
     "nickname-required": "Nickname is required",
-    "nickname-already-exists": "This account name already exists"
+    "nickname-already-exists": "This account name already exists",
+    "nickname-invalid-format": "The account name can't contain any special characters"
   }
 }
