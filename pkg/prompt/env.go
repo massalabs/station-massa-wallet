@@ -4,8 +4,6 @@ import (
 	"os"
 
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type envPrompter struct {
@@ -37,14 +35,6 @@ func NewEnvPrompter(app *walletapp.WalletApp) *envPrompter {
 			PromptApp: app,
 		},
 	}
-}
-
-func (w *WalletPrompter) SaveAccountFile(nickname string) (string, error) {
-	return runtime.SaveFileDialog(w.PromptApp.Ctx, runtime.SaveDialogOptions{
-		Title:           "Backup Account File",
-		DefaultFilename: wallet.Filename(nickname),
-		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yml)", Pattern: "*.yml"}},
-	})
 }
 
 // Verifies at compilation time that walletPrompterMock implements WalletPrompterInterface interface.
