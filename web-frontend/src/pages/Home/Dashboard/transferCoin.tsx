@@ -1,4 +1,4 @@
-import { AccountObject } from '../../models/AccountModel';
+import { AccountObject } from '../../../models/AccountModel';
 
 interface TransferCoinProps {
   account: AccountObject;

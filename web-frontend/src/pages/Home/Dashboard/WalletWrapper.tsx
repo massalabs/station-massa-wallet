@@ -1,4 +1,4 @@
-import { DashboardLayout } from '../../layouts/Dashboard';
+import { DashboardLayout } from '../../../layouts/DashboardLayout';
 import { Dropdown, MassaWallet, SideMenu } from '@massalabs/react-ui-kit';
 import {
   FiHome,
@@ -11,9 +11,9 @@ import {
   FiSun,
 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useResource from '../../custom/api/useResource';
-import { AccountObject } from '../../models/AccountModel';
-import { routeFor } from '../../utils';
+import useResource from '../../../custom/api/useResource';
+import { AccountObject } from '../../../models/AccountModel';
+import { routeFor } from '../../../utils';
 import { useState } from 'react';
 import { TransferCoin } from './transferCoin';
 
@@ -44,12 +44,8 @@ export default function DashBoard() {
   );
 
   const [selectedItem, setSelectedItem] = useState<MenuItem>(
-    state.menuItem ? state.menuItem : MenuItem.SendReceive,
+    state.menuItem ?? MenuItem.SendReceive,
   );
-
-  const handleSidebarItemClick = (item: MenuItem) => {
-    setSelectedItem(item);
-  };
 
   const isActive = (item: MenuItem) => {
     return item === selectedItem;
@@ -67,49 +63,49 @@ export default function DashBoard() {
       icon: <FiHome />,
       active: false,
       footer: false,
-      onClickItem: () => handleSidebarItemClick(MenuItem.Home),
+      onClickItem: () => setSelectedItem(MenuItem.Home),
     },
     {
       label: 'Transactions',
       icon: <FiList />,
       active: isActive(MenuItem.Transactions),
       footer: false,
-      onClickItem: () => handleSidebarItemClick(MenuItem.Transactions),
+      onClickItem: () => setSelectedItem(MenuItem.Transactions),
     },
     {
       label: 'Send/Receive',
       icon: <FiArrowUpRight />,
       active: isActive(MenuItem.SendReceive),
       footer: false,
-      onClickItem: () => handleSidebarItemClick(MenuItem.SendReceive),
+      onClickItem: () => setSelectedItem(MenuItem.SendReceive),
     },
     {
       label: 'Contacts',
       icon: <FiUsers />,
       active: isActive(MenuItem.Contacts),
       footer: false,
-      onClickItem: () => handleSidebarItemClick(MenuItem.Contacts),
+      onClickItem: () => setSelectedItem(MenuItem.Contacts),
     },
     {
       label: 'Assets',
       icon: <FiDisc />,
       active: isActive(MenuItem.Assets),
       footer: false,
-      onClickItem: () => handleSidebarItemClick(MenuItem.Assets),
+      onClickItem: () => setSelectedItem(MenuItem.Assets),
     },
     {
       label: 'Settings',
       icon: <FiSettings />,
       active: isActive(MenuItem.Settings),
       footer: true,
-      onClickItem: () => handleSidebarItemClick(MenuItem.Settings),
+      onClickItem: () => setSelectedItem(MenuItem.Settings),
     },
     {
       label: 'Light theme',
       icon: <FiSun />,
       active: isActive(MenuItem.LightTheme),
       footer: true,
-      onClickItem: () => handleSidebarItemClick(MenuItem.LightTheme),
+      onClickItem: () => setSelectedItem(MenuItem.LightTheme),
     },
   ];
 
