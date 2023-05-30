@@ -23,7 +23,8 @@ export const handleApplyResult = (
   req: promptRequest,
   errMsgCb:
     | React.Dispatch<React.SetStateAction<IErrorObject | null>>
-    | ((msg: string) => void),
+    | ((msg: string) => void)
+    | null = null,
   quitOnError = false,
 ) => {
   return (result: promptResult) => {
@@ -34,7 +35,7 @@ export const handleApplyResult = (
       setTimeout(hideAndReload, timeoutDelay);
     } else {
       req.Msg = Intl.t(`errors.${result.CodeMessage}`);
-      errMsgCb(req.Msg);
+      if (errMsgCb) errMsgCb(req.Msg);
       navigate('/failure', {
         state: { req },
       });

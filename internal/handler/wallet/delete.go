@@ -35,7 +35,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 func handleDelete(wlt *wallet.Wallet, prompterApp prompt.WalletPrompterInterface) {
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Delete,
-		Msg:    fmt.Sprintf("Deleting wallet %s:", wlt.Nickname),
+		Msg:    "Delete an account",
 	}
 
 	_, err := prompt.WakeUpPrompt(prompterApp, promptRequest, wlt)

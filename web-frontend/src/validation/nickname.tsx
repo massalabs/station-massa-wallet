@@ -8,7 +8,7 @@ export function isAlreadyExists(
 }
 
 /**
- * This functino validates the nickname using the following rules:
+ * This function validates the nickname using the following rules:
  * - must contain only alphanumeric characters, underscores and dashes
  * - must be between 1 and 32 characters long
  *

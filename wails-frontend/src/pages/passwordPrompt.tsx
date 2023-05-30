@@ -1,4 +1,4 @@
-import { useState, useRef, SyntheticEvent } from 'react';
+import { useState, useRef, SyntheticEvent, ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '../../wailsjs/runtime';
@@ -11,7 +11,7 @@ import {
 import { handleApplyResult, handleCancel } from '../utils/utils';
 import { parseForm } from '../utils/parseForm';
 
-import { FiLock } from 'react-icons/fi';
+import { FiLock, FiTrash2 } from 'react-icons/fi';
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
@@ -44,6 +44,15 @@ function PasswordPrompt() {
     }
   }
 
+  function getButtonIcon(): ReactNode {
+    switch (req.Action) {
+      case deleteReq:
+        return <FiTrash2 />;
+      default:
+        return <FiLock />;
+    }
+  }
+
   // error state for the input password field
   const [error, setError] = useState<IErrorObject | null>(null);
 
@@ -65,7 +74,7 @@ function PasswordPrompt() {
 
     EventsOnce(events.promptResult, handleResult);
 
-    return SendPromptInput(password);
+    SendPromptInput(password);
   }
 
   async function handleResult(result: promptResult) {
@@ -76,16 +85,23 @@ function PasswordPrompt() {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
         return;
       }
+    } else {
+      handleApplyResult(navigate, req, setError, false)(result);
     }
-
-    handleApplyResult(navigate, req, setError, false)(result);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
     if (!validate(e)) return;
 
-    save(e);
+    const form = parseForm(e);
+    const { password } = form;
+
+    if (req.Action === deleteReq) {
+      navigate('/confirm-delete', { state: { req, password } });
+    } else {
+      save(e);
+    }
   }
 
   return (
@@ -111,7 +127,7 @@ function PasswordPrompt() {
                 Cancel
               </Button>
             </div>
-            <Button preIcon={<FiLock />} type="submit">
+            <Button preIcon={getButtonIcon()} type="submit">
               {getButtonLabel()}
             </Button>
           </div>
