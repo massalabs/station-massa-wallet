@@ -488,6 +488,10 @@ func NicknameIsUnique(nickname string) error {
 	return nil
 }
 
+// NicknameIsValid validates the nickname using the following rules:
+// - must have at least 1 character
+// - must contain only alphanumeric characters, underscores and dashes
+// - must not exceed MaxNicknameLength characters
 func NicknameIsValid(nickname string) bool {
 	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
 }

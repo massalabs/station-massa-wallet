@@ -14,6 +14,14 @@ export function ImportPrivateKey(arg1, arg2, arg3) {
   return window['go']['walletapp']['WalletApp']['ImportPrivateKey'](arg1, arg2, arg3);
 }
 
+export function IsNicknameUnique(arg1) {
+  return window['go']['walletapp']['WalletApp']['IsNicknameUnique'](arg1);
+}
+
+export function IsNicknameValid(arg1) {
+  return window['go']['walletapp']['WalletApp']['IsNicknameValid'](arg1);
+}
+
 export function SelectAccountFile() {
   return window['go']['walletapp']['WalletApp']['SelectAccountFile']();
 }
