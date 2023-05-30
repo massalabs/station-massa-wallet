@@ -14,8 +14,8 @@ export function ImportPrivateKey(arg1, arg2, arg3) {
   return window['go']['walletapp']['WalletApp']['ImportPrivateKey'](arg1, arg2, arg3);
 }
 
-export function IsAlreadyExists(arg1) {
-  return window['go']['walletapp']['WalletApp']['IsAlreadyExists'](arg1);
+export function IsNicknameUnique(arg1) {
+  return window['go']['walletapp']['WalletApp']['IsNicknameUnique'](arg1);
 }
 
 export function IsNicknameValid(arg1) {

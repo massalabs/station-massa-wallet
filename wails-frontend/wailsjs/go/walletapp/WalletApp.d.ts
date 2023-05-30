@@ -8,7 +8,7 @@ export function Hide():Promise<void>;
 
 export function ImportPrivateKey(arg1:string,arg2:string,arg3:string):Promise<void>;
 
-export function IsAlreadyExists(arg1:string):Promise<boolean>;
+export function IsNicknameUnique(arg1:string):Promise<boolean>;
 
 export function IsNicknameValid(arg1:string):Promise<boolean>;
 

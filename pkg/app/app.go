@@ -127,7 +127,7 @@ func (a *WalletApp) ImportPrivateKey(pkey string, nickname string, password stri
 	a.PromptInput <- ImportFromPKey{PrivateKey: pkey, Nickname: nickname, Password: password}
 }
 
-func (a *WalletApp) IsAlreadyExists(nickname string) bool {
+func (a *WalletApp) IsNicknameUnique(nickname string) bool {
 	return wallet.NicknameIsUnique(nickname) != nil
 }
 

@@ -5,7 +5,7 @@ import { handleCancel } from '../utils/utils';
 import { Password, Input, Button } from '@massalabs/react-ui-kit';
 import { IErrorObject, parseForm } from '../utils';
 import {
-  IsAlreadyExists,
+  IsNicknameUnique,
   IsNicknameValid,
 } from '../../wailsjs/go/walletapp/WalletApp';
 
@@ -48,7 +48,7 @@ const ImportPrivatekey = () => {
       return false;
     }
 
-    if (await IsAlreadyExists(nickname)) {
+    if (await IsNicknameUnique(nickname)) {
       setError({ nickname: t('nickname-already-exists') });
       return false;
     }
