@@ -126,3 +126,11 @@ type ImportFromPKey struct {
 func (a *WalletApp) ImportPrivateKey(pkey string, nickname string, password string) {
 	a.PromptInput <- ImportFromPKey{PrivateKey: pkey, Nickname: nickname, Password: password}
 }
+
+func (a *WalletApp) IsAlreadyExists(nickname string) bool {
+	return wallet.NicknameIsUnique(nickname) != nil
+}
+
+func (a *WalletApp) IsNicknameValid(nickname string) bool {
+	return wallet.NicknameIsValid(nickname)
+}
