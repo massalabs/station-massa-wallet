@@ -4,10 +4,11 @@ import { ClipboardSetText, EventsOnce } from '../../wailsjs/runtime';
 import { events, promptRequest, promptResult } from '../events/events';
 import { parseForm } from '../utils/parseForm';
 import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
-import { Layout } from '../layouts/Layout/Layout';
-import { Password, Button } from '@massalabs/react-ui-kit';
-import { FiCopy } from 'react-icons/fi';
 import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
+
+import { Password, Button } from '@massalabs/react-ui-kit';
+import { Layout } from '../layouts/Layout/Layout';
+import { FiCopy, FiArrowRight } from 'react-icons/fi';
 
 function EnterKey() {
   const navigate = useNavigate();
@@ -17,17 +18,15 @@ function EnterKey() {
 
   return (
     <>
-      <div className="min-w-fit w-full">
-        <Button
-          variant="secondary"
-          onClick={() => navigate('/backup-methods', { state: { req } })}
-        >
-          Cancel
-        </Button>
-      </div>
-      <div className="min-w-fit w-full">
-        <Button type="submit">Next</Button>
-      </div>
+      <Button
+        variant="secondary"
+        onClick={() => navigate('/backup-methods', { state: { req } })}
+      >
+        Cancel
+      </Button>
+      <Button posIcon={<FiArrowRight />} type="submit">
+        Next
+      </Button>
     </>
   );
 }
@@ -100,9 +99,9 @@ function BackupKeyPairs() {
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title text-neutral">{req.Msg}</h1>
+        <h1 className="mas-title">{req.Msg}</h1>
         {!privateKey && (
-          <p className="mas-body text-neutral pt-4">
+          <p className="mas-body pt-4">
             Enter your password to show your private key
           </p>
         )}

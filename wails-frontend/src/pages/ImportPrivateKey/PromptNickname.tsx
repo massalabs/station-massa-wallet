@@ -69,7 +69,7 @@ function PromptNickname() {
     <Layout>
       <Stepper step={1} steps={['Private Key', 'Account name', 'Password']} />
       <form ref={form} onSubmit={handleSubmit}>
-        <p className="mas-title pt-4">{req.Msg}</p>
+        <h1 className="mas-title pt-4">{req.Msg}</h1>
         <p className="mas-body pt-4">Define your account name</p>
         <div className="pt-4">
           <Input

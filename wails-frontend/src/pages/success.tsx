@@ -2,6 +2,7 @@ import { useLocation } from 'react-router';
 import { promptAction, promptRequest } from '../events/events';
 import { FiCheck } from 'react-icons/fi';
 import I18n from '../i18n/i18n';
+import { Layout } from '../layouts/Layout/Layout';
 
 function Success() {
   const { state } = useLocation();
@@ -27,16 +28,14 @@ function Success() {
   }
 
   return (
-    <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
-      <div className="w-1/4 max-w-xs  min-w-fit flex flex-col justify-center items-center">
+    <Layout>
+      <div className="flex flex-col items-center justify-center">
         <div className="w-12 h-12 bg-brand flex flex-col justify-center items-center rounded-full mb-6">
           <FiCheck className="w-6 h-6" />
         </div>
-        <div>
-          <p className="text-neutral mas-body">{successMsg(req)}</p>
-        </div>
+        <p className="text-neutral mas-body">{successMsg(req)}</p>
       </div>
-    </div>
+    </Layout>
   );
 }
 
