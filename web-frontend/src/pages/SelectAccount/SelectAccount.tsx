@@ -37,14 +37,19 @@ export default function SelectAccount() {
           </div>
           <div id="account-select" className="w-full flex flex-col">
             {accounts.map((account: AccountObject) => (
-              <div className="mb-4" key={account.nickname}>
-                <AccountSelector
-                  avatar={<FiUser className="text-neutral h-6 w-6" />}
-                  icon={<MassaToken size={24} />}
-                  accountName={account.nickname}
-                  amount={toMAS(account.candidateBalance).toString()}
-                />
-              </div>
+              <Link
+                to={routeFor('home')}
+                state={{ nickname: account.nickname }}
+              >
+                <div className="mb-4" key={account.nickname}>
+                  <AccountSelector
+                    avatar={<FiUser className="text-neutral h-6 w-6" />}
+                    icon={<MassaToken size={24} />}
+                    accountName={account.nickname}
+                    amount={toMAS(account.candidateBalance).toString()}
+                  />
+                </div>
+              </Link>
             ))}
             <div>
               <Link to={routeFor('account-create')}>
