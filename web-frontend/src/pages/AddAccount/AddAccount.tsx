@@ -10,10 +10,10 @@ import LandingPage from '../../layouts/LandingPage/LandingPage';
 export default function AddAccount() {
   const navigate = useNavigate();
 
-  const { mutate, isSuccess } = usePut<AccountObject>('accounts');
+  const { mutate, isSuccess, data } = usePut<AccountObject>('accounts');
 
   if (isSuccess) {
-    navigate(routeFor('homepage'));
+    navigate(routeFor('dashboard'), { state: { nickname: data.nickname } });
   }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
