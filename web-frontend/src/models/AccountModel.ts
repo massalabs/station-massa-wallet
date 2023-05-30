@@ -12,3 +12,8 @@ export type AccountObject = {
   keyPair: keyPairObject;
   nickname: string;
 };
+export type SendTransactionObject = {
+  amount: string;
+  recipientAddress: string;
+  fee: string;
+};
