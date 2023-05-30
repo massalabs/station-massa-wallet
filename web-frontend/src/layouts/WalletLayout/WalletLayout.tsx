@@ -1,4 +1,4 @@
-import { DashboardLayout } from '../../../layouts/DashboardLayout';
+import { ReactNode } from 'react';
 import { Dropdown, MassaWallet, SideMenu } from '@massalabs/react-ui-kit';
 import {
   FiHome,
@@ -11,11 +11,10 @@ import {
   FiSun,
 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useResource from '../../../custom/api/useResource';
-import { AccountObject } from '../../../models/AccountModel';
-import { routeFor } from '../../../utils';
+import useResource from '../../custom/api/useResource';
+import { AccountObject } from '../../models/AccountModel';
+import { routeFor } from '../../utils';
 import { useState } from 'react';
-import { TransferCoin } from './transferCoin';
 
 enum MenuItem {
   Home = 'home',
@@ -27,7 +26,11 @@ enum MenuItem {
   LightTheme = 'light-theme',
 }
 
-export default function DashBoard() {
+interface WalletProps {
+  children: ReactNode;
+}
+
+function WalletLayout(props: WalletProps) {
   const navigate = useNavigate();
   const { state } = useLocation();
   var nickname: string = state.nickname;
@@ -39,17 +42,13 @@ export default function DashBoard() {
     navigate(routeFor('index'));
   }
 
-  const [selectedAccount, setSelectedAccount] = useState<AccountObject>(
-    accounts.find((account) => account.nickname === nickname)!,
-  );
-
   const [selectedItem, setSelectedItem] = useState<MenuItem>(
     state.menuItem ?? MenuItem.SendReceive,
   );
 
-  const isActive = (item: MenuItem) => {
+  function isActive(item: MenuItem) {
     return item === selectedItem;
-  };
+  }
 
   let menuConf = {
     title: 'MassaWallet',
@@ -59,46 +58,46 @@ export default function DashBoard() {
 
   let menuItems = [
     {
-      label: 'Home',
+      label: 'Wallet',
       icon: <FiHome />,
       active: false,
       footer: false,
-      onClickItem: () => setSelectedItem(MenuItem.Home),
+      onClickItem: () => navigate(routeFor(MenuItem.Home)),
     },
     {
       label: 'Transactions',
       icon: <FiList />,
       active: isActive(MenuItem.Transactions),
       footer: false,
-      onClickItem: () => setSelectedItem(MenuItem.Transactions),
+      onClickItem: () => navigate(routeFor(MenuItem.Transactions)),
     },
     {
       label: 'Send/Receive',
       icon: <FiArrowUpRight />,
       active: isActive(MenuItem.SendReceive),
       footer: false,
-      onClickItem: () => setSelectedItem(MenuItem.SendReceive),
+      onClickItem: () => navigate(routeFor(MenuItem.SendReceive)),
     },
     {
       label: 'Contacts',
       icon: <FiUsers />,
       active: isActive(MenuItem.Contacts),
       footer: false,
-      onClickItem: () => setSelectedItem(MenuItem.Contacts),
+      onClickItem: () => navigate(routeFor(MenuItem.Contacts)),
     },
     {
       label: 'Assets',
       icon: <FiDisc />,
       active: isActive(MenuItem.Assets),
       footer: false,
-      onClickItem: () => setSelectedItem(MenuItem.Assets),
+      onClickItem: () => navigate(routeFor(MenuItem.Assets)),
     },
     {
       label: 'Settings',
       icon: <FiSettings />,
       active: isActive(MenuItem.Settings),
       footer: true,
-      onClickItem: () => setSelectedItem(MenuItem.Settings),
+      onClickItem: () => navigate(routeFor(MenuItem.Settings)),
     },
     {
       label: 'Light theme',
@@ -112,7 +111,6 @@ export default function DashBoard() {
   const accountsItems = accounts.map((account) => ({
     icon: <FiUser size={32} />,
     item: account.nickname,
-    onClick: () => setSelectedAccount(account),
   }));
 
   const selectedAccountKey: number = parseInt(
@@ -121,22 +119,20 @@ export default function DashBoard() {
     )!,
   );
 
-  let content;
-  switch (selectedItem) {
-    case MenuItem.SendReceive:
-      content = <TransferCoin account={selectedAccount} />;
-      break;
-    default:
-      content = null;
-  }
-
   return (
-    <DashboardLayout>
-      <SideMenu conf={menuConf} items={menuItems} />
-      <div className="absolute top-0 right-0 m-6">
-        <Dropdown options={accountsItems} select={selectedAccountKey} />
+    <div className="bg-primary min-h-screen">
+      <div
+        className="flex flex-col justify-center h-screen
+        max-w-xs min-w-fit text-f-primary m-auto"
+      >
+        <SideMenu conf={menuConf} items={menuItems} />
+        <div className="absolute top-0 right-0 m-6">
+          <Dropdown options={accountsItems} select={selectedAccountKey} />
+        </div>
+        {props?.children}
       </div>
-      {content}
-    </DashboardLayout>
+    </div>
   );
 }
+
+export default WalletLayout;

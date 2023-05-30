@@ -38,7 +38,7 @@ export default function SelectAccount() {
           <div id="account-select" className="w-full flex flex-col">
             {accounts.map((account: AccountObject) => (
               <Link
-                to={routeFor('dashboard')}
+                to={routeFor('home')}
                 state={{ nickname: account.nickname }}
               >
                 <div className="mb-4" key={account.nickname}>

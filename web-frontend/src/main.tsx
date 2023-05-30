@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom/client';
 import {
   RouterProvider,
@@ -21,7 +22,7 @@ import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
 import mockServer from './mirage/server.ts';
 import SendCoins from './pages/Home/TransferCoins/SendCoins/SendCoins.tsx';
-import DashBoard from './pages/Dashboard/Dashboard.tsx';
+import Home from './pages/Home/Home.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -39,7 +40,13 @@ const router = createBrowserRouter(
       <Route path="account-create-step-one" element={<StepOne />} />
       <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
-      <Route path="send-coins" element={<SendCoins />} />
+      <Route path="home" element={<Home />} />
+      <Route path="transactions" element={<></>}></Route>
+      <Route path="send-coins" element={<SendCoins />}></Route>
+      <Route path="receive" element={<></>}></Route>
+      <Route path="assets" element={<></>}></Route>
+      <Route path="settings" element={<></>}></Route>
+      <Route path="contacts" element={<></>}></Route>
       <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>,

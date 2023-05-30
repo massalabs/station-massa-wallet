@@ -13,7 +13,7 @@ export default function AddAccount() {
   const { mutate, isSuccess, data } = usePut<AccountObject>('accounts');
 
   if (isSuccess) {
-    navigate(routeFor('dashboard'), { state: { nickname: data.nickname } });
+    navigate(routeFor('home'), { state: { nickname: data.nickname } });
   }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
