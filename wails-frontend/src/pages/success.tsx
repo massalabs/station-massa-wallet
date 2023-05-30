@@ -1,33 +1,34 @@
 import { useLocation } from 'react-router';
 import { promptAction, promptRequest } from '../events/events';
 import { FiCheck } from 'react-icons/fi';
+import I18n from '../i18n/i18n';
 
-const Success = () => {
+function Success() {
   const { state } = useLocation();
   const { req } = state;
 
-  const successMsg = (req: promptRequest) => {
+  function successMsg(req: promptRequest) {
     switch (req.Action) {
       case promptAction.deleteReq:
-        return 'The account has been deleted';
+        return I18n.t('success.delete');
       case promptAction.newPasswordReq:
-        return 'The password has been created';
+        return I18n.t('success.new-password');
       case promptAction.importReq:
-        return 'The account has been imported';
+        return I18n.t('success.import');
       case promptAction.signReq:
-        return 'The transaction has been signed';
+        return I18n.t('success.sign');
       case promptAction.backupReq:
-        return 'The account file has been saved';
+        return I18n.t('success.backup');
       case promptAction.transferReq:
-        return 'The transaction has been sent';
+        return I18n.t('success.transfer');
       default:
-        return 'Success';
+        return I18n.t('success.success');
     }
-  };
+  }
 
   return (
     <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
-      <div className="w-1/4  max-w-xs  min-w-fit flex flex-col justify-center items-center">
+      <div className="w-1/4 max-w-xs  min-w-fit flex flex-col justify-center items-center">
         <div className="w-12 h-12 bg-brand flex flex-col justify-center items-center rounded-full mb-6">
           <FiCheck className="w-6 h-6" />
         </div>
@@ -37,6 +38,6 @@ const Success = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Success;

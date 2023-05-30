@@ -1,0 +1,11 @@
+{
+  "success": {
+    "delete": "The account has been deleted",
+    "new-password": "The password has been created",
+    "import": "The account has been imported",
+    "sign": "The transaction has been signed",
+    "backup": "The account file has been saved",
+    "transfer": "The transaction has been sent",
+    "success": "Success"
+  }
+}
