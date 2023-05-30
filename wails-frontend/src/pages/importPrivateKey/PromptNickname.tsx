@@ -77,6 +77,7 @@ const PromptNickname = () => {
           </div>
           <div className="pb-4">
             <Input
+              defaultValue=""
               name="nickname"
               placeholder={'Account name'}
               error={error?.nickname}

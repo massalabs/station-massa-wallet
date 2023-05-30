@@ -63,6 +63,7 @@ const PromptPrivateKey = () => {
           </div>
           <div className="pb-4">
             <Password
+              defaultValue=""
               name="privateKey"
               placeholder={'Private key'}
               error={error?.privateKey}
