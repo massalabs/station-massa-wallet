@@ -17,14 +17,14 @@ const ImportPrivatekey = () => {
 
   const baselineStr = () => {
     if (privateKey) {
-      return 'Choose a username';
+      return 'Choose an account name';
     }
     return 'Enter your Private Key';
   };
 
   const placeholder = () => {
     if (privateKey) {
-      return 'Username';
+      return 'Account name';
     }
     return 'Private key';
   };
