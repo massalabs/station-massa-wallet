@@ -1,6 +1,7 @@
 export enum ErrorCode {
   InvalidNickname = 'Nickname-0001',
   InvalidPrivateKey = 'PrivateKey-0001',
+  ErrNoFile = 'NoFile-0001',
   FilesystemError = 'AccountFile-0001',
   DuplicateKey = 'DuplicateKey-0001',
   UnknownError = 'Unknown-0001',
@@ -13,6 +14,7 @@ export enum ErrorCode {
 const errorsEN: Record<ErrorCode, string> = {
   [ErrorCode.InvalidNickname]: 'Invalid nickname',
   [ErrorCode.InvalidPrivateKey]: 'Invalid private key',
+  [ErrorCode.ErrNoFile]: 'No file selected',
   [ErrorCode.FilesystemError]: 'Filesystem error',
   [ErrorCode.DuplicateKey]: 'Private key already exists',
   [ErrorCode.UnknownError]: 'Unknown error, try again',

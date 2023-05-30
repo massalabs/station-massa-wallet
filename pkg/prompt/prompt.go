@@ -35,7 +35,7 @@ func (w *WalletPrompter) SelectBackupFilepath(nickname string) (string, error) {
 	return runtime.SaveFileDialog(w.PromptApp.Ctx, runtime.SaveDialogOptions{
 		Title:           "Backup Account File",
 		DefaultFilename: wallet.Filename(nickname),
-		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yml)", Pattern: "*.yml"}},
+		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yaml)", Pattern: "*.yaml"}},
 	})
 }
 

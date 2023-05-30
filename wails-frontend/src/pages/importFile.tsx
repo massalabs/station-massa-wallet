@@ -9,6 +9,7 @@ import { handleApplyResult, handleCancel } from '../utils/utils';
 import { walletapp } from '../../wailsjs/go/models';
 import { EventsOnce } from '../../wailsjs/runtime/runtime';
 import { Button } from '@massalabs/react-ui-kit';
+import { getErrorMessage } from '../utils';
 
 const ImportFile = () => {
   const nav = useNavigate();
@@ -21,8 +22,8 @@ const ImportFile = () => {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const accountStyleSuccess = ' mas-body text-s-success  pb-4';
-  const accountStyleNormal = ' mas-body text-neutral  pb-4';
+  const accountStyleSuccess = 'mas-body text-s-success pb-4';
+  const accountStyleNormal = 'mas-body text-neutral pb-4';
 
   const baselineStr = () =>
     account
@@ -39,7 +40,7 @@ const ImportFile = () => {
         return;
       }
       if (res.err) {
-        setErrorMsg(res.err);
+        setErrorMsg(getErrorMessage(res.codeMessage));
         return;
       }
       setAccount(res);

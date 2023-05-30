@@ -21,7 +21,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"lukechampine.com/blake3"
 )
 
@@ -64,7 +64,7 @@ type Wallet struct {
 }
 
 type AccountSerialized struct {
-	Version      uint8    `yaml:"Version"`
+	Version      *uint8   `yaml:"Version"`
 	Nickname     string   `yaml:"Nickname"`
 	Address      string   `yaml:"Address"`
 	Salt         [16]byte `yaml:"Salt,flow"`
@@ -75,7 +75,7 @@ type AccountSerialized struct {
 
 func (accountSerialized *AccountSerialized) ToAccount() Wallet {
 	wallet := Wallet{
-		Version:  accountSerialized.Version,
+		Version:  *accountSerialized.Version,
 		Nickname: accountSerialized.Nickname,
 		Address:  accountSerialized.Address,
 		KeyPair: KeyPair{
@@ -91,7 +91,7 @@ func (accountSerialized *AccountSerialized) ToAccount() Wallet {
 
 func (account *Wallet) ToAccountSerialized() AccountSerialized {
 	accountSerialized := AccountSerialized{
-		Version:      account.Version,
+		Version:      &account.Version,
 		Nickname:     account.Nickname,
 		Address:      account.Address,
 		Salt:         account.KeyPair.Salt,
@@ -294,10 +294,39 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 
+	errMissingFields := checkMandatoryFields(accountSerialized)
+	if errMissingFields != nil {
+		return Wallet{}, errMissingFields
+	}
+
 	account := accountSerialized.ToAccount()
 	account.KeyPair.PrivateKey = accountSerialized.CipheredData
 
 	return account, nil
+}
+
+func checkMandatoryFields(accountSerialized AccountSerialized) *WalletError {
+	if len(accountSerialized.Salt) == 0 {
+		return &WalletError{fmt.Errorf("missing salt"), utils.ErrInvalidFileFormat}
+	}
+
+	if len(accountSerialized.Nonce) == 0 {
+		return &WalletError{fmt.Errorf("missing nonce"), utils.ErrInvalidFileFormat}
+	}
+
+	if len(accountSerialized.CipheredData) == 0 {
+		return &WalletError{fmt.Errorf("missing ciphered data"), utils.ErrInvalidFileFormat}
+	}
+
+	if len(accountSerialized.PublicKey) == 0 {
+		return &WalletError{fmt.Errorf("missing public key"), utils.ErrInvalidFileFormat}
+	}
+
+	if accountSerialized.Version == nil {
+		return &WalletError{fmt.Errorf("missing version"), utils.ErrInvalidFileFormat}
+	}
+
+	return nil
 }
 
 // Generate instantiates a new wallet, protects its private key and persists it.

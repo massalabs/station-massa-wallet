@@ -95,7 +95,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			prompterApp.App().PromptInput <- "invalidFilename"
 			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, utils.ErrInvalidFileFormat)
+			checkResultChannel(t, failRes, false, utils.ErrInvalidFileExtension)
 		}(testResult)
 
 		resp := importWallet(t, api)

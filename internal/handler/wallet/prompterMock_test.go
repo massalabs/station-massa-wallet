@@ -5,7 +5,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
 )
 
-const WalletBackupFilepath = "walletBackup.yml"
+const WalletBackupFilepath = "walletBackup.yaml"
 
 type walletPrompterMock struct {
 	resultChannel chan walletapp.EventData
