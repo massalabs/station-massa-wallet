@@ -20,6 +20,7 @@ import StepTwo from './pages/CreateAccount/StepTwo.tsx';
 import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
 import mockServer from './mirage/server.ts';
+import SendCoins from './pages/Home/TransferCoins/SendCoins/SendCoins.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -37,6 +38,7 @@ const router = createBrowserRouter(
       <Route path="account-create-step-one" element={<StepOne />} />
       <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
+      <Route path="send-coins" element={<SendCoins />} />
       <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>,
