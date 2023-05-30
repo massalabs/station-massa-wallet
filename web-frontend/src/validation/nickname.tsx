@@ -8,5 +8,5 @@ export function isAlreadyExists(
 }
 
 export function isNicknameValid(nickname: string): boolean {
-  return /^[a-z0-9_-]+$/.test(nickname);
+  return /^[a-zA-Z0-9_-]+$/.test(nickname);
 }
