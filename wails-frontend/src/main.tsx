@@ -14,7 +14,8 @@ import PasswordPrompt from './pages/passwordPrompt';
 import Success from './pages/success';
 import ImportMethods from './pages/importMethods';
 import ImportFile from './pages/importFile';
-import ImportPrivatekey from './pages/importPrivateKey';
+import PromptPrivateKey from './pages/importPrivateKey/PromptPrivateKey';
+import PromptNickname from './pages/importPrivateKey/PromptNickname';
 import Failure from './pages/failure';
 import BackupMethods from './pages/backupMethods';
 import BackupKeyPairs from './pages/backupKeyPairs';
@@ -32,7 +33,8 @@ const router = createBrowserRouter(
       <Route path="/failure" element={<Failure />} />
       <Route path="/import-methods" element={<ImportMethods />} />
       <Route path="/import-file" element={<ImportFile />} />
-      <Route path="/import-key-pairs" element={<ImportPrivatekey />} />
+      <Route path="/import-key-pairs" element={<PromptPrivateKey />} />
+      <Route path="/import-nickname" element={<PromptNickname />} />
     </Route>,
   ),
 );

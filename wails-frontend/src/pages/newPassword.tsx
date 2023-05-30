@@ -83,7 +83,7 @@ function NewPassword() {
     );
 
     return isImportAction
-      ? ImportPrivateKey(state.pkey, state.nickname, password)
+      ? ImportPrivateKey(state.privateKey, state.nickname, password)
       : SendPromptInput(password);
   }
 

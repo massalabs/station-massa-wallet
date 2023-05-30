@@ -32,5 +32,6 @@ export function getErrorMessage(code: ErrorCode | string): string {
 export interface IErrorObject {
   nickname?: string;
   password?: string;
+  privateKey?: string;
   error?: string;
 }
