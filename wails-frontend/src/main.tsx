@@ -18,6 +18,7 @@ import ImportPrivatekey from './pages/importPrivateKey';
 import Failure from './pages/failure';
 import BackupMethods from './pages/backupMethods';
 import BackupKeyPairs from './pages/backupKeyPairs';
+import NewPassword from './pages/newPassword';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
       <Route path="/backup-methods" element={<BackupMethods />} />
       <Route path="/backup-pkey" element={<BackupKeyPairs />} />
       <Route path="/password" element={<PasswordPrompt />} />
+      <Route path="/new-password" element={<NewPassword />} />
       <Route path="/success" element={<Success />} />
       <Route path="/failure" element={<Failure />} />
       <Route path="/import-methods" element={<ImportMethods />} />

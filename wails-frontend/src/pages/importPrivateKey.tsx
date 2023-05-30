@@ -43,7 +43,7 @@ const ImportPrivatekey = () => {
 
     state = { ...state, pkey: privateKey, nickname: input };
 
-    navigate('/password', { state });
+    navigate('/new-password', { state });
   };
 
   const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
