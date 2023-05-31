@@ -11,7 +11,8 @@ import { parseForm } from '../utils/parseForm';
 import { hasMoreThanFiveChars, hasSamePassword } from '../validation/password';
 
 import { FiLock } from 'react-icons/fi';
-import { Password, Button } from '@massalabs/react-ui-kit';
+import { Layout } from '../layouts/Layout/Layout';
+import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
 import { IErrorObject } from '../utils';
 
 function NewPassword() {
@@ -21,15 +22,15 @@ function NewPassword() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const { newPasswordReq, importReq, deleteReq } = promptAction;
+  const { newPasswordReq, importReq } = promptAction;
   const isImportAction = req.Action === importReq;
 
   function getButtonLabel() {
     switch (req.Action) {
-      case deleteReq:
-        return 'Delete';
       case newPasswordReq:
         return 'Define';
+      case importReq:
+        return 'Define and import';
       default:
         return 'Apply';
     }
@@ -95,43 +96,43 @@ function NewPassword() {
   }
 
   return (
-    <div className="bg-primary min-h-screen">
+    <Layout>
+      {isImportAction && (
+        <div className="pb-6">
+          <Stepper step={2} steps={['Private Key', 'Account name', 'Password']} />
+        </div>
+      )}
       <form ref={form} onSubmit={handleSubmit}>
-        <div
-          className="flex flex-col justify-center h-screen
-          max-w-xs min-w-fit text-f-primary m-auto"
-        >
-          <h1 className="mas-title">{req.Msg}</h1>
-          <p className="mas-body pt-4">{getSubtitle()}</p>
-          <div className="pt-4">
-            <Password
-              defaultValue=""
-              name="password"
-              placeholder="Password"
-              error={error?.password}
-            />
-          </div>
-          <div className="pt-4">
-            <Password
-              defaultValue=""
-              name="passwordConfirm"
-              placeholder="Confirm your password"
-              error={errorConfirm?.password}
-            />
-          </div>
-          <div className="pt-4 flex gap-4">
-            <div className="max-w-min">
-              <Button variant={'secondary'} onClick={handleCancel}>
-                Cancel
-              </Button>
-            </div>
-            <Button preIcon={<FiLock />} type="submit">
-              {getButtonLabel()}
+        <h1 className="mas-title">{req.Msg}</h1>
+        <p className="mas-body pt-4">{getSubtitle()}</p>
+        <div className="pt-4">
+          <Password
+            defaultValue=""
+            name="password"
+            placeholder="Password"
+            error={error?.password}
+          />
+        </div>
+        <div className="pt-4">
+          <Password
+            defaultValue=""
+            name="passwordConfirm"
+            placeholder="Confirm your password"
+            error={errorConfirm?.password}
+          />
+        </div>
+        <div className="pt-4 flex gap-4">
+          <div className="max-w-min">
+            <Button variant={'secondary'} onClick={handleCancel}>
+              Cancel
             </Button>
           </div>
+          <Button preIcon={<FiLock />} type="submit">
+            {getButtonLabel()}
+          </Button>
         </div>
       </form>
-    </div>
+    </Layout>
   );
 }
 
