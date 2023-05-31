@@ -41,10 +41,15 @@ export default function SelectAccount() {
                 to={routeFor('home')}
                 state={{ nickname: account.nickname }}
               >
-                <div className="mb-4" key={account.nickname}>
+                <div className="mb-4 theme-light" key={account.nickname}>
                   <AccountSelector
-                    avatar={<FiUser className="text-neutral h-6 w-6" />}
-                    icon={<MassaToken size={24} />}
+                    avatar={<FiUser className="text-primary h-6 w-6" />}
+                    icon={
+                      <MassaToken
+                        size={24}
+                        className="bg-neutral rounded-full"
+                      />
+                    }
                     accountName={account.nickname}
                     amount={toMAS(account.candidateBalance).toString()}
                   />
