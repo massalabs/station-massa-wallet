@@ -15,6 +15,7 @@ import { hasMoreThanFiveChars } from '../validation/password';
 import { FiLock } from 'react-icons/fi';
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
+import { Layout } from '../layouts/Layout/Layout';
 
 function PasswordPrompt() {
   const navigate = useNavigate();
@@ -90,35 +91,28 @@ function PasswordPrompt() {
   }
 
   return (
-    <div className="bg-primary min-h-screen">
+    <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <div
-          className="flex flex-col justify-center h-screen
-          max-w-xs min-w-fit text-f-primary m-auto"
-        >
-          <h1 className="mas-title">{req.Msg}</h1>
-          <p className="mas-body pt-4">{getSubtitle()}</p>
-          <div className="pt-4">
-            <Password
-              defaultValue=""
-              name="password"
-              placeholder="Password"
-              error={error?.password}
-            />
-          </div>
-          <div className="pt-4 flex gap-4">
-            <div className="max-w-min">
-              <Button variant={'secondary'} onClick={handleCancel}>
-                Cancel
-              </Button>
-            </div>
-            <Button preIcon={<FiLock />} type="submit">
-              {getButtonLabel()}
-            </Button>
-          </div>
+        <h1 className="mas-title">{req.Msg}</h1>
+        <p className="mas-body pt-4">{getSubtitle()}</p>
+        <div className="pt-4">
+          <Password
+            defaultValue=""
+            name="password"
+            placeholder="Password"
+            error={error?.password}
+          />
+        </div>
+        <div className="pt-4 flex gap-4">
+          <Button variant={'secondary'} onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button preIcon={<FiLock />} type="submit">
+            {getButtonLabel()}
+          </Button>
         </div>
       </form>
-    </div>
+    </Layout>
   );
 }
 
