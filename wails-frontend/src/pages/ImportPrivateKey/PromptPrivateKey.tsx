@@ -55,7 +55,7 @@ function PromptPrivateKey() {
 
   return (
     <Layout>
-      <Stepper step={0} steps={['Private Key', 'Username', 'Password']} />
+      <Stepper step={0} steps={['Private Key', 'Account name', 'Password']} />
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title pt-6">{req.Msg}</h1>
         <p className="mas-body pt-4">Enter your Private Key</p>

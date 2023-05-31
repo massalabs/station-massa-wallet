@@ -99,7 +99,7 @@ function NewPassword() {
     <Layout>
       {isImportAction && (
         <div className="pb-6">
-          <Stepper step={2} steps={['Private Key', 'Username', 'Password']} />
+          <Stepper step={2} steps={['Private Key', 'Account name', 'Password']} />
         </div>
       )}
       <form ref={form} onSubmit={handleSubmit}>
