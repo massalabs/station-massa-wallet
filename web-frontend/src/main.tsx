@@ -21,7 +21,7 @@ import StepTwo from './pages/CreateAccount/StepTwo.tsx';
 import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
 import mockServer from './mirage/server.ts';
-import SendCoins from './pages/Home/TransferCoins/SendCoins/SendCoins.tsx';
+import SendCoins from './pages/TransferCoins/SendCoins/SendCoins.tsx';
 import Home from './pages/Home/Home.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
