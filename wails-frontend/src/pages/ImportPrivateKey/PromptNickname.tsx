@@ -2,12 +2,14 @@ import { SyntheticEvent, useRef, useState } from 'react';
 import { promptRequest } from '../../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { handleCancel } from '../../utils/utils';
-import { Input, Button } from '@massalabs/react-ui-kit';
 import { IErrorObject, parseForm } from '../../utils';
 import {
   IsNicknameUnique,
   IsNicknameValid,
 } from '../../../wailsjs/go/walletapp/WalletApp';
+
+import { Input, Button, Stepper } from '@massalabs/react-ui-kit';
+import { Layout } from '../../layouts/Layout/Layout';
 
 // TODO: create i18n and move this to translation file
 const t = (key: string): string => {
@@ -21,7 +23,7 @@ const t = (key: string): string => {
   return errors[key] || key;
 };
 
-const PromptNickname = () => {
+function PromptNickname() {
   const navigate = useNavigate();
   const form = useRef(null);
 
@@ -64,39 +66,28 @@ const PromptNickname = () => {
   }
 
   return (
-    <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
-      <div className="w-1/4  max-w-sm  min-w-fit">
-        <form ref={form} onSubmit={handleSubmit}>
-          <div>
-            <p className="mas-title text-neutral pb-4">{req.Msg}</p>
-          </div>
-          <div>
-            <p className="mas-body text-neutral pb-4">
-              Define your account name
-            </p>
-          </div>
-          <div className="pb-4">
-            <Input
-              defaultValue=""
-              name="nickname"
-              placeholder={'Account name'}
-              error={error?.nickname}
-            />
-          </div>
-          <div className="flex flex-row gap-4 w-full pb-4">
-            <div className="min-w-fit w-full">
-              <Button variant={'secondary'} onClick={handleCancel}>
-                Cancel
-              </Button>
-            </div>
-            <div className="min-w-fit w-full">
-              <Button type="submit">Next</Button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Layout>
+      <Stepper step={1} steps={['Private Key', 'Username', 'Password']} />
+      <form ref={form} onSubmit={handleSubmit}>
+        <p className="mas-title pt-4">{req.Msg}</p>
+        <p className="mas-body pt-4">Define your account name</p>
+        <div className="pt-4">
+          <Input
+            defaultValue=""
+            name="nickname"
+            placeholder={'Account name'}
+            error={error?.nickname}
+          />
+        </div>
+        <div className="flex gap-4 pt-4">
+          <Button variant={'secondary'} onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button type="submit">Next</Button>
+        </div>
+      </form>
+    </Layout>
   );
-};
+}
 
 export default PromptNickname;
