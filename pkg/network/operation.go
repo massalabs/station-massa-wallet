@@ -3,7 +3,6 @@ package network
 import (
 	"fmt"
 
-	"github.com/go-openapi/strfmt"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
 )
@@ -29,10 +28,8 @@ func SendOperation(wlt *wallet.Wallet, massaClient NodeFetcherInterface, operati
 		return nil, fmt.Errorf("Error while making operation: %w", err)
 	}
 
-	// sign the msg in base64
 	// TODO: we do not implement the handling of the correlation id for now
-	byteMsgB64 := strfmt.Base64(msg)
-	signature, err := wlt.Sign(&byteMsgB64)
+	signature, err := wlt.Sign(msg)
 	if err != nil {
 		return nil, fmt.Errorf("Error sign: %w", err)
 	}

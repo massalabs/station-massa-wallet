@@ -12,6 +12,7 @@ const (
 	errorDeleteFile
 	errorGetWallets
 	errorSignEmptyNickname
+	errorSignDecodeOperation
 	errorSignRead
 	errorSignLoadCache
 	errorSignGenerateCorrelationId

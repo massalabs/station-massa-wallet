@@ -3,6 +3,7 @@ package wallet
 import (
 	"bytes"
 	cryptorand "crypto/rand"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -72,7 +73,16 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	signature, err := wlt.Sign(params.Body.Operation)
+	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	if err != nil {
+		return operations.NewSignInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorSignDecodeOperation,
+				Message: "Error: while decoding operation.",
+			})
+	}
+
+	signature, err := wlt.Sign(op)
 	if err != nil {
 		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
