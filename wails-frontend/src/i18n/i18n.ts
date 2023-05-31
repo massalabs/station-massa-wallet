@@ -7,6 +7,7 @@ import dot from 'dot-object';
 import enUs from './en_US.json';
 import frFR from './fr_FR.json';
 import { INTL } from '../const/intl/intl';
+import { LogPrint } from '../../wailsjs/runtime/runtime';
 
 type Copy = Record<string, string | object>;
 
@@ -45,7 +46,7 @@ class I18n {
     } else if (lang === INTL.FR_fr) {
       return frFR;
     } else {
-      console.warn(
+      LogPrint(
         `I18n::_getCopy:: We may not support yet ${lang}. Loading 'en_US' then... `,
       );
       return enUs;
