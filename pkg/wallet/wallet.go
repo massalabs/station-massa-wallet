@@ -6,8 +6,8 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,7 +16,6 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/go-openapi/strfmt"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
 	"golang.org/x/crypto/pbkdf2"
@@ -268,6 +267,8 @@ func Load(nickname string) (*Wallet, error) {
 	if err != nil {
 		return nil, fmt.Errorf("getting file path for '%s': %w", nickname, err)
 	}
+
+	log.Print(filePath)
 
 	if _, err := os.Stat(filePath); err != nil {
 		return nil, ErrorAccountNotFound(nickname)
@@ -544,27 +545,12 @@ func addressFromPublicKey(pubKeyBytes []byte) string {
 
 // Sign signs the given operation with the wallet.
 // The operation is a base64 encoded string.
-func (wallet *Wallet) Sign(operation *strfmt.Base64) ([]byte, error) {
+func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
 	pubKey := wallet.KeyPair.PublicKey
 	privKey := wallet.KeyPair.PrivateKey
 
-	digest, err := hash(operation, pubKey)
-	if err != nil {
-		return nil, err
-	}
+	digest := blake3.Sum256(append(pubKey, operation...))
 
 	signature := ed25519.Sign(privKey, digest[:])
 	return signature, nil
-}
-
-// hash prepares the digest for signature.
-func hash(operation *strfmt.Base64, publicKey []byte) ([32]byte, error) {
-	op, err := base64.StdEncoding.DecodeString(operation.String())
-	if err != nil {
-		return [32]byte{}, fmt.Errorf("decoding operation: %w", err)
-	}
-
-	digest := blake3.Sum256(append(publicKey, op...))
-
-	return digest, nil
 }
