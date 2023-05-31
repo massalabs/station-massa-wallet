@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import usePost from '../../../../custom/api/usePost';
-import { SendTransactionObject } from '../../../../models/AccountModel';
+import usePost from '../../../custom/api/usePost';
+import { SendTransactionObject } from '../../../models/AccountModel';
 import { Button } from '@massalabs/react-ui-kit';
 import { useLocation } from 'react-router-dom';
-
-export function SendCoins() {
+import WalletLayout from '../../../layouts/WalletLayout/WalletLayout';
+export default function SendCoins() {
   const { state } = useLocation();
   const nickname = state.nickname;
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
@@ -35,7 +35,7 @@ export function SendCoins() {
   }
 
   return (
-    <div className="bg-primary w-full h-screen">
+    <WalletLayout>
       <h1>Send coins</h1>
 
       <form className="flex flex-col w-1/2">
@@ -59,6 +59,6 @@ export function SendCoins() {
         />
         <Button onClick={handleTransfer}>Send</Button>
       </form>
-    </div>
+    </WalletLayout>
   );
 }

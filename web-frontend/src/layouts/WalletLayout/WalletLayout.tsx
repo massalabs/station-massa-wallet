@@ -18,7 +18,8 @@ import { useState } from 'react';
 
 enum MenuItem {
   Home = 'home',
-  SendReceive = 'send-receive',
+  SendCoins = 'send-coins',
+  Receive = 'receive',
   Transactions = 'transactions',
   Contacts = 'contacts',
   Assets = 'assets',
@@ -74,9 +75,12 @@ function WalletLayout(props: WalletProps) {
     {
       label: 'Send/Receive',
       icon: <FiArrowUpRight />,
-      active: isActive(MenuItem.SendReceive),
+      active: isActive(MenuItem.SendCoins),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.SendReceive)),
+      onClickItem: () =>
+        navigate(routeFor(MenuItem.SendCoins), {
+          state: { nickname, menuItem: MenuItem.SendCoins },
+        }),
     },
     {
       label: 'Contacts',
