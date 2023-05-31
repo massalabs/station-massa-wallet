@@ -19,6 +19,7 @@ export enum promptAction {
 export type promptRequest = {
   Action: promptAction;
   Msg: string;
+  Data: any;
 };
 
 export const events = {

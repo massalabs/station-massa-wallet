@@ -17,12 +17,18 @@ import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
 import Intl from '../i18n/i18n';
 
+interface PromptRequestDeleteDate {
+  Nickname: string;
+  Balance: string;
+}
+
 function PasswordPrompt() {
   const navigate = useNavigate();
   const form = useRef(null);
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
+  const data: PromptRequestDeleteDate = req.Data;
 
   const { deleteReq } = promptAction;
 
@@ -97,7 +103,7 @@ function PasswordPrompt() {
     const form = parseForm(e);
     const { password } = form;
 
-    if (req.Action === deleteReq) {
+    if (req.Action === deleteReq && data.Balance !== '0') {
       navigate('/confirm-delete', { state: { req, password } });
     } else {
       save(e);
