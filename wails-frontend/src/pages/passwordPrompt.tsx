@@ -113,30 +113,23 @@ function PasswordPrompt() {
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <div
-          className="flex flex-col justify-center h-screen
-          max-w-xs min-w-fit text-f-primary m-auto"
-        >
-          <h1 className="mas-title">{req.Msg}</h1>
-          <p className="mas-body pt-4">{getSubtitle()}</p>
-          <div className="pt-4">
-            <Password
-              defaultValue=""
-              name="password"
-              placeholder="Password"
-              error={error?.password}
-            />
-          </div>
-          <div className="pt-4 flex gap-4">
-            <div className="max-w-min">
-              <Button variant={'secondary'} onClick={handleCancel}>
-                Cancel
-              </Button>
-            </div>
-            <Button preIcon={getButtonIcon()} type="submit">
-              {getButtonLabel()}
-            </Button>
-          </div>
+        <h1 className="mas-title">{req.Msg}</h1>
+        <p className="mas-body pt-4">{getSubtitle()}</p>
+        <div className="pt-4">
+          <Password
+            defaultValue=""
+            name="password"
+            placeholder="Password"
+            error={error?.password}
+          />
+        </div>
+        <div className="pt-4 flex gap-4">
+          <Button variant={'secondary'} onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button preIcon={getButtonIcon()} type="submit">
+            {getButtonLabel()}
+          </Button>
         </div>
       </form>
     </Layout>
