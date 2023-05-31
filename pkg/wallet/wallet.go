@@ -79,7 +79,7 @@ func (accountSerialized *AccountSerialized) ToAccount() Wallet {
 		Nickname: accountSerialized.Nickname,
 		Address:  accountSerialized.Address,
 		KeyPair: KeyPair{
-			PrivateKey: make([]byte, 0),
+			PrivateKey: accountSerialized.CipheredData,
 			PublicKey:  accountSerialized.PublicKey,
 			Salt:       accountSerialized.Salt,
 			Nonce:      accountSerialized.Nonce,
@@ -181,6 +181,15 @@ func Xor(a, b []byte) ([]byte, error) {
 // Persist stores the wallet on the file system.
 // Note: the wallet is stored in YAML format and in Thyra config directory.
 func (w *Wallet) Persist() error {
+	filePath, err := FilePath(w.Nickname)
+	if err != nil {
+		return fmt.Errorf("getting file path for '%s': %w", w.Nickname, err)
+	}
+
+	return w.SaveFile(filePath)
+}
+
+func (w *Wallet) SaveFile(filePath string) error {
 	accountSerialized := w.ToAccountSerialized()
 
 	// account is protected so PrivateKey is encrypted
@@ -189,11 +198,6 @@ func (w *Wallet) Persist() error {
 	yamlMarshaled, err := yaml.Marshal(accountSerialized)
 	if err != nil {
 		return fmt.Errorf("marshalling wallet: %w", err)
-	}
-
-	filePath, err := FilePath(w.Nickname)
-	if err != nil {
-		return fmt.Errorf("getting file path for '%s': %w", w.Nickname, err)
 	}
 
 	err = os.WriteFile(filePath, yamlMarshaled, FileModeUserReadWriteOnly)
@@ -281,6 +285,25 @@ func Load(nickname string) (*Wallet, error) {
 	return &wallet, nil
 }
 
+func ExtractNickname(filePath string) string {
+	// Extract the file name from the file path
+	fileName := filepath.Base(filePath)
+
+	// Remove the extension from the file name
+	fileName = strings.TrimSuffix(fileName, ".yaml")
+	fileName = strings.TrimSuffix(fileName, ".yml")
+
+	// Check if the file name starts with "wallet_"
+	if strings.HasPrefix(fileName, "wallet_") {
+		// Remove the "wallet_" prefix from the file name
+		nickname := strings.TrimPrefix(fileName, "wallet_")
+		return nickname
+	}
+
+	// Return an empty string if the "wallet_" prefix is not present
+	return ""
+}
+
 func LoadFile(filePath string) (Wallet, *WalletError) {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -288,6 +311,8 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	}
 
 	accountSerialized := AccountSerialized{}
+
+	fmt.Println(content)
 
 	err = yaml.Unmarshal(content, &accountSerialized)
 	if err != nil {
@@ -300,7 +325,7 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	}
 
 	account := accountSerialized.ToAccount()
-	account.KeyPair.PrivateKey = accountSerialized.CipheredData
+	account.Nickname = ExtractNickname(filePath)
 
 	return account, nil
 }
@@ -509,7 +534,7 @@ func AddressIsUnique(address string) error {
 
 	if slices.IndexFunc(
 		wallets,
-		func(w Wallet) bool { return w.Address == address },
+		func(w Wallet) bool { return addressFromPublicKey(w.KeyPair.PublicKey) == address },
 	) != -1 {
 		return fmt.Errorf("importing new account: duplicate account with different name (but same keys).")
 	}

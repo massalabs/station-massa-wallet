@@ -25,6 +25,21 @@ func HandleExportFile(params operations.ExportAccountFileParams) middleware.Resp
 
 	pathToWallet, err := wlt.FilePath()
 	if err != nil {
+		pathToWallet = "wallet_unknown.yaml"
+	}
+
+	tempFile, err := os.CreateTemp("", "wallet-*.dat")
+	if err != nil {
+		return operations.NewExportAccountFileInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorExportWallet,
+				Message: err.Error(),
+			})
+	}
+	defer tempFile.Close()
+
+	err = wlt.SaveFile(tempFile.Name())
+	if err != nil {
 		return operations.NewExportAccountFileInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorExportWallet,
@@ -33,14 +48,19 @@ func HandleExportFile(params operations.ExportAccountFileParams) middleware.Resp
 	}
 
 	responder := middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
-		file, _ := os.Open(pathToWallet)
+		file, err := os.Open(pathToWallet)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
+
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filepath.Base(file.Name())))
 		if _, err := io.Copy(w, file); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer file.Close()
 	})
 
 	return responder

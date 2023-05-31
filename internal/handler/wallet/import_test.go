@@ -10,10 +10,26 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
+	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
-func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.ResponseRecorder {
+func writeAccountFile(filePath, yamlMarshaled string) (string, error) {
+	tempFile, err := os.CreateTemp("", fmt.Sprintf("wallet_%s.yaml", wallet.ExtractNickname(filePath)))
+	if err != nil {
+		return "", fmt.Errorf("error creating temp file: %w", err)
+	}
+	defer tempFile.Close()
+
+	err = os.WriteFile(tempFile.Name(), []byte(yamlMarshaled), wallet.FileModeUserReadWriteOnly)
+	if err != nil {
+		return "", fmt.Errorf("writing wallet to '%s: %w", filePath, err)
+	}
+
+	return tempFile.Name(), nil
+}
+
+func importAccount(t *testing.T, api *operations.MassaWalletAPI) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("PUT", "/api/accounts")
 	if !exist {
 		panic("Endpoint doesn't exist")
@@ -46,10 +62,8 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
   4, 133, 59, 3, 213, 78, 33, 118, 49, 207, 180, 77, 78, 128, 37, 131]
 `, nickname)
 
-		filePath := "importMe.yaml"
-		// Write wallet file
-		data := []byte(walletFile)
-		err = os.WriteFile(filePath, data, 0o644)
+		filePath := fmt.Sprintf("wallet_%s.yaml", nickname)
+		filePath, err = writeAccountFile(filePath, walletFile)
 		assert.NoError(t, err)
 
 		testResult := make(chan walletapp.EventData)
@@ -61,7 +75,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			res <- (<-resChan)
 		}(testResult)
 
-		resp := importWallet(t, api)
+		resp := importAccount(t, api)
 
 		result := <-testResult
 
@@ -80,12 +94,9 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	t.Run("import invalid path file", func(t *testing.T) {
 		walletFile := "InvalidWalet"
 
-		filePath := "importMe.yaml"
-		// Write wallet file
-		data := []byte(walletFile)
-		err = os.WriteFile(filePath, data, 0o644)
+		filePath := "wallet_importMe.yaml"
+		_, err = writeAccountFile(filePath, walletFile)
 		assert.NoError(t, err)
-		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
 
@@ -98,7 +109,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			checkResultChannel(t, failRes, false, utils.ErrInvalidFileExtension)
 		}(testResult)
 
-		resp := importWallet(t, api)
+		resp := importAccount(t, api)
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
@@ -106,12 +117,9 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	t.Run("import invalid account file", func(t *testing.T) {
 		walletFile := "InvalidWalet"
 
-		filePath := "importMe.yaml"
-		// Write wallet file
-		data := []byte(walletFile)
-		err = os.WriteFile(filePath, data, 0o644)
+		filePath := "wallet_importMe.yaml"
+		filePath, err = writeAccountFile(filePath, walletFile)
 		assert.NoError(t, err)
-		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
 
@@ -124,7 +132,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
 		}(testResult)
 
-		resp := importWallet(t, api)
+		resp := importAccount(t, api)
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
@@ -147,12 +155,9 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
   4, 133, 59, 3, 213, 78, 33, 118, 49, 207, 180, 77, 78, 128, 37, 131]
 `, nickname)
 
-		filePath := "importMe.yaml"
-		// Write wallet file
-		data := []byte(walletFile)
-		err = os.WriteFile(filePath, data, 0o644)
+		filePath := fmt.Sprintf("wallet_%s.yaml", nickname)
+		filePath, err = writeAccountFile(filePath, walletFile)
 		assert.NoError(t, err)
-		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
 
@@ -165,7 +170,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 			checkResultChannel(t, failRes, false, utils.ErrInvalidNickname)
 		}(testResult)
 
-		resp := importWallet(t, api)
+		resp := importAccount(t, api)
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
@@ -180,7 +185,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	}{
 		{
 			name:       "import private key",
-			nickname:   "walletToBeImported",
+			nickname:   "walletToBeImported2",
 			privateKey: "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA",
 			password:   "aGoodPassword",
 			wantStatus: http.StatusOK,
@@ -202,7 +207,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		},
 		{
 			name:       "import invalid private key",
-			nickname:   "walletToBeImported",
+			nickname:   "walletToBeImported3",
 			privateKey: "invalidPrivateKey",
 			password:   "aWrongPassword",
 			wantStatus: http.StatusUnauthorized,
@@ -226,7 +231,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 				res <- (<-resChan)
 			}(testResult)
 
-			resp := importWallet(t, api)
+			resp := importAccount(t, api)
 			verifyStatusCode(t, resp, tt.wantStatus)
 
 			result := <-testResult
