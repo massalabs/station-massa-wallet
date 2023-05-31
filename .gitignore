@@ -2,10 +2,7 @@
 wallet_*.json
 *.exe
 wallet-plugin*
-api/server/restapi/operations
-api/server/restapi
-!api/server/restapi/configure_massa_wallet.go
-api/server/models
+
 coverage.out
 build
 node_modules
