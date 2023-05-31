@@ -22,17 +22,18 @@ function ConfirmDelete() {
   return (
     <Layout>
       <h1 className="mas-title">{req.Msg}</h1>
-      <FiAlertTriangle />
-      <p className="mas-body pt-4">
-        you have some tokens left, are you sure you want to delete?
-      </p>
-
       <div className="pt-4 flex gap-4">
-        <div className="max-w-min">
-          <Button variant={'secondary'} onClick={handleCancel}>
-            Cancel
-          </Button>
-        </div>
+        <FiAlertTriangle size={42} className="text-s-warning" strokeWidth="1" />
+        <p className="mas-body">
+          you have some coins left, are your
+          <br />
+          sure you want to delete?
+        </p>
+      </div>
+      <div className="pt-4 flex gap-4">
+        <Button variant={'secondary'} onClick={handleCancel}>
+          Cancel
+        </Button>
         <Button preIcon={<FiTrash2 />} onClick={handleConfirm}>
           Delete
         </Button>
