@@ -43,7 +43,7 @@ function WalletLayout(props: WalletProps) {
   }
 
   const [selectedItem, setSelectedItem] = useState<MenuItem>(
-    state.menuItem ?? MenuItem.SendReceive,
+    state.menuItem ?? MenuItem.Home,
   );
 
   function isActive(item: MenuItem) {
@@ -60,7 +60,7 @@ function WalletLayout(props: WalletProps) {
     {
       label: 'Wallet',
       icon: <FiHome />,
-      active: false,
+      active: isActive(MenuItem.Home),
       footer: false,
       onClickItem: () => navigate(routeFor(MenuItem.Home)),
     },
