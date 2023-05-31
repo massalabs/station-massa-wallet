@@ -7,7 +7,6 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -267,8 +266,6 @@ func Load(nickname string) (*Wallet, error) {
 	if err != nil {
 		return nil, fmt.Errorf("getting file path for '%s': %w", nickname, err)
 	}
-
-	log.Print(filePath)
 
 	if _, err := os.Stat(filePath); err != nil {
 		return nil, ErrorAccountNotFound(nickname)
