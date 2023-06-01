@@ -5,6 +5,10 @@ import { AccountObject } from '../../../models/AccountModel';
 import { useLocation } from 'react-router-dom';
 import { parseForm } from '../../../utils/parseForm';
 import { useState } from 'react';
+import {
+  formatStandard,
+  reverseFormatStandard,
+} from '../../../utils/MassaFormating';
 
 // remove padding from Balance component
 
@@ -64,18 +68,6 @@ function Send() {
     if (!validate(e)) return;
     // const formObject = parseForm(e);
     // const { amount, recipient } = formObject;
-  }
-
-  function formatStandard(num: number, maximumFractionDigits = 2) {
-    return num.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits,
-    });
-  }
-
-  function reverseFormatStandard(str: string) {
-    const formattedString = str.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
-    return parseFloat(formattedString);
   }
 
   const formattedBalance = formatStandard(balance);
