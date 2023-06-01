@@ -18,7 +18,7 @@ export function SendForm({ ...props }) {
       {/* Balance Section */}
       <div>
         <p> Account Balance</p>
-        <Balance customClass="pl-0" amount={formattedBalance} />
+        <Balance customClass="pl-0 bg-transparent" amount={formattedBalance} />
       </div>
       <div className="mb-3.5">
         <div className="flex flex-row justify-between w-full mb-3.5 ">

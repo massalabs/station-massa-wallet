@@ -97,20 +97,30 @@ function Send() {
     setAmount(e.target.value);
   }
 
-  const args = {
+  const sendArgs = {
     amount: amount,
     formattedBalance: formattedBalance,
-    recipient,
+    recipient: recipient,
     error: error,
     setRecipient,
     handleSubmit,
     handleChange,
     SendPercentage,
   };
+  const confirmArgs = {
+    amount: amount,
+    recipient: recipient,
+    valid: valid,
+    setValid,
+  };
 
   return (
     <div className="mt-3.5">
-      {valid ? <SendConfirmation /> : <SendForm {...args} />}
+      {valid ? (
+        <SendConfirmation {...confirmArgs} />
+      ) : (
+        <SendForm {...sendArgs} />
+      )}
     </div>
   );
 }
