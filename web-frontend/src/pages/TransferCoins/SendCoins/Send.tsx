@@ -1,4 +1,3 @@
-import { Balance, Button, Input } from '@massalabs/react-ui-kit';
 import useResource from '../../../custom/api/useResource';
 import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
@@ -9,8 +8,8 @@ import {
   formatStandard,
   reverseFormatStandard,
 } from '../../../utils/MassaFormating';
-
-// remove padding from Balance component
+import { SendForm } from './SendForm';
+import { SendConfirmation } from './SendConfirmation';
 
 interface IErrorObject {
   amount?: string;
@@ -26,8 +25,9 @@ function Send() {
   const account = accounts.find((account) => account.nickname === nickname);
   const balance = parseInt(account?.candidateBalance ?? '0') / 10 ** 9;
   const [amount, setAmount] = useState<string>('');
-  const [error, setError] = useState<IErrorObject | null>(null);
   const [recipient, setRecipient] = useState('');
+  const [valid, setValid] = useState<boolean>(false);
+  const [error, setError] = useState<IErrorObject | null>(null);
 
   const selectPercentClass = 'mr-3.5 hover:cursor-pointer';
 
@@ -64,6 +64,7 @@ function Send() {
     if (!validate(e)) return;
     // const formObject = parseForm(e);
     // const { amount, recipient } = formObject;
+    else setValid(!valid);
   }
 
   const formattedBalance = formatStandard(balance);
@@ -92,75 +93,20 @@ function Send() {
     setAmount(e.target.value);
   }
 
+  const args = {
+    amount: amount,
+    formattedBalance: formattedBalance,
+    recipient,
+    error: error,
+    setRecipient,
+    handleSubmit,
+    handleChange,
+    SendPercentage,
+  };
+
   return (
     <div className="mt-3.5">
-      <form onSubmit={handleSubmit}>
-        {/* Balance Section */}
-        <div>
-          <p> Account Balance</p>
-          <Balance
-            customClass="pl-0"
-            amount={formattedBalance}
-            equal={'0012345.67'}
-          />
-        </div>
-        <div className="mb-3.5">
-          <div className="flex flex-row justify-between w-full mb-3.5 ">
-            <p>Send Token</p>
-            <p>
-              Available : <u>{formattedBalance}</u>
-            </p>
-          </div>
-          <div className="mb-3.5">
-            <Input
-              placeholder={'Amount to send'}
-              value={amount}
-              name="amount"
-              onChange={(e) => handleChange(e)}
-              error={error?.amount}
-            />
-          </div>
-          <div className="flex flex-row-reverse">
-            <ul className="flex flex-row">
-              <SendPercentage percentage={25} />
-              <SendPercentage percentage={50} />
-              <SendPercentage percentage={75} />
-              <SendPercentage percentage={100} />
-            </ul>
-          </div>
-        </div>
-        <div>
-          <div className="mb-3.5">
-            <p>To :</p>
-          </div>
-          <div className="mb-3.5">
-            <Input
-              placeholder={'Recipient'}
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              name="recipient"
-              error={error?.recipient}
-            />
-          </div>
-          <div className="flex flex-row-reverse mb-3.5">
-            <p
-              className="hover:cursor-pointer"
-              onClick={() => console.log('transfer between accounts')}
-            >
-              <u>Transfer between my account</u>
-            </p>
-          </div>
-        </div>
-        {/* Button Section */}
-        <div className="flex flex-col w-full">
-          <div className="mb-3.5">
-            <Button variant={'secondary'}>Advanced</Button>
-          </div>
-          <div>
-            <Button type="submit"> Send </Button>
-          </div>
-        </div>
-      </form>
+      {valid ? <SendConfirmation /> : <SendForm {...args} />}
     </div>
   );
 }
