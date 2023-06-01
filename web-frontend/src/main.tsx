@@ -23,6 +23,7 @@ import StepThree from './pages/CreateAccount/StepThree.tsx';
 import mockServer from './mirage/server.ts';
 import SendCoins from './pages/TransferCoins/SendCoins/SendCoins.tsx';
 import Home from './pages/Home/Home.tsx';
+import Settings from './pages/Settings/Settings.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -41,12 +42,12 @@ const router = createBrowserRouter(
       <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
       <Route path="home" element={<Home />} />
-      <Route path="transactions" element={<></>}></Route>
-      <Route path="send-coins" element={<SendCoins />}></Route>
-      <Route path="receive" element={<></>}></Route>
-      <Route path="assets" element={<></>}></Route>
-      <Route path="settings" element={<></>}></Route>
-      <Route path="contacts" element={<></>}></Route>
+      <Route path="transactions" element={<></>} />
+      <Route path="send-coins" element={<SendCoins />} />
+      <Route path="receive" element={<></>} />
+      <Route path="assets" element={<></>} />
+      <Route path="settings" element={<Settings />} />
+      <Route path="contacts" element={<></>} />
       <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>,
