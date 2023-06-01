@@ -15,6 +15,7 @@ import { hasMoreThanFiveChars } from '../validation/password';
 import { FiLock } from 'react-icons/fi';
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
+import { Layout } from '../layouts/Layout/Layout';
 
 function PasswordPrompt() {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ function PasswordPrompt() {
   }
 
   return (
-    <div className="bg-primary min-h-screen">
+    <Layout>
       <form ref={form} onSubmit={handleSubmit}>
         <div
           className="flex flex-col justify-center h-screen
@@ -118,7 +119,7 @@ function PasswordPrompt() {
           </div>
         </div>
       </form>
-    </div>
+    </Layout>
   );
 }
 

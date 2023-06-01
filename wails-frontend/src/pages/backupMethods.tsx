@@ -38,9 +38,7 @@ function BackupMethods() {
         <Button variant="secondary" onClick={handleDownloadYaml}>
           Download a .yaml file
         </Button>
-        <div>
-          <p className="mas-body text-s-error">{errorMsg}</p>
-        </div>
+        {errorMsg && <p className="mas-body text-s-error">{errorMsg}</p>}
         <Button onClick={handleKeyPairs}>Show key pairs</Button>
       </div>
     </Layout>

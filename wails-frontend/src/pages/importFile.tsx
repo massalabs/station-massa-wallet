@@ -10,6 +10,7 @@ import { walletapp } from '../../wailsjs/go/models';
 import { EventsOnce } from '../../wailsjs/runtime/runtime';
 import { Button } from '@massalabs/react-ui-kit';
 import { getErrorMessage } from '../utils';
+import { Layout } from '../layouts/Layout/Layout';
 
 const ImportFile = () => {
   const nav = useNavigate();
@@ -30,7 +31,7 @@ const ImportFile = () => {
       ? `Selected ${account.nickname}'s account`
       : 'Select an account file to import';
 
-  const importStr = () => (account ? 'Import' : 'Select a file');
+  const getImportLabel = () => (account ? 'Import' : 'Select a file');
 
   const handleApply = async () => {
     setErrorMsg('');
@@ -54,31 +55,21 @@ const ImportFile = () => {
   };
 
   return (
-    <div className="bg-primary flex flex-col justify-center items-center h-screen w-full">
-      <div className="w-1/4  max-w-sm  min-w-fit">
-        <div>
-          <p className="mas-title text-neutral pb-4">{req.Msg}</p>
-        </div>
-        <div>
-          <p className={account ? accountStyleSuccess : accountStyleNormal}>
-            {baselineStr()}
-          </p>
-        </div>
-        <div className="flex flex-row gap-4  pb-4">
-          <div className="min-w-fit">
-            <Button variant={'secondary'} onClick={handleCancel}>
-              Cancel
-            </Button>
-          </div>
-          <div className="min-w-fit">
-            <Button onClick={handleApply}>{importStr()}</Button>
-          </div>
-        </div>
-        <div>
-          <p className="mas-body text-s-error">{errorMsg}</p>
+    <Layout>
+      <h1 className="mas-title pb-4">{req.Msg}</h1>
+      <p className={account ? accountStyleSuccess : accountStyleNormal}>
+        {baselineStr()}
+      </p>
+      <div className="flex flex-row gap-4 pb-4">
+        <Button variant={'secondary'} onClick={handleCancel}>
+          Cancel
+        </Button>
+        <div className="min-w-fit">
+          <Button onClick={handleApply}>{getImportLabel()}</Button>
         </div>
       </div>
-    </div>
+      {errorMsg && <p className="mas-body text-s-error">{errorMsg}</p>}
+    </Layout>
   );
 };
 
