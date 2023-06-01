@@ -52,6 +52,10 @@ function Send() {
       setError({ recipient: Intl.t('errors.send.no-recipient') });
       return false;
     }
+    if (!checkRecipientFormat(recipient)) {
+      setError({ recipient: Intl.t('errors.send.invalid-recipient') });
+      return false;
+    }
     setError(null);
     return true;
   }
@@ -73,6 +77,10 @@ function Send() {
     const newAmount = balance * pct;
     const newFormatedAmount = formatStandard(newAmount, 9);
     setAmount(newFormatedAmount);
+  }
+  function checkRecipientFormat(recipient: string) {
+    const regex = /^A[a-zA-Z0-9]{52}$/;
+    return regex.test(recipient);
   }
 
   function SendPercentage({ percentage }: { percentage: number }) {
