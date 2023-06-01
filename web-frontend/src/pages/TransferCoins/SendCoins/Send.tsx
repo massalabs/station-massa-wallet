@@ -7,6 +7,7 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import {
   formatStandard,
   reverseFormatStandard,
+  checkRecipientFormat,
 } from '../../../utils/MassaFormating';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
@@ -22,14 +23,14 @@ function Send() {
   const { state } = useLocation();
   const nickname = state.nickname;
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  const account = accounts.find((account) => account.nickname === nickname);
-  const balance = parseInt(account?.candidateBalance ?? '0') / 10 ** 9;
+  let account = accounts.find((account) => account.nickname === nickname);
+  const unformattedBalance = account?.candidateBalance ?? '0';
+  const balance = parseInt(unformattedBalance) / 10 ** 9;
+
   const [amount, setAmount] = useState<string>('');
   const [recipient, setRecipient] = useState('');
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<IErrorObject | null>(null);
-
-  const selectPercentClass = 'mr-3.5 hover:cursor-pointer';
 
   // TODO : implement address check to see if it is real
 
@@ -38,7 +39,6 @@ function Send() {
     const { amount, recipient } = formObject;
 
     const amountNum = reverseFormatStandard(amount);
-    console.log(amount, amountNum, balance);
 
     if (amountNum > balance) {
       setError({ amount: Intl.t('errors.send.amount-to-high') });
@@ -78,10 +78,6 @@ function Send() {
     const newFormatedAmount = formatStandard(newAmount, 9);
     setAmount(newFormatedAmount);
   }
-  function checkRecipientFormat(recipient: string) {
-    const regex = /^A[a-zA-Z0-9]{52}$/;
-    return regex.test(recipient);
-  }
 
   function SendPercentage({ percentage }: { percentage: number }) {
     return (
@@ -89,9 +85,9 @@ function Send() {
         onClick={() => {
           overrideAmount(percentage / 100);
         }}
-        className={selectPercentClass}
+        className="mr-3.5 hover:cursor-pointer"
       >
-        {percentage == 100 ? 'Max' : `${percentage}%`}
+        {percentage === 100 ? 'Max' : `${percentage}%`}
       </li>
     );
   }
