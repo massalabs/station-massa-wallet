@@ -1,4 +1,4 @@
-import { FiUser, FiPlus } from 'react-icons/fi';
+import { FiPlus, FiArrowUpRight } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { routeFor } from '../../utils';
 import useResource from '../../custom/api/useResource';
@@ -7,7 +7,7 @@ import { toMAS } from '@massalabs/massa-web3';
 import Intl from '../../i18n/i18n';
 
 import LandingPage from '../../layouts/LandingPage/LandingPage';
-import { Button, AccountSelector, MassaToken } from '@massalabs/react-ui-kit';
+import { Button, Selector, MassaLogo } from '@massalabs/react-ui-kit';
 
 export default function SelectAccount() {
   const navigate = useNavigate();
@@ -25,32 +25,21 @@ export default function SelectAccount() {
     <LandingPage>
       <div className={`${defaultFlex} h-screen`}>
         <div className="w-1/2">
-          <div className="mb-6">
-            <p className="mas-banner text-neutral">
-              {Intl.t('account.header.title')}
-            </p>
-          </div>
-          <div className="mb-6">
-            <label className="mas-body text-neutral" htmlFor="account-select">
-              {Intl.t('account.select')}
-            </label>
-          </div>
-          <div id="account-select" className="w-full flex flex-col">
+          <h1 className="mas-banner">{Intl.t('account.header.title')}</h1>
+          <label className="mas-body pt-6" htmlFor="account-select">
+            {Intl.t('account.select')}
+          </label>
+          <div id="account-select" className="pt-5">
             {accounts.map((account: AccountObject) => (
               <Link
                 to={routeFor('home')}
                 state={{ nickname: account.nickname }}
               >
-                <div className="mb-4 theme-light" key={account.nickname}>
-                  <AccountSelector
-                    avatar={<FiUser className="text-primary h-6 w-6" />}
-                    icon={
-                      <MassaToken
-                        size={24}
-                        className="bg-neutral rounded-full"
-                      />
-                    }
-                    accountName={account.nickname}
+                <div className="pb-4" key={account.nickname}>
+                  <Selector
+                    preIcon={<FiArrowUpRight />}
+                    posIcon={<MassaLogo size={24} />}
+                    content={account.nickname}
                     amount={toMAS(account.candidateBalance).toString()}
                   />
                 </div>
