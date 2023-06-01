@@ -38,6 +38,11 @@
   "errors": {
     "nickname-required": "Nickname is required",
     "nickname-already-exists": "This account name already exists",
-    "nickname-invalid-format": "The account name can't contain any special characters"
+    "nickname-invalid-format": "The account name can't contain any special characters",
+    "send": {
+      "invalid-amount": "Amount is invalid",
+      "amount-to-high": "Insufficient funds on balance",
+      "no-recipient": "Recipient is required"
+    }
   }
 }

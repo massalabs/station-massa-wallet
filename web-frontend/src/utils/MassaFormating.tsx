@@ -1,5 +1,6 @@
 export function formatStandard(num: number, maximumFractionDigits = 2) {
-  return num.toLocaleString('en-US', {
+  const locale = localStorage.getItem('locale') || 'en-US';
+  return num.toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits,
   });

@@ -1,7 +1,7 @@
 import { Balance, Button, Input } from '@massalabs/react-ui-kit';
-import { FiUsers } from 'react-icons/fi';
 import useResource from '../../../custom/api/useResource';
 import { AccountObject } from '../../../models/AccountModel';
+import Intl from '../../../i18n/i18n';
 import { useLocation } from 'react-router-dom';
 import { parseForm } from '../../../utils/parseForm';
 import { useState, ChangeEvent, FormEvent } from 'react';
@@ -40,20 +40,16 @@ function Send() {
     const amountNum = reverseFormatStandard(amount);
     console.log(amount, amountNum, balance);
 
-    if (!amountNum && amount == '') {
-      setError({ amount: 'Amount is required' });
-      return false;
-    }
     if (amountNum > balance) {
-      setError({ amount: 'Insufficient funds on balance' });
+      setError({ amount: Intl.t('errors.send.amount-to-high') });
       return false;
     }
     if (Number.isNaN(amountNum)) {
-      setError({ amount: 'Please enter a valid number' });
+      setError({ amount: Intl.t('errors.send.invalid-amount') });
       return false;
     }
     if (!recipient) {
-      setError({ recipient: 'Recipient is required' });
+      setError({ recipient: Intl.t('errors.send.no-recipient') });
       return false;
     }
     setError(null);
@@ -142,7 +138,6 @@ function Send() {
               placeholder={'Recipient'}
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
-              icon={<FiUsers />}
               name="recipient"
               error={error?.recipient}
             />
