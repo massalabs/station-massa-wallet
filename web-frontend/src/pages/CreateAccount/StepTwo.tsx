@@ -14,7 +14,7 @@ export default function StepTwo() {
   const { state } = useLocation();
   const nickname = state.nickname;
 
-  const { mutate, isSuccess } = usePost<AccountObject>('accounts', nickname);
+  const { mutate, isSuccess } = usePost<AccountObject>(`accounts/${nickname}`);
 
   if (isSuccess) {
     navigate(routeFor('account-create-step-three'), { state: { nickname } });

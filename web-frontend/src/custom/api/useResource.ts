@@ -13,6 +13,7 @@ function useResource<T>(resource: string): UseQueryResult<T, undefined> {
     queryKey: ['', url],
     queryFn: async () => {
       const { data } = await axios.get<T, AxiosResponse<T>>(url);
+
       return data;
     },
   });

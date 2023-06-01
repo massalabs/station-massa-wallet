@@ -6,19 +6,19 @@ import { UseMutationResult, useMutation } from '@tanstack/react-query';
 
 // LOCALS
 
-function usePost<T>(
+function useDelete<T>(
   resource: string,
 ): UseMutationResult<T, unknown, T, unknown> {
   var url = `${import.meta.env.VITE_BASE_API}/${resource}`;
 
   return useMutation<T, unknown, T, unknown>({
     mutationKey: [resource],
-    mutationFn: async (payload) => {
-      const { data } = await axios.post<T>(url, payload);
+    mutationFn: async () => {
+      const { data } = await axios.delete<T>(url);
 
       return data;
     },
   });
 }
 
-export default usePost;
+export default useDelete;

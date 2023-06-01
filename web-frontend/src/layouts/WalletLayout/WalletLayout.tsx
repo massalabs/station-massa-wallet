@@ -114,6 +114,7 @@ function WalletLayout(props: WalletProps) {
   }));
 
   const selectedAccountKey: number = parseInt(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     Object.keys(accounts).find(
       (_, idx) => accounts[idx].nickname === nickname,
     )!,
@@ -123,7 +124,7 @@ function WalletLayout(props: WalletProps) {
     <div className="bg-primary min-h-screen">
       <div
         className="flex flex-col justify-center h-screen
-        max-w-xs min-w-fit text-f-primary m-auto"
+        min-w-fit text-f-primary m-auto"
       >
         <SideMenu conf={menuConf} items={menuItems} />
         <div className="absolute top-0 right-0 m-6">
