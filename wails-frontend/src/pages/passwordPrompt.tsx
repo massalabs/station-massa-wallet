@@ -10,12 +10,12 @@ import {
 } from '../events/events';
 import { handleApplyResult, handleCancel } from '../utils/utils';
 import { parseForm } from '../utils/parseForm';
-import { hasMoreThanFiveChars } from '../validation/password';
 
 import { FiLock } from 'react-icons/fi';
 import { Password, Button } from '@massalabs/react-ui-kit';
-import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
+import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
+import Intl from '../i18n/i18n';
 
 function PasswordPrompt() {
   const navigate = useNavigate();
@@ -48,14 +48,11 @@ function PasswordPrompt() {
   const [error, setError] = useState<IErrorObject | null>(null);
 
   function validate(e: SyntheticEvent) {
-    const form = parseForm(e);
-    const { password } = form;
+    const formObject = parseForm(e);
+    const { password } = formObject;
 
-    // reset error state
-    setError(null);
-
-    if (!hasMoreThanFiveChars(password)) {
-      setError({ password: 'Password must have at least 5 characters' });
+    if (!password || !password.length) {
+      setError({ password: 'Password is required' });
       return false;
     }
 
@@ -76,7 +73,8 @@ function PasswordPrompt() {
 
     if (!Success) {
       if (CodeMessage === ErrorCode.WrongPassword) {
-        setError({ password: getErrorMessage(CodeMessage) });
+        setError({ password: Intl.t(`errors.${CodeMessage}`) });
+        return;
       }
     }
 
