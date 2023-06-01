@@ -4,7 +4,7 @@ import useResource from '../../../custom/api/useResource';
 import { AccountObject } from '../../../models/AccountModel';
 import { useLocation } from 'react-router-dom';
 import { parseForm } from '../../../utils/parseForm';
-import { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import {
   formatStandard,
   reverseFormatStandard,
@@ -63,7 +63,7 @@ function Send() {
   // This function is going to be used for the backend
   // Some parts are commented to avoid a build errors
   // because the amount and recipient aren't used yet
-  function handleSubmit(e: any) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!validate(e)) return;
     // const formObject = parseForm(e);
@@ -91,7 +91,7 @@ function Send() {
     );
   }
 
-  function handleChange(e: any) {
+  function handleChange(e: ChangeEvent<HTMLInputElement>): void {
     e.preventDefault();
     setAmount(e.target.value);
   }
