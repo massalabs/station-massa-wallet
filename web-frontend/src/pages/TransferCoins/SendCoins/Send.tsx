@@ -109,6 +109,7 @@ function Send() {
   };
   const confirmArgs = {
     amount: amount,
+    nickname: nickname,
     recipient: recipient,
     valid: valid,
     setValid,

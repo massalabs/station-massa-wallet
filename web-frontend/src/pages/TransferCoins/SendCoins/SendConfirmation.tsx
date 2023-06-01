@@ -4,13 +4,35 @@ import {
   formatStandard,
   reverseFormatStandard,
 } from '../../../utils/MassaFormating';
+import usePost from '../../../custom/api/usePost';
+import { SendTransactionObject } from '../../../models/AccountModel';
+import { routeFor } from '../../../utils';
+import { useNavigate } from 'react-router-dom';
 
 export function SendConfirmation({ ...props }) {
-  const { amount, recipient, valid, setValid } = props;
+  const navigate = useNavigate();
+  const { amount, nickname, recipient, valid, setValid } = props;
 
-  const reversedAmount = reverseFormatStandard(amount);
+  let fees = '999'; // TO DO: implement in the advanced page
+  let reversedAmount = reverseFormatStandard(amount);
+  const total = +amount + +fees;
 
-  console.log(formatStandard(reversedAmount));
+  const { mutate, isSuccess } = usePost<SendTransactionObject>(
+    'accounts',
+    `${nickname}/transfer`,
+  );
+  if (isSuccess) {
+    navigate(routeFor('account-create-step-three'), { state: { nickname } });
+  }
+  const handleTransfer = () => {
+    const transferData: SendTransactionObject = {
+      amount: amount,
+      recipientAddress: recipient,
+      fee: fees,
+    };
+
+    mutate(transferData as SendTransactionObject);
+  };
 
   return (
     <div>
@@ -31,26 +53,31 @@ export function SendConfirmation({ ...props }) {
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-3.5">
         <div className="flex flex-row items-center mb-3.5 ">
           <div className="mr-2">
-            <p>Amount ({formatStandard(reversedAmount)}) + gas fee (0.2 MAS)</p>
+            <p>
+              Amount ({formatStandard(reversedAmount)}) + gas fee {fees}
+            </p>
           </div>
           <div>
             <FiHelpCircle />
           </div>
         </div>
         <div className="mb-3.5">
-          <Balance
-            customClass="pl-0 bg-transparent"
-            amount={formatStandard(reversedAmount)}
-          />
+          <Balance customClass="pl-0 bg-transparent" amount={total} />
         </div>
         <div>
           <p>
-            To : <u>{recipient}</u>
+            To : <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
           </p>
         </div>
       </div>
       <div>
-        <Button> Confirm and sign with my password </Button>
+        <Button
+          onClick={() => {
+            handleTransfer();
+          }}
+        >
+          Confirm and sign with my password
+        </Button>
       </div>
     </div>
   );
