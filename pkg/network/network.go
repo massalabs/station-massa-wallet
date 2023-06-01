@@ -6,10 +6,12 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 )
 
 const (
-	massaStationNodeEndpoint = "http://station.massa/massa/node"
+	massaStationNodeEndpoint = plugin.MassaStationBaseURL + "/massa/node"
 	defaultNetwork           = "buildnet"
 	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
 )
