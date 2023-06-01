@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	massaStationNodeEndpoint = "http://my.massa/massa/node"
+	massaStationNodeEndpoint = "http://station.massa/massa/node"
 	defaultNetwork           = "buildnet"
 	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
 )
