@@ -7,6 +7,8 @@ import { IErrorObject, parseForm } from '../../utils';
 import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
 import { Layout } from '../../layouts/Layout/Layout';
 
+import { IMPORT_STEPS } from '../../const/stepper';
+
 // TODO: create i18n and move this to translation file
 const t = (key: string): string => {
   const errors: Record<string, string> = {
@@ -55,7 +57,7 @@ function PromptPrivateKey() {
 
   return (
     <Layout>
-      <Stepper step={0} steps={['Private Key', 'Account name', 'Password']} />
+      <Stepper step={0} steps={IMPORT_STEPS} />
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title pt-6">{req.Msg}</h1>
         <p className="mas-body pt-4">Enter your Private Key</p>

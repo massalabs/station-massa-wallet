@@ -11,6 +11,8 @@ import {
 import { Input, Button, Stepper } from '@massalabs/react-ui-kit';
 import { Layout } from '../../layouts/Layout/Layout';
 
+import { IMPORT_STEPS } from '../../const/stepper';
+
 // TODO: create i18n and move this to translation file
 const t = (key: string): string => {
   const errors: Record<string, string> = {
@@ -67,7 +69,7 @@ function PromptNickname() {
 
   return (
     <Layout>
-      <Stepper step={1} steps={['Private Key', 'Account name', 'Password']} />
+      <Stepper step={1} steps={IMPORT_STEPS} />
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title pt-4">{req.Msg}</h1>
         <p className="mas-body pt-4">Define your account name</p>

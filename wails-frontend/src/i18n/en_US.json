@@ -7,5 +7,12 @@
     "backup": "The account file has been saved",
     "transfer": "The transaction has been sent",
     "success": "Success"
+  },
+  "import": {
+    "steps": {
+      "private": "Private Key",
+      "account": "Account name",
+      "password": "Password"
+    }
   }
 }
