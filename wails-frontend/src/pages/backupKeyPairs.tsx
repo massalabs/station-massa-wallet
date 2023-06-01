@@ -4,24 +4,17 @@ import { ClipboardSetText, EventsOnce } from '../../wailsjs/runtime';
 import { events, promptRequest, promptResult } from '../events/events';
 import { parseForm } from '../utils/parseForm';
 import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
-import { ErrorCode, IErrorObject, getErrorMessage } from '../utils';
+import { ErrorCode, IErrorObject, handleCancel } from '../utils';
 
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { Layout } from '../layouts/Layout/Layout';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
+import Intl from '../i18n/i18n';
 
 function EnterKey() {
-  const navigate = useNavigate();
-
-  let { state } = useLocation();
-  const req: promptRequest = state.req;
-
   return (
     <>
-      <Button
-        variant="secondary"
-        onClick={() => navigate('/backup-methods', { state: { req } })}
-      >
+      <Button variant="secondary" onClick={handleCancel}>
         Cancel
       </Button>
       <Button posIcon={<FiArrowRight />} type="submit">
@@ -65,6 +58,7 @@ function BackupKeyPairs() {
       setError({ password: 'Password is required' });
       return false;
     }
+
     return true;
   }
 
@@ -72,11 +66,12 @@ function BackupKeyPairs() {
     let { Success, CodeMessage } = result;
 
     if (!Success) {
+      const errorMessage = Intl.t(`errors.${CodeMessage}`);
       if (CodeMessage === ErrorCode.WrongPassword) {
-        setError({ password: getErrorMessage(CodeMessage) });
+        setError({ password: errorMessage });
         return;
       } else {
-        req.Msg = getErrorMessage(CodeMessage);
+        req.Msg = errorMessage;
         navigate('/failure', {
           state: { req },
         });
