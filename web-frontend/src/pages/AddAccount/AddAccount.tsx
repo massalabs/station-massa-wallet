@@ -13,7 +13,7 @@ export default function AddAccount() {
   const { mutate, isSuccess, data } = usePut<AccountObject>('accounts');
 
   if (isSuccess) {
-    navigate(routeFor('home'), { state: { nickname: data.nickname } });
+    navigate(routeFor(`${data.nickname}/home`));
   }
 
   return (

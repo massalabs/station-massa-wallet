@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { usePost, useDelete, usePut } from '../../custom/api';
+import { useParams } from 'react-router-dom';
 import { AccountObject } from '../../models/AccountModel';
 import Intl from '../../i18n/i18n';
 
@@ -12,8 +12,7 @@ import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { FiTrash2 } from 'react-icons/fi';
 
 export default function Settings() {
-  const { state } = useLocation();
-  const nickname: string = state.nickname;
+  const { nickname } = useParams();
 
   const { mutate: mutableBackup } = usePost<AccountObject>(
     `accounts/${nickname}/backup`,
@@ -27,7 +26,7 @@ export default function Settings() {
     `accounts/${nickname}`,
   );
 
-  const [newNickname, setNewNickname] = useState<string>(nickname);
+  const [newNickname, setNewNickname] = useState<string>(nickname || '');
 
   return (
     <WalletLayout menuItem={MenuItem.Settings}>

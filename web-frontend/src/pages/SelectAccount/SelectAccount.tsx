@@ -43,8 +43,7 @@ export default function SelectAccount() {
             {accounts.map((account: AccountObject) => (
               <Link
                 className="w-full"
-                to={routeFor('home')}
-                state={{ nickname: account.nickname }}
+                to={routeFor(`${account.nickname}/home`)}
               >
                 <div className="pb-4" key={account.nickname}>
                   <Selector

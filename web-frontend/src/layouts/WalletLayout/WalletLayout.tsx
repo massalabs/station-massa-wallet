@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
@@ -38,8 +38,7 @@ interface WalletProps {
 function WalletLayout(props: WalletProps) {
   const { menuItem } = props;
   const navigate = useNavigate();
-  const { state } = useLocation();
-  var nickname: string = state.nickname;
+  const { nickname } = useParams();
 
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
 
@@ -64,42 +63,44 @@ function WalletLayout(props: WalletProps) {
       icon: <FiHome />,
       active: isActive(MenuItem.Home),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.Home), { state }),
+      onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Home}`)),
     },
     {
       label: 'Transactions',
       icon: <FiList />,
       active: isActive(MenuItem.Transactions),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.Transactions), { state }),
+      onClickItem: () =>
+        navigate(routeFor(`${nickname}/${MenuItem.Transactions}`)),
     },
     {
       label: 'Send/Receive',
       icon: <FiArrowUpRight />,
       active: isActive(MenuItem.SendReceive),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.SendReceive), { state }),
+      onClickItem: () =>
+        navigate(routeFor(`${nickname}/${MenuItem.SendReceive}`)),
     },
     {
       label: 'Contacts',
       icon: <FiUsers />,
       active: isActive(MenuItem.Contacts),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.Contacts), { state }),
+      onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Contacts}`)),
     },
     {
       label: 'Assets',
       icon: <FiDisc />,
       active: isActive(MenuItem.Assets),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.Assets), { state }),
+      onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Assets}`)),
     },
     {
       label: 'Settings',
       icon: <FiSettings />,
       active: isActive(MenuItem.Settings),
       footer: true,
-      onClickItem: () => navigate(routeFor(MenuItem.Settings), { state }),
+      onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Settings}`)),
     },
     {
       label: 'Light theme',
