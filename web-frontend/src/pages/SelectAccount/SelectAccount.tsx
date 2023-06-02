@@ -8,6 +8,7 @@ import Intl from '../../i18n/i18n';
 
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button, Selector, MassaLogo } from '@massalabs/react-ui-kit';
+import { formatStandard } from '../../utils/MassaFormating';
 
 export default function SelectAccount() {
   const navigate = useNavigate();
@@ -21,17 +22,23 @@ export default function SelectAccount() {
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
 
+  function getFormattedBalance(account: AccountObject): string {
+    return formatStandard(toMAS(account.candidateBalance).toNumber());
+  }
+
   return (
     <LandingPage>
       <div className={`${defaultFlex} h-screen`}>
         <div className="w-1/2">
-          <h1 className="mas-banner text-f-primary">
+          <h1 className="mas-banner text-f-primary pb-6">
             {Intl.t('account.header.title')}
           </h1>
-          <label className="mas-body text-info pt-6" htmlFor="account-select">
-            {Intl.t('account.select')}
-          </label>
-          <div id="account-select" className="pt-5">
+          <div className="pb-6">
+            <label className="mas-body text-info" htmlFor="account-select">
+              {Intl.t('account.select')}
+            </label>
+          </div>
+          <div id="account-select" className="pb-4">
             {accounts.map((account: AccountObject) => (
               <Link
                 to={routeFor('home')}
@@ -42,7 +49,7 @@ export default function SelectAccount() {
                     preIcon={<FiArrowUpRight />}
                     posIcon={<MassaLogo size={24} />}
                     content={account.nickname}
-                    amount={toMAS(account.candidateBalance).toString()}
+                    amount={getFormattedBalance(account)}
                   />
                 </div>
               </Link>
