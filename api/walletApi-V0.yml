@@ -36,9 +36,9 @@ paths:
           required: true
           description: Website resource.
       responses:
-        "200":
+        200:
           description: Page found
-        "404":
+        404:
           description: Resource not found.
           schema:
             $ref: "#/definitions/Error"
@@ -61,9 +61,9 @@ paths:
           required: true
           description: Website resource.
       responses:
-        "200":
+        200:
           description: Page found
-        "404":
+        404:
           description: Resource not found.
           schema:
             $ref: "#/definitions/Error"
@@ -74,17 +74,17 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
+        200:
           description: Accounts retrieved
           schema:
             type: array
             items:
               $ref: "#/definitions/Account"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -94,23 +94,23 @@ paths:
       produces:
         - application/json  
       responses:
-        "200":
+        200:
           description: Account imported.
           schema:
             $ref: "#/definitions/Account"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -124,23 +124,23 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
+        200:
           description: Account retrieved.
           schema:
             $ref: "#/definitions/Account"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication. Only possible if ciphered is false.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Not found.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -152,23 +152,23 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
+        200:
           description: New account created.
           schema:
             $ref: "#/definitions/Account"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -180,23 +180,23 @@ paths:
       produces:
         - application/json
       responses:
-        "204":
+        204:
           description: Account deleted successfully.
           schema:
             $ref: "#/definitions/Account"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Not found.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -214,23 +214,23 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
+        200:
           description: Account nickname modified successfully.
           schema:
             $ref: "#/definitions/Account"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Not found.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -274,27 +274,27 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
+        200:
           description:  Returns the signature, public key, and correlationId (if provided).
           schema:
             $ref: "#/definitions/SignResponse"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Account Not found.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -313,27 +313,27 @@ paths:
       produces:
         - application/json
       responses:
-        "200":
+        200:
           description: Operation id
           schema:
             $ref: "#/definitions/OperationResponse"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Account Not found.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -350,27 +350,27 @@ paths:
           schema:
             $ref: "#/definitions/RollsRequest"
       responses:
-        "200":
+        200:
           description: Operation id
           schema:
             $ref: "#/definitions/OperationResponse"
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Account Not found.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
@@ -383,25 +383,25 @@ paths:
       produces:
         - application/json
       responses:
-        "204":
+        204:
           description: Account backup
-        "400":
+        400:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
-        "401":
+        401:
           description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
-        "404":
+        404:
           description: Account Not found.
           schema:
             $ref: "#/definitions/Error"
-        "422":
+        422:
           description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
           schema:
             $ref: "#/definitions/Error"
-        "500":
+        500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
