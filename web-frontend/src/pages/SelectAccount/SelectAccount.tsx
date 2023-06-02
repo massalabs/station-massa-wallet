@@ -1,7 +1,7 @@
 import { FiPlus, FiArrowUpRight } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { routeFor } from '../../utils';
-import useResource from '../../custom/api/useResource';
+import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { toMAS } from '@massalabs/massa-web3';
 import Intl from '../../i18n/i18n';
@@ -20,27 +20,24 @@ export default function SelectAccount() {
     navigate(routeFor('index'));
   }
 
-  const defaultFlex = 'flex flex-col justify-center items-center align-center';
-
   function getFormattedBalance(account: AccountObject): string {
     return formatStandard(toMAS(account.candidateBalance).toNumber());
   }
 
   return (
     <LandingPage>
-      <div className={`${defaultFlex} h-screen`}>
-        <div className="w-1/2">
+      <div className="flex flex-col justify-center items-center h-screen">
+        <div className="flex flex-col justify-center items-start w-full h-full max-w-lg">
           <h1 className="mas-banner text-f-primary pb-6">
             {Intl.t('account.header.title')}
           </h1>
-          <div className="pb-6">
-            <label className="mas-body text-info" htmlFor="account-select">
-              {Intl.t('account.select')}
-            </label>
-          </div>
-          <div id="account-select" className="pb-4">
+          <label className="mas-body text-info pb-6" htmlFor="account-select">
+            {Intl.t('account.select')}
+          </label>
+          <div id="account-select" className="pb-4 w-full">
             {accounts.map((account: AccountObject) => (
               <Link
+                className="w-full"
                 to={routeFor('home')}
                 state={{ nickname: account.nickname }}
               >
@@ -54,13 +51,11 @@ export default function SelectAccount() {
                 </div>
               </Link>
             ))}
-            <div>
-              <Link to={routeFor('account-create')}>
-                <Button variant="secondary" preIcon={<FiPlus />}>
-                  {Intl.t('account.add')}
-                </Button>
-              </Link>
-            </div>
+            <Link to={routeFor('account-create')}>
+              <Button variant="secondary" preIcon={<FiPlus />}>
+                {Intl.t('account.add')}
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

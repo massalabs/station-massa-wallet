@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import usePost from '../../custom/api/usePost';
-import useDelete from '../../custom/api/useDelete';
+import { usePost, useDelete } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 
 import WalletLayout from '../../layouts/WalletLayout/WalletLayout';
