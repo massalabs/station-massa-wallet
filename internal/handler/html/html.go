@@ -65,7 +65,7 @@ func HandleWebApp(params operations.WebAppParams) middleware.Responder {
 	return openapi.NewCustomResponder(resourceContent, header, http.StatusOK)
 }
 
-// DefaultRedirectHandler redirects request to "/" URL to "web/index.html"
+// DefaultRedirectHandler redirects request to "/" URL to "web-app/index"
 func DefaultRedirectHandler(_ operations.DefaultPageParams) middleware.Responder {
 	return openapi.NewCustomResponder(nil, map[string]string{"Location": "web-app/index"}, http.StatusPermanentRedirect)
 }
@@ -74,5 +74,4 @@ func DefaultRedirectHandler(_ operations.DefaultPageParams) middleware.Responder
 func AppendEndpoints(api *operations.MassaWalletAPI) {
 	api.DefaultPageHandler = operations.DefaultPageHandlerFunc(DefaultRedirectHandler)
 	api.WebHandler = operations.WebHandlerFunc(Handle)
-	api.WebAppHandler = operations.WebAppHandlerFunc(HandleWebApp)
 }
