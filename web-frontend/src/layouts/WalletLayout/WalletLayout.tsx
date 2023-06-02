@@ -113,6 +113,7 @@ function WalletLayout(props: WalletProps) {
   const accountsItems = accounts.map((account) => ({
     icon: <Identicon username={account.nickname} size={32} />,
     item: account.nickname,
+    onClick: () => navigate(routeFor(`${account.nickname}/${MenuItem.Home}`)),
   }));
 
   const selectedAccountKey: number = parseInt(
