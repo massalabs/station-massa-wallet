@@ -1,4 +1,5 @@
 import WalletLayout from '../../layouts/WalletLayout/WalletLayout';
+
 export default function Home() {
   return (
     <WalletLayout>

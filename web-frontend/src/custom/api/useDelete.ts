@@ -6,7 +6,7 @@ import { UseMutationResult, useMutation } from '@tanstack/react-query';
 
 // LOCALS
 
-function useDelete<T>(
+export function useDelete<T>(
   resource: string,
 ): UseMutationResult<T, unknown, T, unknown> {
   var url = `${import.meta.env.VITE_BASE_API}/${resource}`;
@@ -20,5 +20,3 @@ function useDelete<T>(
     },
   });
 }
-
-export default useDelete;

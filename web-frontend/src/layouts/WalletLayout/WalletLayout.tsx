@@ -1,4 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useResource } from '../../custom/api';
+import { AccountObject } from '../../models/AccountModel';
+import { routeFor } from '../../utils';
+
 import { Dropdown, MassaWallet, SideMenu } from '@massalabs/react-ui-kit';
 import {
   FiHome,
@@ -10,11 +15,6 @@ import {
   FiSettings,
   FiSun,
 } from 'react-icons/fi';
-import { useLocation, useNavigate } from 'react-router-dom';
-import useResource from '../../custom/api/useResource';
-import { AccountObject } from '../../models/AccountModel';
-import { routeFor } from '../../utils';
-import { useState } from 'react';
 
 enum MenuItem {
   Home = 'home',
