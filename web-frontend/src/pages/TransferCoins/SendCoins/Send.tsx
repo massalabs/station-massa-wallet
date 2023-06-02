@@ -8,6 +8,7 @@ import {
   formatStandard,
   reverseFormatStandard,
   checkRecipientFormat,
+  Unit,
 } from '../../../utils/MassaFormating';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
@@ -25,7 +26,7 @@ function Send() {
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
   let account = accounts.find((account) => account.nickname === nickname);
   const unformattedBalance = account?.candidateBalance ?? '0';
-  const balance = parseInt(unformattedBalance) / 10 ** 9;
+  const balance = parseInt(unformattedBalance);
 
   const [amount, setAmount] = useState<string>('');
   const [recipient, setRecipient] = useState('');
@@ -79,7 +80,7 @@ function Send() {
 
   function overrideAmount(pct: number) {
     const newAmount = balance * pct;
-    const newFormatedAmount = formatStandard(newAmount, 9);
+    const newFormatedAmount = formatStandard(newAmount, Unit.MAS, 9);
     setAmount(newFormatedAmount);
   }
 
@@ -98,14 +99,20 @@ function Send() {
 
   function handleChange(e: ChangeEvent<HTMLInputElement>): void {
     e.preventDefault();
+    const candidateAmount = e.target.value;
+    // if there is more than 9 decimals, set the amount to the previous value
+    if (candidateAmount.split('.')[1]?.length > 9) {
+      setAmount(amount);
+      return;
+    }
     setAmount(e.target.value);
   }
 
   const sendArgs = {
-    amount: amount,
-    formattedBalance: formattedBalance,
-    recipient: recipient,
-    error: error,
+    amount,
+    formattedBalance,
+    recipient,
+    error,
     setRecipient,
     handleSubmit,
     handleChange,

@@ -12,10 +12,11 @@ import { useNavigate } from 'react-router-dom';
 export function SendConfirmation({ ...props }) {
   const navigate = useNavigate();
   const { amount, nickname, recipient, valid, setValid } = props;
-
   let fees = '999'; // TO DO: implement in the advanced page
-  let reversedAmount = reverseFormatStandard(amount);
+  const reversedAmount = reverseFormatStandard(amount);
   const total = +reversedAmount + +fees;
+  console.log('total', total);
+  const formattedTotal = formatStandard(total);
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
     'accounts',
@@ -54,7 +55,8 @@ export function SendConfirmation({ ...props }) {
         <div className="flex flex-row items-center mb-3.5 ">
           <div className="mr-2">
             <p>
-              Amount ({formatStandard(reversedAmount)}) + gas fee {fees}
+              Amount ({formatStandard(reversedAmount)}) MAS + gas fee {fees}{' '}
+              nMAS
             </p>
           </div>
           <div>
@@ -62,7 +64,7 @@ export function SendConfirmation({ ...props }) {
           </div>
         </div>
         <div className="mb-3.5">
-          <Balance customClass="pl-0 bg-transparent" amount={total} />
+          <Balance customClass="pl-0 bg-transparent" amount={formattedTotal} />
         </div>
         <div>
           <p>
