@@ -16,6 +16,8 @@ export const hideAndReload = () => {
   WindowReloadApp();
 };
 
+const timeoutDelay = 1000 * 6; // 6 seconds
+
 export const handleApplyResult = (
   navigate: NavigateFunction,
   req: promptRequest,
@@ -29,7 +31,7 @@ export const handleApplyResult = (
       navigate('/success', {
         state: { req },
       });
-      setTimeout(hideAndReload, 2000);
+      setTimeout(hideAndReload, timeoutDelay);
     } else {
       req.Msg = Intl.t(`errors.${result.CodeMessage}`);
       errMsgCb(req.Msg);
@@ -37,7 +39,7 @@ export const handleApplyResult = (
         state: { req },
       });
       if (quitOnError || result.CodeMessage === 'Timeout-0001') {
-        setTimeout(hideAndReload, 2000);
+        setTimeout(hideAndReload, timeoutDelay);
         return;
       }
     }
