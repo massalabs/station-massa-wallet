@@ -35,6 +35,15 @@
     "add": "Add an account",
     "select": "Select an account"
   },
+  "settings": {
+    "title-profil": "Account profil",
+    "title-security": "Account security",
+    "buttons": {
+      "update": "Update",
+      "delete": "Delete account",
+      "backup": "Back up account"
+    }
+  },
   "errors": {
     "nickname-required": "Nickname is required",
     "nickname-already-exists": "This account name already exists",

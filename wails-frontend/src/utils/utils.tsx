@@ -2,7 +2,8 @@ import { NavigateFunction } from 'react-router-dom';
 import { Hide, AbortAction } from '../../wailsjs/go/walletapp/WalletApp';
 import { WindowReloadApp } from '../../wailsjs/runtime';
 import { promptResult, promptRequest } from '../events/events';
-import { IErrorObject, getErrorMessage } from './errors';
+import { IErrorObject } from './errors';
+import Intl from '../i18n/i18n';
 
 export const handleCancel = () => {
   AbortAction();
@@ -15,12 +16,15 @@ export const hideAndReload = () => {
   WindowReloadApp();
 };
 
+const timeoutDelay = 1000 * 6; // 6 seconds
+
 export const handleApplyResult = (
   navigate: NavigateFunction,
   req: promptRequest,
   errMsgCb:
     | React.Dispatch<React.SetStateAction<IErrorObject | null>>
-    | ((msg: string) => void),
+    | ((msg: string) => void)
+    | null = null,
   quitOnError = false,
 ) => {
   return (result: promptResult) => {
@@ -28,15 +32,15 @@ export const handleApplyResult = (
       navigate('/success', {
         state: { req },
       });
-      setTimeout(hideAndReload, 2000);
+      setTimeout(hideAndReload, timeoutDelay);
     } else {
-      req.Msg = getErrorMessage(result.CodeMessage);
-      errMsgCb(req.Msg);
+      req.Msg = Intl.t(`errors.${result.CodeMessage}`);
+      if (errMsgCb) errMsgCb(req.Msg);
       navigate('/failure', {
         state: { req },
       });
       if (quitOnError || result.CodeMessage === 'Timeout-0001') {
-        setTimeout(hideAndReload, 2000);
+        setTimeout(hideAndReload, timeoutDelay);
         return;
       }
     }

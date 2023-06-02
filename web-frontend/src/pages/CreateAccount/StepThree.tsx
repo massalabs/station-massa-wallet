@@ -7,7 +7,7 @@ import { FiArrowRight } from 'react-icons/fi';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { useNavigate } from 'react-router-dom';
 import { AccountObject } from '../../models/AccountModel';
-import usePost from '../../custom/api/usePost';
+import { usePost } from '../../custom/api';
 
 export default function StepThree() {
   const navigate = useNavigate();
@@ -16,9 +16,7 @@ export default function StepThree() {
   const nickname: string = state.nickname;
 
   const { mutate, isSuccess } = usePost<AccountObject>(
-    'accounts',
-    nickname,
-    'backup',
+    `accounts/${nickname}/backup`,
   );
 
   if (isSuccess) {
@@ -27,9 +25,9 @@ export default function StepThree() {
 
   return (
     <LandingPage>
-      <div className="flex flex-col justify-center items-center align-center h-screen">
-        <div className="flex flex-col justify-center items-center w-fit h-fit max-w-sm text-neutral">
-          <div className="w-full max-w-xs">
+      <div className="flex flex-col justify-center items-center h-screen">
+        <div className="flex flex-col justify-start w-full h-full max-w-sm max-h-56">
+          <div className="w-full pb-6">
             <Stepper
               step={2}
               steps={[
@@ -39,18 +37,20 @@ export default function StepThree() {
               ]}
             />
           </div>
-          <h1 className="mas-banner pt-6">{Intl.t('account.create.title')}</h1>
-          <p className="mas-body pt-6">
+          <h1 className="mas-banner text-f-primary pb-6">
+            {Intl.t('account.create.title')}
+          </h1>
+          <p className="mas-body text-f-primary pb-4">
             {Intl.t('account.create.step3.description')}
           </p>
-          <div className="pt-4 w-full">
+          <div className="w-full pb-4">
             <Link to={routeFor('home')} state={{ nickname }}>
               <Button posIcon={<FiArrowRight />}>
                 {Intl.t('account.create.buttons.skip')}
               </Button>
             </Link>
           </div>
-          <div className="pt-4 w-full">
+          <div className="pb-4 w-full">
             <Button
               variant="secondary"
               onClick={() => mutate({} as AccountObject)}

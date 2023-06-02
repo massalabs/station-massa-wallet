@@ -1,20 +1,20 @@
 // STYLES
 
 // EXTERNALS
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
 
 // LOCALS
 
-export function usePut<T>(
+export function useDelete<T>(
   resource: string,
 ): UseMutationResult<T, unknown, T, unknown> {
-  const url = `${import.meta.env.VITE_BASE_API}/${resource}`;
+  var url = `${import.meta.env.VITE_BASE_API}/${resource}`;
 
   return useMutation<T, unknown, T, unknown>({
     mutationKey: [resource],
-    mutationFn: async (payload) => {
-      const { data } = await axios.put<T, AxiosResponse<T>>(url, payload);
+    mutationFn: async () => {
+      const { data } = await axios.delete<T>(url);
 
       return data;
     },

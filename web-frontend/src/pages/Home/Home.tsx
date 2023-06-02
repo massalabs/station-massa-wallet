@@ -1,7 +1,9 @@
-import WalletLayout from '../../layouts/WalletLayout/WalletLayout';
+import WalletLayout, {
+  MenuItem,
+} from '../../layouts/WalletLayout/WalletLayout';
 export default function Home() {
   return (
-    <WalletLayout>
+    <WalletLayout menuItem={MenuItem.Home}>
       <div>
         <h1>Home Page</h1>
       </div>

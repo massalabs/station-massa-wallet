@@ -30,8 +30,3 @@ const (
 	TradeRolls
 	Unprotect
 )
-
-type PromptRequestData struct {
-	Action PromptRequestAction
-	Msg    string
-}

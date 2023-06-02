@@ -111,7 +111,7 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 	wallet, loadErr := wallet.LoadFile(filePath)
 	if loadErr != nil {
 		fmt.Printf("error while loading file: %v", loadErr.Err)
-		return selectFileResult{Err: loadErr.Err.Error(), CodeMessage: utils.ErrAccountFile}
+		return selectFileResult{Err: loadErr.Err.Error(), CodeMessage: loadErr.CodeErr}
 	}
 
 	return selectFileResult{FilePath: filePath, Nickname: wallet.Nickname}

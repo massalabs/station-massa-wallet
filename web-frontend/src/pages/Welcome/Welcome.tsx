@@ -1,12 +1,12 @@
-import LandingPage from '../../layouts/LandingPage/LandingPage';
-import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
-import { FiArrowRight } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { goToErrorPage, routeFor } from '../../utils';
-import useResource from '../../custom/api/useResource';
+import { useResource, usePut } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
-import usePut from '../../custom/api/usePut';
 import Intl from '../../i18n/i18n';
+
+import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
+import LandingPage from '../../layouts/LandingPage/LandingPage';
+import { FiArrowRight } from 'react-icons/fi';
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ export default function Welcome() {
   return (
     <LandingPage>
       <div className="flex flex-col justify-center items-center h-screen">
-        <div className="w-fit h-fit max-w-lg">
-          <h1 className="mas-banner text-f-primary">
+        <div className="flex flex-col justify-start items-start w-full h-full max-w-sm max-h-56">
+          <h1 className="mas-banner text-f-primary pb-6">
             {Intl.t('welcome.title-first-part')}
             <br />
             {Intl.t('welcome.title-second-part')}
@@ -33,23 +33,22 @@ export default function Welcome() {
               {Intl.t('welcome.title-third-part')}
             </span>
           </h1>
-          <div className="pt-6">
-            <Link to={routeFor('account-create-step-one')}>
-              <Button posIcon={<FiArrowRight />}>
-                {Intl.t('account.create.title')}
-              </Button>
-            </Link>
-          </div>
-          <div className="pt-3.5">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                mutate({} as AccountObject);
-              }}
-            >
-              {Intl.t('account.import')}
+          <Link
+            className="pb-4 w-full"
+            to={routeFor('account-create-step-one')}
+          >
+            <Button posIcon={<FiArrowRight />}>
+              {Intl.t('account.create.title')}
             </Button>
-          </div>
+          </Link>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              mutate({} as AccountObject);
+            }}
+          >
+            {Intl.t('account.import')}
+          </Button>
         </div>
       </div>
     </LandingPage>

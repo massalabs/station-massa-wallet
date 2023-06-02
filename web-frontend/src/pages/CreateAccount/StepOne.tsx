@@ -7,7 +7,7 @@ import { parseForm } from '../../utils/parseForm';
 import { Input, Stepper, Button } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
-import useResource from '../../custom/api/useResource';
+import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { isAlreadyExists, isNicknameValid } from '../../validation/nickname';
 
@@ -63,11 +63,9 @@ export default function StepOne() {
   return (
     <LandingPage>
       <form ref={form} onSubmit={handleSubmit}>
-        <div
-          className={`flex flex-col justify-center items-center align-center h-screen`}
-        >
-          <div className="flex flex-col justify-center content-center items-center w-fit h-fit max-w-sm">
-            <div className="w-full max-w-xs mb-6">
+        <div className="flex flex-col justify-center items-center h-screen">
+          <div className="flex flex-col justify-start w-full h-full max-w-sm max-h-56">
+            <div className="w-full pb-6">
               <Stepper
                 step={0}
                 steps={[
@@ -77,10 +75,10 @@ export default function StepOne() {
                 ]}
               />
             </div>
-            <h1 className="mas-banner text-neutral mb-6">
+            <h1 className="mas-banner text-neutral pb-6">
               {Intl.t('account.create.title')}
             </h1>
-            <div className="w-full mb-4">
+            <div className="w-full pb-4">
               <Input
                 defaultValue=""
                 name="nickname"

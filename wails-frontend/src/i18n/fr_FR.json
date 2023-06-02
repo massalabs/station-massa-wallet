@@ -7,5 +7,12 @@
     "backup": "Le compte a été sauvegardé",
     "transfer": "La transaction a été envoyée",
     "success": "Succès"
+  },
+  "import": {
+    "steps": {
+      "private": "Clé privée",
+      "account": "Nom du compte",
+      "password": "Mot de passe"
+    }
   }
 }

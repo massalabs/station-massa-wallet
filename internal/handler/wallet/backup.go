@@ -48,12 +48,14 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	var privateKey string = ""
 
 	if isYmlBackup {
-		err = w.saveAccountFile(params.Nickname)
-		if err != nil {
+		walletErr := w.saveAccountFile(params.Nickname)
+		if walletErr != nil {
+			w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+				walletapp.EventData{Success: false, CodeMessage: walletErr.CodeErr})
 			return operations.NewBackupAccountBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorSaveAccount,
-					Message: "Unable to backup account file",
+					Message: walletErr.CodeErr,
 				})
 		}
 	} else {
@@ -67,32 +69,55 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	return operations.NewBackupAccountNoContent()
 }
 
-func (w *walletBackupAccount) saveAccountFile(nickname string) error {
+func (w *walletBackupAccount) saveAccountFile(nickname string) *wallet.WalletError {
 	dstFile, err := w.prompterApp.SelectBackupFilepath(nickname)
 	if err != nil {
-		return err
+		return &wallet.WalletError{
+			Err:     err,
+			CodeErr: utils.ErrAccountFile,
+		}
+	}
+
+	if dstFile == "" {
+		return &wallet.WalletError{
+			Err:     fmt.Errorf("no file selected"),
+			CodeErr: utils.ActionCanceled,
+		}
 	}
 
 	// Create the destination file
 	destination, err := os.Create(dstFile)
 	if err != nil {
-		return err
+		return &wallet.WalletError{
+			Err:     err,
+			CodeErr: utils.ErrAccountFile,
+		}
 	}
 	defer destination.Close()
 
 	srcFile, err := wallet.FilePath(nickname)
 	if err != nil {
-		return err
+		return &wallet.WalletError{
+			Err:     err,
+			CodeErr: utils.ErrAccountFile,
+		}
 	}
 	source, err := os.Open(srcFile)
 	if err != nil {
-		return err
+		return &wallet.WalletError{
+			Err:     err,
+			CodeErr: utils.ErrAccountFile,
+		}
 	}
 	defer source.Close()
 
 	_, err = io.Copy(destination, source)
 	if err != nil {
-		return err
+		return &wallet.WalletError{
+			Err:     err,
+			CodeErr: utils.ErrAccountFile,
+		}
 	}
+
 	return nil
 }

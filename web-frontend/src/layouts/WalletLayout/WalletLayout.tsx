@@ -1,22 +1,26 @@
 import { ReactNode } from 'react';
-import { Dropdown, MassaWallet, SideMenu } from '@massalabs/react-ui-kit';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useResource } from '../../custom/api';
+import { AccountObject } from '../../models/AccountModel';
+import { routeFor } from '../../utils';
+
+import {
+  Dropdown,
+  MassaWallet,
+  SideMenu,
+  Identicon,
+} from '@massalabs/react-ui-kit';
 import {
   FiHome,
   FiList,
   FiArrowUpRight,
-  FiUser,
   FiUsers,
   FiDisc,
   FiSettings,
   FiSun,
 } from 'react-icons/fi';
-import { useLocation, useNavigate } from 'react-router-dom';
-import useResource from '../../custom/api/useResource';
-import { AccountObject } from '../../models/AccountModel';
-import { routeFor } from '../../utils';
-import { useState } from 'react';
 
-enum MenuItem {
+export enum MenuItem {
   Home = 'home',
   SendReceive = 'send-receive',
   Transactions = 'transactions',
@@ -27,10 +31,12 @@ enum MenuItem {
 }
 
 interface WalletProps {
+  menuItem: MenuItem;
   children: ReactNode;
 }
 
 function WalletLayout(props: WalletProps) {
+  const { menuItem } = props;
   const navigate = useNavigate();
   const { state } = useLocation();
   var nickname: string = state.nickname;
@@ -42,12 +48,8 @@ function WalletLayout(props: WalletProps) {
     navigate(routeFor('index'));
   }
 
-  const [selectedItem, setSelectedItem] = useState<MenuItem>(
-    state.menuItem ?? MenuItem.Home,
-  );
-
   function isActive(item: MenuItem) {
-    return item === selectedItem;
+    return item === menuItem;
   }
 
   let menuConf = {
@@ -104,16 +106,16 @@ function WalletLayout(props: WalletProps) {
       icon: <FiSun />,
       active: isActive(MenuItem.LightTheme),
       footer: true,
-      onClickItem: () => setSelectedItem(MenuItem.LightTheme),
     },
   ];
 
   const accountsItems = accounts.map((account) => ({
-    icon: <FiUser size={32} />,
+    icon: <Identicon username={account.nickname} size={32} />,
     item: account.nickname,
   }));
 
   const selectedAccountKey: number = parseInt(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     Object.keys(accounts).find(
       (_, idx) => accounts[idx].nickname === nickname,
     )!,
@@ -123,7 +125,7 @@ function WalletLayout(props: WalletProps) {
     <div className="bg-primary min-h-screen">
       <div
         className="flex flex-col justify-center h-screen
-        max-w-xs min-w-fit text-f-primary m-auto"
+        min-w-fit text-f-primary m-auto"
       >
         <SideMenu conf={menuConf} items={menuItems} />
         <div className="absolute top-0 right-0 m-6">
