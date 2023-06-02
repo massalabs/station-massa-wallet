@@ -4,7 +4,7 @@
     "new-password": "The password has been created",
     "import": "The account has been imported",
     "sign": "The transaction has been signed",
-    "backup": "The account file has been saved",
+    "backup": "Your .yaml file has been downloaded",
     "transfer": "The transaction has been sent",
     "success": "Success"
   },
