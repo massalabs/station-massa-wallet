@@ -76,12 +76,11 @@ function Send() {
     // const { amount, recipient } = formObject;
     else setValid(!valid);
   }
-
-  const formattedBalance = formatStandard(balance);
+  const formattedBalance = formatStandard(balance, Unit.NanoMAS, 2);
 
   function overrideAmount(pct: number) {
     const newAmount = balance * pct;
-    const newFormatedAmount = formatStandard(newAmount, Unit.MAS, 9);
+    const newFormatedAmount = formatStandard(newAmount, Unit.NanoMAS, 9);
     setAmount(newFormatedAmount);
   }
 
@@ -122,20 +121,20 @@ function Send() {
   }
 
   const confirmArgs = {
-    amount: amount,
-    nickname: nickname,
-    recipient: recipient,
+    amount,
+    nickname,
+    recipient,
     valid: valid,
     fees: fees,
     setValid,
   };
 
   const sendArgs = {
-    amount: amount,
-    formattedBalance: formattedBalance,
-    recipient: recipient,
-    error: error,
-    fees: fees,
+    amount,
+    formattedBalance,
+    recipient,
+    error,
+    fees,
     setFees,
     handleFees,
     handleFeesConfirm,

@@ -1,6 +1,7 @@
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft, FiHelpCircle } from 'react-icons/fi';
 import {
+  Unit,
   formatStandard,
   reverseFormatStandard,
 } from '../../../utils/MassaFormating';
@@ -8,14 +9,15 @@ import usePost from '../../../custom/api/usePost';
 import { SendTransactionObject } from '../../../models/AccountModel';
 import { routeFor } from '../../../utils';
 import { useNavigate } from 'react-router-dom';
+import { fromMAS } from '@massalabs/massa-web3';
 
 export function SendConfirmation({ ...props }) {
   const navigate = useNavigate();
-  const { amount, nickname, recipient, valid, setValid } = props;
-
-  let fees = '0.99'; // TO DO: implement in the advanced page
-  let reversedAmount = reverseFormatStandard(amount);
-  const total = +amount + +fees;
+  const { amount, nickname, recipient, valid, fees, setValid } = props;
+  const reversedAmount = reverseFormatStandard(amount);
+  const amountInNanoMAS = fromMAS(reversedAmount).toString();
+  const total = +amountInNanoMAS + +fees;
+  const formattedTotal = formatStandard(total, Unit.NanoMAS);
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
     'accounts',
