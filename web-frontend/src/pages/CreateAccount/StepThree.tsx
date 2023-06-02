@@ -16,9 +16,7 @@ export default function StepThree() {
   const nickname: string = state.nickname;
 
   const { mutate, isSuccess } = usePost<AccountObject>(
-    'accounts',
-    nickname,
-    'backup',
+    `accounts/${nickname}/backup`,
   );
 
   if (isSuccess) {
