@@ -16,7 +16,7 @@ paths:
       responses:
         "301":
           description: Move to the default endpoint
-  /web/{resource}:
+  /web-app/{resource}:
     get:
       operationId: web
       produces:

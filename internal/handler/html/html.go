@@ -34,9 +34,9 @@ func Handle(params operations.WebParams) middleware.Responder {
 	return openapi.NewCustomResponder(resourceContent, header, http.StatusOK)
 }
 
-// DefaultRedirectHandler redirects request to "/" URL to "web/index.html"
+// DefaultRedirectHandler redirects request to "/" URL to "web-app//index.html"
 func DefaultRedirectHandler(_ operations.DefaultPageParams) middleware.Responder {
-	return openapi.NewCustomResponder(nil, map[string]string{"Location": "web/index.html"}, http.StatusPermanentRedirect)
+	return openapi.NewCustomResponder(nil, map[string]string{"Location": "web-app/index.html"}, http.StatusPermanentRedirect)
 }
 
 // AppendEndpoints appends web endpoints to the API.
