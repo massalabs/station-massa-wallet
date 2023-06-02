@@ -19,7 +19,8 @@ const (
 
 // Message codes
 const (
-	WrongPassword = "WrongPassword-0001"
+	WrongPassword  = "WrongPassword-0001"
+	ActionCanceled = "ActionCanceled-0001"
 )
 
 // Messages

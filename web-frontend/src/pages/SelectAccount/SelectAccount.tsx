@@ -25,8 +25,10 @@ export default function SelectAccount() {
     <LandingPage>
       <div className={`${defaultFlex} h-screen`}>
         <div className="w-1/2">
-          <h1 className="mas-banner">{Intl.t('account.header.title')}</h1>
-          <label className="mas-body pt-6" htmlFor="account-select">
+          <h1 className="mas-banner text-f-primary">
+            {Intl.t('account.header.title')}
+          </h1>
+          <label className="mas-body text-info pt-6" htmlFor="account-select">
             {Intl.t('account.select')}
           </label>
           <div id="account-select" className="pt-5">

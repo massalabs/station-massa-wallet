@@ -4,7 +4,7 @@
     "new-password": "The password has been created",
     "import": "The account has been imported",
     "sign": "The transaction has been signed",
-    "backup": "The account file has been saved",
+    "backup": "Your .yaml file has been downloaded",
     "transfer": "The transaction has been sent",
     "success": "Success"
   },
@@ -14,5 +14,19 @@
       "account": "Account name",
       "password": "Password"
     }
+  },
+  "errors": {
+    "Nickname-0001": "Invalid nickname",
+    "PrivateKey-0001": "Invalid private key",
+    "NoFile-0001": "No file selected",
+    "AccountFile-0001": "Filesystem error",
+    "InvalidFileFormat-0001": "Invalid account file format",
+    "DuplicateKey-0001": "Private key already exists",
+    "Unknown-0001": "Unknown error, try again",
+    "DuplicateNickname-001": "This account name already exists",
+    "Timeout-0001": "Timeout error",
+    "WrongPassword-0001": "Wrong password",
+    "InvalidPromptInput-0001": "Invalid user input",
+    "ActionCanceled-0001": "Action canceled"
   }
 }

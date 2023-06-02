@@ -9,8 +9,8 @@ import { handleApplyResult, handleCancel } from '../utils/utils';
 import { walletapp } from '../../wailsjs/go/models';
 import { EventsOnce } from '../../wailsjs/runtime/runtime';
 import { Button } from '@massalabs/react-ui-kit';
-import { getErrorMessage } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
+import Intl from '../i18n/i18n';
 
 const ImportFile = () => {
   const nav = useNavigate();
@@ -41,7 +41,7 @@ const ImportFile = () => {
         return;
       }
       if (res.err) {
-        setErrorMsg(getErrorMessage(res.codeMessage));
+        setErrorMsg(Intl.t(`errors.${res.codeMessage}`));
         return;
       }
       setAccount(res);
