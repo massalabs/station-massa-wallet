@@ -30,13 +30,15 @@ export default function SelectAccount() {
     <LandingPage>
       <div className={`${defaultFlex} h-screen`}>
         <div className="w-1/2">
-          <h1 className="mas-banner text-f-primary">
+          <h1 className="mas-banner text-f-primary pb-6">
             {Intl.t('account.header.title')}
           </h1>
-          <label className="mas-body text-info pt-6" htmlFor="account-select">
-            {Intl.t('account.select')}
-          </label>
-          <div id="account-select" className="pt-5">
+          <div className="pb-6">
+            <label className="mas-body text-info" htmlFor="account-select">
+              {Intl.t('account.select')}
+            </label>
+          </div>
+          <div id="account-select" className="pb-4">
             {accounts.map((account: AccountObject) => (
               <Link
                 to={routeFor('home')}
