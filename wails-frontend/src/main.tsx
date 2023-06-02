@@ -20,6 +20,7 @@ import Failure from './pages/failure';
 import BackupMethods from './pages/backupMethods';
 import BackupKeyPairs from './pages/backupKeyPairs';
 import NewPassword from './pages/newPassword';
+import ConfirmDelete from './pages/confirmDelete';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route path="/import-file" element={<ImportFile />} />
       <Route path="/import-key-pairs" element={<PromptPrivateKey />} />
       <Route path="/import-nickname" element={<PromptNickname />} />
+      <Route path="/confirm-delete" element={<ConfirmDelete />} />
     </Route>,
   ),
 );

@@ -14,7 +14,7 @@ import (
 // Note: the password prompter is mandatory for sign endpoint
 func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface, gc gcache.Cache) {
 	api.CreateAccountHandler = NewCreateAccount(prompterApp, massaClient)
-	api.DeleteAccountHandler = NewDelete(prompterApp)
+	api.DeleteAccountHandler = NewDelete(prompterApp, massaClient)
 	api.ImportAccountHandler = NewImport(prompterApp, massaClient)
 	api.AccountListHandler = NewGetAll(massaClient)
 	api.SignHandler = NewSign(prompterApp, gc)

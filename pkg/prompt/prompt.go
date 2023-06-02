@@ -15,6 +15,7 @@ const PASSWORD_MIN_LENGTH = 5
 type PromptRequest struct {
 	Action walletapp.PromptRequestAction
 	Msg    string
+	Data   interface{}
 }
 
 // WalletPrompter is a struct that wraps a Fyne GUI application and implements the delete.Confirmer interface.
@@ -23,7 +24,7 @@ type WalletPrompter struct {
 }
 
 func (w *WalletPrompter) PromptRequest(req PromptRequest) {
-	runtime.EventsEmit(w.PromptApp.Ctx, walletapp.PromptRequestEvent, walletapp.PromptRequestData{Action: req.Action, Msg: req.Msg})
+	runtime.EventsEmit(w.PromptApp.Ctx, walletapp.PromptRequestEvent, req)
 	w.PromptApp.Show()
 }
 
