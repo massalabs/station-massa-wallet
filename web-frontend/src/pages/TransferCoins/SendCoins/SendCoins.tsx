@@ -1,5 +1,7 @@
 import { Tabs, Button } from '@massalabs/react-ui-kit';
-import WalletLayout from '../../../layouts/WalletLayout/WalletLayout';
+import WalletLayout, {
+  MenuItem,
+} from '../../../layouts/WalletLayout/WalletLayout';
 import { useLocation } from 'react-router-dom';
 import Send from './Send';
 
@@ -27,7 +29,7 @@ function SendCoins() {
   };
 
   return (
-    <WalletLayout>
+    <WalletLayout menuItem={MenuItem.SendCoins}>
       <Tabs {...args} />
     </WalletLayout>
   );

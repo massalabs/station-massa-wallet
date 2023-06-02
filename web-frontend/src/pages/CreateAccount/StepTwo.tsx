@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { usePost } from '../../custom/api/usePost';
+import { usePost } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';

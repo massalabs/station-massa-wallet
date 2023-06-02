@@ -5,7 +5,7 @@ import {
   formatStandard,
   reverseFormatStandard,
 } from '../../../utils/MassaFormating';
-import usePost from '../../../custom/api/usePost';
+import { usePost } from '../../../custom/api';
 import { SendTransactionObject } from '../../../models/AccountModel';
 import { routeFor } from '../../../utils';
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +20,7 @@ export function SendConfirmation({ ...props }) {
   const formattedTotal = formatStandard(total, Unit.NanoMAS);
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
-    'accounts',
-    `${nickname}/transfer`,
+    `accounts/${nickname}/transfer`,
   );
   if (isSuccess) {
     navigate(routeFor('account-create-step-three'), { state: { nickname } });
@@ -40,7 +39,7 @@ export function SendConfirmation({ ...props }) {
     <div>
       <div
         onClick={() => setValid(!valid)}
-        className="flex flex-row just items-center hover:cursor-pointer mb-3.5"
+        className="flex flex-row just items-center hover:cursor-pointer pb-3.5"
       >
         <div className="mr-2">
           <FiChevronLeft />
@@ -49,12 +48,12 @@ export function SendConfirmation({ ...props }) {
           <u>Back to Sending page</u>
         </p>
       </div>
-      <div className="mb-3.5">
+      <div className="pb-3.5">
         <p>You're going to send: </p>
       </div>
-      <div className="flex flex-col p-10 bg-secondary rounded-lg mb-3.5">
-        <div className="flex flex-row items-center mb-3.5 ">
-          <div className="mr-2">
+      <div className="flex flex-col p-10 bg-secondary rounded-lg pb-3.5">
+        <div className="flex flex-row items-center pb-3.5 ">
+          <div className="pr-2">
             <p>
               Amount ({formatStandard(reversedAmount)}) MAS + gas fee {fees}{' '}
               nMAS
@@ -64,7 +63,7 @@ export function SendConfirmation({ ...props }) {
             <FiHelpCircle />
           </div>
         </div>
-        <div className="mb-3.5">
+        <div className="pb-3.5">
           <Balance customClass="pl-0 bg-transparent" amount={formattedTotal} />
         </div>
         <div>

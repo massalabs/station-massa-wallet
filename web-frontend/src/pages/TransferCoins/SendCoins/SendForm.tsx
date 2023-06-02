@@ -1,113 +1,33 @@
-import {
-  Balance,
-  Button,
-  Input,
-  PopupModal,
-  PopupModalContent,
-  PopupModalHeader,
-  RadioButton,
-} from '@massalabs/react-ui-kit';
-import { useState } from 'react';
+import { Balance, Button, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
+import Modal from './Modal';
 
 export function SendForm({ ...props }) {
   const {
     amount,
     formattedBalance,
     recipient,
-    fees,
     error,
+    fees,
+    modal,
+    setModal,
+    handleModal,
     handleFees,
+    handleFeesConfirm,
     setRecipient,
     handleSubmit,
     handleChange,
-    handleFeesConfirm,
     SendPercentage,
   } = props;
 
-  const radioArgs = {
-    name: 'radio',
+  const modalArgs = {
+    modal,
+    setModal,
+    handleModal,
+    fees,
+    handleFees,
+    handleFeesConfirm,
   };
-
-  const [modal, setModal] = useState<boolean>(false);
-
-  function Modal() {
-    return (
-      <PopupModal fullMode={true} onClose={() => setModal(!modal)}>
-        <PopupModalHeader>
-          <div>
-            <label className="mas-title">Advanced</label>
-            <p className="mas-body">
-              You pay gas fees to reward block validators and maximize your
-              chances to see your transaction validated. It’s a tip for people
-              that support the blockchain network.
-            </p>
-          </div>
-        </PopupModalHeader>
-        <PopupModalContent>
-          <div>
-            <div className="flex flex-row items-center mas-buttons pb-3.5">
-              <RadioButton defaultChecked={true} {...radioArgs} />
-              <p>Preset : </p>
-            </div>
-            <div className="flex flex-row items-center w-full gap-4  pb-3.5">
-              <div className="w-full">
-                <Button
-                  variant={fees == 1000 ? 'primary' : 'secondary'}
-                  onClick={() => handleFees(1000)}
-                >
-                  Standard
-                  <label className="text-info text-xs flex ml-1 items-center">
-                    (1000 nMAS)
-                  </label>
-                </Button>
-              </div>
-              <div className="w-full">
-                <Button
-                  variant={fees == 5000 ? 'primary' : 'secondary'}
-                  onClick={() => handleFees(5000)}
-                >
-                  High
-                  <label className="text-info text-xs flex pl-1 items-center">
-                    (5000 nMAS)
-                  </label>
-                </Button>
-              </div>
-              <div className="w-full">
-                <Button
-                  variant={fees === 1 ? 'primary' : 'secondary'}
-                  onClick={() => handleFees(1)}
-                >
-                  Low
-                  <label className="text-info text-xs flex pl-1 items-center">
-                    (1 uMAS)
-                  </label>
-                </Button>
-              </div>
-            </div>
-            <div>
-              <div className="flex flex-row items-center mas-buttons pb-3.5">
-                <RadioButton defaultChecked={false} {...radioArgs} />
-                <p> Custom fees : </p>
-              </div>
-              <form className="pb-3.5" onSubmit={handleFeesConfirm}>
-                <div className="pb-3.5">
-                  <Input placeholder={'Gas fees amount'} name="fees" />
-                </div>
-                <div>
-                  <Button type="submit"> Confirm Fees </Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </PopupModalContent>
-      </PopupModal>
-    );
-  }
-
-  function handleModal() {
-    setModal(!modal);
-  }
 
   return (
     <div>
@@ -120,14 +40,14 @@ export function SendForm({ ...props }) {
             amount={formattedBalance}
           />
         </div>
-        <div className="mb-3.5">
-          <div className="flex flex-row justify-between w-full mb-3.5 ">
+        <div className="pb-3.5">
+          <div className="flex flex-row justify-between w-full pb-3.5 ">
             <p>Send Token</p>
             <p>
               Available : <u>{formattedBalance}</u>
             </p>
           </div>
-          <div className="mb-3.5">
+          <div className="pb-3.5">
             <Input
               placeholder={'Amount to send'}
               value={amount}
@@ -146,10 +66,10 @@ export function SendForm({ ...props }) {
           </div>
         </div>
         <div>
-          <div className="mb-3.5">
+          <div className="pb-3.5">
             <p>To :</p>
           </div>
-          <div className="mb-3.5">
+          <div className="pb-3.5">
             <Input
               placeholder={'Recipient'}
               value={recipient}
@@ -158,18 +78,18 @@ export function SendForm({ ...props }) {
               error={error?.recipient}
             />
           </div>
-          <div className="flex flex-row-reverse mb-3.5">
+          <div className="flex flex-row-reverse pb-3.5">
             <p
               className="hover:cursor-pointer"
               onClick={() => console.log('transfer between accounts')}
             >
-              <u>Transfer between my account</u>
+              <u>Transfer between my accounts</u>
             </p>
           </div>
         </div>
         {/* Button Section */}
         <div className="flex flex-col w-full">
-          <div className="mb-3.5">
+          <div className="pb-3.5">
             <Button
               onClick={handleModal}
               variant={'secondary'}
@@ -185,7 +105,7 @@ export function SendForm({ ...props }) {
           </div>
         </div>
       </form>
-      <div>{modal ? <Modal /> : null}</div>
+      <div>{modal ? <Modal {...modalArgs} /> : null}</div>
     </div>
   );
 }

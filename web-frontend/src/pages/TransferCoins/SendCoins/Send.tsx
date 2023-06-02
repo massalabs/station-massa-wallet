@@ -1,4 +1,4 @@
-import useResource from '../../../custom/api/useResource';
+import { useResource } from '../../../custom/api/useResource';
 import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
 import { useLocation } from 'react-router-dom';
@@ -33,6 +33,7 @@ function Send() {
   const [recipient, setRecipient] = useState('');
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<IErrorObject | null>(null);
+  const [modal, setModal] = useState<boolean>(false);
 
   // TODO : implement address check to see if it is real
 
@@ -108,16 +109,29 @@ function Send() {
     setAmount(e.target.value);
   }
 
-  function handleFeesConfirm(e: ChangeEvent<HTMLInputElement>) {
-    console.log('confirm');
-    e.preventDefault();
-    const formObject = parseForm(e);
-    const { fees } = formObject;
-    console.log(fees);
+  // function handleFeesConfirm(e: ChangeEvent<HTMLInputElement>) {
+  //   e.preventDefault();
+  //   const formObject = parseForm(e);
+  //   const { fees } = formObject;
+  //   setFees(fees);
+  //   setModal(!modal);
+  // }
+
+  function handleFeesConfirm() {
+    // e.preventDefault();
+    // const formObject = parseForm(e);
+    // const { fees } = formObject;
+
+    setModal(!modal);
   }
 
   function handleFees(num: number) {
+    console.log(num);
     setFees(num);
+  }
+
+  function handleModal() {
+    setModal(!modal);
   }
 
   const confirmArgs = {
@@ -135,6 +149,9 @@ function Send() {
     recipient,
     error,
     fees,
+    modal,
+    setModal,
+    handleModal,
     setFees,
     handleFees,
     handleFeesConfirm,

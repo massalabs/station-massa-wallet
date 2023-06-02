@@ -30,7 +30,7 @@ function Success() {
   return (
     <Layout>
       <div className="flex flex-col items-center justify-center">
-        <div className="w-12 h-12 bg-brand flex flex-col justify-center items-center rounded-full mb-6">
+        <div className="w-12 h-12 bg-brand flex flex-col justify-center items-center rounded-full pb-6">
           <FiCheck className="w-6 h-6" />
         </div>
         <p className="text-neutral mas-body">{successMsg(req)}</p>

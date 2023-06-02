@@ -8,6 +8,12 @@ export enum Unit {
   NanoMAS = 'NanoMAS',
 }
 
+export const presetFees: { [key: string]: number } = {
+  low: 1,
+  standard: 1000,
+  high: 5000,
+};
+
 /**
  * Formats a number according to the specified unit and formatting options.
  * @param num - The number to format.
