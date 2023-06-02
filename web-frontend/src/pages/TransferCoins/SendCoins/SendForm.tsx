@@ -1,4 +1,12 @@
-import { Balance, Button, Input } from '@massalabs/react-ui-kit';
+import {
+  Balance,
+  Button,
+  Input,
+  PopupModal,
+  PopupModalContent,
+  PopupModalHeader,
+} from '@massalabs/react-ui-kit';
+import { useState } from 'react';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 export function SendForm({ ...props }) {
@@ -12,6 +20,25 @@ export function SendForm({ ...props }) {
     handleChange,
     SendPercentage,
   } = props;
+
+  const [modal, setModal] = useState<boolean>(false);
+
+  function Modal() {
+    return (
+      <PopupModal fullMode={true} onClose={() => setModal(!modal)}>
+        <PopupModalHeader>
+          <label className="text-f-primary">The title</label>
+        </PopupModalHeader>
+        <PopupModalContent>
+          <label className="text-f-primary">any content</label>
+        </PopupModalContent>
+      </PopupModal>
+    );
+  }
+
+  function handleModal() {
+    setModal(!modal);
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -68,9 +95,16 @@ export function SendForm({ ...props }) {
         </div>
       </div>
       {/* Button Section */}
+
+      {modal ? <Modal /> : null}
+
       <div className="flex flex-col w-full">
         <div className="mb-3.5">
-          <Button variant={'secondary'} posIcon={<FiPlus />}>
+          <Button
+            onClick={handleModal}
+            variant={'secondary'}
+            posIcon={<FiPlus />}
+          >
             Advanced
           </Button>
         </div>
