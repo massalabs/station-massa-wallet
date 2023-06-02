@@ -77,6 +77,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		ImportAccountHandler: ImportAccountHandlerFunc(func(params ImportAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation ImportAccount has not yet been implemented")
 		}),
+		ModifyAccountNicknameHandler: ModifyAccountNicknameHandlerFunc(func(params ModifyAccountNicknameParams) middleware.Responder {
+			return middleware.NotImplemented("operation ModifyAccountNickname has not yet been implemented")
+		}),
 		SignHandler: SignHandlerFunc(func(params SignParams) middleware.Responder {
 			return middleware.NotImplemented("operation Sign has not yet been implemented")
 		}),
@@ -161,6 +164,8 @@ type MassaWalletAPI struct {
 	GetAccountHandler GetAccountHandler
 	// ImportAccountHandler sets the operation handler for the import account operation
 	ImportAccountHandler ImportAccountHandler
+	// ModifyAccountNicknameHandler sets the operation handler for the modify account nickname operation
+	ModifyAccountNicknameHandler ModifyAccountNicknameHandler
 	// SignHandler sets the operation handler for the sign operation
 	SignHandler SignHandler
 	// TradeRollsHandler sets the operation handler for the trade rolls operation
@@ -285,6 +290,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.ImportAccountHandler == nil {
 		unregistered = append(unregistered, "ImportAccountHandler")
+	}
+	if o.ModifyAccountNicknameHandler == nil {
+		unregistered = append(unregistered, "ModifyAccountNicknameHandler")
 	}
 	if o.SignHandler == nil {
 		unregistered = append(unregistered, "SignHandler")
@@ -432,6 +440,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/api/accounts"] = NewImportAccount(o.context, o.ImportAccountHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/api/accounts/{nickname}"] = NewModifyAccountNickname(o.context, o.ModifyAccountNicknameHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
