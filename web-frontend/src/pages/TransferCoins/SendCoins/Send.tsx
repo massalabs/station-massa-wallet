@@ -29,6 +29,7 @@ function Send() {
   const balance = parseInt(unformattedBalance);
 
   const [amount, setAmount] = useState<string>('');
+  const [fees, setFees] = useState<number>(1000);
   const [recipient, setRecipient] = useState('');
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<IErrorObject | null>(null);
@@ -38,7 +39,7 @@ function Send() {
   function validate(e: any) {
     const formObject = parseForm(e);
     const { amount, recipient } = formObject;
-
+    console.log(fees);
     const amountNum = reverseFormatStandard(amount);
 
     if (amountNum > balance) {
@@ -108,22 +109,40 @@ function Send() {
     setAmount(e.target.value);
   }
 
-  const sendArgs = {
-    amount,
-    formattedBalance,
-    recipient,
-    error,
-    setRecipient,
-    handleSubmit,
-    handleChange,
-    SendPercentage,
-  };
+  function handleFeesConfirm(e: ChangeEvent<HTMLInputElement>) {
+    console.log('confirm');
+    e.preventDefault();
+    const formObject = parseForm(e);
+    const { fees } = formObject;
+    console.log(fees);
+  }
+
+  function handleFees(num: number) {
+    setFees(num);
+  }
+
   const confirmArgs = {
     amount: amount,
     nickname: nickname,
     recipient: recipient,
     valid: valid,
+    fees: fees,
     setValid,
+  };
+
+  const sendArgs = {
+    amount: amount,
+    formattedBalance: formattedBalance,
+    recipient: recipient,
+    error: error,
+    fees: fees,
+    setFees,
+    handleFees,
+    handleFeesConfirm,
+    setRecipient,
+    handleSubmit,
+    handleChange,
+    SendPercentage,
   };
 
   return (

@@ -12,11 +12,10 @@ import { useNavigate } from 'react-router-dom';
 export function SendConfirmation({ ...props }) {
   const navigate = useNavigate();
   const { amount, nickname, recipient, valid, setValid } = props;
-  let fees = '999'; // TO DO: implement in the advanced page
-  const reversedAmount = reverseFormatStandard(amount);
-  const total = +reversedAmount + +fees;
-  console.log('total', total);
-  const formattedTotal = formatStandard(total);
+
+  let fees = '0.99'; // TO DO: implement in the advanced page
+  let reversedAmount = reverseFormatStandard(amount);
+  const total = +amount + +fees;
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
     'accounts',
