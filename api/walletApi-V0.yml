@@ -200,6 +200,40 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+    put:
+      operationId: ModifyAccountNickname
+      description: Modify the account nickname
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/ModifyNicknameRequest"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Account nickname modified successfully.
+          schema:
+            $ref: "#/definitions/Account"
+        "400":
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        "404":
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        "422":
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        "500":
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
   /api/accounts/{nickname}/exportFile:
     get:
       operationId: ExportAccountFile
@@ -445,6 +479,11 @@ definitions:
       - fee
       - amount
       - side
+  ModifyNicknameRequest:
+    type: object
+    properties:
+      newNickname:
+        $ref: "#/definitions/Nickname"
   OperationResponse:
     type: object
     properties:

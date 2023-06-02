@@ -164,6 +164,59 @@ func init() {
           }
         }
       },
+      "put": {
+        "description": "Modify the account nickname",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "ModifyAccountNickname",
+        "parameters": [
+          {
+            "$ref": "#/parameters/nickname"
+          },
+          {
+            "x-nullable": false,
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ModifyNicknameRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account nickname modified successfully.",
+            "schema": {
+              "$ref": "#/definitions/Account"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Generate a new account with new random keys",
         "produces": [
@@ -688,6 +741,14 @@ func init() {
         }
       }
     },
+    "ModifyNicknameRequest": {
+      "type": "object",
+      "properties": {
+        "newNickname": {
+          "$ref": "#/definitions/Nickname"
+        }
+      }
+    },
     "Nickname": {
       "description": "Account's short name.",
       "type": "string",
@@ -951,6 +1012,64 @@ func init() {
           },
           "404": {
             "description": "Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Modify the account nickname",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "ModifyAccountNickname",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Account's short name.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "x-nullable": false,
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ModifyNicknameRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account nickname modified successfully.",
+            "schema": {
+              "$ref": "#/definitions/Account"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1556,6 +1675,14 @@ func init() {
           "description": "error message.",
           "type": "string",
           "x-nullable": false
+        }
+      }
+    },
+    "ModifyNicknameRequest": {
+      "type": "object",
+      "properties": {
+        "newNickname": {
+          "$ref": "#/definitions/Nickname"
         }
       }
     },
