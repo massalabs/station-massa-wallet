@@ -8,6 +8,7 @@ import Intl from '../../i18n/i18n';
 
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { Button, Selector, MassaLogo } from '@massalabs/react-ui-kit';
+import { formatStandard } from '../../utils/MassaFormating';
 
 export default function SelectAccount() {
   const navigate = useNavigate();
@@ -20,6 +21,10 @@ export default function SelectAccount() {
   }
 
   const defaultFlex = 'flex flex-col justify-center items-center align-center';
+
+  function getFormattedBalance(account: AccountObject): string {
+    return formatStandard(toMAS(account.candidateBalance).toNumber());
+  }
 
   return (
     <LandingPage>
@@ -42,7 +47,7 @@ export default function SelectAccount() {
                     preIcon={<FiArrowUpRight />}
                     posIcon={<MassaLogo size={24} />}
                     content={account.nickname}
-                    amount={toMAS(account.candidateBalance).toString()}
+                    amount={getFormattedBalance(account)}
                   />
                 </div>
               </Link>
