@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
@@ -16,7 +16,7 @@ import {
   FiSun,
 } from 'react-icons/fi';
 
-enum MenuItem {
+export enum MenuItem {
   Home = 'home',
   SendReceive = 'send-receive',
   Transactions = 'transactions',
@@ -27,10 +27,12 @@ enum MenuItem {
 }
 
 interface WalletProps {
+  menuItem: MenuItem;
   children: ReactNode;
 }
 
 function WalletLayout(props: WalletProps) {
+  const { menuItem } = props;
   const navigate = useNavigate();
   const { state } = useLocation();
   var nickname: string = state.nickname;
@@ -42,12 +44,8 @@ function WalletLayout(props: WalletProps) {
     navigate(routeFor('index'));
   }
 
-  const [selectedItem, setSelectedItem] = useState<MenuItem>(
-    state.menuItem ?? MenuItem.Home,
-  );
-
   function isActive(item: MenuItem) {
-    return item === selectedItem;
+    return item === menuItem;
   }
 
   let menuConf = {
@@ -104,7 +102,6 @@ function WalletLayout(props: WalletProps) {
       icon: <FiSun />,
       active: isActive(MenuItem.LightTheme),
       footer: true,
-      onClickItem: () => setSelectedItem(MenuItem.LightTheme),
     },
   ];
 
