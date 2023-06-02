@@ -45,6 +45,12 @@ function mockServer(environment = ENV.DEV) {
           candidateBalance: '117',
         });
       });
+
+      this.put('accounts/:nickname', (schema, request) => {
+        let { newNickname } = JSON.parse(request.requestBody).newNickname;
+
+        return schema.create('account', { nickname: newNickname });
+      });
     },
   });
 

@@ -4,12 +4,16 @@ import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
 
-import { Dropdown, MassaWallet, SideMenu } from '@massalabs/react-ui-kit';
+import {
+  Dropdown,
+  MassaWallet,
+  SideMenu,
+  Identicon,
+} from '@massalabs/react-ui-kit';
 import {
   FiHome,
   FiList,
   FiArrowUpRight,
-  FiUser,
   FiUsers,
   FiDisc,
   FiSettings,
@@ -106,7 +110,7 @@ function WalletLayout(props: WalletProps) {
   ];
 
   const accountsItems = accounts.map((account) => ({
-    icon: <FiUser size={32} />,
+    icon: <Identicon username={account.nickname} size={32} />,
     item: account.nickname,
   }));
 

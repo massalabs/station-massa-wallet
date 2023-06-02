@@ -1,4 +1,4 @@
-import { FiPlus, FiArrowUpRight } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { routeFor } from '../../utils';
 import { useResource } from '../../custom/api';
@@ -7,7 +7,12 @@ import { toMAS } from '@massalabs/massa-web3';
 import Intl from '../../i18n/i18n';
 
 import LandingPage from '../../layouts/LandingPage/LandingPage';
-import { Button, Selector, MassaLogo } from '@massalabs/react-ui-kit';
+import {
+  Button,
+  Selector,
+  MassaLogo,
+  Identicon,
+} from '@massalabs/react-ui-kit';
 import { formatStandard } from '../../utils/MassaFormating';
 
 export default function SelectAccount() {
@@ -43,7 +48,9 @@ export default function SelectAccount() {
               >
                 <div className="pb-4" key={account.nickname}>
                   <Selector
-                    preIcon={<FiArrowUpRight />}
+                    preIcon={
+                      <Identicon username={account.nickname} size={32} />
+                    }
                     posIcon={<MassaLogo size={24} />}
                     content={account.nickname}
                     amount={getFormattedBalance(account)}
