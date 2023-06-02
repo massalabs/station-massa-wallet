@@ -44,6 +44,10 @@ function Send() {
       setError({ amount: Intl.t('errors.send.amount-to-high') });
       return false;
     }
+    if (amountNum <= 0) {
+      setError({ amount: Intl.t('errors.send.amount-to-low') });
+      return false;
+    }
     if (Number.isNaN(amountNum)) {
       setError({ amount: Intl.t('errors.send.invalid-amount') });
       return false;

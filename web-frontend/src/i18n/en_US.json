@@ -42,6 +42,7 @@
     "send": {
       "invalid-amount": "Amount is invalid",
       "amount-to-high": "Insufficient funds on balance",
+      "amount-to-low": "Amount must be greater than 0",
       "no-recipient": "Recipient is required",
       "invalid-recipient": "Recipient's address doesn't seem to be a valid Massa address"
     }

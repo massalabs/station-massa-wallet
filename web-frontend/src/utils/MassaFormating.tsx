@@ -12,6 +12,6 @@ export function reverseFormatStandard(str: string) {
 }
 
 export function checkRecipientFormat(recipient: string) {
-  const regex = /^A[a-zA-Z0-9]{52}$/;
+  const regex = /^AU[a-zA-Z0-9]{51}$/;
   return regex.test(recipient);
 }

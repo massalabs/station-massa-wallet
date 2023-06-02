@@ -15,7 +15,7 @@ export function SendConfirmation({ ...props }) {
 
   let fees = '999'; // TO DO: implement in the advanced page
   let reversedAmount = reverseFormatStandard(amount);
-  const total = +amount + +fees;
+  const total = +reversedAmount + +fees;
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
     'accounts',
