@@ -24,8 +24,8 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Thyra version**
-The version of Thyra the bug is present in.
+**MassaStation version**
+The version of MassaStation the bug is present in.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. MacOS, Windows...]
