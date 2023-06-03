@@ -27,6 +27,8 @@ func Test_walletDelete_Handle(t *testing.T) {
 	api, prompterApp, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
+	testResult := make(chan walletapp.EventData)
+
 	nickname := "walletToDelete"
 	password := "zePassword"
 	_, errGenerate := wallet.Generate(nickname, password)
@@ -38,38 +40,58 @@ func Test_walletDelete_Handle(t *testing.T) {
 	})
 
 	t.Run("invalid password", func(t *testing.T) {
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PromptInput <- "invalid password"
+			// forward test result to test goroutine
+			failRes := <-resChan
+
+			checkResultChannel(t, failRes, false, utils.WrongPassword)
+
+			// Send cancel to prompter app to unlock the handler
+			prompterApp.App().CtrlChan <- walletapp.Cancel
+		}(testResult)
+
 		resp := deleteWallet(t, api, nickname)
-
-		verifyStatusCode(t, resp, http.StatusNoContent)
-
-		prompterApp.App().PromptInput <- "invalid password"
-
-		result := <-resChan
-
-		checkResultChannel(t, result, false, utils.WrongPassword)
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
 	t.Run("canceled by user", func(t *testing.T) {
+		go func() {
+			// Send wrong password to prompter app and wait for result
+			prompterApp.App().PromptInput <- "this is not the password"
+			// forward test result to test goroutine
+			failRes := <-resChan
+
+			checkResultChannel(t, failRes, false, utils.WrongPassword)
+
+			// Send cancel to prompter app to unlock the handler
+			prompterApp.App().CtrlChan <- walletapp.Cancel
+		}()
+
 		resp := deleteWallet(t, api, nickname)
 
-		verifyStatusCode(t, resp, http.StatusNoContent)
-
-		prompterApp.App().CtrlChan <- walletapp.Cancel
+		verifyStatusCode(t, resp, http.StatusUnauthorized)
 
 		_, err = wallet.Load(nickname)
 		assert.NoError(t, err)
 	})
 
 	t.Run("delete success", func(t *testing.T) {
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PromptInput <- password
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
 		resp := deleteWallet(t, api, nickname)
 
 		verifyStatusCode(t, resp, http.StatusNoContent)
 
-		prompterApp.App().PromptInput <- password
+		result := <-testResult
 
-		result := <-resChan
-
-		checkResultChannel(t, result, true, "Delete Success")
+		checkResultChannel(t, result, true, utils.MsgAccountDeleted)
 
 		_, err = wallet.Load(nickname)
 		assert.Error(t, err, "Wallet should have been deleted")
