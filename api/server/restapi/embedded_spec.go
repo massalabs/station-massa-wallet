@@ -209,7 +209,7 @@ func init() {
         }
       },
       "delete": {
-        "description": "Delete the account associated with the provided nickname in the path.",
+        "description": "Delete the account associated with the provided nickname in the path, the user will be prompt to confirm the deletion.",
         "produces": [
           "application/json"
         ],
@@ -221,13 +221,19 @@ func init() {
         ],
         "responses": {
           "204": {
-            "description": "Account deletion request has been taken into account, the user will be prompt to confirm the deletion.",
+            "description": "Account deleted successfully.",
             "schema": {
               "$ref": "#/definitions/Account"
             }
           },
           "400": {
             "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1007,7 +1013,7 @@ func init() {
         }
       },
       "delete": {
-        "description": "Delete the account associated with the provided nickname in the path.",
+        "description": "Delete the account associated with the provided nickname in the path, the user will be prompt to confirm the deletion.",
         "produces": [
           "application/json"
         ],
@@ -1024,13 +1030,19 @@ func init() {
         ],
         "responses": {
           "204": {
-            "description": "Account deletion request has been taken into account, the user will be prompt to confirm the deletion.",
+            "description": "Account deleted successfully.",
             "schema": {
               "$ref": "#/definitions/Account"
             }
           },
           "400": {
             "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
