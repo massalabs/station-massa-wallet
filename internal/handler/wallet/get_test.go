@@ -110,7 +110,7 @@ func Test_getWallet_handler(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s?ciphered=false", nickname), "")
 		assert.NoError(t, err)
 
-		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
+		verifyStatusCode(t, resp, http.StatusOK)
 		assertWalletBody(t, resp, nickname, false)
 
 		result := <-testResult

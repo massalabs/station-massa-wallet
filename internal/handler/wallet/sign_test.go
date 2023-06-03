@@ -55,9 +55,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		assert.True(t, result.Success)
-
-		assert.Equal(t, utils.MsgAccountUnprotected, result.CodeMessage)
+		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
 	})
 
 	// The handler will not return until a the good password is sent or the action is canceled
@@ -85,9 +83,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		assert.True(t, result.Success)
-
-		assert.Equal(t, utils.MsgAccountUnprotected, result.CodeMessage)
+		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
