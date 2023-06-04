@@ -22,7 +22,7 @@ import {
 
 export enum MenuItem {
   Home = 'home',
-  SendReceive = 'send-receive',
+  SendCoins = 'send-coins',
   Transactions = 'transactions',
   Contacts = 'contacts',
   Assets = 'assets',
@@ -77,10 +77,9 @@ function WalletLayout(props: WalletProps) {
     {
       label: 'Send/Receive',
       icon: <FiArrowUpRight />,
-      active: isActive(MenuItem.SendReceive),
+      active: isActive(MenuItem.SendCoins),
       footer: false,
-      onClickItem: () =>
-        navigate(routeFor(`${nickname}/${MenuItem.SendReceive}`)),
+      onClickItem: () => navigate(routeFor(MenuItem.SendCoins), { state }),
     },
     {
       label: 'Contacts',
@@ -127,7 +126,7 @@ function WalletLayout(props: WalletProps) {
     <div className="bg-primary min-h-screen">
       <div
         className="flex flex-col justify-center h-screen
-        min-w-fit text-f-primary m-auto"
+        w-1/2 min-w-fit text-f-primary m-auto"
       >
         <SideMenu conf={menuConf} items={menuItems} />
         <div className="absolute top-0 right-0 m-6">
