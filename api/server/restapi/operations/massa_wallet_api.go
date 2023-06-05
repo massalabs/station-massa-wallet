@@ -68,6 +68,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		DeleteAccountHandler: DeleteAccountHandlerFunc(func(params DeleteAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation DeleteAccount has not yet been implemented")
 		}),
+		EditAccountHandler: EditAccountHandlerFunc(func(params EditAccountParams) middleware.Responder {
+			return middleware.NotImplemented("operation EditAccount has not yet been implemented")
+		}),
 		ExportAccountFileHandler: ExportAccountFileHandlerFunc(func(params ExportAccountFileParams) middleware.Responder {
 			return middleware.NotImplemented("operation ExportAccountFile has not yet been implemented")
 		}),
@@ -76,9 +79,6 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		}),
 		ImportAccountHandler: ImportAccountHandlerFunc(func(params ImportAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation ImportAccount has not yet been implemented")
-		}),
-		ModifyAccountNicknameHandler: ModifyAccountNicknameHandlerFunc(func(params ModifyAccountNicknameParams) middleware.Responder {
-			return middleware.NotImplemented("operation ModifyAccountNickname has not yet been implemented")
 		}),
 		SignHandler: SignHandlerFunc(func(params SignParams) middleware.Responder {
 			return middleware.NotImplemented("operation Sign has not yet been implemented")
@@ -158,14 +158,14 @@ type MassaWalletAPI struct {
 	CreateAccountHandler CreateAccountHandler
 	// DeleteAccountHandler sets the operation handler for the delete account operation
 	DeleteAccountHandler DeleteAccountHandler
+	// EditAccountHandler sets the operation handler for the edit account operation
+	EditAccountHandler EditAccountHandler
 	// ExportAccountFileHandler sets the operation handler for the export account file operation
 	ExportAccountFileHandler ExportAccountFileHandler
 	// GetAccountHandler sets the operation handler for the get account operation
 	GetAccountHandler GetAccountHandler
 	// ImportAccountHandler sets the operation handler for the import account operation
 	ImportAccountHandler ImportAccountHandler
-	// ModifyAccountNicknameHandler sets the operation handler for the modify account nickname operation
-	ModifyAccountNicknameHandler ModifyAccountNicknameHandler
 	// SignHandler sets the operation handler for the sign operation
 	SignHandler SignHandler
 	// TradeRollsHandler sets the operation handler for the trade rolls operation
@@ -282,6 +282,9 @@ func (o *MassaWalletAPI) Validate() error {
 	if o.DeleteAccountHandler == nil {
 		unregistered = append(unregistered, "DeleteAccountHandler")
 	}
+	if o.EditAccountHandler == nil {
+		unregistered = append(unregistered, "EditAccountHandler")
+	}
 	if o.ExportAccountFileHandler == nil {
 		unregistered = append(unregistered, "ExportAccountFileHandler")
 	}
@@ -290,9 +293,6 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.ImportAccountHandler == nil {
 		unregistered = append(unregistered, "ImportAccountHandler")
-	}
-	if o.ModifyAccountNicknameHandler == nil {
-		unregistered = append(unregistered, "ModifyAccountNicknameHandler")
 	}
 	if o.SignHandler == nil {
 		unregistered = append(unregistered, "SignHandler")
@@ -428,6 +428,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/api/accounts/{nickname}"] = NewDeleteAccount(o.context, o.DeleteAccountHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/api/accounts/{nickname}"] = NewEditAccount(o.context, o.EditAccountHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -440,10 +444,6 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/api/accounts"] = NewImportAccount(o.context, o.ImportAccountHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/api/accounts/{nickname}"] = NewModifyAccountNickname(o.context, o.ModifyAccountNicknameHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

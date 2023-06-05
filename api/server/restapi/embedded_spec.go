@@ -165,11 +165,11 @@ func init() {
         }
       },
       "put": {
-        "description": "Modify the account nickname",
+        "description": "Edit the account associated with the provided nickname in the path.",
         "produces": [
           "application/json"
         ],
-        "operationId": "ModifyAccountNickname",
+        "operationId": "EditAccount",
         "parameters": [
           {
             "$ref": "#/parameters/nickname"
@@ -180,13 +180,13 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ModifyNicknameRequest"
+              "$ref": "#/definitions/EditAccountRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Account nickname modified successfully.",
+            "description": "Account edited successfully.",
             "schema": {
               "$ref": "#/definitions/Account"
             }
@@ -721,6 +721,14 @@ func init() {
       "type": "string",
       "format": "byte"
     },
+    "EditAccountRequest": {
+      "type": "object",
+      "properties": {
+        "newNickname": {
+          "$ref": "#/definitions/Nickname"
+        }
+      }
+    },
     "Error": {
       "description": "Error object.",
       "type": "object",
@@ -738,14 +746,6 @@ func init() {
           "description": "error message.",
           "type": "string",
           "x-nullable": false
-        }
-      }
-    },
-    "ModifyNicknameRequest": {
-      "type": "object",
-      "properties": {
-        "newNickname": {
-          "$ref": "#/definitions/Nickname"
         }
       }
     },
@@ -1025,11 +1025,11 @@ func init() {
         }
       },
       "put": {
-        "description": "Modify the account nickname",
+        "description": "Edit the account associated with the provided nickname in the path.",
         "produces": [
           "application/json"
         ],
-        "operationId": "ModifyAccountNickname",
+        "operationId": "EditAccount",
         "parameters": [
           {
             "type": "string",
@@ -1045,13 +1045,13 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ModifyNicknameRequest"
+              "$ref": "#/definitions/EditAccountRequest"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Account nickname modified successfully.",
+            "description": "Account edited successfully.",
             "schema": {
               "$ref": "#/definitions/Account"
             }
@@ -1658,6 +1658,14 @@ func init() {
       "type": "string",
       "format": "byte"
     },
+    "EditAccountRequest": {
+      "type": "object",
+      "properties": {
+        "newNickname": {
+          "$ref": "#/definitions/Nickname"
+        }
+      }
+    },
     "Error": {
       "description": "Error object.",
       "type": "object",
@@ -1675,14 +1683,6 @@ func init() {
           "description": "error message.",
           "type": "string",
           "x-nullable": false
-        }
-      }
-    },
-    "ModifyNicknameRequest": {
-      "type": "object",
-      "properties": {
-        "newNickname": {
-          "$ref": "#/definitions/Nickname"
         }
       }
     },

@@ -201,8 +201,8 @@ paths:
           schema:
             $ref: "#/definitions/Error"
     put:
-      operationId: ModifyAccountNickname
-      description: Modify the account nickname
+      operationId: EditAccount
+      description: Edit the account associated with the provided nickname in the path.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -210,12 +210,12 @@ paths:
           required: true
           x-nullable: false
           schema:
-            $ref: "#/definitions/ModifyNicknameRequest"
+            $ref: "#/definitions/EditAccountRequest"
       produces:
         - application/json
       responses:
         200:
-          description: Account nickname modified successfully.
+          description: Account edited successfully.
           schema:
             $ref: "#/definitions/Account"
         400:
@@ -479,7 +479,7 @@ definitions:
       - fee
       - amount
       - side
-  ModifyNicknameRequest:
+  EditAccountRequest:
     type: object
     properties:
       newNickname:
