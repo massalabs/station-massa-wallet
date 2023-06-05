@@ -17,7 +17,7 @@ import (
 const DeleteAccountNoContentCode int = 204
 
 /*
-DeleteAccountNoContent Account deletion request has been taken into account, the user will be prompt to confirm the deletion.
+DeleteAccountNoContent Account deleted successfully.
 
 swagger:response deleteAccountNoContent
 */
@@ -95,6 +95,51 @@ func (o *DeleteAccountBadRequest) SetPayload(payload *models.Error) {
 func (o *DeleteAccountBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+// DeleteAccountUnauthorizedCode is the HTTP code returned for type DeleteAccountUnauthorized
+const DeleteAccountUnauthorizedCode int = 401
+
+/*
+DeleteAccountUnauthorized Unauthorized - The request requires user authentication.
+
+swagger:response deleteAccountUnauthorized
+*/
+type DeleteAccountUnauthorized struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewDeleteAccountUnauthorized creates DeleteAccountUnauthorized with default headers values
+func NewDeleteAccountUnauthorized() *DeleteAccountUnauthorized {
+
+	return &DeleteAccountUnauthorized{}
+}
+
+// WithPayload adds the payload to the delete account unauthorized response
+func (o *DeleteAccountUnauthorized) WithPayload(payload *models.Error) *DeleteAccountUnauthorized {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the delete account unauthorized response
+func (o *DeleteAccountUnauthorized) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DeleteAccountUnauthorized) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(401)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

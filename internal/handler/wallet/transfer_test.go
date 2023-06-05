@@ -68,7 +68,7 @@ func Test_transfer_handler(t *testing.T) {
 		result := <-testResult
 		assert.True(t, result.Success)
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
+		verifyStatusCode(t, resp, http.StatusOK)
 	})
 
 	err = cleanupTestData([]string{nickname})

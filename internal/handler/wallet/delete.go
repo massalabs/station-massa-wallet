@@ -2,9 +2,11 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
 
+	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
 	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
@@ -13,7 +15,7 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-type PromptRequestDeleteDate struct {
+type PromptRequestDeleteData struct {
 	Nickname string
 	Balance  string
 }
@@ -34,23 +36,19 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 		return resp
 	}
 
-	go handleDelete(wlt, w)
-
-	return operations.NewDeleteAccountNoContent()
-}
-
-func handleDelete(wlt *wallet.Wallet, w *walletDelete) {
 	infos, err := w.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
 	if err != nil {
-		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
-		return
+		return operations.NewDeleteAccountInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorGetWallet,
+				Message: "Unable to retrieve account infos",
+			})
 	}
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Delete,
 		Msg:    "Delete an account",
-		Data: PromptRequestDeleteDate{
+		Data: PromptRequestDeleteData{
 			Nickname: wlt.Nickname,
 			Balance:  fmt.Sprint(infos[0].CandidateBalance),
 		},
@@ -58,7 +56,11 @@ func handleDelete(wlt *wallet.Wallet, w *walletDelete) {
 
 	_, err = prompt.WakeUpPrompt(w.prompterApp, promptRequest, wlt)
 	if err != nil {
-		return
+		return operations.NewDeleteAccountUnauthorized().WithPayload(
+			&models.Error{
+				Code:    fmt.Sprint(http.StatusUnauthorized),
+				Message: "Unable to unprotect wallet",
+			})
 	}
 
 	if wlt.DeleteFile() != nil {
@@ -66,8 +68,15 @@ func handleDelete(wlt *wallet.Wallet, w *walletDelete) {
 		fmt.Println(errStr)
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
+		return operations.NewDeleteAccountInternalServerError().WithPayload(
+			&models.Error{
+				Code:    utils.ErrAccountFile,
+				Message: "Unable to delete account file",
+			})
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountDeleted})
+
+	return operations.NewDeleteAccountNoContent()
 }

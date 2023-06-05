@@ -32,7 +32,7 @@ func NewDeleteAccount(ctx *middleware.Context, handler DeleteAccountHandler) *De
 /*
 	DeleteAccount swagger:route DELETE /api/accounts/{nickname} deleteAccount
 
-Delete the account associated with the provided nickname in the path.
+Delete the account associated with the provided nickname in the path, the user will be prompt to confirm the deletion.
 */
 type DeleteAccount struct {
 	Context *middleware.Context

@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
 
@@ -44,7 +45,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		if err != nil {
 			return operations.NewGetAccountUnauthorized().WithPayload(
 				&models.Error{
-					Code:    errorGetWallets,
+					Code:    fmt.Sprint(http.StatusUnauthorized),
 					Message: "Unable to unprotect wallet",
 				})
 		}
@@ -64,7 +65,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 	if err != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorGetWallets,
+				Code:    utils.ErrNetwork,
 				Message: "Unable to retrieve account infos",
 			})
 	}
