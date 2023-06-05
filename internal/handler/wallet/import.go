@@ -70,8 +70,8 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 			Nickname:         models.Nickname(wlt.Nickname),
 			CandidateBalance: models.Amount(fmt.Sprint(infos[0].CandidateBalance)),
 			Balance:          models.Amount(fmt.Sprint(infos[0].Balance)),
-			Address:          wlt.Address,
-			KeyPair: models.AccountKeyPair{
+			Address:          models.Address(wlt.Address),
+			KeyPair: models.KeyPair{
 				PrivateKey: "",
 				PublicKey:  wlt.GetPupKey(),
 				Salt:       "",

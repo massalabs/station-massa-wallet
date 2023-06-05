@@ -350,9 +350,13 @@ func Generate(nickname string, password string) (*Wallet, *WalletError) {
 
 // Delete removes wallet from file system
 func (w *Wallet) DeleteFile() (err error) {
-	filePath, err := FilePath(w.Nickname)
+	return DeleteAccount(w.Nickname)
+}
+
+func DeleteAccount(nickname string) error {
+	filePath, err := FilePath(nickname)
 	if err != nil {
-		return fmt.Errorf("getting file path for '%s': %w", w.Nickname, err)
+		return fmt.Errorf("getting file path for '%s': %w", nickname, err)
 	}
 
 	err = os.Remove(filePath)

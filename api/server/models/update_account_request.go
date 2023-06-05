@@ -14,34 +14,30 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// Account Account object (V0).
+// UpdateAccountRequest Account object (V0).
 //
-// swagger:model Account
-type Account struct {
+// swagger:model UpdateAccountRequest
+type UpdateAccountRequest struct {
 
 	// address
-	// Required: true
-	Address Address `json:"address"`
+	Address Address `json:"address,omitempty"`
 
 	// balance
-	// Required: true
-	Balance Amount `json:"balance"`
+	Balance Amount `json:"balance,omitempty"`
 
 	// candidate balance
-	// Required: true
-	CandidateBalance Amount `json:"candidateBalance"`
+	CandidateBalance Amount `json:"candidateBalance,omitempty"`
 
 	// key pair
-	// Required: true
-	KeyPair KeyPair `json:"keyPair"`
+	KeyPair KeyPair `json:"keyPair,omitempty"`
 
 	// nickname
 	// Required: true
 	Nickname Nickname `json:"nickname"`
 }
 
-// Validate validates this account
-func (m *Account) Validate(formats strfmt.Registry) error {
+// Validate validates this update account request
+func (m *UpdateAccountRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAddress(formats); err != nil {
@@ -70,10 +66,9 @@ func (m *Account) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Account) validateAddress(formats strfmt.Registry) error {
-
-	if err := validate.Required("address", "body", Address(m.Address)); err != nil {
-		return err
+func (m *UpdateAccountRequest) validateAddress(formats strfmt.Registry) error {
+	if swag.IsZero(m.Address) { // not required
+		return nil
 	}
 
 	if err := m.Address.Validate(formats); err != nil {
@@ -88,10 +83,9 @@ func (m *Account) validateAddress(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Account) validateBalance(formats strfmt.Registry) error {
-
-	if err := validate.Required("balance", "body", Amount(m.Balance)); err != nil {
-		return err
+func (m *UpdateAccountRequest) validateBalance(formats strfmt.Registry) error {
+	if swag.IsZero(m.Balance) { // not required
+		return nil
 	}
 
 	if err := m.Balance.Validate(formats); err != nil {
@@ -106,10 +100,9 @@ func (m *Account) validateBalance(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Account) validateCandidateBalance(formats strfmt.Registry) error {
-
-	if err := validate.Required("candidateBalance", "body", Amount(m.CandidateBalance)); err != nil {
-		return err
+func (m *UpdateAccountRequest) validateCandidateBalance(formats strfmt.Registry) error {
+	if swag.IsZero(m.CandidateBalance) { // not required
+		return nil
 	}
 
 	if err := m.CandidateBalance.Validate(formats); err != nil {
@@ -124,7 +117,10 @@ func (m *Account) validateCandidateBalance(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Account) validateKeyPair(formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) validateKeyPair(formats strfmt.Registry) error {
+	if swag.IsZero(m.KeyPair) { // not required
+		return nil
+	}
 
 	if err := m.KeyPair.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -138,7 +134,7 @@ func (m *Account) validateKeyPair(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Account) validateNickname(formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) validateNickname(formats strfmt.Registry) error {
 
 	if err := validate.Required("nickname", "body", Nickname(m.Nickname)); err != nil {
 		return err
@@ -156,8 +152,8 @@ func (m *Account) validateNickname(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this account based on the context it is used
-func (m *Account) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this update account request based on the context it is used
+func (m *UpdateAccountRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateAddress(ctx, formats); err != nil {
@@ -186,7 +182,7 @@ func (m *Account) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 	return nil
 }
 
-func (m *Account) contextValidateAddress(ctx context.Context, formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) contextValidateAddress(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Address.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -200,7 +196,7 @@ func (m *Account) contextValidateAddress(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *Account) contextValidateBalance(ctx context.Context, formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) contextValidateBalance(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Balance.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -214,7 +210,7 @@ func (m *Account) contextValidateBalance(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *Account) contextValidateCandidateBalance(ctx context.Context, formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) contextValidateCandidateBalance(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.CandidateBalance.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -228,7 +224,7 @@ func (m *Account) contextValidateCandidateBalance(ctx context.Context, formats s
 	return nil
 }
 
-func (m *Account) contextValidateKeyPair(ctx context.Context, formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) contextValidateKeyPair(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.KeyPair.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -242,7 +238,7 @@ func (m *Account) contextValidateKeyPair(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *Account) contextValidateNickname(ctx context.Context, formats strfmt.Registry) error {
+func (m *UpdateAccountRequest) contextValidateNickname(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Nickname.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -257,7 +253,7 @@ func (m *Account) contextValidateNickname(ctx context.Context, formats strfmt.Re
 }
 
 // MarshalBinary interface implementation
-func (m *Account) MarshalBinary() ([]byte, error) {
+func (m *UpdateAccountRequest) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -265,8 +261,8 @@ func (m *Account) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Account) UnmarshalBinary(b []byte) error {
-	var res Account
+func (m *UpdateAccountRequest) UnmarshalBinary(b []byte) error {
+	var res UpdateAccountRequest
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

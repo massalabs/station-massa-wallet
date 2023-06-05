@@ -86,6 +86,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		TransferCoinHandler: TransferCoinHandlerFunc(func(params TransferCoinParams) middleware.Responder {
 			return middleware.NotImplemented("operation TransferCoin has not yet been implemented")
 		}),
+		UpdateAccountHandler: UpdateAccountHandlerFunc(func(params UpdateAccountParams) middleware.Responder {
+			return middleware.NotImplemented("operation UpdateAccount has not yet been implemented")
+		}),
 		DefaultPageHandler: DefaultPageHandlerFunc(func(params DefaultPageParams) middleware.Responder {
 			return middleware.NotImplemented("operation DefaultPage has not yet been implemented")
 		}),
@@ -167,6 +170,8 @@ type MassaWalletAPI struct {
 	TradeRollsHandler TradeRollsHandler
 	// TransferCoinHandler sets the operation handler for the transfer coin operation
 	TransferCoinHandler TransferCoinHandler
+	// UpdateAccountHandler sets the operation handler for the update account operation
+	UpdateAccountHandler UpdateAccountHandler
 	// DefaultPageHandler sets the operation handler for the default page operation
 	DefaultPageHandler DefaultPageHandler
 	// WebHandler sets the operation handler for the web operation
@@ -294,6 +299,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.TransferCoinHandler == nil {
 		unregistered = append(unregistered, "TransferCoinHandler")
+	}
+	if o.UpdateAccountHandler == nil {
+		unregistered = append(unregistered, "UpdateAccountHandler")
 	}
 	if o.DefaultPageHandler == nil {
 		unregistered = append(unregistered, "DefaultPageHandler")
@@ -444,6 +452,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/api/accounts/{nickname}/transfer"] = NewTransferCoin(o.context, o.TransferCoinHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/api/accounts/{nickname}"] = NewUpdateAccount(o.context, o.UpdateAccountHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

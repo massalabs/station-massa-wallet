@@ -164,6 +164,59 @@ func init() {
           }
         }
       },
+      "put": {
+        "description": "Update the account associated with the provided nickname in the path.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "UpdateAccount",
+        "parameters": [
+          {
+            "$ref": "#/parameters/nickname"
+          },
+          {
+            "x-nullable": false,
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account edited successfully.",
+            "schema": {
+              "$ref": "#/definitions/Account"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Generate a new account with new random keys",
         "produces": [
@@ -606,9 +659,7 @@ func init() {
       ],
       "properties": {
         "address": {
-          "description": "Account's address.",
-          "type": "string",
-          "x-nullable": false
+          "$ref": "#/definitions/Address"
         },
         "balance": {
           "$ref": "#/definitions/Amount"
@@ -617,46 +668,17 @@ func init() {
           "$ref": "#/definitions/Amount"
         },
         "keyPair": {
-          "description": "Account's key pair.",
-          "type": "object",
-          "required": [
-            "privateKey",
-            "publicKey",
-            "salt",
-            "nonce"
-          ],
-          "properties": {
-            "nonce": {
-              "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "privateKey": {
-              "description": "Key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "publicKey": {
-              "description": "Key pair's public key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "salt": {
-              "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            }
-          },
-          "x-nullable": false
+          "$ref": "#/definitions/KeyPair"
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
         }
       }
+    },
+    "Address": {
+      "description": "Account's address.",
+      "type": "string",
+      "x-nullable": false
     },
     "Amount": {
       "description": "Mas amount in nanoMassa.",
@@ -687,6 +709,43 @@ func init() {
           "x-nullable": false
         }
       }
+    },
+    "KeyPair": {
+      "description": "Account's key pair.",
+      "type": "object",
+      "required": [
+        "privateKey",
+        "publicKey",
+        "salt",
+        "nonce"
+      ],
+      "properties": {
+        "nonce": {
+          "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "privateKey": {
+          "description": "Key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "publicKey": {
+          "description": "Key pair's public key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "salt": {
+          "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        }
+      },
+      "x-nullable": false
     },
     "Nickname": {
       "description": "Account's short name.",
@@ -783,6 +842,30 @@ func init() {
         },
         "recipientAddress": {
           "type": "string"
+        }
+      }
+    },
+    "UpdateAccountRequest": {
+      "description": "Account object (V0).",
+      "type": "object",
+      "required": [
+        "nickname"
+      ],
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "balance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "candidateBalance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "keyPair": {
+          "$ref": "#/definitions/KeyPair"
+        },
+        "nickname": {
+          "$ref": "#/definitions/Nickname"
         }
       }
     }
@@ -963,6 +1046,64 @@ func init() {
           }
         }
       },
+      "put": {
+        "description": "Update the account associated with the provided nickname in the path.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "UpdateAccount",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Account's short name.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "x-nullable": false,
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account edited successfully.",
+            "schema": {
+              "$ref": "#/definitions/Account"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Generate a new account with new random keys",
         "produces": [
@@ -1440,9 +1581,7 @@ func init() {
       ],
       "properties": {
         "address": {
-          "description": "Account's address.",
-          "type": "string",
-          "x-nullable": false
+          "$ref": "#/definitions/Address"
         },
         "balance": {
           "$ref": "#/definitions/Amount"
@@ -1451,48 +1590,49 @@ func init() {
           "$ref": "#/definitions/Amount"
         },
         "keyPair": {
-          "description": "Account's key pair.",
-          "type": "object",
-          "required": [
-            "privateKey",
-            "publicKey",
-            "salt",
-            "nonce"
-          ],
-          "properties": {
-            "nonce": {
-              "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "privateKey": {
-              "description": "Key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "publicKey": {
-              "description": "Key pair's public key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "salt": {
-              "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            }
-          },
-          "x-nullable": false
+          "$ref": "#/definitions/KeyPair"
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
         }
       }
     },
-    "AccountKeyPair": {
+    "Address": {
+      "description": "Account's address.",
+      "type": "string",
+      "x-nullable": false
+    },
+    "Amount": {
+      "description": "Mas amount in nanoMassa.",
+      "type": "string",
+      "x-nullable": false
+    },
+    "CorrelationId": {
+      "description": "Correlation id of the operation batch",
+      "type": "string",
+      "format": "byte"
+    },
+    "Error": {
+      "description": "Error object.",
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "description": "error code.",
+          "type": "string",
+          "x-nullable": false
+        },
+        "message": {
+          "description": "error message.",
+          "type": "string",
+          "x-nullable": false
+        }
+      }
+    },
+    "KeyPair": {
       "description": "Account's key pair.",
       "type": "object",
       "required": [
@@ -1528,36 +1668,6 @@ func init() {
         }
       },
       "x-nullable": false
-    },
-    "Amount": {
-      "description": "Mas amount in nanoMassa.",
-      "type": "string",
-      "x-nullable": false
-    },
-    "CorrelationId": {
-      "description": "Correlation id of the operation batch",
-      "type": "string",
-      "format": "byte"
-    },
-    "Error": {
-      "description": "Error object.",
-      "type": "object",
-      "required": [
-        "code",
-        "message"
-      ],
-      "properties": {
-        "code": {
-          "description": "error code.",
-          "type": "string",
-          "x-nullable": false
-        },
-        "message": {
-          "description": "error message.",
-          "type": "string",
-          "x-nullable": false
-        }
-      }
     },
     "Nickname": {
       "description": "Account's short name.",
@@ -1654,6 +1764,30 @@ func init() {
         },
         "recipientAddress": {
           "type": "string"
+        }
+      }
+    },
+    "UpdateAccountRequest": {
+      "description": "Account object (V0).",
+      "type": "object",
+      "required": [
+        "nickname"
+      ],
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "balance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "candidateBalance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "keyPair": {
+          "$ref": "#/definitions/KeyPair"
+        },
+        "nickname": {
+          "$ref": "#/definitions/Nickname"
         }
       }
     }

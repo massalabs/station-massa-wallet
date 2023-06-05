@@ -53,7 +53,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		g.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
 
-		modelWallet.KeyPair = models.AccountKeyPair{
+		modelWallet.KeyPair = models.KeyPair{
 			PrivateKey: wlt.GetPrivKey(),
 			PublicKey:  wlt.GetPupKey(),
 			Salt:       wlt.GetSalt(),
@@ -79,7 +79,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 func createModelWallet(wlt wallet.Wallet) models.Account {
 	return models.Account{
 		Nickname: models.Nickname(wlt.Nickname),
-		Address:  wlt.Address,
-		KeyPair:  models.AccountKeyPair{},
+		Address:  models.Address(wlt.Address),
+		KeyPair:  models.KeyPair{},
 	}
 }
