@@ -45,6 +45,7 @@ function WalletLayout(props: WalletProps) {
   // If no account, redirect to welcome page
   if (!accounts.length) {
     navigate(routeFor('index'));
+    return <></>;
   }
 
   function isActive(item: MenuItem) {
@@ -117,10 +118,9 @@ function WalletLayout(props: WalletProps) {
   }));
 
   const selectedAccountKey: number = parseInt(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     Object.keys(accounts).find(
       (_, idx) => accounts[idx].nickname === nickname,
-    )!,
+    ) || '0',
   );
 
   return (
