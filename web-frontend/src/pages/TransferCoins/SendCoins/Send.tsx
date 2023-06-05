@@ -1,7 +1,7 @@
 import { useResource } from '../../../custom/api/useResource';
 import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { parseForm } from '../../../utils/parseForm';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import {
@@ -13,16 +13,8 @@ import {
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 
-interface IErrorObject {
-  amount?: string;
-  fees?: string;
-  recipient?: string;
-  error?: string;
-}
-
 function Send() {
-  const { state } = useLocation();
-  const nickname = state.nickname;
+  const { nickname } = useParams();
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
   let account = accounts.find((account) => account.nickname === nickname);
   const unformattedBalance = account?.candidateBalance ?? '0';
@@ -32,16 +24,13 @@ function Send() {
   const [fees, setFees] = useState<number>(1000);
   const [recipient, setRecipient] = useState('');
   const [valid, setValid] = useState<boolean>(false);
-  const [error, setError] = useState<IErrorObject | null>(null);
+  const [error, setError] = useState<object | null>(null);
   const [modal, setModal] = useState<boolean>(false);
   const [modalAccounts, setModalAccounts] = useState<boolean>(false);
-
-  // TODO : implement address check to see if it is real
 
   function validate(e: any) {
     const formObject = parseForm(e);
     const { amount, recipient } = formObject;
-    console.log(fees);
     const amountNum = reverseFormatStandard(amount);
 
     if (amountNum > balance) {
@@ -67,15 +56,9 @@ function Send() {
     setError(null);
     return true;
   }
-
-  // This function is going to be used for the backend
-  // Some parts are commented to avoid a build errors
-  // because the amount and recipient aren't used yet
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!validate(e)) return;
-    // const formObject = parseForm(e);
-    // const { amount, recipient } = formObject;
     else setValid(!valid);
   }
   const formattedBalance = formatStandard(balance, Unit.NanoMAS, 2);
@@ -110,18 +93,14 @@ function Send() {
     setAmount(e.target.value);
   }
 
-  function handleFeesConfirm() {
-    setModal(!modal);
-  }
-
   function handleFees(num: number) {
-    console.log(num);
     setFees(num);
   }
 
   function handleModal() {
     setModal(!modal);
   }
+
   function handleModalAccounts() {
     setModalAccounts(!modalAccounts);
   }
@@ -145,12 +124,11 @@ function Send() {
     modal,
     modalAccounts,
     setModal,
-    setModalAccounts,
     handleModal,
+    setModalAccounts,
     handleModalAccounts,
     setFees,
     handleFees,
-    handleFeesConfirm,
     setRecipient,
     handleSubmit,
     handleChange,

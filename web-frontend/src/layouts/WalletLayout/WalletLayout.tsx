@@ -79,7 +79,8 @@ function WalletLayout(props: WalletProps) {
       icon: <FiArrowUpRight />,
       active: isActive(MenuItem.SendCoins),
       footer: false,
-      onClickItem: () => navigate(routeFor(MenuItem.SendCoins), { state }),
+      onClickItem: () =>
+        navigate(routeFor(`${nickname}/${MenuItem.SendCoins}`)),
     },
     {
       label: 'Contacts',

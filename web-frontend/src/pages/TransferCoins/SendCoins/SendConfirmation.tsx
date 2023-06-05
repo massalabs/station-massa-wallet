@@ -8,8 +8,10 @@ import {
 import { usePost } from '../../../custom/api';
 import { SendTransactionObject } from '../../../models/AccountModel';
 import { routeFor } from '../../../utils';
+import Intl from '../../../i18n/i18n';
 import { useNavigate } from 'react-router-dom';
 import { fromMAS } from '@massalabs/massa-web3';
+import { useState } from 'react';
 
 export function SendConfirmation({ ...props }) {
   const navigate = useNavigate();
@@ -18,12 +20,13 @@ export function SendConfirmation({ ...props }) {
   const amountInNanoMAS = fromMAS(reversedAmount).toString();
   const total = +amountInNanoMAS + +fees;
   const formattedTotal = formatStandard(total, Unit.NanoMAS);
+  const [showTooltip, setShowTooltip] = useState(false); // Add state for tooltip visibility
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
     `accounts/${nickname}/transfer`,
   );
   if (isSuccess) {
-    navigate(routeFor('account-create-step-three'), { state: { nickname } });
+    navigate(routeFor('index'));
   }
   const handleTransfer = () => {
     const transferData: SendTransactionObject = {
@@ -45,22 +48,32 @@ export function SendConfirmation({ ...props }) {
           <FiChevronLeft />
         </div>
         <p>
-          <u>Back to Sending page</u>
+          <u>{Intl.t('sendcoins.back-to-sending')}</u>
         </p>
       </div>
       <div className="pb-3.5">
-        <p>You're going to send: </p>
+        <p>{Intl.t('sendcoins.send-message')}</p>
       </div>
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-3.5">
         <div className="flex flex-row items-center pb-3.5 ">
           <div className="pr-2">
             <p>
-              Amount ({formatStandard(reversedAmount)}) MAS + gas fee {fees}{' '}
-              nMAS
+              {Intl.t('sendcoins.amount')} ({formatStandard(reversedAmount)})
+              {Intl.t('sendcoins.mas-gas')} {fees}
+              {Intl.t('sendcoins.nano-mas')}
             </p>
           </div>
-          <div>
+          <div
+            className="flex flex-row relative items-center gap-1 "
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
             <FiHelpCircle />
+            {showTooltip && (
+              <div className="flex flex-col w-[368px] absolute z-10 t-4 bg-tertiary p-3 rounded ">
+                {Intl.t('sendcoins.gas-info').replace('XX', fees)}
+              </div>
+            )}
           </div>
         </div>
         <div className="pb-3.5">
@@ -68,7 +81,8 @@ export function SendConfirmation({ ...props }) {
         </div>
         <div>
           <p>
-            To : <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
+            {Intl.t('sendcoins.recipient')}
+            <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
           </p>
         </div>
       </div>
@@ -78,7 +92,7 @@ export function SendConfirmation({ ...props }) {
             handleTransfer();
           }}
         >
-          Confirm and sign with my password
+          {Intl.t('sendcoins.confirm-sign')}
         </Button>
       </div>
     </div>

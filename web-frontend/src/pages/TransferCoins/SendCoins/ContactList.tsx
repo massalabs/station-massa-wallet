@@ -10,8 +10,6 @@ import { formatStandard } from '../../../utils/MassaFormating';
 import { useResource } from '../../../custom/api';
 import { AccountObject } from '../../../models/AccountModel';
 
-import { toMAS } from '@massalabs/massa-web3';
-
 function AccountSelect({ ...props }) {
   const { modalAccounts, setModalAccounts, setRecipient, account } = props;
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
@@ -19,16 +17,7 @@ function AccountSelect({ ...props }) {
     (acnt: AccountObject) => acnt.nickname !== account.nickname,
   );
 
-  function getFormattedBalance(account: AccountObject): string {
-    return formatStandard(toMAS(account.candidateBalance).toNumber());
-  }
   function setRecipientAndClose(account: AccountObject) {
-    console.log(
-      'setting recipient as ',
-      account.nickname,
-      ' address ',
-      account.address,
-    );
     setRecipient(account.address);
     setModalAccounts(false);
   }
@@ -39,20 +28,19 @@ function AccountSelect({ ...props }) {
       onClose={() => setModalAccounts(!modalAccounts)}
     >
       <PopupModalHeader>
-        <div>
-          <label className="mas-title">My accounts</label>
-        </div>
+        <label className="mas-title">My accounts</label>
       </PopupModalHeader>
       <PopupModalContent>
         <div>
           {otherAccounts.map((account: AccountObject) => (
-            <div className="pb-4" key={account.nickname}>
+            <div className="pb-4">
               <Selector
+                key={account.nickname}
                 preIcon={<Identicon username={account.nickname} size={32} />}
                 posIcon={<MassaToken size={24} />}
                 content={account.nickname}
                 variant="secondary"
-                amount={getFormattedBalance(account)}
+                amount={formatStandard(+account.candidateBalance)}
                 onClick={() => setRecipientAndClose(account)}
               />
             </div>

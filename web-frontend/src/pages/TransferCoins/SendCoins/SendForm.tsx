@@ -1,6 +1,7 @@
 import { Balance, Button, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
-import Modal from './Modal';
+import Intl from '../../../i18n/i18n';
+import Modal from './Advanced';
 import ContactList from './ContactList';
 
 export function SendForm({ ...props }) {
@@ -13,12 +14,10 @@ export function SendForm({ ...props }) {
     fees,
     modal,
     modalAccounts,
-    setModal,
-    setModalAccounts,
     handleModal,
+    setModalAccounts,
     handleModalAccounts,
     handleFees,
-    handleFeesConfirm,
     setRecipient,
     handleSubmit,
     handleChange,
@@ -26,12 +25,9 @@ export function SendForm({ ...props }) {
   } = props;
 
   const modalArgs = {
-    modal,
-    setModal,
-    handleModal,
     fees,
+    handleModal,
     handleFees,
-    handleFeesConfirm,
   };
   const modalArgsAccounts = {
     modalAccounts,
@@ -46,7 +42,7 @@ export function SendForm({ ...props }) {
       <form onSubmit={handleSubmit}>
         {/* Balance Section */}
         <div>
-          <p> Account Balance</p>
+          <p> {Intl.t('sendcoins.account-balance')}</p>
           <Balance
             customClass="pl-0 bg-transparent"
             amount={formattedBalance}
@@ -54,9 +50,9 @@ export function SendForm({ ...props }) {
         </div>
         <div className="pb-3.5">
           <div className="flex flex-row justify-between w-full pb-3.5 ">
-            <p>Send Token</p>
+            <p> {Intl.t('sendcoins.send-action')} </p>
             <p>
-              Available : <u>{formattedBalance}</u>
+              {Intl.t('sendcoins.available-balance')} <u>{formattedBalance}</u>
             </p>
           </div>
           <div className="pb-3.5">
@@ -79,7 +75,7 @@ export function SendForm({ ...props }) {
         </div>
         <div>
           <div className="pb-3.5">
-            <p>To :</p>
+            <p>{Intl.t('sendcoins.recipient')}</p>
           </div>
           <div className="pb-3.5">
             <Input
@@ -95,7 +91,7 @@ export function SendForm({ ...props }) {
               className="hover:cursor-pointer"
               onClick={() => setModalAccounts(!modalAccounts)}
             >
-              <u>Transfer between my accounts</u>
+              <u>{Intl.t('sendcoins.transfer-between-acc')}</u>
             </p>
           </div>
         </div>
@@ -103,16 +99,16 @@ export function SendForm({ ...props }) {
         <div className="flex flex-col w-full">
           <div className="pb-3.5">
             <Button
-              onClick={handleModal}
+              onClick={() => handleModal()}
               variant={'secondary'}
               posIcon={<FiPlus />}
             >
-              Advanced
+              {Intl.t('sendcoins.advanced')}
             </Button>
           </div>
           <div>
             <Button type="submit" posIcon={<FiArrowUpRight />}>
-              Send
+              {Intl.t('sendcoins.send')}
             </Button>
           </div>
         </div>

@@ -2,24 +2,18 @@ import { Tabs, Button } from '@massalabs/react-ui-kit';
 import WalletLayout, {
   MenuItem,
 } from '../../../layouts/WalletLayout/WalletLayout';
-import { useLocation } from 'react-router-dom';
+import Intl from '../../../i18n/i18n';
 import Send from './Send';
 
 function SendCoins() {
-  const { state } = useLocation();
-  const nickname = state.nickname;
-
-  console.log(nickname);
-
   const tabsConfig = [
     {
-      label: 'Send',
+      label: Intl.t('sendcoins.send-tab'),
       content: <Send />,
-      onClickTab: () => console.log('Hello'),
     },
     {
-      label: 'Receive',
-      content: <Button> Tab 2 component </Button>,
+      label: Intl.t('sendcoins.receive-tab'),
+      content: <Button> Receive component </Button>,
     },
   ];
 
