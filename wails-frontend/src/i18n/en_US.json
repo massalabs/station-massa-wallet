@@ -16,6 +16,10 @@
     }
   },
   "password-prompt": {
+    "title": {
+      "transfer-request": "Sign a transaction",
+      "Sign": "Sign a transaction"
+    },
     "subtitle": {
       "default": "Enter your password below to validate",
       "delete": "Enter your password to delete your wallet",

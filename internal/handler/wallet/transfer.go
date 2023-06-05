@@ -16,6 +16,13 @@ import (
 	"github.com/massalabs/thyra/pkg/node/sendoperation/transaction"
 )
 
+type PromptRequestTransferData struct {
+	NicknameFrom     string
+	Amount           string
+	Fee              string
+	RecipientAddress string
+}
+
 func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
 	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient}
 }
@@ -53,8 +60,14 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 
 	promptRequest := prompt.PromptRequest{
-		Action: walletapp.Transfer,
-		Msg:    fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
+		Action:      walletapp.Transfer,
+		CodeMessage: utils.MsgTransferRequest,
+		Data: PromptRequestTransferData{
+			NicknameFrom:     wlt.Nickname,
+			Amount:           string(params.Body.Amount),
+			Fee:              string(params.Body.Fee),
+			RecipientAddress: *params.Body.RecipientAddress,
+		},
 	}
 
 	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
