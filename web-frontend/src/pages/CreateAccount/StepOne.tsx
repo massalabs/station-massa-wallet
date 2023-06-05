@@ -50,7 +50,7 @@ export default function StepOne() {
     const formObject = parseForm(e);
     const { nickname } = formObject;
 
-    navigate(routeFor('account-create-step-two'), { state: { nickname } });
+    navigate(routeFor(`${nickname}/account-create-step-two`));
   }
 
   function handleSubmit(e: SyntheticEvent) {

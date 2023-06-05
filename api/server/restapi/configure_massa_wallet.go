@@ -6,12 +6,14 @@ import (
 	"crypto/tls"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/rs/cors"
 
 	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
+	"github.com/massalabs/thyra-plugin-wallet/internal/handler/html"
 )
 
 //go:generate swagger generate server --target ../../server --name MassaWallet --spec ../../walletApi-V0.yml --principal interface{} --exclude-main
@@ -83,5 +85,29 @@ func setupGlobalMiddleware(handler http.Handler) http.Handler {
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodHead, http.MethodDelete},
 	}).Handler
 
-	return handleCORS(handler)
+	return webAppMiddleware(handleCORS(handler))
+}
+
+func webAppMiddleware(handler http.Handler) http.Handler {
+	// prefix of the ReactJS web application for the wallet plugin.
+	const prefix = "/web-app/"
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, prefix) {
+			params := operations.WebAppParams{
+				HTTPRequest: r,
+				Resource:    strings.TrimPrefix(r.URL.Path, prefix),
+			}
+			responder := html.HandleWebApp(params)
+			if responder != nil {
+				// Handle the successful response
+				responder.WriteResponse(w, runtime.JSONProducer())
+				return
+			}
+			// Handle nil response
+			http.Error(w, "No response from handler", http.StatusInternalServerError)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	})
 }

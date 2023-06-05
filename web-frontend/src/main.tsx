@@ -35,19 +35,24 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path={import.meta.env.VITE_BASE_APP}>
+      {/* routes for onboarding and account creation */}
       <Route path="index" element={<Welcome />} />
       <Route path="account-select" element={<SelectAccount />} />
       <Route path="account-create" element={<AddAccount />} />
       <Route path="account-create-step-one" element={<StepOne />} />
       <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
-      <Route path="home" element={<Home />} />
-      <Route path="transactions" element={<></>} />
-      <Route path="send-coins" element={<SendCoins />} />
-      <Route path="receive" element={<></>} />
-      <Route path="assets" element={<></>} />
-      <Route path="settings" element={<Settings />} />
-      <Route path="contacts" element={<></>} />
+
+      {/* routes for wallet */}
+      <Route path=":nickname/home" element={<Home />} />
+      <Route path=":nickname/transactions" element={<></>} />
+      <Route path=":nickname/send-coins" element={<SendCoins />} />
+      <Route path=":nickname/receive" element={<></>} />
+      <Route path=":nickname/assets" element={<></>} />
+      <Route path=":nickname/settings" element={<Settings />} />
+      <Route path=":nickname/contacts" element={<></>} />
+
+      {/* routes for errors */}
       <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
     </Route>,

@@ -20,7 +20,7 @@ export default function StepThree() {
   );
 
   if (isSuccess) {
-    navigate(routeFor('home'), { state: { nickname } });
+    navigate(routeFor(`${nickname}/home`));
   }
 
   return (
@@ -44,7 +44,7 @@ export default function StepThree() {
             {Intl.t('account.create.step3.description')}
           </p>
           <div className="w-full pb-4">
-            <Link to={routeFor('home')} state={{ nickname }}>
+            <Link to={routeFor(`${nickname}/home`)}>
               <Button posIcon={<FiArrowRight />}>
                 {Intl.t('account.create.buttons.skip')}
               </Button>
