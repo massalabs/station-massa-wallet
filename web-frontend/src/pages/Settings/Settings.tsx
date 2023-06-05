@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePost, useDelete, usePut } from '../../custom/api';
 import { useParams } from 'react-router-dom';
 import { AccountObject } from '../../models/AccountModel';
 import Intl from '../../i18n/i18n';
+import { routeFor } from '../../utils';
 
 import WalletLayout, {
   MenuItem,
@@ -12,15 +14,19 @@ import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { FiTrash2 } from 'react-icons/fi';
 
 export default function Settings() {
+  const navigate = useNavigate();
   const { nickname } = useParams();
 
   const { mutate: mutableBackup } = usePost<AccountObject>(
     `accounts/${nickname}/backup`,
   );
 
-  const { mutate: mutableDelete } = useDelete<AccountObject>(
-    `accounts/${nickname}`,
-  );
+  const { mutate: mutableDelete, isSuccess: isSuccessDelete } =
+    useDelete<AccountObject>(`accounts/${nickname}`);
+
+  if (isSuccessDelete) {
+    navigate(routeFor('index'));
+  }
 
   const { mutate: mutableUpdate } = usePut<AccountObject>(
     `accounts/${nickname}`,
