@@ -1,17 +1,22 @@
 import { Balance, Button, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 import Modal from './Modal';
+import ContactList from './ContactList';
 
 export function SendForm({ ...props }) {
   const {
     amount,
+    account,
     formattedBalance,
     recipient,
     error,
     fees,
     modal,
+    modalAccounts,
     setModal,
+    setModalAccounts,
     handleModal,
+    handleModalAccounts,
     handleFees,
     handleFeesConfirm,
     setRecipient,
@@ -27,6 +32,13 @@ export function SendForm({ ...props }) {
     fees,
     handleFees,
     handleFeesConfirm,
+  };
+  const modalArgsAccounts = {
+    modalAccounts,
+    setModalAccounts,
+    handleModalAccounts,
+    setRecipient,
+    account,
   };
 
   return (
@@ -81,7 +93,7 @@ export function SendForm({ ...props }) {
           <div className="flex flex-row-reverse pb-3.5">
             <p
               className="hover:cursor-pointer"
-              onClick={() => console.log('transfer between accounts')}
+              onClick={() => setModalAccounts(!modalAccounts)}
             >
               <u>Transfer between my accounts</u>
             </p>
@@ -105,7 +117,13 @@ export function SendForm({ ...props }) {
           </div>
         </div>
       </form>
-      <div>{modal ? <Modal {...modalArgs} /> : null}</div>
+      <div>
+        {modal ? (
+          <Modal {...modalArgs} />
+        ) : modalAccounts ? (
+          <ContactList {...modalArgsAccounts} />
+        ) : null}
+      </div>
     </div>
   );
 }

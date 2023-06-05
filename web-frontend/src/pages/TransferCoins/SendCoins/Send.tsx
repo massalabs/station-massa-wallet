@@ -34,6 +34,7 @@ function Send() {
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<IErrorObject | null>(null);
   const [modal, setModal] = useState<boolean>(false);
+  const [modalAccounts, setModalAccounts] = useState<boolean>(false);
 
   // TODO : implement address check to see if it is real
 
@@ -121,6 +122,9 @@ function Send() {
   function handleModal() {
     setModal(!modal);
   }
+  function handleModalAccounts() {
+    setModalAccounts(!modalAccounts);
+  }
 
   const confirmArgs = {
     amount,
@@ -133,13 +137,17 @@ function Send() {
 
   const sendArgs = {
     amount,
+    account,
     formattedBalance,
     recipient,
     error,
     fees,
     modal,
+    modalAccounts,
     setModal,
+    setModalAccounts,
     handleModal,
+    handleModalAccounts,
     setFees,
     handleFees,
     handleFeesConfirm,
