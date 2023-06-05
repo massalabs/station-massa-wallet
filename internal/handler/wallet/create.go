@@ -80,7 +80,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 	return operations.NewCreateAccountOK().WithPayload(
 		&models.Account{
 			Nickname:         models.Nickname(wlt.Nickname),
-			Address:          wlt.Address,
+			Address:          models.Address(wlt.Address),
 			CandidateBalance: models.Amount(fmt.Sprint(infos[0].CandidateBalance)),
 			Balance:          models.Amount(fmt.Sprint(infos[0].Balance)),
 			KeyPair: models.KeyPair{

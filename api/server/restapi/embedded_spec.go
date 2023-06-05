@@ -659,9 +659,7 @@ func init() {
       ],
       "properties": {
         "address": {
-          "description": "Account's address.",
-          "type": "string",
-          "x-nullable": false
+          "$ref": "#/definitions/Address"
         },
         "balance": {
           "$ref": "#/definitions/Amount"
@@ -676,6 +674,11 @@ func init() {
           "$ref": "#/definitions/Nickname"
         }
       }
+    },
+    "Address": {
+      "description": "Account's address.",
+      "type": "string",
+      "x-nullable": false
     },
     "Amount": {
       "description": "Mas amount in nanoMassa.",
@@ -1562,9 +1565,7 @@ func init() {
       ],
       "properties": {
         "address": {
-          "description": "Account's address.",
-          "type": "string",
-          "x-nullable": false
+          "$ref": "#/definitions/Address"
         },
         "balance": {
           "$ref": "#/definitions/Amount"
@@ -1579,6 +1580,11 @@ func init() {
           "$ref": "#/definitions/Nickname"
         }
       }
+    },
+    "Address": {
+      "description": "Account's address.",
+      "type": "string",
+      "x-nullable": false
     },
     "Amount": {
       "description": "Mas amount in nanoMassa.",

@@ -79,7 +79,7 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 func createModelWallet(wlt wallet.Wallet) models.Account {
 	return models.Account{
 		Nickname: models.Nickname(wlt.Nickname),
-		Address:  wlt.Address,
+		Address:  models.Address(wlt.Address),
 		KeyPair:  models.KeyPair{},
 	}
 }

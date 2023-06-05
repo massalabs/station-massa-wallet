@@ -536,11 +536,13 @@ definitions:
       balance:
         $ref: "#/definitions/Amount"
       address:
-        description: Account's address.
-        type: string
-        x-nullable: false
+        $ref: "#/definitions/Address"
       keyPair:
         $ref: "#/definitions/KeyPair"
+  Address:
+    description: Account's address.
+    type: string
+    x-nullable: false
   KeyPair:
     description: Account's key pair.
     type: object

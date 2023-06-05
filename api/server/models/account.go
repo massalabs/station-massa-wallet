@@ -19,9 +19,9 @@ import (
 // swagger:model Account
 type Account struct {
 
-	// Account's address.
+	// address
 	// Required: true
-	Address string `json:"address"`
+	Address Address `json:"address"`
 
 	// balance
 	// Required: true
@@ -72,7 +72,16 @@ func (m *Account) Validate(formats strfmt.Registry) error {
 
 func (m *Account) validateAddress(formats strfmt.Registry) error {
 
-	if err := validate.RequiredString("address", "body", m.Address); err != nil {
+	if err := validate.Required("address", "body", Address(m.Address)); err != nil {
+		return err
+	}
+
+	if err := m.Address.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("address")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("address")
+		}
 		return err
 	}
 
@@ -151,6 +160,10 @@ func (m *Account) validateNickname(formats strfmt.Registry) error {
 func (m *Account) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateAddress(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateBalance(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -170,6 +183,20 @@ func (m *Account) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *Account) contextValidateAddress(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.Address.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("address")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("address")
+		}
+		return err
+	}
+
 	return nil
 }
 
