@@ -78,22 +78,20 @@ function Modal({ ...props }) {
               />
               <p>Custom fees :</p>
             </div>
-            <form className="pb-3.5">
-              <div className="pb-3.5">
-                <Input
-                  type="text"
-                  placeholder="Gas fees amount"
-                  name="fees"
-                  defaultValue=""
-                  onChange={(e) => handleFees(e.target.value)}
-                />
-              </div>
-              <div>
-                <Button type="submit" onClick={handleFeesConfirm}>
-                  Confirm fees
-                </Button>
-              </div>
-            </form>
+
+            <Input
+              type="text"
+              placeholder="Gas fees amount"
+              name="fees"
+              defaultValue=""
+              disabled={radioActive}
+              onChange={(e) => handleFees(e.target.value)}
+            />
+            <div>
+              <Button type="submit" onClick={handleFeesConfirm}>
+                Confirm fees
+              </Button>
+            </div>
           </div>
         </div>
       </PopupModalContent>
