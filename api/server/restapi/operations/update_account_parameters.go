@@ -18,19 +18,19 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
 )
 
-// NewEditAccountParams creates a new EditAccountParams object
+// NewUpdateAccountParams creates a new UpdateAccountParams object
 //
 // There are no default values defined in the spec.
-func NewEditAccountParams() EditAccountParams {
+func NewUpdateAccountParams() UpdateAccountParams {
 
-	return EditAccountParams{}
+	return UpdateAccountParams{}
 }
 
-// EditAccountParams contains all the bound params for the edit account operation
+// UpdateAccountParams contains all the bound params for the update account operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters EditAccount
-type EditAccountParams struct {
+// swagger:parameters UpdateAccount
+type UpdateAccountParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -39,7 +39,7 @@ type EditAccountParams struct {
 	  Required: true
 	  In: body
 	*/
-	Body *models.EditAccountRequest
+	Body *models.UpdateAccountRequest
 	/*Account's short name.
 	  Required: true
 	  In: path
@@ -50,15 +50,15 @@ type EditAccountParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewEditAccountParams() beforehand.
-func (o *EditAccountParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewUpdateAccountParams() beforehand.
+func (o *UpdateAccountParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body models.EditAccountRequest
+		var body models.UpdateAccountRequest
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			if err == io.EOF {
 				res = append(res, errors.Required("body", "body", ""))
@@ -95,7 +95,7 @@ func (o *EditAccountParams) BindRequest(r *http.Request, route *middleware.Match
 }
 
 // bindNickname binds and validates parameter Nickname from path.
-func (o *EditAccountParams) bindNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *UpdateAccountParams) bindNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]

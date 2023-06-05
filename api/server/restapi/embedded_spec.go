@@ -165,11 +165,11 @@ func init() {
         }
       },
       "put": {
-        "description": "Edit the account associated with the provided nickname in the path.",
+        "description": "Update the account associated with the provided nickname in the path.",
         "produces": [
           "application/json"
         ],
-        "operationId": "EditAccount",
+        "operationId": "UpdateAccount",
         "parameters": [
           {
             "$ref": "#/parameters/nickname"
@@ -180,7 +180,7 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/EditAccountRequest"
+              "$ref": "#/definitions/UpdateAccountRequest"
             }
           }
         ],
@@ -690,30 +690,6 @@ func init() {
       "type": "string",
       "format": "byte"
     },
-    "EditAccountRequest": {
-      "description": "Account object (V0).",
-      "type": "object",
-      "required": [
-        "nickname"
-      ],
-      "properties": {
-        "address": {
-          "$ref": "#/definitions/Address"
-        },
-        "balance": {
-          "$ref": "#/definitions/Amount"
-        },
-        "candidateBalance": {
-          "$ref": "#/definitions/Amount"
-        },
-        "keyPair": {
-          "$ref": "#/definitions/KeyPair"
-        },
-        "nickname": {
-          "$ref": "#/definitions/Nickname"
-        }
-      }
-    },
     "Error": {
       "description": "Error object.",
       "type": "object",
@@ -866,6 +842,30 @@ func init() {
         },
         "recipientAddress": {
           "type": "string"
+        }
+      }
+    },
+    "UpdateAccountRequest": {
+      "description": "Account object (V0).",
+      "type": "object",
+      "required": [
+        "nickname"
+      ],
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "balance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "candidateBalance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "keyPair": {
+          "$ref": "#/definitions/KeyPair"
+        },
+        "nickname": {
+          "$ref": "#/definitions/Nickname"
         }
       }
     }
@@ -1047,11 +1047,11 @@ func init() {
         }
       },
       "put": {
-        "description": "Edit the account associated with the provided nickname in the path.",
+        "description": "Update the account associated with the provided nickname in the path.",
         "produces": [
           "application/json"
         ],
-        "operationId": "EditAccount",
+        "operationId": "UpdateAccount",
         "parameters": [
           {
             "type": "string",
@@ -1067,7 +1067,7 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/EditAccountRequest"
+              "$ref": "#/definitions/UpdateAccountRequest"
             }
           }
         ],
@@ -1612,30 +1612,6 @@ func init() {
       "type": "string",
       "format": "byte"
     },
-    "EditAccountRequest": {
-      "description": "Account object (V0).",
-      "type": "object",
-      "required": [
-        "nickname"
-      ],
-      "properties": {
-        "address": {
-          "$ref": "#/definitions/Address"
-        },
-        "balance": {
-          "$ref": "#/definitions/Amount"
-        },
-        "candidateBalance": {
-          "$ref": "#/definitions/Amount"
-        },
-        "keyPair": {
-          "$ref": "#/definitions/KeyPair"
-        },
-        "nickname": {
-          "$ref": "#/definitions/Nickname"
-        }
-      }
-    },
     "Error": {
       "description": "Error object.",
       "type": "object",
@@ -1788,6 +1764,30 @@ func init() {
         },
         "recipientAddress": {
           "type": "string"
+        }
+      }
+    },
+    "UpdateAccountRequest": {
+      "description": "Account object (V0).",
+      "type": "object",
+      "required": [
+        "nickname"
+      ],
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "balance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "candidateBalance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "keyPair": {
+          "$ref": "#/definitions/KeyPair"
+        },
+        "nickname": {
+          "$ref": "#/definitions/Nickname"
         }
       }
     }

@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-// EditAccountURL generates an URL for the edit account operation
-type EditAccountURL struct {
+// UpdateAccountURL generates an URL for the update account operation
+type UpdateAccountURL struct {
 	Nickname string
 
 	_basePath string
@@ -24,7 +24,7 @@ type EditAccountURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *EditAccountURL) WithBasePath(bp string) *EditAccountURL {
+func (o *UpdateAccountURL) WithBasePath(bp string) *UpdateAccountURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -32,12 +32,12 @@ func (o *EditAccountURL) WithBasePath(bp string) *EditAccountURL {
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *EditAccountURL) SetBasePath(bp string) {
+func (o *UpdateAccountURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *EditAccountURL) Build() (*url.URL, error) {
+func (o *UpdateAccountURL) Build() (*url.URL, error) {
 	var _result url.URL
 
 	var _path = "/api/accounts/{nickname}"
@@ -46,7 +46,7 @@ func (o *EditAccountURL) Build() (*url.URL, error) {
 	if nickname != "" {
 		_path = strings.Replace(_path, "{nickname}", nickname, -1)
 	} else {
-		return nil, errors.New("nickname is required on EditAccountURL")
+		return nil, errors.New("nickname is required on UpdateAccountURL")
 	}
 
 	_basePath := o._basePath
@@ -56,7 +56,7 @@ func (o *EditAccountURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *EditAccountURL) Must(u *url.URL, err error) *url.URL {
+func (o *UpdateAccountURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -67,17 +67,17 @@ func (o *EditAccountURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *EditAccountURL) String() string {
+func (o *UpdateAccountURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *EditAccountURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *UpdateAccountURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on EditAccountURL")
+		return nil, errors.New("scheme is required for a full url on UpdateAccountURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on EditAccountURL")
+		return nil, errors.New("host is required for a full url on UpdateAccountURL")
 	}
 
 	base, err := o.Build()
@@ -91,6 +91,6 @@ func (o *EditAccountURL) BuildFull(scheme, host string) (*url.URL, error) {
 }
 
 // StringFull returns the string representation of a complete url
-func (o *EditAccountURL) StringFull(scheme, host string) string {
+func (o *UpdateAccountURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }
