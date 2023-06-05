@@ -20,6 +20,7 @@ export type promptRequest = {
   Action: promptAction;
   Msg: string;
   Data: any;
+  CodeMessage: string;
 };
 
 export const events = {
