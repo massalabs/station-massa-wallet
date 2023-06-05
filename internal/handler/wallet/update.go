@@ -74,16 +74,12 @@ func (m *walletEditAccount) handleEditAccount(wlt *wallet.Wallet, newNickname mo
 	}
 
 	// delete old file
-	wlt.Nickname = oldNickname
-	if wlt.DeleteFile() != nil {
+	if wallet.DeleteAccount(oldNickname) != nil {
 		return nil, &wallet.WalletError{
 			Err:     fmt.Errorf("persisting the old account: %w", err),
 			CodeErr: utils.ErrAccountFile,
 		}
 	}
-
-	// restore new nickname
-	wlt.Nickname = string(newNickname)
 
 	return wlt, nil
 }
