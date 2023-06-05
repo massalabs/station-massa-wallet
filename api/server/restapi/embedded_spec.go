@@ -29,7 +29,7 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Thyra plugin - Massa Wallet",
+    "description": "MassaStation plugin - Wallet",
     "title": "massa-wallet",
     "version": "0.0.1"
   },
@@ -818,7 +818,7 @@ func init() {
   ],
   "swagger": "2.0",
   "info": {
-    "description": "Thyra plugin - Massa Wallet",
+    "description": "MassaStation plugin - Wallet",
     "title": "massa-wallet",
     "version": "0.0.1"
   },

@@ -1,14 +1,14 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "thyra-plugin-wallet",
-  "outputfilename": "thyra-plugin-wallet",
+  "name": "MassaStation-plugin-wallet",
+  "outputfilename": "MassaStation-plugin-wallet",
   "frontend:dir": "wails-frontend",
   "frontend:install": "npm install",
   "frontend:build": "npm run build",
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "Pierre Seznec",
-    "email": "ps@massa.net"
+    "name": "Massa Labs",
+    "email": "contact@massa.net"
   }
 }

@@ -5,7 +5,7 @@ getWallets();
 function addPrefixUrl(relativeURL) {
     return `/${relativeURL}`
 
-    //    return `/thyra/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
+    //    return `/plugin/${pluginAuthor}/${pluginName}/${relativeURL}`
 }
 
 function openNickNameModal() {

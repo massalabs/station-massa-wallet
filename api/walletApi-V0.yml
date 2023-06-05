@@ -1,7 +1,7 @@
 consumes:
   - application/json
 info:
-  description: Thyra plugin - Massa Wallet
+  description: MassaStation plugin - Wallet
   title: massa-wallet
   version: 0.0.1
 host: localhost:8080
