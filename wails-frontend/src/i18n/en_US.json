@@ -15,6 +15,18 @@
       "password": "Password"
     }
   },
+  "password-prompt": {
+    "subtitle": {
+      "default": "Enter your password below to validate",
+      "delete": "Enter your password to delete your wallet",
+      "sign": "Enter your password to sign a transaction"
+    },
+    "buttons": {
+      "default": "Apply",
+      "delete": "Delete",
+      "sign": "Sign"
+    }
+  },
   "errors": {
     "Nickname-0001": "Invalid nickname",
     "PrivateKey-0001": "Invalid private key",
@@ -27,6 +39,7 @@
     "Timeout-0001": "Timeout error",
     "WrongPassword-0001": "Wrong password",
     "InvalidPromptInput-0001": "Invalid user input",
-    "ActionCanceled-0001": "Action canceled"
+    "ActionCanceled-0001": "Action canceled",
+    "PasswordRequired": "Password is required"
   }
 }

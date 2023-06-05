@@ -30,23 +30,27 @@ function PasswordPrompt() {
   const req: promptRequest = state.req;
   const data: PromptRequestDeleteDate = req.Data;
 
-  const { deleteReq } = promptAction;
+  const { deleteReq, signReq } = promptAction;
 
   function getButtonLabel() {
     switch (req.Action) {
       case deleteReq:
-        return 'Delete';
+        return Intl.t('password-prompt.buttons.delete');
+      case signReq:
+        return Intl.t('password-prompt.buttons.sign');
       default:
-        return 'Apply';
+        return Intl.t('password-prompt.buttons.default');
     }
   }
 
   function getSubtitle() {
     switch (req.Action) {
       case deleteReq:
-        return 'Enter your password to delete your wallet';
+        return Intl.t('password-prompt.subtitle.delete');
+      case signReq:
+        return Intl.t('password-prompt.subtitle.sign');
       default:
-        return 'Enter your password below to validate';
+        return Intl.t('password-prompt.subtitle.default');
     }
   }
 
@@ -54,6 +58,8 @@ function PasswordPrompt() {
     switch (req.Action) {
       case deleteReq:
         return <FiTrash2 />;
+      case signReq:
+        return;
       default:
         return <FiLock />;
     }
@@ -67,7 +73,7 @@ function PasswordPrompt() {
     const { password } = formObject;
 
     if (!password || !password.length) {
-      setError({ password: 'Password is required' });
+      setError({ password: Intl.t('errors.PasswordRequired') });
       return false;
     }
 
