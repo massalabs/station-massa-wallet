@@ -13,28 +13,28 @@ import (
 	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
 )
 
-type PromptRequestModifyAccountNicknameData struct {
+type PromptRequestEditAccountData struct {
 	Nickname string
 	Balance  string
 }
 
-func NewModifyAccountNickname(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.ModifyAccountNicknameHandler {
-	return &walletModifyAccountNickname{prompterApp: prompterApp, massaClient: massaClient}
+func NewEditAccount(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.EditAccountHandler {
+	return &walletEditAccount{prompterApp: prompterApp, massaClient: massaClient}
 }
 
-type walletModifyAccountNickname struct {
+type walletEditAccount struct {
 	prompterApp prompt.WalletPrompterInterface
 	massaClient network.NodeFetcherInterface
 }
 
 // HandleDelete handles a delete request
-func (m *walletModifyAccountNickname) Handle(params operations.ModifyAccountNicknameParams) middleware.Responder {
+func (m *walletEditAccount) Handle(params operations.EditAccountParams) middleware.Responder {
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
 	}
 
-	newWlt, errModify := m.handleModifyAccountNickname(wlt, params.Body.NewNickname)
+	newWlt, errModify := m.handleEditAccount(wlt, params.Body.NewNickname)
 	if errModify != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -60,7 +60,7 @@ func (m *walletModifyAccountNickname) Handle(params operations.ModifyAccountNick
 	return operations.NewGetAccountOK().WithPayload(&modelWallet)
 }
 
-func (m *walletModifyAccountNickname) handleModifyAccountNickname(wlt *wallet.Wallet, newNickname models.Nickname) (*wallet.Wallet, *wallet.WalletError) {
+func (m *walletEditAccount) handleEditAccount(wlt *wallet.Wallet, newNickname models.Nickname) (*wallet.Wallet, *wallet.WalletError) {
 	oldNickname := wlt.Nickname
 
 	// persist new nickname before deleting old file
