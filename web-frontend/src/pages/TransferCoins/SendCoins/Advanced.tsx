@@ -12,22 +12,20 @@ import { useState } from 'react';
 
 function Modal({ ...props }) {
   const feesTypes = Object.keys(presetFees);
-  const { fees, handleModal, handleFees } = props;
+  const { fees, modal, setModal, handleFees } = props;
 
   function PresetFeeSelector({ name }: { name: string }) {
     return (
-      <div className="w-full">
-        <Button
-          disabled={!radioActive} // Update the disabled prop here
-          variant={fees === presetFees[name] ? 'primary' : 'secondary'}
-          onClick={() => handleFees(presetFees[name])}
-        >
-          {name}
-          <label className="text-info text-xs flex pl-1 items-center">
-            ({presetFees[name]} nMAS)
-          </label>
-        </Button>
-      </div>
+      <Button
+        disabled={!radioActive} // Update the disabled prop here
+        variant={fees === presetFees[name] ? 'primary' : 'secondary'}
+        onClick={() => handleFees(presetFees[name])}
+      >
+        {name}
+        <label className="text-info text-xs flex pl-1 items-center">
+          ({presetFees[name]} nMAS)
+        </label>
+      </Button>
     );
   }
 
@@ -37,23 +35,17 @@ function Modal({ ...props }) {
 
   const [radioActive, setRadioActive] = useState<boolean>(true);
 
-  function handleRadio() {
-    setRadioActive(!radioActive);
-  }
-
   return (
-    <PopupModal fullMode={true} onClose={() => handleModal()}>
+    <PopupModal fullMode={true} onClose={() => setModal(!modal)}>
       <PopupModalHeader>
-        <div>
-          <label className="mas-title">{Intl.t('sendcoins.advanced')}</label>
-          <p className="mas-body">{Intl.t('sendcoins.advanced-message')}</p>
-        </div>
+        <label className="mas-title">{Intl.t('sendcoins.advanced')}</label>
+        <p className="mas-body">{Intl.t('sendcoins.advanced-message')}</p>
       </PopupModalHeader>
       <PopupModalContent>
         <div className="flex flex-row items-center mas-buttons pb-3.5">
           <RadioButton
             defaultChecked={true}
-            onClick={handleRadio}
+            onClick={() => setRadioActive(!radioActive)}
             {...radioArgs}
           />
           <p>{Intl.t('sendcoins.preset')}</p>
@@ -64,26 +56,25 @@ function Modal({ ...props }) {
           ))}
         </div>
 
-        <div className="flex flex-row items-center mas-buttons pb-3.5">
+        <div className="flex flex-row items-center mas-buttons mb-3.5">
           <RadioButton
             defaultChecked={false}
-            onClick={handleRadio}
+            onClick={() => setRadioActive(!radioActive)}
             {...radioArgs}
           />
           <p>{Intl.t('sendcoins.custom-fees')}</p>
         </div>
 
-        <div className="pt-3.5">
-          <Input
-            type="text"
-            placeholder="Gas fees amount"
-            name="fees"
-            defaultValue=""
-            disabled={radioActive}
-            onChange={(e) => handleFees(e.target.value)}
-          />
-        </div>
-        <Button type="submit" onClick={() => handleModal()}>
+        <Input
+          type="text"
+          placeholder="Gas fees amount"
+          name="fees"
+          defaultValue=""
+          disabled={radioActive}
+          onChange={(e) => handleFees(e.target.value)}
+        />
+
+        <Button type="submit" onClick={() => setModal(!modal)}>
           {Intl.t('sendcoins.confirm-fees')}
         </Button>
       </PopupModalContent>

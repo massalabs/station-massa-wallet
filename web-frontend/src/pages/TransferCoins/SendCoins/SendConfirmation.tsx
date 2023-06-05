@@ -1,5 +1,5 @@
 import { Balance, Button } from '@massalabs/react-ui-kit';
-import { FiChevronLeft, FiHelpCircle } from 'react-icons/fi';
+import { FiChevronLeft } from 'react-icons/fi';
 import {
   Unit,
   formatStandard,
@@ -12,6 +12,7 @@ import Intl from '../../../i18n/i18n';
 import { useNavigate } from 'react-router-dom';
 import { fromMAS } from '@massalabs/massa-web3';
 import { useState } from 'react';
+import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export function SendConfirmation({ ...props }) {
   const amountInNanoMAS = fromMAS(reversedAmount).toString();
   const total = +amountInNanoMAS + +fees;
   const formattedTotal = formatStandard(total, Unit.NanoMAS);
-  const [showTooltip, setShowTooltip] = useState(false); // Add state for tooltip visibility
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const { mutate, isSuccess } = usePost<SendTransactionObject>(
     `accounts/${nickname}/transfer`,
@@ -37,64 +38,53 @@ export function SendConfirmation({ ...props }) {
 
     mutate(transferData as SendTransactionObject);
   };
+  const ToolTipArgs = {
+    showTooltip,
+    content: Intl.t('sendcoins.gas-info').replace('XX', fees),
+  };
 
   return (
-    <div>
+    <>
       <div
         onClick={() => setValid(!valid)}
-        className="flex flex-row just items-center hover:cursor-pointer pb-3.5"
+        className="flex flex-row just items-center hover:cursor-pointer pb-3.5 gap-2"
       >
-        <div className="mr-2">
-          <FiChevronLeft />
-        </div>
-        <p>
-          <u>{Intl.t('sendcoins.back-to-sending')}</u>
-        </p>
+        <FiChevronLeft />
+
+        <u>{Intl.t('sendcoins.back-to-sending')}</u>
       </div>
-      <div className="pb-3.5">
-        <p>{Intl.t('sendcoins.send-message')}</p>
-      </div>
+      <p className="mb-3.5">{Intl.t('sendcoins.send-message')}</p>
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-3.5">
         <div className="flex flex-row items-center pb-3.5 ">
           <div className="pr-2">
-            <p>
-              {Intl.t('sendcoins.amount')} ({formatStandard(reversedAmount)})
-              {Intl.t('sendcoins.mas-gas')} {fees}
-              {Intl.t('sendcoins.nano-mas')}
-            </p>
+            {Intl.t('sendcoins.amount')} ({formatStandard(reversedAmount)})
+            {Intl.t('sendcoins.mas-gas')} {fees}
+            {Intl.t('sendcoins.nano-mas')}
           </div>
           <div
             className="flex flex-row relative items-center gap-1 "
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
-            <FiHelpCircle />
-            {showTooltip && (
-              <div className="flex flex-col w-[368px] absolute z-10 t-4 bg-tertiary p-3 rounded ">
-                {Intl.t('sendcoins.gas-info').replace('XX', fees)}
-              </div>
-            )}
+            <ToolTip {...ToolTipArgs} />
           </div>
         </div>
-        <div className="pb-3.5">
-          <Balance customClass="pl-0 bg-transparent" amount={formattedTotal} />
-        </div>
-        <div>
-          <p>
-            {Intl.t('sendcoins.recipient')}
-            <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
-          </p>
-        </div>
+        <Balance
+          customClass="pl-0 bg-transparent mb-3.5"
+          amount={formattedTotal}
+        />
+        <p>
+          {Intl.t('sendcoins.recipient')}
+          <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
+        </p>
       </div>
-      <div className="mt-3.5">
-        <Button
-          onClick={() => {
-            handleTransfer();
-          }}
-        >
-          {Intl.t('sendcoins.confirm-sign')}
-        </Button>
-      </div>
-    </div>
+      <Button
+        onClick={() => {
+          handleTransfer();
+        }}
+      >
+        {Intl.t('sendcoins.confirm-sign')}
+      </Button>
+    </>
   );
 }

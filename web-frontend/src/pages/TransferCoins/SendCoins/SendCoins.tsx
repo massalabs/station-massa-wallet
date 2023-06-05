@@ -13,7 +13,7 @@ function SendCoins() {
     },
     {
       label: Intl.t('sendcoins.receive-tab'),
-      content: <Button> Receive component </Button>,
+      content: <Button>Receive component</Button>,
     },
   ];
 

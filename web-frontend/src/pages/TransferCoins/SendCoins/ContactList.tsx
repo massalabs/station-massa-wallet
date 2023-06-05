@@ -12,9 +12,10 @@ import { AccountObject } from '../../../models/AccountModel';
 
 function AccountSelect({ ...props }) {
   const { modalAccounts, setModalAccounts, setRecipient, account } = props;
+  const selectedAccount = account;
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  const otherAccounts = accounts.filter(
-    (acnt: AccountObject) => acnt.nickname !== account.nickname,
+  const filteredAccounts = accounts.filter(
+    (account: AccountObject) => account.nickname !== selectedAccount.nickname,
   );
 
   function setRecipientAndClose(account: AccountObject) {
@@ -31,21 +32,18 @@ function AccountSelect({ ...props }) {
         <label className="mas-title">My accounts</label>
       </PopupModalHeader>
       <PopupModalContent>
-        <div>
-          {otherAccounts.map((account: AccountObject) => (
-            <div className="pb-4">
-              <Selector
-                key={account.nickname}
-                preIcon={<Identicon username={account.nickname} size={32} />}
-                posIcon={<MassaToken size={24} />}
-                content={account.nickname}
-                variant="secondary"
-                amount={formatStandard(+account.candidateBalance)}
-                onClick={() => setRecipientAndClose(account)}
-              />
-            </div>
-          ))}
-        </div>
+        {filteredAccounts.map((account: AccountObject) => (
+          <Selector
+            customClass="pb-4"
+            key={account.nickname}
+            preIcon={<Identicon username={account.nickname} size={32} />}
+            posIcon={<MassaToken size={24} />}
+            content={account.nickname}
+            variant="secondary"
+            amount={formatStandard(+account.candidateBalance)}
+            onClick={() => setRecipientAndClose(account)}
+          />
+        ))}
       </PopupModalContent>
     </PopupModal>
   );

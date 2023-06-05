@@ -85,7 +85,7 @@ function Send() {
   function handleChange(e: ChangeEvent<HTMLInputElement>): void {
     e.preventDefault();
     const candidateAmount = e.target.value;
-    // if there is more than 9 decimals, set the amount to the previous value
+    // MAX 9 DECIMALS
     if (candidateAmount.split('.')[1]?.length > 9) {
       setAmount(amount);
       return;
@@ -95,10 +95,6 @@ function Send() {
 
   function handleFees(num: number) {
     setFees(num);
-  }
-
-  function handleModal() {
-    setModal(!modal);
   }
 
   function handleModalAccounts() {
@@ -112,6 +108,8 @@ function Send() {
     valid: valid,
     fees: fees,
     setValid,
+    modal,
+    setModal,
   };
 
   const sendArgs = {
@@ -124,7 +122,6 @@ function Send() {
     modal,
     modalAccounts,
     setModal,
-    handleModal,
     setModalAccounts,
     handleModalAccounts,
     setFees,
@@ -136,7 +133,7 @@ function Send() {
   };
 
   return (
-    <div className="mt-3.5">
+    <div className="pt-3.5">
       {valid ? (
         <SendConfirmation {...confirmArgs} />
       ) : (
