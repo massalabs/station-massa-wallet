@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { routeFor } from '../../utils';
 import { AccountObject } from '../../models/AccountModel';
 import { usePut } from '../../custom/api';
+import Intl from '../../i18n/i18n';
 
 import { Button } from '@massalabs/react-ui-kit';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
@@ -20,18 +21,22 @@ export default function AddAccount() {
     <LandingPage>
       <div className="flex flex-col justify-center items-center h-screen">
         <div className="flex flex-col justify-start items-center w-full h-full max-w-sm max-h-56">
-          <h1 className="mas-banner text-neutral pb-6">Add an account</h1>
+          <h1 className="mas-banner text-neutral pb-6">
+            {Intl.t('add-account.title')}
+          </h1>
           <Link
             className="pb-4 w-full"
             to={routeFor('account-create-step-one')}
           >
-            <Button posIcon={<FiArrowRight />}>Create an account</Button>
+            <Button posIcon={<FiArrowRight />}>
+              {Intl.t('add-account.buttons.create')}
+            </Button>
           </Link>
           <Button
             variant="secondary"
             onClick={() => mutate({} as AccountObject)}
           >
-            Import an existing account
+            {Intl.t('add-account.buttons.import')}
           </Button>
         </div>
       </div>
