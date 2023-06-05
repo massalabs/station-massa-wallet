@@ -93,3 +93,21 @@ Go-swagger will internally generate 422 response when the inputs are invalid.
 This software implements this standard: <https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md>.
 
 For account file extension, we recommend `.yaml`. However, `.yml` is also supported in the import feature.
+
+## Frontend
+
+### Web app
+
+Go swagger URL prefix: `/web-app`
+
+Folder: `web-frontend`.
+
+This folder contains the source code of the web frontend app. It is a React app.
+
+### Wails
+
+Wails is a native GUI library for Go. It allows us to build a native GUI app with Go and React.
+
+Folder: `wails-frontend`.
+
+This folder contains the source code of the wails frontend app. It is a React app.

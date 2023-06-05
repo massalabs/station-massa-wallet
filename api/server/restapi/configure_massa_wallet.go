@@ -89,6 +89,7 @@ func setupGlobalMiddleware(handler http.Handler) http.Handler {
 }
 
 func webAppMiddleware(handler http.Handler) http.Handler {
+	// prefix of the ReactJS web application for the wallet plugin.
 	const prefix = "/web-app/"
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
