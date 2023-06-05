@@ -44,9 +44,21 @@
       "backup": "Back up account"
     }
   },
+  "add-account": {
+    "title": "Add an account",
+    "buttons": {
+      "create": "Create an account",
+      "import": "Import an existing account"
+    }
+  },
   "errors": {
     "nickname-required": "Nickname is required",
     "nickname-already-exists": "This account name already exists",
-    "nickname-invalid-format": "The account name can't contain any special characters"
+    "nickname-invalid-format": "The account name can't contain any special characters",
+    "unexpected-error": {
+      "title": "Oops!",
+      "description": "An unexpected error has occurred",
+      "link": "Go back to the Welcome page!"
+    }
   }
 }
