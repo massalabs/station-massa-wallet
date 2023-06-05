@@ -41,7 +41,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 	t.Run("invalid password", func(t *testing.T) {
 		// Send password to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
+		go func() {
 			prompterApp.App().PromptInput <- "invalid password"
 			// forward test result to test goroutine
 			failRes := <-resChan
@@ -50,7 +50,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 			// Send cancel to prompter app to unlock the handler
 			prompterApp.App().CtrlChan <- walletapp.Cancel
-		}(testResult)
+		}()
 
 		resp := deleteWallet(t, api, nickname)
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
@@ -79,11 +79,11 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 	t.Run("delete success", func(t *testing.T) {
 		// Send password to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
+		go func() {
 			prompterApp.App().PromptInput <- password
 			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
+			testResult <- (<-resChan)
+		}()
 
 		resp := deleteWallet(t, api, nickname)
 
