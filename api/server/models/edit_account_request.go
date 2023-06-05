@@ -11,22 +11,52 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
-// EditAccountRequest edit account request
+// EditAccountRequest Account object (V0).
 //
 // swagger:model EditAccountRequest
 type EditAccountRequest struct {
 
-	// new nickname
-	NewNickname Nickname `json:"newNickname,omitempty"`
+	// address
+	Address Address `json:"address,omitempty"`
+
+	// balance
+	Balance Amount `json:"balance,omitempty"`
+
+	// candidate balance
+	CandidateBalance Amount `json:"candidateBalance,omitempty"`
+
+	// key pair
+	KeyPair KeyPair `json:"keyPair,omitempty"`
+
+	// nickname
+	// Required: true
+	Nickname Nickname `json:"nickname"`
 }
 
 // Validate validates this edit account request
 func (m *EditAccountRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateNewNickname(formats); err != nil {
+	if err := m.validateAddress(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateBalance(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCandidateBalance(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateKeyPair(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNickname(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -36,16 +66,85 @@ func (m *EditAccountRequest) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *EditAccountRequest) validateNewNickname(formats strfmt.Registry) error {
-	if swag.IsZero(m.NewNickname) { // not required
+func (m *EditAccountRequest) validateAddress(formats strfmt.Registry) error {
+	if swag.IsZero(m.Address) { // not required
 		return nil
 	}
 
-	if err := m.NewNickname.Validate(formats); err != nil {
+	if err := m.Address.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("newNickname")
+			return ve.ValidateName("address")
 		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("newNickname")
+			return ce.ValidateName("address")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) validateBalance(formats strfmt.Registry) error {
+	if swag.IsZero(m.Balance) { // not required
+		return nil
+	}
+
+	if err := m.Balance.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("balance")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("balance")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) validateCandidateBalance(formats strfmt.Registry) error {
+	if swag.IsZero(m.CandidateBalance) { // not required
+		return nil
+	}
+
+	if err := m.CandidateBalance.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("candidateBalance")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("candidateBalance")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) validateKeyPair(formats strfmt.Registry) error {
+	if swag.IsZero(m.KeyPair) { // not required
+		return nil
+	}
+
+	if err := m.KeyPair.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("keyPair")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("keyPair")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) validateNickname(formats strfmt.Registry) error {
+
+	if err := validate.Required("nickname", "body", Nickname(m.Nickname)); err != nil {
+		return err
+	}
+
+	if err := m.Nickname.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("nickname")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("nickname")
 		}
 		return err
 	}
@@ -57,7 +156,23 @@ func (m *EditAccountRequest) validateNewNickname(formats strfmt.Registry) error 
 func (m *EditAccountRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateNewNickname(ctx, formats); err != nil {
+	if err := m.contextValidateAddress(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateBalance(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateCandidateBalance(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateKeyPair(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateNickname(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -67,13 +182,69 @@ func (m *EditAccountRequest) ContextValidate(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *EditAccountRequest) contextValidateNewNickname(ctx context.Context, formats strfmt.Registry) error {
+func (m *EditAccountRequest) contextValidateAddress(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := m.NewNickname.ContextValidate(ctx, formats); err != nil {
+	if err := m.Address.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("newNickname")
+			return ve.ValidateName("address")
 		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("newNickname")
+			return ce.ValidateName("address")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) contextValidateBalance(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.Balance.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("balance")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("balance")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) contextValidateCandidateBalance(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.CandidateBalance.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("candidateBalance")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("candidateBalance")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) contextValidateKeyPair(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.KeyPair.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("keyPair")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("keyPair")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *EditAccountRequest) contextValidateNickname(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.Nickname.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("nickname")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("nickname")
 		}
 		return err
 	}

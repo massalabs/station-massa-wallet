@@ -34,7 +34,7 @@ func (m *walletEditAccount) Handle(params operations.EditAccountParams) middlewa
 		return resp
 	}
 
-	newWlt, errModify := m.handleEditAccount(wlt, params.Body.NewNickname)
+	newWlt, errModify := m.handleEditAccount(wlt, params.Body.Nickname)
 	if errModify != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{

@@ -27,7 +27,7 @@ func Test_ModifyWallets_handler(t *testing.T) {
 
 	newNickname := "toby-new"
 	payload := fmt.Sprintf(`{
-		"newNickname": "%s"
+		"nickname": "%s"
 	}`, newNickname)
 
 	t.Run("update invalid payload", func(t *testing.T) {

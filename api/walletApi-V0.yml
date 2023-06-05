@@ -481,9 +481,20 @@ definitions:
       - side
   EditAccountRequest:
     type: object
+    description: Account object (V0).
+    required:
+      - nickname
     properties:
-      newNickname:
+      nickname:
         $ref: "#/definitions/Nickname"
+      candidateBalance:
+        $ref: "#/definitions/Amount"
+      balance:
+        $ref: "#/definitions/Amount"
+      address:
+        $ref: "#/definitions/Address"
+      keyPair:
+        $ref: "#/definitions/KeyPair"
   OperationResponse:
     type: object
     properties:

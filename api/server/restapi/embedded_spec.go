@@ -691,9 +691,25 @@ func init() {
       "format": "byte"
     },
     "EditAccountRequest": {
+      "description": "Account object (V0).",
       "type": "object",
+      "required": [
+        "nickname"
+      ],
       "properties": {
-        "newNickname": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "balance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "candidateBalance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "keyPair": {
+          "$ref": "#/definitions/KeyPair"
+        },
+        "nickname": {
           "$ref": "#/definitions/Nickname"
         }
       }
@@ -1597,9 +1613,25 @@ func init() {
       "format": "byte"
     },
     "EditAccountRequest": {
+      "description": "Account object (V0).",
       "type": "object",
+      "required": [
+        "nickname"
+      ],
       "properties": {
-        "newNickname": {
+        "address": {
+          "$ref": "#/definitions/Address"
+        },
+        "balance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "candidateBalance": {
+          "$ref": "#/definitions/Amount"
+        },
+        "keyPair": {
+          "$ref": "#/definitions/KeyPair"
+        },
+        "nickname": {
           "$ref": "#/definitions/Nickname"
         }
       }
