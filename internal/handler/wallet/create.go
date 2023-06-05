@@ -83,7 +83,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			Address:          wlt.Address,
 			CandidateBalance: models.Amount(fmt.Sprint(infos[0].CandidateBalance)),
 			Balance:          models.Amount(fmt.Sprint(infos[0].Balance)),
-			KeyPair: models.AccountKeyPair{
+			KeyPair: models.KeyPair{
 				PrivateKey: "",
 				PublicKey:  wlt.GetPupKey(),
 				Salt:       "",

@@ -33,7 +33,7 @@ type Account struct {
 
 	// key pair
 	// Required: true
-	KeyPair AccountKeyPair `json:"keyPair"`
+	KeyPair KeyPair `json:"keyPair"`
 
 	// nickname
 	// Required: true
@@ -240,113 +240,6 @@ func (m *Account) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *Account) UnmarshalBinary(b []byte) error {
 	var res Account
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// AccountKeyPair Account's key pair.
-//
-// swagger:model AccountKeyPair
-type AccountKeyPair struct {
-
-	// Nonce used by the AES-GCM algorithm used to protect the key pair's private key.
-	// Required: true
-	Nonce string `json:"nonce"`
-
-	// Key pair's private key.
-	// Required: true
-	PrivateKey string `json:"privateKey"`
-
-	// Key pair's public key.
-	// Required: true
-	PublicKey string `json:"publicKey"`
-
-	// Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.
-	// Required: true
-	Salt string `json:"salt"`
-}
-
-// Validate validates this account key pair
-func (m *AccountKeyPair) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateNonce(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePrivateKey(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePublicKey(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSalt(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *AccountKeyPair) validateNonce(formats strfmt.Registry) error {
-
-	if err := validate.RequiredString("keyPair"+"."+"nonce", "body", m.Nonce); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *AccountKeyPair) validatePrivateKey(formats strfmt.Registry) error {
-
-	if err := validate.RequiredString("keyPair"+"."+"privateKey", "body", m.PrivateKey); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *AccountKeyPair) validatePublicKey(formats strfmt.Registry) error {
-
-	if err := validate.RequiredString("keyPair"+"."+"publicKey", "body", m.PublicKey); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *AccountKeyPair) validateSalt(formats strfmt.Registry) error {
-
-	if err := validate.RequiredString("keyPair"+"."+"salt", "body", m.Salt); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ContextValidate validates this account key pair based on context it is used
-func (m *AccountKeyPair) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *AccountKeyPair) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *AccountKeyPair) UnmarshalBinary(b []byte) error {
-	var res AccountKeyPair
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

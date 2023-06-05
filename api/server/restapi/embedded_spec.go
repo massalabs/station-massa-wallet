@@ -670,41 +670,7 @@ func init() {
           "$ref": "#/definitions/Amount"
         },
         "keyPair": {
-          "description": "Account's key pair.",
-          "type": "object",
-          "required": [
-            "privateKey",
-            "publicKey",
-            "salt",
-            "nonce"
-          ],
-          "properties": {
-            "nonce": {
-              "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "privateKey": {
-              "description": "Key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "publicKey": {
-              "description": "Key pair's public key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "salt": {
-              "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            }
-          },
-          "x-nullable": false
+          "$ref": "#/definitions/KeyPair"
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
@@ -748,6 +714,43 @@ func init() {
           "x-nullable": false
         }
       }
+    },
+    "KeyPair": {
+      "description": "Account's key pair.",
+      "type": "object",
+      "required": [
+        "privateKey",
+        "publicKey",
+        "salt",
+        "nonce"
+      ],
+      "properties": {
+        "nonce": {
+          "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "privateKey": {
+          "description": "Key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "publicKey": {
+          "description": "Key pair's public key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "salt": {
+          "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        }
+      },
+      "x-nullable": false
     },
     "Nickname": {
       "description": "Account's short name.",
@@ -1570,83 +1573,12 @@ func init() {
           "$ref": "#/definitions/Amount"
         },
         "keyPair": {
-          "description": "Account's key pair.",
-          "type": "object",
-          "required": [
-            "privateKey",
-            "publicKey",
-            "salt",
-            "nonce"
-          ],
-          "properties": {
-            "nonce": {
-              "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "privateKey": {
-              "description": "Key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "publicKey": {
-              "description": "Key pair's public key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            },
-            "salt": {
-              "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
-              "type": "string",
-              "format": "base58check",
-              "x-nullable": false
-            }
-          },
-          "x-nullable": false
+          "$ref": "#/definitions/KeyPair"
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
         }
       }
-    },
-    "AccountKeyPair": {
-      "description": "Account's key pair.",
-      "type": "object",
-      "required": [
-        "privateKey",
-        "publicKey",
-        "salt",
-        "nonce"
-      ],
-      "properties": {
-        "nonce": {
-          "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
-          "type": "string",
-          "format": "base58check",
-          "x-nullable": false
-        },
-        "privateKey": {
-          "description": "Key pair's private key.",
-          "type": "string",
-          "format": "base58check",
-          "x-nullable": false
-        },
-        "publicKey": {
-          "description": "Key pair's public key.",
-          "type": "string",
-          "format": "base58check",
-          "x-nullable": false
-        },
-        "salt": {
-          "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
-          "type": "string",
-          "format": "base58check",
-          "x-nullable": false
-        }
-      },
-      "x-nullable": false
     },
     "Amount": {
       "description": "Mas amount in nanoMassa.",
@@ -1685,6 +1617,43 @@ func init() {
           "x-nullable": false
         }
       }
+    },
+    "KeyPair": {
+      "description": "Account's key pair.",
+      "type": "object",
+      "required": [
+        "privateKey",
+        "publicKey",
+        "salt",
+        "nonce"
+      ],
+      "properties": {
+        "nonce": {
+          "description": "Nonce used by the AES-GCM algorithm used to protect the key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "privateKey": {
+          "description": "Key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "publicKey": {
+          "description": "Key pair's public key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        },
+        "salt": {
+          "description": "Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.",
+          "type": "string",
+          "format": "base58check",
+          "x-nullable": false
+        }
+      },
+      "x-nullable": false
     },
     "Nickname": {
       "description": "Account's short name.",
