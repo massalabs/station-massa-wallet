@@ -13,17 +13,17 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// ModifyNicknameRequest modify nickname request
+// EditAccountRequest edit account request
 //
-// swagger:model ModifyNicknameRequest
-type ModifyNicknameRequest struct {
+// swagger:model EditAccountRequest
+type EditAccountRequest struct {
 
 	// new nickname
 	NewNickname Nickname `json:"newNickname,omitempty"`
 }
 
-// Validate validates this modify nickname request
-func (m *ModifyNicknameRequest) Validate(formats strfmt.Registry) error {
+// Validate validates this edit account request
+func (m *EditAccountRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateNewNickname(formats); err != nil {
@@ -36,7 +36,7 @@ func (m *ModifyNicknameRequest) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ModifyNicknameRequest) validateNewNickname(formats strfmt.Registry) error {
+func (m *EditAccountRequest) validateNewNickname(formats strfmt.Registry) error {
 	if swag.IsZero(m.NewNickname) { // not required
 		return nil
 	}
@@ -53,8 +53,8 @@ func (m *ModifyNicknameRequest) validateNewNickname(formats strfmt.Registry) err
 	return nil
 }
 
-// ContextValidate validate this modify nickname request based on the context it is used
-func (m *ModifyNicknameRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this edit account request based on the context it is used
+func (m *EditAccountRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateNewNickname(ctx, formats); err != nil {
@@ -67,7 +67,7 @@ func (m *ModifyNicknameRequest) ContextValidate(ctx context.Context, formats str
 	return nil
 }
 
-func (m *ModifyNicknameRequest) contextValidateNewNickname(ctx context.Context, formats strfmt.Registry) error {
+func (m *EditAccountRequest) contextValidateNewNickname(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.NewNickname.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -82,7 +82,7 @@ func (m *ModifyNicknameRequest) contextValidateNewNickname(ctx context.Context, 
 }
 
 // MarshalBinary interface implementation
-func (m *ModifyNicknameRequest) MarshalBinary() ([]byte, error) {
+func (m *EditAccountRequest) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -90,8 +90,8 @@ func (m *ModifyNicknameRequest) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *ModifyNicknameRequest) UnmarshalBinary(b []byte) error {
-	var res ModifyNicknameRequest
+func (m *EditAccountRequest) UnmarshalBinary(b []byte) error {
+	var res EditAccountRequest
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
