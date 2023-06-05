@@ -98,7 +98,7 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 	}
 }
 
-/*MassaWalletAPI Thyra plugin - Massa Wallet */
+/*MassaWalletAPI MassaStation plugin - Wallet */
 type MassaWalletAPI struct {
 	spec            *loads.Document
 	context         *middleware.Context

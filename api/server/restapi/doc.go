@@ -2,7 +2,7 @@
 
 // Package restapi massa-wallet
 //
-//	Thyra plugin - Massa Wallet
+//	MassaStation plugin - Wallet
 //	Schemes:
 //	  http
 //	Host: localhost:8080
