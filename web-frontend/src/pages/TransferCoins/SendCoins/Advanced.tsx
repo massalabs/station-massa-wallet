@@ -22,7 +22,7 @@ function Modal({ ...props }) {
         onClick={() => handleFees(presetFees[name])}
       >
         {name}
-        <label className="text-info text-xs flex pl-1 items-center">
+        <label className="text-tertiary text-xs flex pl-1 items-center">
           ({presetFees[name]} nMAS)
         </label>
       </Button>
@@ -38,8 +38,10 @@ function Modal({ ...props }) {
   return (
     <PopupModal fullMode={true} onClose={() => setModal(!modal)}>
       <PopupModalHeader>
-        <label className="mas-title">{Intl.t('sendcoins.advanced')}</label>
-        <p className="mas-body">{Intl.t('sendcoins.advanced-message')}</p>
+        <div className="flex flex-col gap-3.5">
+          <label className="mas-title">{Intl.t('sendcoins.advanced')}</label>
+          <p className="mas-body">{Intl.t('sendcoins.advanced-message')}</p>
+        </div>
       </PopupModalHeader>
       <PopupModalContent>
         <div className="flex flex-row items-center mas-buttons pb-3.5">
