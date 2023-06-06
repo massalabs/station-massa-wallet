@@ -1,7 +1,4 @@
-import { useResource } from '../../../custom/api/useResource';
-import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
-import { useParams } from 'react-router-dom';
 import { parseForm } from '../../../utils/parseForm';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import {
@@ -13,16 +10,18 @@ import {
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 
-function Send() {
-  const { nickname } = useParams();
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  let account = accounts.find((account) => account.nickname === nickname);
+function Send({ ...props }) {
+  const { account } = props;
+  const nickname = account.nickname ?? '';
+  const queryParams = new URLSearchParams(location.search);
+  const presetTo = queryParams.get('to') ?? '';
+  const presetAmount = queryParams.get('amount') ?? '';
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);
 
-  const [amount, setAmount] = useState<string>('');
+  const [amount, setAmount] = useState<string>(presetAmount);
   const [fees, setFees] = useState<number>(1000);
-  const [recipient, setRecipient] = useState('');
+  const [recipient, setRecipient] = useState(presetTo);
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<object | null>(null);
   const [modal, setModal] = useState<boolean>(false);

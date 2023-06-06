@@ -5,30 +5,24 @@ import WalletLayout, {
 import Intl from '../../i18n/i18n';
 import Send from './SendCoins/Send';
 import ReceiveCoins from './ReceiveCoins/ReceiveCoins';
+import { useParams } from 'react-router-dom';
+import { useResource } from '../../custom/api';
+import { AccountObject } from '../../models/AccountModel';
 
 function SendCoins() {
-  // this is place holder code for texting purpose
-  // The nickname will be passed as an argument to the CopyAddress.tsx
-  const address = 'AU12irbDfYNwyZRbnpBrfCBPCxrktp8f8riK2sQddWbzQ3g43G7bb';
-  const formattedAddress = address.slice(0, 4) + '...' + address.slice(-4);
-
-  const componentArgs = {
-    formattedAddress,
-    address,
-  };
+  const { nickname } = useParams();
+  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
+  const account = accounts.find((account) => account.nickname === nickname);
+  const params = { account };
 
   const tabsConfig = [
     {
       label: Intl.t('sendcoins.send-tab'),
-      content: <Send />,
+      content: <Send {...params} />,
     },
     {
       label: Intl.t('sendcoins.receive-tab'),
-      content: (
-        <div className="mt-20">
-          <ReceiveCoins {...componentArgs} />
-        </div>
-      ),
+      content: <ReceiveCoins {...params} />,
     },
   ];
 
