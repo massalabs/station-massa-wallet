@@ -11,7 +11,7 @@ export interface ConfigStoreState {
 
 const configStore = persist<ConfigStoreState>(
   () => ({
-    timeoutId: undefined
+    timeoutId: undefined,
   }),
   {
     name: 'config-store',
