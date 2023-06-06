@@ -27,6 +27,28 @@
       "sign": "Sign"
     }
   },
+  "backup": {
+    "title": "Back up",
+    "subtitle": {
+      "choose-method": "Choose a back up method",
+      "private-key": "Enter your password to show your private key."
+    },
+    "inputs": {
+      "private-key": {
+        "placeholder": "Private key"
+      },
+      "password": {
+        "placeholder": "Password"
+      }
+    },
+    "buttons": {
+      "download": "Download a .yaml file",
+      "show": "Show key pairs",
+      "copy": "Copy to clipboard",
+      "next": "Next",
+      "cancel": "Cancel"
+    }
+  },
   "errors": {
     "Nickname-0001": "Invalid nickname",
     "PrivateKey-0001": "Invalid private key",
