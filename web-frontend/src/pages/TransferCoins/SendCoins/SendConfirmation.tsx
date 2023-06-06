@@ -47,19 +47,18 @@ export function SendConfirmation({ ...props }) {
     <>
       <div
         onClick={() => setValid(!valid)}
-        className="flex flex-row just items-center hover:cursor-pointer pb-3.5 gap-2"
+        className="flex flex-row just items-center hover:cursor-pointer mb-5 gap-2"
       >
         <FiChevronLeft />
 
         <u>{Intl.t('sendcoins.back-to-sending')}</u>
       </div>
-      <p className="mb-3.5">{Intl.t('sendcoins.send-message')}</p>
-      <div className="flex flex-col p-10 bg-secondary rounded-lg mb-3.5">
-        <div className="flex flex-row items-center pb-3.5 ">
+      <p className="mb-6">{Intl.t('sendcoins.send-message')}</p>
+      <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
+        <div className="flex flex-row items-center pb-3 ">
           <div className="pr-2">
             {Intl.t('sendcoins.amount')} ({formatStandard(reversedAmount)})
-            {Intl.t('sendcoins.mas-gas')} {fees}
-            {Intl.t('sendcoins.nano-mas')}
+            {Intl.t('sendcoins.mas-gas')} ({fees}){Intl.t('sendcoins.nano-mas')}
           </div>
           <div
             className="flex flex-row relative items-center gap-1 "
@@ -70,7 +69,7 @@ export function SendConfirmation({ ...props }) {
           </div>
         </div>
         <Balance
-          customClass="pl-0 bg-transparent mb-3.5"
+          customClass="p-0 bg-transparent mb-3"
           amount={formattedTotal}
         />
         <p>

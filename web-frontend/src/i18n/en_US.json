@@ -71,7 +71,7 @@
   "sendcoins": {
     "send-tab": "Send",
     "receive-tab": "Receive",
-    "amount": "amount",
+    "amount": "Amount",
     "account-balance": "Account Balance",
     "send-action": "Send Tokens",
     "available-balance": "Available : ",
@@ -88,7 +88,7 @@
     "advanced-message": "You pay gas fees to reward block validators and maximize your chances to see your transaction validated. It is a tip for people that support the blockchain network.",
     "custom-fees": "Custom fees : ",
     "confirm-fees": "Confirm fees ",
-    "gas-info": "Default gas fees are XX and defined by Massa Labs to assure minimum tip to block validator. If you want to custom them go to advanced section in previous screen"
+    "gas-info": "Default gas fees are XX nMAS and defined by Massa Labs to assure minimum tip to block validator. If you want to custom them go to advanced section in previous screen"
   },
   "receive": {
     "account-receive": "Generate a link",
