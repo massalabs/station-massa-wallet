@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
@@ -42,35 +42,12 @@ function WalletLayout(props: WalletProps) {
   const navigate = useNavigate();
   const { nickname } = useParams();
 
-  const { data: accounts = [], refetch } = useResource<AccountObject[]>(
-    'accounts',
-    {
-      refetchOnWindowFocus: false,
-      enabled: false, // disable this query from automatically running
-      manual: true,
-    },
-  );
-
-  refetch();
-
-  const [selectedAccountKey, setSelectedAccountKey] = useState(0);
-
-  useEffect(() => {
-    const index = Object.keys(accounts).find((_, idx) => {
-      return accounts[idx].nickname === nickname;
-    });
-
-    if (index === undefined) {
-      setSelectedAccountKey(0);
-    } else {
-      setSelectedAccountKey(parseInt(index));
-    }
-  }, [accounts, refetch]);
+  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
 
   // If no account, redirect to welcome page
   if (!accounts.length) {
     navigate(routeFor('index'));
-    return null;
+    return <></>;
   }
 
   function isActive(item: MenuItem) {
@@ -147,6 +124,12 @@ function WalletLayout(props: WalletProps) {
     item: Intl.t('account.add'),
     onClick: () => navigate(routeFor('account-create')),
   });
+
+  const selectedAccountKey: number = parseInt(
+    Object.keys(accounts).find(
+      (_, idx) => accounts[idx].nickname === nickname,
+    ) || '0',
+  );
 
   return (
     <div className="bg-primary min-h-screen">
