@@ -89,5 +89,9 @@
     "custom-fees": "Custom fees : ",
     "confirm-fees": "Confirm fees ",
     "gas-info": "Default gas fees are XX and defined by Massa Labs to assure minimum tip to block validator. If you want to custom them go to advanced section in previous screen"
+  },
+  "receive": {
+    "account-receive": "Generate a link",
+    "account-address": "Account address: "
   }
 }

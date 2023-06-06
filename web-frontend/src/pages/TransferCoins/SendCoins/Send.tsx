@@ -28,7 +28,7 @@ function Send() {
   const [modal, setModal] = useState<boolean>(false);
   const [modalAccounts, setModalAccounts] = useState<boolean>(false);
 
-  function validate(e: any) {
+  function validate(e: FormEvent<HTMLFormElement>) {
     const formObject = parseForm(e);
     const { amount, recipient } = formObject;
     const amountNum = reverseFormatStandard(amount);
