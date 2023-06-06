@@ -58,6 +58,7 @@ function PromptNickname() {
   }
 
   async function handleSubmit(e: SyntheticEvent) {
+    e.preventDefault();
     const formObject = parseForm(e);
     const { nickname } = formObject;
 
