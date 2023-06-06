@@ -1,11 +1,13 @@
 import { EventsOn } from '../wailsjs/runtime';
 import { events, promptAction, promptRequest } from './events/events';
 import { useNavigate } from 'react-router-dom';
+import { useConfigStore } from './store/store';
 
 export function App() {
   const navigate = useNavigate();
 
   const handlePromptRequest = (req: promptRequest) => {
+    clearTimeout(useConfigStore.getState().timeoutId);
     switch (req.Action) {
       case promptAction.deleteReq:
       case promptAction.signReq:
