@@ -2,10 +2,13 @@ import Placeholder from '../../layouts/Placeholder/Placeholder';
 import WalletLayout, {
   MenuItem,
 } from '../../layouts/WalletLayout/WalletLayout';
-export default function Home() {
+
+function Transactions() {
   return (
-    <WalletLayout menuItem={MenuItem.Home}>
+    <WalletLayout menuItem={MenuItem.Transactions}>
       <Placeholder />
     </WalletLayout>
   );
 }
+
+export default Transactions;
