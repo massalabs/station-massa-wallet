@@ -13,6 +13,7 @@ import '@massalabs/react-ui-kit/src/global.css';
 
 import { ENV } from './const/env/env';
 import './index.css';
+import mockServer from './mirage/server.js';
 import Welcome from './pages/Welcome/Welcome.tsx';
 import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
@@ -20,11 +21,11 @@ import AddAccount from './pages/AddAccount/AddAccount.tsx';
 import StepTwo from './pages/CreateAccount/StepTwo.tsx';
 import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
-import mockServer from './mirage/server.ts';
 import SendCoins from './pages/TransferCoins/SendCoins.tsx';
 import Home from './pages/Home/Home.tsx';
-import Settings from './pages/Settings/Settings.tsx';
 import ReceiveCoins from './pages/TransferCoins/ReceiveCoins/ReceiveCoins.tsx';
+import Settings from './pages/Settings/Settings.tsx';
+import SettingsEdit from './pages/Settings/SeetingsEdit.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -50,8 +51,9 @@ const router = createBrowserRouter(
       <Route path=":nickname/send-coins" element={<SendCoins />} />
       <Route path=":nickname/receive" element={<ReceiveCoins />} />
       <Route path=":nickname/assets" element={<></>} />
-      <Route path=":nickname/settings" element={<Settings />} />
       <Route path=":nickname/contacts" element={<></>} />
+      <Route path=":nickname/settings" element={<Settings />} />
+      <Route path=":nickname/settings/update" element={<SettingsEdit />} />
 
       {/* routes for errors */}
       <Route path="error" element={<Error />} />
