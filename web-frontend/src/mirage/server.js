@@ -1,18 +1,18 @@
 import { createServer, Model, Factory } from 'miragejs';
 import { ENV } from '../const/env/env';
-import { AccountObject } from '../models/AccountModel';
 import { faker } from '@faker-js/faker';
 
+// eslint-disable-next-line jsdoc/require-jsdoc
 function mockServer(environment = ENV.DEV) {
   let mockedServer = createServer({
     environment,
 
     models: {
-      account: Model.extend<Partial<AccountObject>>({}),
+      account: Model,
     },
 
     factories: {
-      account: Factory.extend<Partial<AccountObject>>({
+      account: Factory.extend({
         nickname() {
           return faker.internet.userName();
         },
@@ -36,7 +36,7 @@ function mockServer(environment = ENV.DEV) {
       this.get('accounts/:nickname', (schema, request) => {
         let nickname = request.params.nickname;
 
-        return schema.find('account', nickname);
+        return schema.findBy('account', { nickname });
       });
 
       this.put('accounts', (schema) => {
@@ -47,9 +47,11 @@ function mockServer(environment = ENV.DEV) {
       });
 
       this.put('accounts/:nickname', (schema, request) => {
-        let { newNickname } = JSON.parse(request.requestBody).newNickname;
+        let { newNickname } = JSON.parse(request.requestBody);
+        let nickname = request.params.nickname;
+        let account = schema.accounts.findBy({ nickname });
 
-        return schema.create('account', { nickname: newNickname });
+        return account.update({ nickname: newNickname });
       });
     },
   });
