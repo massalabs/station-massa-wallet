@@ -53,3 +53,18 @@ export function checkRecipientFormat(recipient: string): boolean {
   const regex = /^AU[a-zA-Z0-9]{51}$/;
   return regex.test(recipient);
 }
+
+/**
+ * Masks the middle of an address with a specified character.
+ * @param str - The address to mask.
+ * @param mask - The character to use for masking. Defaults to `.`.
+ * @returns The masked address.
+ */
+
+export function maskAddress(str: string, length = 4, mask = '. . .'): string {
+  const start = length;
+  const end = str.length - length;
+  const masked = str.substring(start, end).replace(/./g, mask);
+
+  return str.substring(0, start) + masked + str.substring(end);
+}

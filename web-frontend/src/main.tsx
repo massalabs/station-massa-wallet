@@ -28,6 +28,7 @@ import Settings from './pages/Settings/Settings.tsx';
 import Transactions from './pages/Transactions/Transactions.tsx';
 import Contacts from './pages/Contacts/Contacts.tsx';
 import Assets from './pages/Assets/Assets.tsx';
+import SendRedirect from './pages/TransferCoins/SendCoins/SendRedirect.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -46,6 +47,7 @@ const router = createBrowserRouter(
       <Route path="account-create-step-one" element={<StepOne />} />
       <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
+      <Route path="send-redirect" element={<SendRedirect />} />
 
       {/* routes for wallet */}
       <Route path=":nickname/home" element={<Home />} />

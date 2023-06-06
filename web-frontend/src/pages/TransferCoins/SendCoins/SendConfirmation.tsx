@@ -27,7 +27,7 @@ export function SendConfirmation({ ...props }) {
     `accounts/${nickname}/transfer`,
   );
   if (isSuccess) {
-    navigate(routeFor('index'));
+    navigate(routeFor(`${nickname}/home`));
   }
   const handleTransfer = () => {
     const transferData: SendTransactionObject = {

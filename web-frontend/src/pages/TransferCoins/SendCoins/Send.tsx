@@ -9,19 +9,21 @@ import {
 } from '../../../utils/MassaFormating';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
+import { useQuery } from '../../../custom/api/useQuery';
 
 function Send({ ...props }) {
   const { account } = props;
   const nickname = account.nickname ?? '';
-  const queryParams = new URLSearchParams(location.search);
-  const presetTo = queryParams.get('to') ?? '';
-  const presetAmount = queryParams.get('amount') ?? '';
+  let query = useQuery();
+
+  let presetTo = query.get('to');
+  let presetAmount = query.get('amount') ?? '';
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);
 
   const [amount, setAmount] = useState<string>(presetAmount);
   const [fees, setFees] = useState<number>(1000);
-  const [recipient, setRecipient] = useState(presetTo);
+  const [recipient, setRecipient] = useState<string>(presetTo ?? '');
   const [valid, setValid] = useState<boolean>(false);
   const [error, setError] = useState<object | null>(null);
   const [modal, setModal] = useState<boolean>(false);
