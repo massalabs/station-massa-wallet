@@ -5,20 +5,20 @@ import { events, promptRequest, promptResult } from '../events/events';
 import { parseForm } from '../utils/parseForm';
 import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
 import { ErrorCode, IErrorObject, handleCancel } from '../utils';
+import Intl from '../i18n/i18n';
 
 import { Password, Button } from '@massalabs/react-ui-kit';
 import { Layout } from '../layouts/Layout/Layout';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
-import Intl from '../i18n/i18n';
 
 function EnterKey() {
   return (
     <>
       <Button variant="secondary" onClick={handleCancel}>
-        Cancel
+        {Intl.t('backup.buttons.cancel')}
       </Button>
       <Button posIcon={<FiArrowRight />} type="submit">
-        Next
+        {Intl.t('backup.buttons.next')}
       </Button>
     </>
   );
@@ -35,7 +35,7 @@ function CopyKey({ privateKey }: CopyProps) {
 
   return (
     <Button onClick={handleCopy} preIcon={<FiCopy />}>
-      Copy to clipboard
+      {Intl.t('backup.buttons.copy')}
     </Button>
   );
 }
@@ -46,6 +46,7 @@ function BackupKeyPairs() {
   const navigate = useNavigate();
 
   const req: promptRequest = state.req;
+  const walletName: string = req.Msg;
 
   const [privateKey, setPrivateKey] = useState<string | undefined>(undefined);
   const [error, setError] = useState<IErrorObject | null>(null);
@@ -55,7 +56,7 @@ function BackupKeyPairs() {
     const { password } = formObject;
 
     if (!password || !password.length) {
-      setError({ password: 'Password is required' });
+      setError({ password: Intl.t('errors.PasswordRequired') });
       return false;
     }
 
@@ -71,9 +72,8 @@ function BackupKeyPairs() {
         setError({ password: errorMessage });
         return;
       } else {
-        req.Msg = errorMessage;
         navigate('/failure', {
-          state: { req },
+          state: { req: { Msg: errorMessage } },
         });
       }
     }
@@ -94,10 +94,14 @@ function BackupKeyPairs() {
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">{req.Msg}</h1>
+        <div className="flex items-end gap-3">
+          <h1 className="mas-title">{Intl.t('backup.title')}</h1>
+          <span>/</span>
+          <h2 className="mas-h2">{walletName}</h2>
+        </div>
         {!privateKey && (
           <p className="mas-body pt-4">
-            Enter your password to show your private key
+            {Intl.t('backup.subtitle.private-key')}
           </p>
         )}
         <div className="pt-4">
@@ -105,14 +109,14 @@ function BackupKeyPairs() {
             <Password
               defaultValue=""
               name="privateKey"
-              placeholder="Private key"
+              placeholder={Intl.t('backup.inputs.private-key.placeholder')}
               value={privateKey}
             />
           ) : (
             <Password
               defaultValue=""
               name="password"
-              placeholder="Password"
+              placeholder={Intl.t('backup.inputs.password.placeholder')}
               error={error?.password}
             />
           )}
