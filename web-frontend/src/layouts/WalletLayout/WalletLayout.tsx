@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
+import Intl from '../../i18n/i18n';
 
 import {
   Dropdown,
@@ -18,6 +19,7 @@ import {
   FiDisc,
   FiSettings,
   FiSun,
+  FiPlus,
 } from 'react-icons/fi';
 
 export enum MenuItem {
@@ -116,6 +118,12 @@ function WalletLayout(props: WalletProps) {
     item: account.nickname,
     onClick: () => navigate(routeFor(`${account.nickname}/${MenuItem.Home}`)),
   }));
+
+  accountsItems.push({
+    icon: <FiPlus size={32} />,
+    item: Intl.t('account.add'),
+    onClick: () => navigate(routeFor('account-create')),
+  });
 
   const selectedAccountKey: number = parseInt(
     Object.keys(accounts).find(
