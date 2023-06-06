@@ -17,7 +17,7 @@ export const hideAndReload = () => {
   WindowReloadApp();
 };
 
-const timeoutDelay = 1000 * 6; // 6 seconds
+const timeoutDelay = 1000 * 4; // 4 seconds
 
 export const handleApplyResult = (
   navigate: NavigateFunction,
