@@ -96,6 +96,9 @@
   },
   "placeholder": {
     "placeholder-banner": "Our new feature is coming soon",
-    "placeholder-message": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll soon be able to do in 3 months."
+    "teaser-home-page": "If you're here, it's because you wanted to see your dashboard! Don't panic, you'll soon be able to do in very soon !",
+    "teaser-transaction-page": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll soon be able to do in 3 months.",
+    "teaser-contacts-page": "If you're here, it's because you wanted to see  all contacts! Don't panic, you'll soon be able connect in Q3 of 2023 !",
+    "teaser-assets-page": "If you're here, it's because you wanted to see  all assets! Don't panic, you'll soon be able to do in very soon !"
   }
 }
