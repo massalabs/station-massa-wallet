@@ -4,6 +4,7 @@ import { WindowReloadApp } from '../../wailsjs/runtime';
 import { promptResult, promptRequest } from '../events/events';
 import { IErrorObject } from './errors';
 import Intl from '../i18n/i18n';
+import { useConfigStore } from '../store/store';
 
 export const handleCancel = () => {
   AbortAction();
@@ -16,7 +17,7 @@ export const hideAndReload = () => {
   WindowReloadApp();
 };
 
-const timeoutDelay = 1000 * 6; // 6 seconds
+const timeoutDelay = 1000 * 4; // 4 seconds
 
 export const handleApplyResult = (
   navigate: NavigateFunction,
@@ -28,11 +29,12 @@ export const handleApplyResult = (
   quitOnError = false,
 ) => {
   return (result: promptResult) => {
+    let timeoutId;
     if (result.Success) {
       navigate('/success', {
         state: { req },
       });
-      setTimeout(hideAndReload, timeoutDelay);
+      timeoutId = setTimeout(hideAndReload, timeoutDelay);
     } else {
       req.Msg = Intl.t(`errors.${result.CodeMessage}`);
       if (errMsgCb) errMsgCb(req.Msg);
@@ -40,9 +42,9 @@ export const handleApplyResult = (
         state: { req },
       });
       if (quitOnError || result.CodeMessage === 'Timeout-0001') {
-        setTimeout(hideAndReload, timeoutDelay);
-        return;
+        timeoutId = setTimeout(hideAndReload, timeoutDelay);
       }
     }
+    useConfigStore.setState({ timeoutId: Number(timeoutId) });
   };
 };
