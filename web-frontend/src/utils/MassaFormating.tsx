@@ -50,7 +50,7 @@ export function reverseFormatStandard(str: string): number {
  * @returns `true` if the address is in the correct format, `false` otherwise.
  */
 export function checkRecipientFormat(recipient: string): boolean {
-  const regex = /^AU[a-zA-Z0-9]{51}$/;
+  const regex = /^AU[a-zA-Z0-9]{50,51}$/;
   return regex.test(recipient);
 }
 

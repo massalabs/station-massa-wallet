@@ -38,9 +38,23 @@ export function SendConfirmation({ ...props }) {
 
     mutate(transferData as SendTransactionObject);
   };
+
+  const [customFees, setCustomFees] = useState<string>('Standard');
+
+  switch (fees) {
+    case 1000:
+      setCustomFees('Standard');
+      break;
+    case 1:
+      setCustomFees('Low');
+      break;
+    case 5000:
+      setCustomFees('High');
+  }
+
   const ToolTipArgs = {
     showTooltip,
-    content: Intl.t('sendcoins.gas-info').replace('XX', fees),
+    content: Intl.t('sendcoins.gas-info', { default: customFees, xx: fees }),
   };
 
   return (
@@ -56,7 +70,7 @@ export function SendConfirmation({ ...props }) {
       <p className="mb-6">{Intl.t('sendcoins.send-message')}</p>
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
         <div className="flex flex-row items-center pb-3 ">
-          <div className="pr-2">
+          <div className="pr-2 text-s-info">
             {Intl.t('sendcoins.amount')} ({formatStandard(reversedAmount)})
             {Intl.t('sendcoins.mas-gas')} ({fees}){Intl.t('sendcoins.nano-mas')}
           </div>
@@ -72,7 +86,7 @@ export function SendConfirmation({ ...props }) {
           customClass="p-0 bg-transparent mb-3"
           amount={formattedTotal}
         />
-        <p>
+        <p className="text-s-info">
           {Intl.t('sendcoins.recipient')}
           <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
         </p>
