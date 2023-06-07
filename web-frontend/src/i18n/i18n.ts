@@ -19,11 +19,14 @@ class I18n {
     this.copy = this._getCopy();
   }
 
-  public t(key: string): string {
+  public t(key: string, interpolations?: Record<string, string>): string {
     let copy = this.copy;
     // we are using pick in order to make life easier when the day for plurals and copy with params arrives
     const result = dot.pick(key, copy);
-    return result ?? key;
+
+    return interpolations
+      ? this._interpolateKeys(result, interpolations)
+      : result ?? key;
   }
 
   private _getLang(): string {
@@ -50,6 +53,20 @@ class I18n {
       );
       return enUs;
     }
+  }
+
+  private _interpolateKeys(
+    str: string,
+    replacements: Record<string, string>,
+    char1 = '{',
+    char2 = '}',
+  ): string {
+    const regex = new RegExp(`${char1}[^${char2}]*${char2}`, 'g');
+
+    return str.replace(regex, (match) => {
+      const key = match.slice(1, -1);
+      return replacements[key] ?? match;
+    });
   }
 }
 
