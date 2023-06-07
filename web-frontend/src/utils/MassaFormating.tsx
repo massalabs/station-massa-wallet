@@ -21,6 +21,7 @@ export const presetFees: { [key: string]: number } = {
  * @param maximumFractionDigits - The maximum number of fraction digits to display. Defaults to `2`.
  * @returns The formatted number as a string.
  */
+
 export function formatStandard(
   num: number,
   unit = Unit.MAS,
@@ -39,6 +40,7 @@ export function formatStandard(
  * @param str - The formatted number string to reverse.
  * @returns The reversed and parsed number.
  */
+
 export function reverseFormatStandard(str: string): number {
   const formattedString = str.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
   return parseFloat(formattedString);
@@ -49,6 +51,7 @@ export function reverseFormatStandard(str: string): number {
  * @param recipient - The recipient address to check.
  * @returns `true` if the address is in the correct format, `false` otherwise.
  */
+
 export function checkRecipientFormat(recipient: string): boolean {
   return /^AU[a-zA-Z0-9]{4,}$/.test(recipient);
 }

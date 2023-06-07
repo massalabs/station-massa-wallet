@@ -12,7 +12,8 @@ import { useState } from 'react';
 
 function Modal({ ...props }) {
   const feesTypes = Object.keys(presetFees);
-  const { fees, modal, setModal, handleFees, handleConfirm } = props;
+  const { fees, modal, setModal, handleFees, handleConfirm, errorAdvanced } =
+    props;
   const [presetGasFees, setPresetGasFees] = useState<boolean>(true);
   const [customGasFees, setCustomFees] = useState<boolean>(false);
 
@@ -101,6 +102,7 @@ function Modal({ ...props }) {
             defaultValue=""
             disabled={!customGasFees}
             onChange={(e) => handleFees(e.target.value)}
+            error={errorAdvanced?.amount}
           />
 
           <Button
