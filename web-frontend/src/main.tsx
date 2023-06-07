@@ -25,6 +25,7 @@ import SendCoins from './pages/TransferCoins/SendCoins.tsx';
 import Home from './pages/Home/Home.tsx';
 import ReceiveCoins from './pages/TransferCoins/ReceiveCoins/ReceiveCoins.tsx';
 import Settings from './pages/Settings/Settings.tsx';
+import SettingsEdit from './pages/Settings/SeetingsEdit.tsx';
 import Transactions from './pages/Transactions/Transactions.tsx';
 import Contacts from './pages/Contacts/Contacts.tsx';
 import Assets from './pages/Assets/Assets.tsx';
@@ -54,6 +55,7 @@ const router = createBrowserRouter(
       <Route path=":nickname/receive" element={<ReceiveCoins />} />
       <Route path=":nickname/assets" element={<Assets />} />
       <Route path=":nickname/settings" element={<Settings />} />
+      <Route path=":nickname/settings/update" element={<SettingsEdit />} />
       <Route path=":nickname/contacts" element={<Contacts />} />
 
       {/* routes for errors */}
