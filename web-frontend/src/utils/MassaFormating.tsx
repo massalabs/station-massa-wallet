@@ -63,7 +63,7 @@ export function checkRecipientFormat(recipient: string): boolean {
 
 export function maskAddress(str: string, length = 4, mask = '. . .'): string {
   const start = length;
-  const end = str.length - length;
+  const end = str?.length - length;
 
-  return str.substring(0, start) + mask + str.substring(end);
+  return str?.substring(0, start) + mask + str?.substring(end);
 }
