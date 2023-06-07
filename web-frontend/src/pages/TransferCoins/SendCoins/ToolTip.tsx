@@ -6,7 +6,7 @@ function ToolTip({ ...props }) {
     <div>
       <FiHelpCircle />
       {showTooltip && (
-        <div className="flex flex-col w-96 absolute z-10 t-10 l-10 bg-tertiary p-3 rounded ">
+        <div className="flex flex-col w-96 absolute z-10 t-10 l-10 bg-tertiary p-3 rounded-lg text-neutral">
           {content}
         </div>
       )}

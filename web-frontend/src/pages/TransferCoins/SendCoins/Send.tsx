@@ -133,13 +133,17 @@ function Send() {
   };
 
   return (
-    <div className="pt-3.5">
+    <>
       {valid ? (
-        <SendConfirmation {...confirmArgs} />
+        <div className="mt-5">
+          <SendConfirmation {...confirmArgs} />
+        </div>
       ) : (
-        <SendForm {...sendArgs} />
+        <div className="mt-5">
+          <SendForm {...sendArgs} />
+        </div>
       )}
-    </div>
+    </>
   );
 }
 

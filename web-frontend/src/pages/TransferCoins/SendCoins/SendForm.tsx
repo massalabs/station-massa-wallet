@@ -42,12 +42,12 @@ export function SendForm({ ...props }) {
     <form onSubmit={handleSubmit}>
       {/* Balance Section */}
       <div>
-        <p> {Intl.t('sendcoins.account-balance')}</p>
+        <p className="mas-subtitle">{Intl.t('sendcoins.account-balance')}</p>
         <Balance customClass="pl-0 bg-transparent" amount={formattedBalance} />
       </div>
       <div className="flex flex-row justify-between w-full pb-3.5 ">
-        <p> {Intl.t('sendcoins.send-action')} </p>
-        <p>
+        <p className="mas-body2"> {Intl.t('sendcoins.send-action')} </p>
+        <p className="mas-body2">
           {Intl.t('sendcoins.available-balance')} <u>{formattedBalance}</u>
         </p>
       </div>
@@ -61,14 +61,14 @@ export function SendForm({ ...props }) {
         />
       </div>
       <div className="flex flex-row-reverse">
-        <ul className="flex flex-row">
+        <ul className="flex flex-row mas-body2">
           <SendPercentage percentage={25} />
           <SendPercentage percentage={50} />
           <SendPercentage percentage={75} />
           <SendPercentage percentage={100} />
         </ul>
       </div>
-      <p className="pb-3.5">{Intl.t('sendcoins.recipient')}</p>
+      <p className="pb-3.5 mas-body2">{Intl.t('sendcoins.recipient')}</p>
       <div className="pb-3.5">
         <Input
           placeholder={'Recipient'}
@@ -83,7 +83,9 @@ export function SendForm({ ...props }) {
           className="hover:cursor-pointer"
           onClick={() => setModalAccounts(!modalAccounts)}
         >
-          <u>{Intl.t('sendcoins.transfer-between-acc')}</u>
+          <u className="mas-body2">
+            {Intl.t('sendcoins.transfer-between-acc')}
+          </u>
         </p>
       </div>
       {/* Button Section */}
