@@ -9,10 +9,8 @@ function Placeholder(props: IPlaceholder) {
   const { message, icon } = props;
   return (
     <div
-      className="flex flex-col justify-around items-center  
-        h-96 max-w-2xl p-10 gap-10
-        relative left-20
-        bg-secondary rounded-lg"
+      className="flex flex-col justify-around items-center h-96 max-w-2xl
+      p-10 gap-10 relative bg-secondary rounded-lg"
     >
       {icon}
       <h1 className="mas-banner text-center">
