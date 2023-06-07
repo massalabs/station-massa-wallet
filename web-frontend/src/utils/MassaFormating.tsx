@@ -40,7 +40,7 @@ export function formatStandard(
  * @returns The reversed and parsed number.
  */
 export function reverseFormatStandard(str: string): number {
-  const formattedString = str.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
+  const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
   return parseFloat(formattedString);
 }
 
@@ -52,4 +52,18 @@ export function reverseFormatStandard(str: string): number {
 export function checkRecipientFormat(recipient: string): boolean {
   const regex = /^AU[a-zA-Z0-9]{51}$/;
   return regex.test(recipient);
+}
+
+/**
+ * Masks the middle of an address with a specified character.
+ * @param str - The address to mask.
+ * @param mask - The character to use for masking. Defaults to `.`.
+ * @returns The masked address.
+ */
+
+export function maskAddress(str: string, length = 4, mask = '. . .'): string {
+  const start = length;
+  const end = str?.length - length;
+
+  return str?.substring(0, start) + mask + str?.substring(end);
 }
