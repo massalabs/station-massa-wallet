@@ -21,7 +21,7 @@ function BackupMethods() {
   async function handleDownloadYaml() {
     EventsOnce(
       events.promptResult,
-      handleApplyResult(navigate, req, setErrorMsg, false),
+      handleApplyResult(navigate, req, setErrorMsg, true),
     );
 
     await SendPromptInput(backupMethods.ymlFileBackup);
