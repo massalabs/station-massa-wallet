@@ -12,9 +12,10 @@ import { useState } from 'react';
 
 function Modal({ ...props }) {
   const feesTypes = Object.keys(presetFees);
-  const { fees, modal, setModal, handleFees, handleConfirm } = props;
+  const { fees, modal, setModal, handleFees } = props;
   const [presetGasFees, setPresetGasFees] = useState<boolean>(true);
   const [customGasFees, setCustomFees] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   function PresetFeeSelector({ name }: { name: string }) {
     const isDisabled = fees !== presetFees[name] || customGasFees;
@@ -53,6 +54,15 @@ function Modal({ ...props }) {
   const customArgs = {
     checked: customGasFees,
   };
+
+  function handleConfirm() {
+    if (isNaN(fees)) {
+      setError(Intl.t('errors.send.invalid-amount'));
+      return;
+    } else {
+      setModal(!modal);
+    }
+  }
 
   return (
     <PopupModal
@@ -101,12 +111,13 @@ function Modal({ ...props }) {
             defaultValue=""
             disabled={!customGasFees}
             onChange={(e) => handleFees(e.target.value)}
+            error={error ? error : ''}
           />
 
           <Button
             customClass="mt-6"
             type="submit"
-            onClick={(e) => handleConfirm(e)}
+            onClick={() => handleConfirm()}
           >
             {Intl.t('sendcoins.confirm-fees')}
           </Button>

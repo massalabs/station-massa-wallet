@@ -111,10 +111,6 @@ function Send(props: SendProps) {
     setModalAccounts(!modalAccounts);
   }
 
-  function handleConfirm() {
-    setModal(!modal);
-  }
-
   const confirmArgs = {
     amount,
     nickname,
@@ -140,7 +136,6 @@ function Send(props: SendProps) {
     handleModalAccounts,
     setFees,
     handleFees,
-    handleConfirm,
     setRecipient,
     handleSubmit,
     handleChange,

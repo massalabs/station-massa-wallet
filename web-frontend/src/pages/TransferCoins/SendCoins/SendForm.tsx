@@ -17,7 +17,6 @@ export function SendForm({ ...props }) {
     modalAccounts,
     setModalAccounts,
     handleModalAccounts,
-    handleConfirm,
     handleFees,
     setRecipient,
     handleSubmit,
@@ -30,7 +29,6 @@ export function SendForm({ ...props }) {
     modal,
     error,
     setModal,
-    handleConfirm,
     handleFees,
   };
   const modalArgsAccounts = {
