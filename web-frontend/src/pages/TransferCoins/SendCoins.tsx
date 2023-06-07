@@ -24,13 +24,19 @@ function SendCoins() {
     },
     {
       label: Intl.t('sendcoins.receive-tab'),
-      content: <ReceiveCoins {...componentArgs} />,
+      content: (
+        <div className="mt-20">
+          <ReceiveCoins {...componentArgs} />
+        </div>
+      ),
     },
   ];
 
   return (
     <WalletLayout menuItem={MenuItem.SendCoins}>
-      <Tabs tabsConfig={tabsConfig} defaultIndex={0} />
+      <div className="w-1/2 h-1/2">
+        <Tabs tabsConfig={tabsConfig} defaultIndex={0} />
+      </div>
     </WalletLayout>
   );
 }
