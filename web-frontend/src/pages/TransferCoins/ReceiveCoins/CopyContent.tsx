@@ -1,10 +1,13 @@
 import { FiCopy } from 'react-icons/fi';
-
-function CopyAddress({ ...props }) {
-  const { address, formattedAddress } = props;
+interface CopyAddressProps {
+  content: string;
+  formattedContent: string;
+}
+function CopyContent(props: CopyAddressProps) {
+  const { content, formattedContent } = props;
 
   function handleCopyClick() {
-    navigator.clipboard.writeText(address);
+    navigator.clipboard.writeText(content);
   }
 
   return (
@@ -14,11 +17,11 @@ function CopyAddress({ ...props }) {
         h-12 mb-3.5 px-3 rounded bg-secondary cursor-pointer"
         onClick={() => handleCopyClick()}
       >
-        <u>{formattedAddress}</u>
+        <u>{formattedContent ?? content}</u>
         <FiCopy size={24} />
       </div>
     </>
   );
 }
 
-export default CopyAddress;
+export default CopyContent;
