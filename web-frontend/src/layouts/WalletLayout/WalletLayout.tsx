@@ -47,7 +47,7 @@ function WalletLayout(props: WalletProps) {
   // If no account, redirect to welcome page
   if (!accounts.length) {
     navigate(routeFor('index'));
-    return <></>;
+    return null;
   }
 
   function isActive(item: MenuItem) {

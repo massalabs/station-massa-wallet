@@ -66,6 +66,10 @@
       "amount-to-low": "Amount must be greater than 0",
       "no-recipient": "Recipient is required",
       "invalid-recipient": "Recipient's address doesn't seem to be a valid Massa address"
+    },
+    "send-redirect": {
+      "account-not-found": "Account not found - redirecting to account creation page. You can import this account with its private key",
+      "no-account": "No account found - redirecting to account creation page"
     }
   },
   "sendcoins": {
@@ -100,5 +104,8 @@
     "teaser-transaction-page": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll soon be able to do in 3 months.",
     "teaser-contacts-page": "If you're here, it's because you wanted to see  all contacts! Don't panic, you'll soon be able connect in Q3 of 2023!",
     "teaser-assets-page": "If you're here, it's because you wanted to see  all assets! Don't panic, you'll soon be able to do in very soon!"
+  },
+  "send-redirect": {
+    "redirecting": "Hey {nickname}! We're transferring you to the send coin page"
   }
 }

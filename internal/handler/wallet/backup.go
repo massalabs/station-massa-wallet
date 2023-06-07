@@ -30,7 +30,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Backup,
-		Msg:    fmt.Sprintf("%s", wlt.Nickname),
+		Msg:    wlt.Nickname,
 	}
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, wlt)
 	if err != nil {
