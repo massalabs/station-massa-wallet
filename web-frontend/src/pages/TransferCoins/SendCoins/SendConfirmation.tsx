@@ -33,7 +33,7 @@ export function SendConfirmation({ ...props }) {
     const transferData: SendTransactionObject = {
       amount: amount,
       recipientAddress: recipient,
-      fee: fees,
+      fee: fees.toString(),
     };
 
     mutate(transferData as SendTransactionObject);
