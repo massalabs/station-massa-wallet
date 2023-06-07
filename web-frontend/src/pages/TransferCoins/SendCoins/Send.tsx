@@ -10,8 +10,13 @@ import {
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 import { useQuery } from '../../../custom/api/useQuery';
+import { AccountObject } from '../../../models/AccountModel';
 
-function Send({ ...props }) {
+export interface SendProps {
+  account: AccountObject;
+}
+
+function Send(props: SendProps) {
   const { account } = props;
   const nickname = account.nickname ?? '';
   let query = useQuery();

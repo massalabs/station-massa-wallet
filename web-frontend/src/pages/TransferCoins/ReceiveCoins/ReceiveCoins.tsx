@@ -4,9 +4,21 @@ import { FiLink } from 'react-icons/fi';
 import Intl from '../../../i18n/i18n';
 import QRCodeReact from 'qrcode.react';
 import { maskAddress } from '../../../utils/MassaFormating';
+import { AccountObject } from '../../../models/AccountModel';
+import { useResource } from '../../../custom/api';
+import { useNavigate, useParams } from 'react-router-dom';
+import { routeFor } from '../../../utils';
 
-function ReceiveCoins({ ...props }) {
-  const { account } = props;
+function ReceiveCoins() {
+  const navigate = useNavigate();
+  const { nickname } = useParams();
+  const { data: account } = useResource<AccountObject>(`accounts/${nickname}`);
+
+  if (account === undefined) {
+    navigate(routeFor(`${nickname}/home`));
+    return null;
+  }
+
   const address = account.address;
   const formattedAddress = maskAddress(address);
   const VITE_BASE_APP = import.meta.env.VITE_BASE_APP;

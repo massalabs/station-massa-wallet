@@ -5,24 +5,30 @@ import WalletLayout, {
 import Intl from '../../i18n/i18n';
 import Send from './SendCoins/Send';
 import ReceiveCoins from './ReceiveCoins/ReceiveCoins';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
+import { routeFor } from '../../utils';
 
 function SendCoins() {
+  const navigate = useNavigate();
+
   const { nickname } = useParams();
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  const account = accounts.find((account) => account.nickname === nickname);
-  const params = { account };
+  const { data: account } = useResource<AccountObject>(`accounts/${nickname}`);
+
+  if (account === undefined) {
+    navigate(routeFor(`${nickname}/home`));
+    return null;
+  }
 
   const tabsConfig = [
     {
       label: Intl.t('sendcoins.send-tab'),
-      content: <Send {...params} />,
+      content: <Send account={account} />,
     },
     {
       label: Intl.t('sendcoins.receive-tab'),
-      content: <ReceiveCoins {...params} />,
+      content: <ReceiveCoins />,
     },
   ];
 
