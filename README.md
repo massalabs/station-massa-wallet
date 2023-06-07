@@ -41,7 +41,7 @@ STANDALONE=1 go run cmd/massa-wallet/thyra-plugin-wallet.go
 The `STANDALONE` environment variable is to run the plugin without Thyra.
 
 Now navigate into <http://localhost:8080>. Note that some features will not work if
-[thyra-server](https://github.com/massalabs/thyra) is not running.
+[MassaStation-server](https://github.com/massalabs/thyra) is not running.
 
 **Install manually the plugin:**
 

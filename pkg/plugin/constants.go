@@ -4,4 +4,4 @@ const PluginAuthor = "Massalabs"
 
 const PluginName = "Wallet"
 
-const PluginDescription = "Massa wallet for Thyra"
+const PluginDescription = "MassaStation wallet"

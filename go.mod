@@ -6,7 +6,7 @@ require (
 	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/massalabs/thyra-plugin-hello-world v0.0.0-20230307170419-4b83067a9503
+	github.com/massalabs/thyra-plugin-hello-world v0.0.7-0.20230601150735-ea4f20201e11
 	github.com/rs/cors v1.8.3
 	golang.org/x/crypto v0.3.0
 	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
