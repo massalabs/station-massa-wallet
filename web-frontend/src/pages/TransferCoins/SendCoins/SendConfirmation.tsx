@@ -31,7 +31,7 @@ export function SendConfirmation({ ...props }) {
   }
   const handleTransfer = () => {
     const transferData: SendTransactionObject = {
-      amount: amount,
+      amount: amountInNanoMAS,
       recipientAddress: recipient,
       fee: fees.toString(),
     };
