@@ -25,7 +25,9 @@ import SendCoins from './pages/TransferCoins/SendCoins.tsx';
 import Home from './pages/Home/Home.tsx';
 import ReceiveCoins from './pages/TransferCoins/ReceiveCoins/ReceiveCoins.tsx';
 import Settings from './pages/Settings/Settings.tsx';
-import SettingsEdit from './pages/Settings/SeetingsEdit.tsx';
+import Transactions from './pages/Transactions/Transactions.tsx';
+import Contacts from './pages/Contacts/Contacts.tsx';
+import Assets from './pages/Assets/Assets.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -47,13 +49,12 @@ const router = createBrowserRouter(
 
       {/* routes for wallet */}
       <Route path=":nickname/home" element={<Home />} />
-      <Route path=":nickname/transactions" element={<></>} />
+      <Route path=":nickname/transactions" element={<Transactions />} />
       <Route path=":nickname/send-coins" element={<SendCoins />} />
       <Route path=":nickname/receive" element={<ReceiveCoins />} />
-      <Route path=":nickname/assets" element={<></>} />
-      <Route path=":nickname/contacts" element={<></>} />
+      <Route path=":nickname/assets" element={<Assets />} />
       <Route path=":nickname/settings" element={<Settings />} />
-      <Route path=":nickname/settings/update" element={<SettingsEdit />} />
+      <Route path=":nickname/contacts" element={<Contacts />} />
 
       {/* routes for errors */}
       <Route path="error" element={<Error />} />

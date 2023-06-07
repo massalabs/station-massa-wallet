@@ -3,14 +3,17 @@ import WalletLayout, {
   MenuItem,
 } from '../../layouts/WalletLayout/WalletLayout';
 import Intl from '../../i18n/i18n';
-import { FiHome } from 'react-icons/fi';
-export default function Home() {
+import { FiDisc } from 'react-icons/fi';
+
+function Assets() {
   return (
-    <WalletLayout menuItem={MenuItem.Home}>
+    <WalletLayout menuItem={MenuItem.Assets}>
       <Placeholder
-        message={Intl.t('placeholder.teaser-home-page')}
-        icon={<FiHome size={114} />}
+        message={Intl.t('placeholder.teaser-assets-page')}
+        icon={<FiDisc size={114} />}
       />
     </WalletLayout>
   );
 }
+
+export default Assets;
