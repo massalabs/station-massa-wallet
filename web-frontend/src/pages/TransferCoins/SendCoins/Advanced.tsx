@@ -12,13 +12,20 @@ import { useState } from 'react';
 
 function Modal({ ...props }) {
   const feesTypes = Object.keys(presetFees);
-  const { fees, modal, setModal, handleFees } = props;
+  const { fees, modal, setModal, handleFees, handleConfirm } = props;
+  const [presetGasFees, setPresetGasFees] = useState<boolean>(true);
+  const [customGasFees, setCustomFees] = useState<boolean>(false);
 
   function PresetFeeSelector({ name }: { name: string }) {
+    const isDisabled = fees !== presetFees[name] || customGasFees;
+    const disabledButton = 'text-neutral bg-secondary';
+
     return (
       <Button
-        disabled={!radioActive} // Update the disabled prop here
-        variant={fees === presetFees[name] ? 'primary' : 'secondary'}
+        customClass={
+          isDisabled ? `w-1/3 h-12 ${disabledButton}` : `w-1/3 h-12 bg-neutral`
+        }
+        variant="toggle"
         onClick={() => handleFees(presetFees[name])}
       >
         {name}
@@ -29,17 +36,29 @@ function Modal({ ...props }) {
     );
   }
 
-  const radioArgs = {
-    name: 'radio',
+  function handlePresetGas() {
+    setCustomFees(false);
+    setPresetGasFees(true);
+  }
+
+  function handleCustomGas() {
+    setCustomFees(true);
+    setPresetGasFees(false);
+  }
+
+  const presetArgs = {
+    checked: presetGasFees,
   };
 
-  const [radioActive, setRadioActive] = useState<boolean>(true);
+  const customArgs = {
+    checked: customGasFees,
+  };
 
   return (
     <PopupModal
       fullMode={true}
       onClose={() => setModal(!modal)}
-      customClass="!w-1/2"
+      customClass="!w-1/2 min-w-[775px]"
     >
       <PopupModalHeader>
         <div className="flex flex-col gap-3.5">
@@ -56,10 +75,10 @@ function Modal({ ...props }) {
           <div className="flex flex-row items-center mas-buttons mb-3">
             <RadioButton
               defaultChecked={true}
-              onClick={() => setRadioActive(!radioActive)}
-              {...radioArgs}
+              onClick={() => handlePresetGas()}
+              {...presetArgs}
             />
-            <p className="">{Intl.t('sendcoins.preset')}</p>
+            <p>{Intl.t('sendcoins.preset')}</p>
           </div>
           <div className="flex flex-row items-center w-full gap-4 mb-6">
             {feesTypes.map((type) => (
@@ -70,25 +89,24 @@ function Modal({ ...props }) {
           <div className="flex flex-row items-center mas-buttons mb-3">
             <RadioButton
               defaultChecked={false}
-              onClick={() => setRadioActive(!radioActive)}
-              {...radioArgs}
+              onClick={() => handleCustomGas()}
+              {...customArgs}
             />
             <p>{Intl.t('sendcoins.custom-fees')}</p>
           </div>
-
           <Input
             type="text"
             placeholder="Gas fees amount"
             name="fees"
             defaultValue=""
-            disabled={radioActive}
+            disabled={!customGasFees}
             onChange={(e) => handleFees(e.target.value)}
           />
 
           <Button
             customClass="mt-6"
             type="submit"
-            onClick={() => setModal(!modal)}
+            onClick={(e) => handleConfirm(e)}
           >
             {Intl.t('sendcoins.confirm-fees')}
           </Button>

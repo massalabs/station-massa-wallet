@@ -36,7 +36,7 @@ function Send(props: SendProps) {
 
   function validate(e: FormEvent<HTMLFormElement>) {
     const formObject = parseForm(e);
-    const { amount, recipient } = formObject;
+    const { amount, recipient, fees } = formObject;
     const amountNum = reverseFormatStandard(amount);
 
     if (amountNum > balance) {
@@ -49,6 +49,10 @@ function Send(props: SendProps) {
     }
     if (Number.isNaN(amountNum)) {
       setError({ amount: Intl.t('errors.send.invalid-amount') });
+      return false;
+    }
+    if (Number.isNaN(fees)) {
+      setError({ fees: Intl.t('errors.send.invalid-amount') });
       return false;
     }
     if (!recipient) {
@@ -107,6 +111,10 @@ function Send(props: SendProps) {
     setModalAccounts(!modalAccounts);
   }
 
+  function handleConfirm() {
+    setModal(!modal);
+  }
+
   const confirmArgs = {
     amount,
     nickname,
@@ -132,6 +140,7 @@ function Send(props: SendProps) {
     handleModalAccounts,
     setFees,
     handleFees,
+    handleConfirm,
     setRecipient,
     handleSubmit,
     handleChange,
