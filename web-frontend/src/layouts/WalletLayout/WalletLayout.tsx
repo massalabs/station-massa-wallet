@@ -132,16 +132,13 @@ function WalletLayout(props: WalletProps) {
   );
 
   return (
-    <div className="bg-primary min-h-screen">
-      <div
-        className="flex flex-col justify-center h-screen
-        w-1/2 min-w-fit text-f-primary m-auto"
-      >
-        <SideMenu conf={menuConf} items={menuItems} />
-        <div className="absolute top-0 right-0 m-6">
-          <Dropdown options={accountsItems} select={selectedAccountKey} />
-        </div>
+    <div className="bg-primary">
+      <SideMenu conf={menuConf} items={menuItems} />
+      <div className="flex justify-center items-center h-screen text-f-primary">
         {props?.children}
+      </div>
+      <div className="absolute top-0 right-0 p-6">
+        <Dropdown options={accountsItems} select={selectedAccountKey} />
       </div>
     </div>
   );
