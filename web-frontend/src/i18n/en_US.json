@@ -98,7 +98,12 @@
   },
   "receive": {
     "account-receive": "Generate a link",
-    "account-address": "Account address: "
+    "account-address": "Account address: ",
+    "amount-token": "Token to send",
+    "amount-to-ask": "Amount to ask",
+    "provider": "Provider",
+    "link-to-share": "Link to share",
+    "recipient": "Account to provide"
   },
   "placeholder": {
     "teaser-banner": "Our new feature is coming soon",

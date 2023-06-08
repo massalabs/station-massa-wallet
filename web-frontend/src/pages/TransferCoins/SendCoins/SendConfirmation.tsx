@@ -10,6 +10,7 @@ import { FiChevronLeft } from 'react-icons/fi';
 import {
   Unit,
   formatStandard,
+  maskAddress,
   reverseFormatStandard,
 } from '../../../utils/MassaFormating';
 import { usePost } from '../../../custom/api';
@@ -18,8 +19,10 @@ import { SendTransactionObject } from '../../../models/AccountModel';
 import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {
-  const navigate = useNavigate();
   const { amount, nickname, recipient, valid, fees, setValid } = props;
+
+  const navigate = useNavigate();
+  const formattedRecipientAddress = maskAddress(recipient);
   const reversedAmount = reverseFormatStandard(amount);
   const amountInNanoMAS = fromMAS(reversedAmount).toString();
   const total = +amountInNanoMAS + +fees;
@@ -104,7 +107,7 @@ export function SendConfirmation({ ...props }) {
         />
         <p className="text-s-info">
           {Intl.t('sendcoins.recipient')}
-          <u>{recipient.slice(0, 4) + '...' + recipient.slice(-4)}</u>
+          <u>{formattedRecipientAddress}</u>
         </p>
       </div>
       <Button
