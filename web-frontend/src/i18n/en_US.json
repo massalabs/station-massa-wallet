@@ -92,7 +92,9 @@
     "advanced-message": "You pay gas fees to reward block validators and maximize your chances to see your transaction validated. It is a tip for people that support the blockchain network.",
     "custom-fees": "Custom fees : ",
     "confirm-fees": "Confirm fees ",
-    "gas-info": "{default} gas fees are {xx} nMAS and defined by Massa Labs to assure minimum tip to block validator. If you want to custom them go to advanced section in previous screen"
+    "gas-info": "{default} gas fees are {gasFees} nMAS, to set custom fees head to the Advanced section on the previous step.",
+    "gas-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
+    "send-confirmation": "Amount ({amount} MAS) + fees ({fees} nMAS)"
   },
   "receive": {
     "account-receive": "Generate a link",
