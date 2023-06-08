@@ -1,3 +1,10 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { routeFor } from '../../../utils';
+import Intl from '../../../i18n/i18n';
+import { fromMAS } from '@massalabs/massa-web3';
+
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 import {
@@ -7,11 +14,7 @@ import {
 } from '../../../utils/MassaFormating';
 import { usePost } from '../../../custom/api';
 import { SendTransactionObject } from '../../../models/AccountModel';
-import { routeFor } from '../../../utils';
-import Intl from '../../../i18n/i18n';
-import { useNavigate } from 'react-router-dom';
-import { fromMAS } from '@massalabs/massa-web3';
-import { useState } from 'react';
+
 import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {
@@ -39,9 +42,33 @@ export function SendConfirmation({ ...props }) {
     mutate(transferData as SendTransactionObject);
   };
 
+  const [customFees, setCustomFees] = useState<string>('Standard');
+
+  useEffect(() => {
+    switch (fees) {
+      case 1000:
+        setCustomFees('Standard');
+        break;
+      case 1:
+        setCustomFees('Low');
+        break;
+      case 5000:
+        setCustomFees('High');
+        break;
+      default:
+        setCustomFees('Standard');
+    }
+  }, [fees]);
+
+  const content = `
+  ${Intl.t('sendcoins.gas-info', {
+    default: customFees,
+    gasFees: fees,
+  })}  \u26A0  ${Intl.t('sendcoins.gas-alert')}`;
+
   const ToolTipArgs = {
     showTooltip,
-    content: Intl.t('sendcoins.gas-info', { default: 'Default', xx: fees }),
+    content,
   };
 
   return (
@@ -58,8 +85,10 @@ export function SendConfirmation({ ...props }) {
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
         <div className="flex flex-row items-center pb-3 ">
           <div className="pr-2 text-s-info">
-            {Intl.t('sendcoins.amount')} ({formatStandard(reversedAmount)})
-            {Intl.t('sendcoins.mas-gas')} ({fees}){Intl.t('sendcoins.nano-mas')}
+            {Intl.t('sendcoins.send-confirmation', {
+              amount: formatStandard(reversedAmount),
+              fees: fees,
+            })}
           </div>
           <div
             className="flex flex-row relative items-center gap-1 "
