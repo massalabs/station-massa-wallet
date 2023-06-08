@@ -73,14 +73,12 @@ function Modal({ ...props }) {
       <PopupModalContent>
         <div className="pb-10">
           <div className="flex flex-row items-center mas-buttons mb-3">
-            <div className="pl-3">
-              <RadioButton
-                defaultChecked={true}
-                onClick={() => handlePresetGas()}
-                {...presetArgs}
-              />
-            </div>
-            <p>{Intl.t('sendcoins.preset')}</p>
+            <RadioButton
+              defaultChecked={true}
+              onClick={() => handlePresetGas()}
+              {...presetArgs}
+            />
+            <p className="h-full ml-3 pb-1">{Intl.t('sendcoins.preset')}</p>
           </div>
           <div className="flex flex-row items-center w-full gap-4 mb-6">
             {feesTypes.map((type) => (
@@ -89,14 +87,14 @@ function Modal({ ...props }) {
           </div>
 
           <div className="flex flex-row items-center mas-buttons mb-3">
-            <div className="pl-3">
-              <RadioButton
-                defaultChecked={false}
-                onClick={() => handleCustomGas()}
-                {...customArgs}
-              />
-            </div>
-            <p>{Intl.t('sendcoins.custom-fees')}</p>
+            <RadioButton
+              defaultChecked={false}
+              onClick={() => handleCustomGas()}
+              {...customArgs}
+            />
+            <p className="h-full ml-3 pb-1">
+              {Intl.t('sendcoins.custom-fees')}
+            </p>
           </div>
           <Input
             type="text"
