@@ -42,17 +42,22 @@ export function validateInputs(
 export function validateAmount(
   amount: string,
   balance?: string,
-  amountType = 'amount',
+  amountType = 'Amount',
 ): SendInputsErrors | null {
-  const amountNum = reverseFormatStandard(amount) * 10 ** 9;
+  let amountNum = reverseFormatStandard(amount);
+  let verb = 'are';
+  if (amountType == 'Amount') {
+    amountNum *= 10 ** 9;
+    verb = 'in';
+  }
   if (amountNum <= 0) {
     return {
-      amount: Intl.t('errors.send.amount-to-low', { type: amountType }),
+      amount: Intl.t('errors.send.amount-to-low', { type: amountType, verb }),
     };
   }
   if (Number.isNaN(amountNum)) {
     return {
-      amount: Intl.t('errors.send.invalid-amount', { type: amountType }),
+      amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
     };
   }
 

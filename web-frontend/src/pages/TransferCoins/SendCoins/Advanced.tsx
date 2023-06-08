@@ -99,7 +99,7 @@ function Modal({ ...props }) {
           </div>
           <Input
             type="text"
-            placeholder="Gas fees amount"
+            placeholder="Gas fees amount (nMAS)"
             name="fees"
             defaultValue=""
             disabled={!customGasFees}

@@ -59,7 +59,7 @@ export function SendConfirmation({ ...props }) {
         setCustomFees('High');
         break;
       default:
-        setCustomFees('Standard');
+        setCustomFees('Custom');
     }
   }, [fees]);
 
