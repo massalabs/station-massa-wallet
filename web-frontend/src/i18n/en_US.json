@@ -4,6 +4,14 @@
     "title-second-part": "Massa",
     "title-third-part": "wallet"
   },
+  "home": {
+    "title-account-balance": "Account balance",
+    "title-account-address": "Account address",
+    "buttons": {
+      "send": "Send",
+      "receive": "Receive"
+    }
+  },
   "account": {
     "header": {
       "title": "Hey!"
