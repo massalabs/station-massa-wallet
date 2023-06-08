@@ -61,11 +61,27 @@ func (m *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 }
 
 func (m *walletUpdateAccount) handleUpdateAccount(wlt *wallet.Wallet, newNickname models.Nickname) (*wallet.Wallet, *wallet.WalletError) {
+	// check if the nickname does not change
+	if wlt.Nickname == string(newNickname) {
+		return nil, &wallet.WalletError{Err: fmt.Errorf("nickname is the same"), CodeErr: utils.ErrSameNickname}
+	}
+
+	// Validate nickname
+	if !wallet.NicknameIsValid(string(newNickname)) {
+		return nil, &wallet.WalletError{Err: fmt.Errorf("invalid nickname"), CodeErr: utils.ErrInvalidNickname}
+	}
+
+	// Validate nickname uniqueness
+	err := wallet.NicknameIsUnique(string(newNickname))
+	if err != nil {
+		return nil, &wallet.WalletError{Err: err, CodeErr: utils.ErrDuplicateNickname}
+	}
+
 	oldNickname := wlt.Nickname
 
 	// persist new nickname before deleting old file
 	wlt.Nickname = string(newNickname)
-	err := wlt.Persist()
+	err = wlt.Persist()
 	if err != nil {
 		return nil, &wallet.WalletError{
 			Err:     fmt.Errorf("persisting the modified account: %w", err),
