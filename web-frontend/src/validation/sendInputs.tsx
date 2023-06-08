@@ -15,14 +15,15 @@ import {
 
 export function validateInputs(
   amount: string,
-  recipient: string,
+  address: string,
   addressType = 'recipient',
   balance?: string,
 ): object | null {
   let errorsAmount = null;
   let errorsRecipient = null;
   errorsAmount = validateAmount(amount, balance);
-  errorsRecipient = validateAddress(recipient, addressType);
+  if (addressType === 'provider' && !address) return errorsAmount; // provider can be empty
+  errorsRecipient = validateAddress(address, addressType);
 
   return errorsAmount || errorsRecipient;
 }
@@ -51,9 +52,7 @@ export function validateAmount(
     };
   }
 
-  console.log(balance);
   if (!balance) return null;
-  console.log(balance);
   if (+balance === undefined)
     return { unexpectedError: Intl.t('errors.unexpected-error.description') };
   if (balance?.length > 0 && amountNum > +balance) {

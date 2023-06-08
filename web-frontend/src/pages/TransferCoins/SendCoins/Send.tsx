@@ -86,8 +86,8 @@ function Send(props: SendProps) {
   function handleConfirm(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const errors = validateAmount(fees.toString(), unformattedBalance, 'fees');
-    if (errors !== null) return;
     setErrorAdvanced(errors);
+    if (errors !== null) return;
     setModal(!modal);
   }
 
