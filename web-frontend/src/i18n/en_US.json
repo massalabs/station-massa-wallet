@@ -97,13 +97,14 @@
     "send-confirmation": "Amount ({amount} MAS) + fees ({fees} nMAS)"
   },
   "receive": {
-    "account-receive": "Generate a link",
+    "receive-account": "Generate link",
+    "receive-amount": "Amount",
     "account-address": "Account address: ",
-    "amount-token": "Token to send",
     "amount-to-ask": "Amount to ask",
+    "recipient": "Recipient",
     "provider": "Provider",
-    "link-to-share": "Link to share",
-    "recipient": "Account to provide"
+    "provider-description": "Address to withdraw",
+    "link-to-share": "Link to share"
   },
   "placeholder": {
     "teaser-banner": "Our new feature is coming soon",
