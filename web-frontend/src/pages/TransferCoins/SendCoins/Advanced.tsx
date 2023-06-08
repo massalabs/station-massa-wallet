@@ -73,11 +73,13 @@ function Modal({ ...props }) {
       <PopupModalContent>
         <div className="pb-10">
           <div className="flex flex-row items-center mas-buttons mb-3">
-            <RadioButton
-              defaultChecked={true}
-              onClick={() => handlePresetGas()}
-              {...presetArgs}
-            />
+            <div className="pl-3">
+              <RadioButton
+                defaultChecked={true}
+                onClick={() => handlePresetGas()}
+                {...presetArgs}
+              />
+            </div>
             <p>{Intl.t('sendcoins.preset')}</p>
           </div>
           <div className="flex flex-row items-center w-full gap-4 mb-6">
@@ -87,11 +89,13 @@ function Modal({ ...props }) {
           </div>
 
           <div className="flex flex-row items-center mas-buttons mb-3">
-            <RadioButton
-              defaultChecked={false}
-              onClick={() => handleCustomGas()}
-              {...customArgs}
-            />
+            <div className="pl-3">
+              <RadioButton
+                defaultChecked={false}
+                onClick={() => handleCustomGas()}
+                {...customArgs}
+              />
+            </div>
             <p>{Intl.t('sendcoins.custom-fees')}</p>
           </div>
           <Input
