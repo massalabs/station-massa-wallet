@@ -95,7 +95,7 @@ function Send(props: SendProps) {
       setFees('1000');
       return;
     }
-    setModal(!modal);
+    setModal(false);
   }
 
   const confirmArgs = {
