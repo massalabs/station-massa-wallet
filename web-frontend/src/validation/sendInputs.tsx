@@ -1,4 +1,14 @@
 import Intl from '../i18n/i18n';
+import {
+  checkAddressFormat,
+  reverseFormatStandard,
+} from '../utils/MassaFormating';
+
+export interface SendInputsErrors {
+  unexpectedError?: string;
+  amount?: string;
+  address?: string;
+}
 
 /**
  * Validate the recipient and/or amount in a form
@@ -7,18 +17,12 @@ import Intl from '../i18n/i18n';
  * @param balance - The balance to validate.
  * @returns An object containing the error object if there is an error, else null
  */
-
-import {
-  checkAddressFormat,
-  reverseFormatStandard,
-} from '../utils/MassaFormating';
-
 export function validateInputs(
   amount: string,
   address: string,
   addressType = 'recipient',
   balance?: string,
-): object | null {
+): SendInputsErrors | null {
   let errorsAmount = null;
   let errorsRecipient = null;
   errorsAmount = validateAmount(amount, balance);
@@ -39,7 +43,7 @@ export function validateAmount(
   amount: string,
   balance?: string,
   amountType = 'amount',
-): object | null {
+): SendInputsErrors | null {
   const amountNum = reverseFormatStandard(amount) * 10 ** 9;
   if (amountNum <= 0) {
     return {
@@ -69,11 +73,10 @@ export function validateAmount(
  * @see checkAddressFormat
  * @see validateInputs
  */
-
 function validateAddress(
   recipient: string,
   addresstype = 'recipient',
-): object | null {
+): SendInputsErrors | null {
   if (!recipient) {
     return {
       address: Intl.t('errors.send.no-address', { type: addresstype }),

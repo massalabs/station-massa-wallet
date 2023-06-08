@@ -13,12 +13,10 @@ import {
   PopupModalHeader,
   Selector,
 } from '@massalabs/react-ui-kit';
-import { validateInputs } from '../../../validation/sendInputs';
-
-interface IError {
-  amount?: string;
-  address?: string;
-}
+import {
+  validateInputs,
+  SendInputsErrors,
+} from '../../../validation/sendInputs';
 
 interface GenerateLinkProps {
   account: AccountObject;
@@ -33,7 +31,7 @@ function GenerateLink(props: GenerateLinkProps) {
 
   const [amount, setAmount] = useState('');
   const [provider, setProvider] = useState('');
-  const [error, setError] = useState<null | IError>(null);
+  const [error, setError] = useState<SendInputsErrors | null>(null);
   const recipient = account.nickname;
   const unformattedBalance = account.candidateBalance;
   const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
