@@ -49,13 +49,13 @@ export function SendConfirmation({ ...props }) {
 
   useEffect(() => {
     switch (fees) {
-      case 1000:
+      case '1000':
         setCustomFees('Standard');
         break;
-      case 1:
+      case '1':
         setCustomFees('Low');
         break;
-      case 5000:
+      case '5000':
         setCustomFees('High');
         break;
       default:
