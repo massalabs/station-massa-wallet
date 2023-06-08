@@ -47,31 +47,36 @@ function GenerateLink(props: GenerateLinkProps) {
         </PopupModalHeader>
         <PopupModalContent>
           <div className="pb-10">
-            <div className="flex flex-col gap-3 mb-3">
-              <p>{Intl.t('receive.amount-token')}</p>
+            <div className="flex flex-col gap-3 mb-6">
+              <p className="mas-body2">{Intl.t('receive.amount-token')}</p>
               <Input
                 placeholder={Intl.t('receive.amount-to-ask')}
+                defaultValue=""
                 onChange={(e) => setAmount(e.target.value)}
               />
             </div>
-            <div className="flex flex-col gap-3 mb-3">
-              <p>{Intl.t('receive.recipient')}</p>
+            <div className="flex flex-col gap-3 mb-6">
+              <p className="mas-body2">{Intl.t('receive.recipient')}</p>
               <Selector
                 preIcon={<Identicon username={account.nickname} />}
                 content={recipient}
                 amount={formattedBalance}
                 posIcon={<MassaToken />}
+                variant="secondary"
               />
             </div>
-            <div className="flex flex-col gap-3 mb-3">
-              <p>{Intl.t('receive.provider')}</p>
+            <div className="flex flex-col gap-3 mb-6">
+              <p className="mas-body2">{Intl.t('receive.provider')}</p>
               <Input
                 placeholder={Intl.t('receive.provider')}
+                defaultValue=""
                 onChange={(e) => setProvider(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-3 mb-3">
-              <p>{Intl.t('receive.link-to-share')}</p>
+              <p className="mas-button-active">
+                {Intl.t('receive.link-to-share')}
+              </p>
               <CopyContent
                 content={url}
                 formattedContent={url.slice(0, 50) + '...'}

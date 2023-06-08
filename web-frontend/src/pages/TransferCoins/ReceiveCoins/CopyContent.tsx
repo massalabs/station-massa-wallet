@@ -14,7 +14,7 @@ function CopyContent(props: CopyAddressProps) {
     <>
       <div
         className="flex flex-row items-center justify-between w-full 
-        h-12 mb-3.5 px-3 rounded bg-secondary cursor-pointer"
+        h-12 px-3 rounded bg-secondary cursor-pointer"
         onClick={() => handleCopyClick()}
       >
         <u>{formattedContent ?? content}</u>
