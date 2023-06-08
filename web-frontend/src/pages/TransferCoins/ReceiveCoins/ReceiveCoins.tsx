@@ -44,7 +44,7 @@ function ReceiveCoins() {
         <p>{Intl.t('receive.account-address')}</p>
         <CopyContent content={address} formattedContent={formattedAddress} />
         <Button onClick={() => setModal(!modal)} preIcon={<FiLink size={24} />}>
-          {Intl.t('receive.account-receive')}
+          {Intl.t('receive.receive-account')}
         </Button>
       </div>
       {modal ? <GenerateLink {...modalArgs} /> : null}
