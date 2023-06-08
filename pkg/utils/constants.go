@@ -3,6 +3,7 @@ package utils
 // Error codes
 const (
 	ErrInvalidNickname      = "Nickname-0001"
+	ErrSameNickname         = "Nickname-0002"
 	ErrInvalidPassword      = "Password-0001"
 	ErrInvalidPrivateKey    = "PrivateKey-0001"
 	ErrAccountFile          = "AccountFile-0001" // for errors related to folder, read/write file, unmarshal...
