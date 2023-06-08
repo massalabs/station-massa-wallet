@@ -39,22 +39,9 @@ export function SendConfirmation({ ...props }) {
     mutate(transferData as SendTransactionObject);
   };
 
-  const [customFees, setCustomFees] = useState<string>('Standard');
-
-  switch (fees) {
-    case 1000:
-      setCustomFees('Standard');
-      break;
-    case 1:
-      setCustomFees('Low');
-      break;
-    case 5000:
-      setCustomFees('High');
-  }
-
   const ToolTipArgs = {
     showTooltip,
-    content: Intl.t('sendcoins.gas-info', { default: customFees, xx: fees }),
+    content: Intl.t('sendcoins.gas-info', { default: 'Default', xx: fees }),
   };
 
   return (
