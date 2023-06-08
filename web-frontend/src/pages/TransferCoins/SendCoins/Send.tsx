@@ -1,7 +1,7 @@
 import { parseForm } from '../../../utils/parseForm';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { formatStandard, Unit } from '../../../utils/MassaFormating';
-import { validate, validateAmount } from '../../../validation/sendInputs';
+import { validateInputs, validateAmount } from '../../../validation/sendInputs';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 import { useQuery } from '../../../custom/api/useQuery';
@@ -18,7 +18,7 @@ function Send(props: SendProps) {
 
   let presetTo = query.get('to');
   let presetAmount = query.get('amount') ?? '';
-  const unformattedBalance = account?.candidateBalance ?? '0';
+  const unformattedBalance = account?.candidateBalance ?? '0.00';
   const balance = parseInt(unformattedBalance);
 
   const [amount, setAmount] = useState<string>(presetAmount);
@@ -34,7 +34,12 @@ function Send(props: SendProps) {
     e.preventDefault();
     const formObject = parseForm(e);
     const { amount, recipient } = formObject;
-    const errors = validate(amount, recipient, balance);
+    const errors = validateInputs(
+      amount,
+      recipient,
+      'recipient',
+      unformattedBalance,
+    );
     setError(errors);
     if (errors !== null) return;
     setValid(!valid);
@@ -80,9 +85,9 @@ function Send(props: SendProps) {
 
   function handleConfirm(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const errors = validateAmount(fees.toString(), balance, 'fees');
-    setErrorAdvanced(errors);
+    const errors = validateAmount(fees.toString(), unformattedBalance, 'fees');
     if (errors !== null) return;
+    setErrorAdvanced(errors);
     setModal(!modal);
   }
 

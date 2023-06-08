@@ -52,7 +52,7 @@ export function reverseFormatStandard(str: string): number {
  * @returns `true` if the address is in the correct format, `false` otherwise.
  */
 
-export function checkRecipientFormat(recipient: string): boolean {
+export function checkAddressFormat(recipient: string): boolean {
   return /^AU[a-zA-Z0-9]{4,}$/.test(recipient);
 }
 

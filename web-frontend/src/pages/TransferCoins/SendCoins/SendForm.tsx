@@ -80,7 +80,7 @@ export function SendForm({ ...props }) {
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
           name="recipient"
-          error={error?.recipient}
+          error={error?.address}
         />
       </div>
       <div className="flex flex-row-reverse pb-3.5">
