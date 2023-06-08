@@ -13,6 +13,10 @@ import {
   PopupModalHeader,
   Selector,
 } from '@massalabs/react-ui-kit';
+import {
+  validateInputs,
+  SendInputsErrors,
+} from '../../../validation/sendInputs';
 
 interface GenerateLinkProps {
   account: AccountObject;
@@ -21,17 +25,28 @@ interface GenerateLinkProps {
   setURL: (url: string) => void;
   setModal: (modal: boolean) => void;
 }
+
 function GenerateLink(props: GenerateLinkProps) {
   const { account, presetURL, setURL, setModal } = props;
 
   const [amount, setAmount] = useState('');
   const [provider, setProvider] = useState('');
+  const [error, setError] = useState<SendInputsErrors | null>(null);
   const recipient = account.nickname;
+  const unformattedBalance = account.candidateBalance;
   const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
   const formattedBalance = formatStandard(recipientBalance);
   const [linkToShare, setLinkTOShare] = useState('');
 
   const handleGenerate = () => {
+    const errors = validateInputs(
+      amount,
+      provider,
+      'provider',
+      unformattedBalance,
+    );
+    setError(errors);
+    if (errors !== null) return;
     const amountArg = amount ? `&amount=${amount}` : '';
     const providerArg = provider ? `&provider=${provider}` : '';
     const newURL = presetURL + amountArg + providerArg;
@@ -59,6 +74,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 placeholder={Intl.t('receive.amount-to-ask')}
                 defaultValue=""
                 onChange={(e) => setAmount(e.target.value)}
+                error={error?.amount}
               />
             </div>
             <div className="flex flex-col gap-3 mb-6">
@@ -77,6 +93,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 placeholder={Intl.t('receive.provider-description')}
                 defaultValue=""
                 onChange={(e) => setProvider(e.target.value)}
+                error={error?.address}
               />
             </div>
             <div className="flex flex-col gap-3 mb-3">

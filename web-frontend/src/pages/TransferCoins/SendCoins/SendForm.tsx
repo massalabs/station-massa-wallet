@@ -11,6 +11,7 @@ export function SendForm({ ...props }) {
     formattedBalance,
     recipient,
     error,
+    errorAdvanced,
     fees,
     modal,
     setModal,
@@ -29,6 +30,7 @@ export function SendForm({ ...props }) {
     fees,
     modal,
     error,
+    errorAdvanced,
     setModal,
     handleConfirm,
     handleFees,
@@ -78,7 +80,7 @@ export function SendForm({ ...props }) {
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
           name="recipient"
-          error={error?.recipient}
+          error={error?.address}
         />
       </div>
       <div className="flex flex-row-reverse pb-3.5">

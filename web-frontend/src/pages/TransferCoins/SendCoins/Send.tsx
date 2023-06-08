@@ -1,12 +1,11 @@
-import Intl from '../../../i18n/i18n';
 import { parseForm } from '../../../utils/parseForm';
 import { useState, ChangeEvent, FormEvent } from 'react';
+import { formatStandard, Unit } from '../../../utils/MassaFormating';
 import {
-  formatStandard,
-  reverseFormatStandard,
-  checkRecipientFormat,
-  Unit,
-} from '../../../utils/MassaFormating';
+  validateInputs,
+  validateAmount,
+  SendInputsErrors,
+} from '../../../validation/sendInputs';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 import { useQuery } from '../../../custom/api/useQuery';
@@ -23,56 +22,33 @@ function Send(props: SendProps) {
 
   let presetTo = query.get('to');
   let presetAmount = query.get('amount') ?? '';
-  const unformattedBalance = account?.candidateBalance ?? '0';
+  const unformattedBalance = account?.candidateBalance ?? '0.00';
   const balance = parseInt(unformattedBalance);
 
   const [amount, setAmount] = useState<string>(presetAmount);
-  const [fees, setFees] = useState<number>(1000);
+  const [fees, setFees] = useState<string>('1000');
   const [recipient, setRecipient] = useState<string>(presetTo ?? '');
   const [valid, setValid] = useState<boolean>(false);
-  const [error, setError] = useState<object | null>(null);
+  const [error, setError] = useState<SendInputsErrors | null>(null);
   const [modal, setModal] = useState<boolean>(false);
   const [modalAccounts, setModalAccounts] = useState<boolean>(false);
+  const [errorAdvanced, setErrorAdvanced] = useState<object | null>(null);
 
-  function validate(e: FormEvent<HTMLFormElement>) {
-    const formObject = parseForm(e);
-    const { amount, recipient, fees } = formObject;
-    const amountNum = reverseFormatStandard(amount);
-
-    if (amountNum > balance) {
-      setError({ amount: Intl.t('errors.send.amount-to-high') });
-      return false;
-    }
-    if (amountNum <= 0) {
-      setError({ amount: Intl.t('errors.send.amount-to-low') });
-      return false;
-    }
-    if (Number.isNaN(amountNum)) {
-      setError({ amount: Intl.t('errors.send.invalid-amount') });
-      return false;
-    }
-    if (Number.isNaN(fees)) {
-      setError({ fees: Intl.t('errors.send.invalid-amount') });
-      return false;
-    }
-    if (!recipient) {
-      setError({ recipient: Intl.t('errors.send.no-recipient') });
-      return false;
-    }
-    if (!checkRecipientFormat(recipient)) {
-      setError({ recipient: Intl.t('errors.send.invalid-recipient') });
-      return false;
-    }
-    setError(null);
-    return true;
-  }
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!validate(e)) return;
-    else setValid(!valid);
+    const formObject = parseForm(e);
+    const { amount, recipient } = formObject;
+    const errors = validateInputs(
+      amount,
+      recipient,
+      'recipient',
+      unformattedBalance,
+    );
+    setError(errors);
+    if (errors !== null) return;
+    setValid(!valid);
   }
   const formattedBalance = formatStandard(balance, Unit.NanoMAS, 2);
-
   function overrideAmount(pct: number) {
     const newAmount = balance * pct;
     const newFormatedAmount = formatStandard(newAmount, Unit.NanoMAS, 9);
@@ -103,7 +79,7 @@ function Send(props: SendProps) {
     setAmount(e.target.value);
   }
 
-  function handleFees(num: number) {
+  function handleFees(num: string) {
     setFees(num);
   }
 
@@ -111,7 +87,14 @@ function Send(props: SendProps) {
     setModalAccounts(!modalAccounts);
   }
 
-  function handleConfirm() {
+  function handleConfirm(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const errors = validateAmount(fees ?? '0.00', unformattedBalance, 'fees');
+    setErrorAdvanced(errors);
+    if (errors !== null) {
+      setFees('1000');
+      return;
+    }
     setModal(!modal);
   }
 
@@ -132,6 +115,7 @@ function Send(props: SendProps) {
     formattedBalance,
     recipient,
     error,
+    errorAdvanced,
     fees,
     modal,
     modalAccounts,
