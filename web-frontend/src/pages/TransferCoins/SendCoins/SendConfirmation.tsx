@@ -11,7 +11,7 @@ import { routeFor } from '../../../utils';
 import Intl from '../../../i18n/i18n';
 import { useNavigate } from 'react-router-dom';
 import { fromMAS } from '@massalabs/massa-web3';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {
@@ -39,9 +39,27 @@ export function SendConfirmation({ ...props }) {
     mutate(transferData as SendTransactionObject);
   };
 
+  const [customFees, setCustomFees] = useState<string>('Standard');
+
+  useEffect(() => {
+    switch (fees) {
+      case 1000:
+        setCustomFees('Standard');
+        break;
+      case 1:
+        setCustomFees('Low');
+        break;
+      case 5000:
+        setCustomFees('High');
+        break;
+      default:
+        setCustomFees('Standard');
+    }
+  }, [fees]);
+
   const ToolTipArgs = {
     showTooltip,
-    content: Intl.t('sendcoins.gas-info', { default: 'Default', xx: fees }),
+    content: Intl.t('sendcoins.gas-info', { default: customFees, xx: fees }),
   };
 
   return (
