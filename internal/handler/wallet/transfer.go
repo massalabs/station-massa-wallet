@@ -54,7 +54,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Transfer,
-		Msg:    fmt.Sprintf("Transfer %s nonaMassa from %s to %s, with fee %s nonaMassa", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
+		Msg:    fmt.Sprintf("Transfer %s MAS from %s to %s, with fee %s MAS", string(params.Body.Amount), wlt.Nickname, *params.Body.RecipientAddress, string(params.Body.Fee)),
 	}
 
 	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)

@@ -16,6 +16,9 @@
     }
   },
   "password-prompt": {
+    "title": {
+      "sign": "Sign a transaction"
+    },
     "subtitle": {
       "default": "Enter your password below to validate",
       "delete": "Enter your password to delete your wallet",
@@ -24,7 +27,9 @@
     "buttons": {
       "default": "Apply",
       "delete": "Delete",
-      "sign": "Sign"
+      "sign": "Sign",
+      "transfer": "Sign",
+      "cancel": "Cancel"
     }
   },
   "backup": {

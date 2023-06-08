@@ -22,6 +22,25 @@ interface PromptRequestDeleteDate {
   Balance: string;
 }
 
+function Header(props: { req: promptRequest; getSubtitle: () => string }) {
+  const { req, getSubtitle } = props;
+
+  const { Action } = req;
+  const { transferReq } = promptAction;
+
+  return Action === transferReq ? (
+    <>
+      <h1 className="mas-title">{Intl.t('password-prompt.title.sign')}</h1>
+      <p className="mas-body pt-4 break-words max-w-xs">{req.Msg}</p>
+    </>
+  ) : (
+    <>
+      <h1 className="mas-title">{req.Msg}</h1>
+      <p className="mas-body pt-4">{getSubtitle()}</p>
+    </>
+  );
+}
+
 function PasswordPrompt() {
   const navigate = useNavigate();
   const form = useRef(null);
@@ -30,7 +49,7 @@ function PasswordPrompt() {
   const req: promptRequest = state.req;
   const data: PromptRequestDeleteDate = req.Data;
 
-  const { deleteReq, signReq } = promptAction;
+  const { deleteReq, signReq, transferReq } = promptAction;
 
   function getButtonLabel() {
     switch (req.Action) {
@@ -38,6 +57,8 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.buttons.delete');
       case signReq:
         return Intl.t('password-prompt.buttons.sign');
+      case transferReq:
+        return Intl.t('password-prompt.buttons.transfer');
       default:
         return Intl.t('password-prompt.buttons.default');
     }
@@ -59,6 +80,7 @@ function PasswordPrompt() {
       case deleteReq:
         return <FiTrash2 />;
       case signReq:
+      case transferReq:
         return;
       default:
         return <FiLock />;
@@ -119,8 +141,7 @@ function PasswordPrompt() {
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">{req.Msg}</h1>
-        <p className="mas-body pt-4">{getSubtitle()}</p>
+        <Header req={req} getSubtitle={getSubtitle} />
         <div className="pt-4">
           <Password
             defaultValue=""
@@ -131,7 +152,7 @@ function PasswordPrompt() {
         </div>
         <div className="pt-4 flex gap-4">
           <Button variant={'secondary'} onClick={handleCancel}>
-            Cancel
+            {Intl.t('password-prompt.buttons.cancel')}
           </Button>
           <Button preIcon={getButtonIcon()} type="submit">
             {getButtonLabel()}
