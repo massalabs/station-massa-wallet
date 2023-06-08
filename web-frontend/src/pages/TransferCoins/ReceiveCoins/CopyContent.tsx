@@ -13,7 +13,7 @@ function CopyContent(props: CopyAddressProps) {
   return (
     <>
       <div
-        className="flex flex-row items-center mas-menu-active justify-between w-full 
+        className="flex flex-row items-center mas-body2 justify-between w-full 
         h-12 px-3 rounded bg-secondary cursor-pointer"
         onClick={() => handleCopyClick()}
       >
