@@ -79,7 +79,7 @@ function Modal({ ...props }) {
               onClick={() => handlePresetGas()}
               {...presetArgs}
             />
-            <p>{Intl.t('sendcoins.preset')}</p>
+            <p className="h-full ml-3 pb-1">{Intl.t('sendcoins.preset')}</p>
           </div>
           <div className="flex flex-row items-center w-full gap-4 mb-6">
             {feesTypes.map((type) => (
@@ -93,7 +93,9 @@ function Modal({ ...props }) {
               onClick={() => handleCustomGas()}
               {...customArgs}
             />
-            <p>{Intl.t('sendcoins.custom-fees')}</p>
+            <p className="h-full ml-3 pb-1">
+              {Intl.t('sendcoins.custom-fees')}
+            </p>
           </div>
           <Input
             type="text"

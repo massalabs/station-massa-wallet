@@ -47,8 +47,10 @@ export function SendForm({ ...props }) {
     <form onSubmit={handleSubmit}>
       {/* Balance Section */}
       <div>
-        <p className="mas-subtitle">{Intl.t('sendcoins.account-balance')}</p>
-        <Balance customClass="pl-0 bg-transparent" amount={formattedBalance} />
+        <p className="mas-subtitle mb-3">
+          {Intl.t('sendcoins.account-balance')}
+        </p>
+        <Balance customClass="mb-5" amount={formattedBalance} />
       </div>
       <div className="flex flex-row justify-between w-full pb-3.5 ">
         <p className="mas-body2"> {Intl.t('sendcoins.send-action')} </p>
