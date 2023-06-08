@@ -195,7 +195,7 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCanceledAction,
-				Message: errorCanceledAction,
+				Message: "Error: action canceled.",
 			})
 	}
 
@@ -203,7 +203,7 @@ func unprotectWalletAskingPassword(wallet *wallet.Wallet, prompter password.Aske
 		return operations.NewRestWalletSignOperationInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorCreateNoPassword,
-				Message: errorCreateNoPassword,
+				Message: "Error: password field is mandatory.",
 			})
 	}
 
