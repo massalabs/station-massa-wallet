@@ -69,7 +69,7 @@
       "link": "Go back to the Welcome page!"
     },
     "send": {
-      "invalid-amount": "{type} is invalid",
+      "invalid-amount": "{type} {verb} invalid",
       "amount-to-high": "Insufficient funds on balance",
       "amount-to-low": "{type} must be greater than 0",
       "no-address": "{type} is required",

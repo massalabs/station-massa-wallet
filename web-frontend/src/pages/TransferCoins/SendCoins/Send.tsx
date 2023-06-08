@@ -89,7 +89,7 @@ function Send(props: SendProps) {
 
   function handleConfirm(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const errors = validateAmount(fees ?? '0.00', unformattedBalance, 'fees');
+    const errors = validateAmount(fees ?? '0.00', unformattedBalance, 'Fees');
     setErrorAdvanced(errors);
     if (errors !== null) {
       setFees('1000');
