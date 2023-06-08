@@ -17,7 +17,7 @@ function CopyContent(props: CopyAddressProps) {
         h-12 px-3 rounded bg-secondary cursor-pointer"
         onClick={() => handleCopyClick()}
       >
-        <u>{formattedContent ?? content}</u>
+        <u>{formattedContent ?? ''}</u>
         <FiCopy size={24} />
       </div>
     </>

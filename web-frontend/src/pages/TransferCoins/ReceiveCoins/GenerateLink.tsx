@@ -22,19 +22,21 @@ interface GenerateLinkProps {
   setModal: (modal: boolean) => void;
 }
 function GenerateLink(props: GenerateLinkProps) {
-  const { account, presetURL, url, setURL, setModal } = props;
+  const { account, presetURL, setURL, setModal } = props;
 
   const [amount, setAmount] = useState('');
   const [provider, setProvider] = useState('');
   const recipient = account.nickname;
   const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
   const formattedBalance = formatStandard(recipientBalance);
+  const [linkToShare, setLinkTOShare] = useState('');
 
   const handleGenerate = () => {
     const amountArg = amount ? `&amount=${amount}` : '';
     const providerArg = provider ? `&provider=${provider}` : '';
     const newURL = presetURL + amountArg + providerArg;
     setURL(newURL);
+    setLinkTOShare(newURL);
   };
 
   return (
@@ -80,8 +82,8 @@ function GenerateLink(props: GenerateLinkProps) {
             <div className="flex flex-col gap-3 mb-3">
               <p className="mas-body2">{Intl.t('receive.link-to-share')}</p>
               <CopyContent
-                content={url}
-                formattedContent={url.slice(0, 50) + '...'}
+                content={linkToShare}
+                formattedContent={linkToShare.slice(0, 50)}
               />
             </div>
             <div className="pb-3">
