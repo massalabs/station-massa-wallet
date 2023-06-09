@@ -17,8 +17,6 @@ function SendCoins() {
 
   const tabIndex = parseInt(query.get('tabIndex') || '0');
 
-  console.log(tabIndex);
-
   const { nickname } = useParams();
   const { data: account } = useResource<AccountObject>(`accounts/${nickname}`);
 

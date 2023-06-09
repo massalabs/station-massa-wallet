@@ -2,8 +2,8 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 
 import {
   validateInputs,
-  validateAmount,
   SendInputsErrors,
+  validateAmount,
 } from '../../../validation/sendInputs';
 import { formatStandard, Unit } from '../../../utils/MassaFormating';
 import { parseForm } from '../../../utils/parseForm';
@@ -46,7 +46,7 @@ function Send(props: SendProps) {
     const errors = validateInputs(
       amount,
       recipient,
-      'recipient',
+      'Recipient',
       unformattedBalance,
     );
     setError(errors);

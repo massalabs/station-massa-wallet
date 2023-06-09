@@ -9,6 +9,7 @@ export interface SendInputsErrors {
   unexpectedError?: string;
   amount?: string;
   address?: string;
+  fees?: string;
 }
 
 /**
@@ -21,7 +22,7 @@ export interface SendInputsErrors {
 export function validateInputs(
   amount: string,
   address: string,
-  addressType = 'recipient',
+  addressType = 'Recipient',
   balance?: string,
 ): SendInputsErrors | null {
   let errorsAmount = null;
@@ -46,8 +47,16 @@ export function validateAmount(
   balance?: string,
   amountType = 'Amount',
 ): SendInputsErrors | null {
-  let amountInNanoMassa = reverseFormatStandard(amount);
   let verb = amountType == 'Amount' ? 'is' : 'are';
+
+  if (Number.isNaN(+amount)) {
+    return {
+      amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
+    };
+  }
+
+  let amountInNanoMassa = reverseFormatStandard(amount);
+
   if (Number.isNaN(amountInNanoMassa)) {
     return {
       amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
