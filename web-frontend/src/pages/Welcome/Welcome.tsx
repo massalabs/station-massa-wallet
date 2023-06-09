@@ -19,9 +19,9 @@ export default function Welcome() {
 
   useEffect(() => {
     if (error) {
-      navigate('/error');
+      navigate(routeFor('error'));
     } else if (hasAccounts) {
-      navigate('/account-select');
+      navigate(routeFor('account-select'));
     }
   }, [data, navigate]);
 

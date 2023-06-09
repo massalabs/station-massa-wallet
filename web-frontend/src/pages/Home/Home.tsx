@@ -25,7 +25,7 @@ export default function Home() {
 
   useEffect(() => {
     if (error) {
-      navigate('/error');
+      navigate(routeFor('error'));
     } else if (!account && !isLoadingData) {
       navigate(routeFor('account-select'));
     }
