@@ -16,10 +16,19 @@ import { Password, Button } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
 import Intl from '../i18n/i18n';
+import { formatStandard } from '../utils/MassaFormating';
+import { toMAS } from '@massalabs/massa-web3';
 
-interface PromptRequestDeleteDate {
+interface PromptRequestDeleteData {
   Nickname: string;
   Balance: string;
+}
+
+interface PromptRequestTransferData {
+  NicknameFrom: string;
+  Amount: string;
+  Fee: string;
+  RecipientAddress: string;
 }
 
 function PasswordPrompt() {
@@ -28,9 +37,21 @@ function PasswordPrompt() {
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
-  const data: PromptRequestDeleteDate = req.Data;
 
-  const { deleteReq, signReq } = promptAction;
+  const data: PromptRequestDeleteData | PromptRequestTransferData = req.Data;
+
+  const { deleteReq, signReq, transferReq } = promptAction;
+
+  function getTitle() {
+    switch (req.Action) {
+      case deleteReq:
+        return Intl.t('password-prompt.title.delete');
+      case signReq:
+        return Intl.t('password-prompt.title.sign');
+      default:
+        return Intl.t(`password-prompt.title.${req.CodeMessage}`);
+    }
+  }
 
   function getButtonLabel() {
     switch (req.Action) {
@@ -38,6 +59,8 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.buttons.delete');
       case signReq:
         return Intl.t('password-prompt.buttons.sign');
+      case transferReq:
+        return Intl.t('password-prompt.buttons.transfer');
       default:
         return Intl.t('password-prompt.buttons.default');
     }
@@ -49,6 +72,14 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.subtitle.delete');
       case signReq:
         return Intl.t('password-prompt.subtitle.sign');
+      case promptAction.transferReq: {
+        const transferData = req.Data as PromptRequestTransferData;
+        return `Transfer ${formatStandard(
+          toMAS(transferData.Amount).toString(),
+        )} Massa from ${transferData.NicknameFrom} to
+        ${transferData.RecipientAddress},
+         with fee(s) ${transferData.Fee} nonaMassa`;
+      }
       default:
         return Intl.t('password-prompt.subtitle.default');
     }
@@ -59,6 +90,8 @@ function PasswordPrompt() {
       case deleteReq:
         return <FiTrash2 />;
       case signReq:
+      case transferReq:
+        // no icon for sign and transfer requests
         return;
       default:
         return <FiLock />;
@@ -109,7 +142,10 @@ function PasswordPrompt() {
     const form = parseForm(e);
     const { password } = form;
 
-    if (req.Action === deleteReq && data.Balance !== '0') {
+    if (
+      req.Action === deleteReq &&
+      (data as PromptRequestDeleteData).Balance !== '0'
+    ) {
       navigate('/confirm-delete', { state: { req, password } });
     } else {
       save(e);
@@ -119,8 +155,8 @@ function PasswordPrompt() {
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">{req.Msg}</h1>
-        <p className="mas-body pt-4">{getSubtitle()}</p>
+        <h1 className="mas-title">{getTitle()}</h1>
+        <p className="mas-body pt-4 break-words max-w-xs">{getSubtitle()}</p>
         <div className="pt-4">
           <Password
             defaultValue=""
@@ -131,7 +167,7 @@ function PasswordPrompt() {
         </div>
         <div className="pt-4 flex gap-4">
           <Button variant={'secondary'} onClick={handleCancel}>
-            Cancel
+            {Intl.t('password-prompt.buttons.cancel')}
           </Button>
           <Button preIcon={getButtonIcon()} type="submit">
             {getButtonLabel()}

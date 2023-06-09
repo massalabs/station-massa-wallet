@@ -13,9 +13,10 @@ import (
 const PASSWORD_MIN_LENGTH = 5
 
 type PromptRequest struct {
-	Action walletapp.PromptRequestAction
-	Msg    string
-	Data   interface{}
+	Action      walletapp.PromptRequestAction
+	Msg         string
+	Data        interface{}
+	CodeMessage string
 }
 
 // WalletPrompter is a struct that wraps a Fyne GUI application and implements the delete.Confirmer interface.

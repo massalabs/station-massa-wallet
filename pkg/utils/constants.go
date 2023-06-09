@@ -33,4 +33,5 @@ const (
 	MsgTransferSuccess    = "Transfer Success"
 	MsgRollTradeSuccess   = "Trade rolls Success"
 	MsgBackupSuccess      = "Backup Success"
+	MsgTransferRequest    = "transfer-request"
 )
