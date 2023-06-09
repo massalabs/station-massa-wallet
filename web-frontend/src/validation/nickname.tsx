@@ -4,7 +4,9 @@ export function isAlreadyExists(
   nickname: string,
   accounts: AccountObject[],
 ): boolean {
-  return accounts.some((account) => account.nickname === nickname);
+  return accounts.some(
+    (account) => account.nickname.toLowerCase() === nickname.toLowerCase(),
+  );
 }
 
 /**
