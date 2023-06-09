@@ -40,8 +40,9 @@ export default function SelectAccount() {
             {Intl.t('account.select')}
           </label>
           <div id="account-select" className="pb-4 w-full">
-            {accounts.map((account: AccountObject) => (
+            {accounts.map((account: AccountObject, index: number) => (
               <Link
+                key={index}
                 className="w-full"
                 to={routeFor(`${account.nickname}/home`)}
               >
