@@ -47,20 +47,18 @@ export function validateAmount(
   amountType = 'Amount',
 ): SendInputsErrors | null {
   let amountInNanoMassa = reverseFormatStandard(amount);
-  let verb = 'are';
-  if (amountType == 'Amount') {
-    amountInNanoMassa = +fromMAS(amount).toString();
-    verb = 'is';
-  }
-
-  if (amountInNanoMassa <= 0 || (!amount && !amountInNanoMassa)) {
-    return {
-      amount: Intl.t('errors.send.amount-to-low', { type: amountType, verb }),
-    };
-  }
+  let verb = amountType == 'Amount' ? 'is' : 'are';
   if (Number.isNaN(amountInNanoMassa)) {
     return {
       amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
+    };
+  }
+
+  if (amountType == 'Amount')
+    amountInNanoMassa = +fromMAS(amountInNanoMassa).toString();
+  if (amountInNanoMassa <= 0 || (!amount && !amountInNanoMassa)) {
+    return {
+      amount: Intl.t('errors.send.amount-to-low', { type: amountType, verb }),
     };
   }
   // amount should be an integer
