@@ -12,8 +12,15 @@ import { useState } from 'react';
 
 function Modal({ ...props }) {
   const feesTypes = Object.keys(presetFees);
-  const { fees, modal, setModal, handleFees, handleConfirm, errorAdvanced } =
-    props;
+  const {
+    fees,
+    modal,
+    setModal,
+    handleFees,
+    handleConfirm,
+    setErrorAdvanced,
+    errorAdvanced,
+  } = props;
   const [presetGasFees, setPresetGasFees] = useState<boolean>(true);
   const [customGasFees, setCustomFees] = useState<boolean>(false);
 
@@ -21,8 +28,13 @@ function Modal({ ...props }) {
     const isDisabled = fees !== presetFees[name] || customGasFees;
     const disabledButton = 'text-neutral bg-secondary';
 
+    const disabledButtonArgs = {
+      disabled: customGasFees,
+    };
+
     return (
       <Button
+        {...disabledButtonArgs}
         customClass={
           isDisabled ? `w-1/3 h-12 ${disabledButton}` : `w-1/3 h-12 bg-neutral`
         }
@@ -45,6 +57,7 @@ function Modal({ ...props }) {
   function handleCustomGas() {
     setCustomFees(true);
     setPresetGasFees(false);
+    handleFees('');
   }
 
   const presetArgs = {
@@ -55,10 +68,15 @@ function Modal({ ...props }) {
     checked: customGasFees,
   };
 
+  function handleClose() {
+    setModal(!modal);
+    setErrorAdvanced(null);
+  }
+
   return (
     <PopupModal
       fullMode={true}
-      onClose={() => setModal(!modal)}
+      onClose={handleClose}
       customClass="!w-1/2 min-w-[775px]"
     >
       <PopupModalHeader>

@@ -51,7 +51,8 @@ export function validateAmount(
     amountNum *= 10 ** 9;
     verb = 'in';
   }
-  if (amountNum <= 0) {
+
+  if (amountNum <= 0 || (!amount && !amountNum)) {
     return {
       amount: Intl.t('errors.send.amount-to-low', { type: amountType, verb }),
     };

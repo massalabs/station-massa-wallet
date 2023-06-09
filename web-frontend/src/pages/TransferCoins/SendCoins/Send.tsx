@@ -130,6 +130,7 @@ function Send(props: SendProps) {
     formattedBalance,
     recipient,
     error,
+    setErrorAdvanced,
     errorAdvanced,
     fees,
     modal,
