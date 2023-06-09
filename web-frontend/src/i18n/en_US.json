@@ -110,7 +110,7 @@
     "account-address": "Account address: ",
     "amount-to-ask": "Amount to ask",
     "recipient": "Recipient",
-    "provider": "Provider",
+    "provider": "Provider (optional):",
     "provider-description": "Address to withdraw",
     "link-to-share": "Link to share"
   },

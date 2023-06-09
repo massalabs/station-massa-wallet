@@ -42,7 +42,7 @@ export function formatStandard(
  */
 
 export function reverseFormatStandard(str: string): number {
-  const formattedString = str.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
+  const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
   return parseFloat(formattedString);
 }
 
