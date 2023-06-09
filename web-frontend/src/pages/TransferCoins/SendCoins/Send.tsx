@@ -106,9 +106,10 @@ function Send(props: SendProps) {
   }
 
   function handleFees(num: string) {
+    // check if '.' is present
+    if (num.includes('.')) return;
     setFees(num);
   }
-
   function handleModalAccounts() {
     setModalAccounts(!modalAccounts);
   }
