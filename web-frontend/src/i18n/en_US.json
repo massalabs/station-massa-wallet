@@ -70,6 +70,7 @@
     },
     "send": {
       "invalid-amount": "{type} {verb} invalid",
+      "invalid-amount-decimals": "{type} can't have decimals",
       "amount-to-high": "Insufficient funds on balance",
       "amount-to-low": "{type} must be greater than 0",
       "no-address": "{type} is required",

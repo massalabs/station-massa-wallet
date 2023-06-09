@@ -120,6 +120,7 @@ function Modal({ ...props }) {
             placeholder="Gas fees amount (nMAS)"
             name="fees"
             defaultValue=""
+            value={customGasFees ? fees : ''}
             disabled={!customGasFees}
             onChange={(e) => handleFees(e.target.value)}
             error={errorAdvanced?.amount}

@@ -1,3 +1,4 @@
+import { fromMAS } from '@massalabs/massa-web3';
 import Intl from '../i18n/i18n';
 import {
   checkAddressFormat,
@@ -45,28 +46,36 @@ export function validateAmount(
   balance?: string,
   amountType = 'Amount',
 ): SendInputsErrors | null {
-  let amountNum = reverseFormatStandard(amount);
+  let amountInNanoMassa = reverseFormatStandard(amount);
   let verb = 'are';
   if (amountType == 'Amount') {
-    amountNum *= 10 ** 9;
-    verb = 'in';
+    amountInNanoMassa = +fromMAS(amount).toString();
+    verb = 'is';
   }
 
-  if (amountNum <= 0 || (!amount && !amountNum)) {
+  if (amountInNanoMassa <= 0 || (!amount && !amountInNanoMassa)) {
     return {
       amount: Intl.t('errors.send.amount-to-low', { type: amountType, verb }),
     };
   }
-  if (Number.isNaN(amountNum)) {
+  if (Number.isNaN(amountInNanoMassa)) {
     return {
       amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
+    };
+  }
+  // amount should be an integer
+  if (amountInNanoMassa % 1 !== 0) {
+    return {
+      amount: Intl.t('errors.send.invalid-amount-decimals', {
+        type: amountType,
+      }),
     };
   }
 
   if (!balance) return null;
   if (+balance === undefined)
     return { unexpectedError: Intl.t('errors.unexpected-error.description') };
-  if (balance?.length > 0 && amountNum > +balance) {
+  if (balance?.length > 0 && amountInNanoMassa > +balance) {
     return { amount: Intl.t('errors.send.amount-to-high') };
   }
   return null;
