@@ -39,6 +39,7 @@ export function validateInputs(
  * @returns An object containing the error message if the amount is invalid, `null` otherwise.
  * @see validateInputs
  */
+
 export function validateAmount(
   amount: string,
   balance?: string,
@@ -80,7 +81,7 @@ export function validateAmount(
  */
 function validateAddress(
   recipient: string,
-  addresstype = 'recipient',
+  addresstype = 'Recipient',
 ): SendInputsErrors | null {
   if (!recipient) {
     return {

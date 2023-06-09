@@ -1,29 +1,28 @@
-import { parseForm } from '../../../utils/parseForm';
 import { useState, ChangeEvent, FormEvent } from 'react';
-import { formatStandard, Unit } from '../../../utils/MassaFormating';
+
 import {
   validateInputs,
   validateAmount,
   SendInputsErrors,
 } from '../../../validation/sendInputs';
-import { SendForm } from './SendForm';
-import { SendConfirmation } from './SendConfirmation';
+import { formatStandard, Unit } from '../../../utils/MassaFormating';
+import { parseForm } from '../../../utils/parseForm';
+
 import { useQuery } from '../../../custom/api/useQuery';
 import { AccountObject } from '../../../models/AccountModel';
+
+import { SendForm } from './SendForm';
+import { SendConfirmation } from './SendConfirmation';
 
 export interface SendProps {
   account: AccountObject;
 }
 
 function Send(props: SendProps) {
-  const { account } = props;
-  const nickname = account.nickname ?? '';
   let query = useQuery();
 
   let presetTo = query.get('to');
   let presetAmount = query.get('amount') ?? '';
-  const unformattedBalance = account?.candidateBalance ?? '0.00';
-  const balance = parseInt(unformattedBalance);
 
   const [amount, setAmount] = useState<string>(presetAmount);
   const [fees, setFees] = useState<string>('1000');
@@ -33,6 +32,12 @@ function Send(props: SendProps) {
   const [modal, setModal] = useState<boolean>(false);
   const [modalAccounts, setModalAccounts] = useState<boolean>(false);
   const [errorAdvanced, setErrorAdvanced] = useState<object | null>(null);
+
+  const { account } = props;
+  const nickname = account.nickname ?? '';
+
+  const unformattedBalance = account?.candidateBalance ?? '0.00';
+  const balance = parseInt(unformattedBalance);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,6 +53,7 @@ function Send(props: SendProps) {
     if (errors !== null) return;
     setValid(!valid);
   }
+
   const formattedBalance = formatStandard(balance, Unit.NanoMAS, 2);
   function overrideAmount(pct: number) {
     const newAmount = balance * pct;
@@ -79,6 +85,26 @@ function Send(props: SendProps) {
     setAmount(e.target.value);
   }
 
+  function handleValidation(errors: object | null) {
+    if (errors !== null) {
+      return;
+    } else {
+      setModal(false);
+    }
+  }
+
+  // we set the fees using a useState so they can render in the modal
+  // We pass the validateAmount Fn as args directly ta handle the confirmation
+  // Because the useState is too slow to be use as a param in th Fn
+  function handleConfirm() {
+    setErrorAdvanced(
+      validateAmount(fees ?? '0.00', unformattedBalance, 'Fees'),
+    );
+    handleValidation(
+      validateAmount(fees ?? '0.00', unformattedBalance, 'Fees'),
+    );
+  }
+
   function handleFees(num: string) {
     setFees(num);
   }
@@ -87,23 +113,12 @@ function Send(props: SendProps) {
     setModalAccounts(!modalAccounts);
   }
 
-  function handleConfirm(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const errors = validateAmount(fees ?? '0.00', unformattedBalance, 'Fees');
-    setErrorAdvanced(errors);
-    if (errors !== null) {
-      setFees('1000');
-      return;
-    }
-    setModal(false);
-  }
-
   const confirmArgs = {
     amount,
     nickname,
     recipient,
-    valid: valid,
-    fees: fees,
+    valid,
+    fees,
     setValid,
     modal,
     setModal,
