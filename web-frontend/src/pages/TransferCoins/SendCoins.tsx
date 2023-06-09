@@ -9,9 +9,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
+import { useQuery } from '../../custom/api/useQuery';
 
 function SendCoins() {
   const navigate = useNavigate();
+  const query = useQuery();
+
+  const tabIndex = parseInt(query.get('tabIndex') || '0');
+
+  console.log(tabIndex);
 
   const { nickname } = useParams();
   const { data: account } = useResource<AccountObject>(`accounts/${nickname}`);
@@ -35,7 +41,7 @@ function SendCoins() {
   return (
     <WalletLayout menuItem={MenuItem.SendCoins}>
       <div className="w-1/2 h-1/2">
-        <Tabs tabsConfig={tabsConfig} defaultIndex={0} />
+        <Tabs tabsConfig={tabsConfig} defaultIndex={tabIndex} />
       </div>
     </WalletLayout>
   );
