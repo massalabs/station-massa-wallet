@@ -62,6 +62,14 @@ export function validateAmount(
       amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
     };
   }
+  // amount should be an integer
+  if (amountNum % 1 !== 0) {
+    return {
+      amount: Intl.t('errors.send.invalid-amount-decimals', {
+        type: amountType,
+      }),
+    };
+  }
 
   if (!balance) return null;
   if (+balance === undefined)
