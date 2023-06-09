@@ -482,7 +482,7 @@ func NicknameIsUnique(nickname string) error {
 
 	// Check if nickname is unique
 	for _, wallet := range wallets {
-		if wallet.Nickname == nickname {
+		if strings.EqualFold(wallet.Nickname, nickname) {
 			return fmt.Errorf("This account name already exists")
 		}
 	}
