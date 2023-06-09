@@ -13,11 +13,11 @@ function CopyContent(props: CopyAddressProps) {
   return (
     <>
       <div
-        className="flex flex-row items-center mas-body2 justify-between w-full 
+        className="flex flex-row items-center mas-body2 justify-between w-full
         h-12 px-3 rounded bg-secondary cursor-pointer"
         onClick={() => handleCopyClick()}
       >
-        <u>{formattedContent ?? ''}</u>
+        <u>{formattedContent}</u>
         <FiCopy size={24} />
       </div>
     </>
