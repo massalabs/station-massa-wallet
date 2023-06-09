@@ -29,9 +29,13 @@ function mockServer(environment = ENV.DEV) {
     routes() {
       this.namespace = import.meta.env.VITE_BASE_API;
 
-      this.get('accounts', (schema) => {
-        return schema.all('account').models;
-      });
+      this.get(
+        'accounts',
+        (schema) => {
+          return schema.all('account').models;
+        },
+        { timing: 4000 },
+      );
 
       this.get('accounts/:nickname', (schema, request) => {
         let nickname = request.params.nickname;

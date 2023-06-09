@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
@@ -42,13 +42,19 @@ function WalletLayout(props: WalletProps) {
   const navigate = useNavigate();
   const { nickname } = useParams();
 
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
+  const { data: accounts = [], error } =
+    useResource<AccountObject[]>('accounts');
 
-  // If no account, redirect to welcome page
-  if (!accounts.length) {
-    navigate(routeFor('index'));
-    return null;
-  }
+  const isLoadingData = status === 'loading';
+  const hasAccounts = !isLoadingData && accounts;
+
+  useEffect(() => {
+    if (error) {
+      navigate('/error');
+    } else if (!hasAccounts) {
+      navigate('/index');
+    }
+  }, [accounts, navigate]);
 
   function isActive(item: MenuItem) {
     return item === menuItem;
