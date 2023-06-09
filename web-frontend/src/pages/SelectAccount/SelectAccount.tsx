@@ -31,9 +31,9 @@ export default function SelectAccount() {
 
   useEffect(() => {
     if (error) {
-      navigate('/error');
+      navigate(routeFor('error'));
     } else if (!isLoadingData && !hasAccounts) {
-      navigate('/index');
+      navigate(routeFor('index'));
     }
   }, [accounts, navigate]);
 
