@@ -52,12 +52,14 @@ function Modal({ ...props }) {
   function handlePresetGas() {
     setCustomFees(false);
     setPresetGasFees(true);
+    handleFees('1000');
+    setErrorAdvanced(null);
   }
 
   function handleCustomGas() {
     setCustomFees(true);
     setPresetGasFees(false);
-    handleFees('');
+    handleFees('0');
   }
 
   const presetArgs = {
@@ -71,12 +73,18 @@ function Modal({ ...props }) {
   function handleClose() {
     setModal(!modal);
     setErrorAdvanced(null);
+    handleFees('1000');
+  }
+
+  function handleOpen() {
+    Number.isNaN(fees) ? handleFees('1000') : handleFees(fees);
   }
 
   return (
     <PopupModal
       fullMode={true}
       onClose={handleClose}
+      onOpen={handleOpen}
       customClass="!w-1/2 min-w-[775px]"
     >
       <PopupModalHeader>
@@ -119,8 +127,7 @@ function Modal({ ...props }) {
             type="text"
             placeholder="Gas fees amount (nMAS)"
             name="fees"
-            defaultValue=""
-            value={customGasFees ? fees : ''}
+            value={!customGasFees ? '' : fees}
             disabled={!customGasFees}
             onChange={(e) => handleFees(e.target.value)}
             error={errorAdvanced?.amount}

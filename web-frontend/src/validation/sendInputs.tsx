@@ -9,6 +9,7 @@ export interface SendInputsErrors {
   unexpectedError?: string;
   amount?: string;
   address?: string;
+  fees?: string;
 }
 
 /**
@@ -21,7 +22,7 @@ export interface SendInputsErrors {
 export function validateInputs(
   amount: string,
   address: string,
-  addressType = 'recipient',
+  addressType = 'Recipient',
   balance?: string,
 ): SendInputsErrors | null {
   let errorsAmount = null;
