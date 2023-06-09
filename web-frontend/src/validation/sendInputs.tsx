@@ -47,8 +47,16 @@ export function validateAmount(
   balance?: string,
   amountType = 'Amount',
 ): SendInputsErrors | null {
-  let amountInNanoMassa = reverseFormatStandard(amount);
   let verb = amountType == 'Amount' ? 'is' : 'are';
+
+  if (Number.isNaN(+amount)) {
+    return {
+      amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),
+    };
+  }
+
+  let amountInNanoMassa = reverseFormatStandard(amount);
+
   if (Number.isNaN(amountInNanoMassa)) {
     return {
       amount: Intl.t('errors.send.invalid-amount', { type: amountType, verb }),

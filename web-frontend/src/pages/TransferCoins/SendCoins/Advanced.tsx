@@ -59,7 +59,7 @@ function Modal({ ...props }) {
   function handleCustomGas() {
     setCustomFees(true);
     setPresetGasFees(false);
-    handleFees('0');
+    handleFees('');
   }
 
   const presetArgs = {
@@ -77,7 +77,7 @@ function Modal({ ...props }) {
   }
 
   function handleOpen() {
-    Number.isNaN(fees) ? handleFees('1000') : handleFees(fees);
+    handleFees('1000');
   }
 
   return (
