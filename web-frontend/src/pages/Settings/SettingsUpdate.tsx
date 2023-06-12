@@ -13,7 +13,7 @@ import WalletLayout, {
 import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { SettingsOption } from './SettingsOption';
 
-export default function SettingsEdit() {
+export default function SettingsUpdate() {
   const navigate = useNavigate();
   const { nickname } = useParams();
 
