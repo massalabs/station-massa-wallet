@@ -6,6 +6,7 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
+  Navigate,
 } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -30,6 +31,7 @@ import Transactions from './pages/Transactions/Transactions.tsx';
 import Contacts from './pages/Contacts/Contacts.tsx';
 import Assets from './pages/Assets/Assets.tsx';
 import SendRedirect from './pages/TransferCoins/SendCoins/SendRedirect.tsx';
+import Base from './pages/Base/Base.tsx';
 
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
@@ -40,7 +42,7 @@ const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path={import.meta.env.VITE_BASE_APP}>
+    <Route path={import.meta.env.VITE_BASE_APP} element={<Base />}>
       {/* routes for onboarding and account creation */}
       <Route path="index" element={<Welcome />} />
       <Route path="account-select" element={<SelectAccount />} />
@@ -63,6 +65,7 @@ const router = createBrowserRouter(
       {/* routes for errors */}
       <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
+      <Route path="/" element={<Navigate to="/index" />} />
     </Route>,
   ),
 );
