@@ -9,7 +9,7 @@ import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { FiArrowRight } from 'react-icons/fi';
 
-export default function Welcome() {
+export default function Index() {
   const { error, data, status } = useResource<AccountObject[]>('accounts');
   const { mutate } = usePut<AccountObject>('accounts');
   const navigate = useNavigate();
@@ -33,11 +33,11 @@ export default function Welcome() {
         <div className="flex flex-col justify-center items-center h-screen">
           <div className="flex flex-col justify-start items-start w-full h-full max-w-sm max-h-56">
             <h1 className="mas-banner text-f-primary pb-6">
-              {Intl.t('welcome.title-first-part')}
+              {Intl.t('index.title-first-part')}
               <br />
-              {Intl.t('welcome.title-second-part')}
+              {Intl.t('index.title-second-part')}
               <span className="text-brand">
-                {Intl.t('welcome.title-third-part')}
+                {Intl.t('index.title-third-part')}
               </span>
             </h1>
             <Link
