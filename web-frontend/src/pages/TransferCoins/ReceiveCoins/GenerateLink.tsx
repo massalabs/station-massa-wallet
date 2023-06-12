@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { formatStandard } from '../../../utils/MassaFormating';
+import { Unit, formatStandard } from '../../../utils/MassaFormating';
 import CopyContent from './CopyContent';
 import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
@@ -14,9 +14,9 @@ import {
   Selector,
 } from '@massalabs/react-ui-kit';
 import {
+  SendInputsErrors,
   getAddressError,
   getAmountFormatError,
-  getAmountTooHighError,
 } from '../../../validation/sendInputs';
 
 interface GenerateLinkProps {
@@ -34,29 +34,34 @@ function GenerateLink(props: GenerateLinkProps) {
   const [provider, setProvider] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
   const recipient = account.nickname;
-  const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
-  const formattedBalance = formatStandard(recipientBalance);
+  const recipientBalance = parseInt(account.candidateBalance);
+  const formattedBalance = formatStandard(recipientBalance, Unit.NanoMAS);
   const [linkToShare, setLinkTOShare] = useState('');
 
   function validate(amount: string, provider: string) {
-    const errorAmountFormat = getAmountFormatError(amount, true);
+    const errorAmountFormat = getAmountFormatError(amount, Unit.MAS);
+    let type =
+      errorAmountFormat === 'errors.send.invalid-amount' ? 'amount' : 'Amount';
     if (errorAmountFormat) {
       setError({
-        amount: Intl.t(errorAmountFormat, { type: 'Amount', verb: 'is' }),
+        amount: Intl.t(errorAmountFormat, { type }),
       });
       return false;
     }
-    if (!provider) return true;
-    const addressError = getAddressError(provider);
-    if (addressError) {
-      setError({ address: Intl.t(addressError) });
-      return false;
+    if (provider) {
+      const addressError = getAddressError(provider);
+      type = 'Provider';
+      if (addressError) {
+        setError({ address: Intl.t(addressError, { type }) });
+        return false;
+      }
     }
+
+    setError(null);
     return true;
   }
   const handleGenerate = () => {
-    const errors = validate(amount, provider);
-    if (errors !== null) return;
+    if (!validate(amount, provider)) return;
     const amountArg = amount ? `&amount=${amount}` : '';
     const providerArg = provider ? `&provider=${provider}` : '';
     const newURL = presetURL + amountArg + providerArg;
@@ -86,7 +91,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 placeholder={Intl.t('receive-coins.amount-to-ask')}
                 defaultValue=""
                 onChange={(e) => setAmount(e.target.value)}
-                // error={error?.amount}
+                error={error?.amount}
               />
             </div>
             <div className="flex flex-col gap-3 mb-6">
@@ -105,7 +110,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 placeholder={Intl.t('receive-coins.provider-description')}
                 defaultValue=""
                 onChange={(e) => setProvider(e.target.value)}
-                // error={error?.address}
+                error={error?.address}
               />
             </div>
             <div className="flex flex-col gap-3 mb-3">
