@@ -52,7 +52,7 @@
       "backup": "Back up account"
     }
   },
-  "add-account": {
+  "account-create": {
     "title": "Add an account",
     "buttons": {
       "create": "Create an account",
