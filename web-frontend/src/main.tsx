@@ -22,9 +22,8 @@ import AccountCreate from './pages/AccountCreate/AccountCreate.tsx';
 import StepTwo from './pages/CreateAccount/StepTwo.tsx';
 import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
-import SendCoins from './pages/TransferCoins/SendCoins.tsx';
+import TransferCoins from './pages/TransferCoins/TransferCoins.tsx';
 import Home from './pages/Home/Home.tsx';
-import ReceiveCoins from './pages/TransferCoins/ReceiveCoins/ReceiveCoins.tsx';
 import Settings from './pages/Settings/Settings.tsx';
 import SettingsUpdate from './pages/Settings/SettingsUpdate.tsx';
 import Transactions from './pages/Transactions/Transactions.tsx';
@@ -55,8 +54,7 @@ const router = createBrowserRouter(
       {/* routes for wallet */}
       <Route path=":nickname/home" element={<Home />} />
       <Route path=":nickname/transactions" element={<Transactions />} />
-      <Route path=":nickname/send-coins" element={<SendCoins />} />
-      <Route path=":nickname/receive-coins" element={<ReceiveCoins />} />
+      <Route path=":nickname/transfer-coins" element={<TransferCoins />} />
       <Route path=":nickname/assets" element={<Assets />} />
       <Route path=":nickname/settings" element={<Settings />} />
       <Route path=":nickname/settings/update" element={<SettingsUpdate />} />

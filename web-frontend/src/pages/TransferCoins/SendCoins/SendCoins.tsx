@@ -14,11 +14,11 @@ import { AccountObject } from '../../../models/AccountModel';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 
-export interface SendProps {
+export interface SendCoinsProps {
   account: AccountObject;
 }
 
-function Send(props: SendProps) {
+function SendCoins(props: SendCoinsProps) {
   let query = useQuery();
 
   let presetTo = query.get('to');
@@ -163,4 +163,4 @@ function Send(props: SendProps) {
   );
 }
 
-export default Send;
+export default SendCoins;

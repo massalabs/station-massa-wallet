@@ -35,7 +35,7 @@ function Redirect() {
     const newQueryParams = new URLSearchParams(location.search);
     newQueryParams.delete('provider');
     navigate(
-      `${routeFor(`${nickname}/send-coins`)}?${newQueryParams.toString()}`,
+      `${routeFor(`${nickname}/transfer-coins`)}?${newQueryParams.toString()}`,
     );
   }
   if (error) {
