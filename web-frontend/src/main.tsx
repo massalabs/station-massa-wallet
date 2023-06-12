@@ -18,7 +18,7 @@ import mockServer from './mirage/server.js';
 import Index from './pages/Index/Index.tsx';
 import AccountSelect from './pages/AccountSelect/AccountSelect.tsx';
 import Error from './pages/Error.tsx';
-import AddAccount from './pages/AddAccount/AddAccount.tsx';
+import AccountCreate from './pages/AccountCreate/AccountCreate.tsx';
 import StepTwo from './pages/CreateAccount/StepTwo.tsx';
 import StepOne from './pages/CreateAccount/StepOne.tsx';
 import StepThree from './pages/CreateAccount/StepThree.tsx';
@@ -46,7 +46,7 @@ const router = createBrowserRouter(
       {/* routes for onboarding and account creation */}
       <Route path="index" element={<Index />} />
       <Route path="account-select" element={<AccountSelect />} />
-      <Route path="account-create" element={<AddAccount />} />
+      <Route path="account-create" element={<AccountCreate />} />
       <Route path="account-create-step-one" element={<StepOne />} />
       <Route path="account-create-step-two" element={<StepTwo />} />
       <Route path="account-create-step-three" element={<StepThree />} />
