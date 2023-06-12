@@ -41,10 +41,10 @@ function ReceiveCoins() {
     <div className="flex flex-row items-center gap-5 mt-5">
       <QRCodeReact value={url} size={165} />
       <div className="flex flex-col w-full gap-3.5">
-        <p>{Intl.t('receive.account-address')}</p>
+        <p>{Intl.t('receive-coins.account-address')}</p>
         <CopyContent content={address} formattedContent={formattedAddress} />
         <Button onClick={() => setModal(!modal)} preIcon={<FiLink size={24} />}>
-          {Intl.t('receive.receive-account')}
+          {Intl.t('receive-coins.receive-account')}
         </Button>
       </div>
       {modal ? <GenerateLink {...modalArgs} /> : null}

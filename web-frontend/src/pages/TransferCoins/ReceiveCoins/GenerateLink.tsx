@@ -63,22 +63,24 @@ function GenerateLink(props: GenerateLinkProps) {
       >
         <PopupModalHeader>
           <h1 className="mas-banner mb-6">
-            {Intl.t('receive.receive-account')}
+            {Intl.t('receive-coins.receive-account')}
           </h1>
         </PopupModalHeader>
         <PopupModalContent>
           <div className="pb-10">
             <div className="flex flex-col gap-3 mb-6">
-              <p className="mas-body2">{Intl.t('receive.receive-amount')}</p>
+              <p className="mas-body2">
+                {Intl.t('receive-coins.receive-amount')}
+              </p>
               <Input
-                placeholder={Intl.t('receive.amount-to-ask')}
+                placeholder={Intl.t('receive-coins.amount-to-ask')}
                 defaultValue=""
                 onChange={(e) => setAmount(e.target.value)}
                 error={error?.amount}
               />
             </div>
             <div className="flex flex-col gap-3 mb-6">
-              <p className="mas-body2">{Intl.t('receive.recipient')}</p>
+              <p className="mas-body2">{Intl.t('receive-coins.recipient')}</p>
               <Selector
                 preIcon={<Identicon username={account.nickname} />}
                 content={recipient}
@@ -88,16 +90,18 @@ function GenerateLink(props: GenerateLinkProps) {
               />
             </div>
             <div className="flex flex-col gap-3 mb-6">
-              <p className="mas-body2">{Intl.t('receive.provider')}</p>
+              <p className="mas-body2">{Intl.t('receive-coins.provider')}</p>
               <Input
-                placeholder={Intl.t('receive.provider-description')}
+                placeholder={Intl.t('receive-coins.provider-description')}
                 defaultValue=""
                 onChange={(e) => setProvider(e.target.value)}
                 error={error?.address}
               />
             </div>
             <div className="flex flex-col gap-3 mb-3">
-              <p className="mas-body2">{Intl.t('receive.link-to-share')}</p>
+              <p className="mas-body2">
+                {Intl.t('receive-coins.link-to-share')}
+              </p>
               <CopyContent
                 content={linkToShare}
                 formattedContent={linkToShare.slice(0, 50)}
@@ -105,7 +109,7 @@ function GenerateLink(props: GenerateLinkProps) {
             </div>
             <div className="pb-3">
               <Button onClick={() => handleGenerate()}>
-                {Intl.t('receive.receive-account')}
+                {Intl.t('receive-coins.receive-account')}
               </Button>
             </div>
           </div>

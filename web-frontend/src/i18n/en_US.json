@@ -105,7 +105,7 @@
     "gas-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
     "send-confirmation": "Amount ({amount} MAS) + fees ({fees} nMAS)"
   },
-  "receive": {
+  "receive-coins": {
     "receive-account": "Generate link",
     "receive-amount": "Amount",
     "account-address": "Account address: ",
