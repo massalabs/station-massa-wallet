@@ -16,7 +16,7 @@ import { ENV } from './const/env/env';
 import './index.css';
 import mockServer from './mirage/server.js';
 import Index from './pages/Index/Index.tsx';
-import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
+import AccountSelect from './pages/AccountSelect/AccountSelect.tsx';
 import Error from './pages/Error.tsx';
 import AddAccount from './pages/AddAccount/AddAccount.tsx';
 import StepTwo from './pages/CreateAccount/StepTwo.tsx';
@@ -45,7 +45,7 @@ const router = createBrowserRouter(
     <Route path={import.meta.env.VITE_BASE_APP} element={<Base />}>
       {/* routes for onboarding and account creation */}
       <Route path="index" element={<Index />} />
-      <Route path="account-select" element={<SelectAccount />} />
+      <Route path="account-select" element={<AccountSelect />} />
       <Route path="account-create" element={<AddAccount />} />
       <Route path="account-create-step-one" element={<StepOne />} />
       <Route path="account-create-step-two" element={<StepTwo />} />

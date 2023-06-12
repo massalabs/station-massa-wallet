@@ -17,7 +17,7 @@ import {
 } from '@massalabs/react-ui-kit';
 import { formatStandard } from '../../utils/MassaFormating';
 
-export default function SelectAccount() {
+export default function AccountSelect() {
   const navigate = useNavigate();
 
   const {
