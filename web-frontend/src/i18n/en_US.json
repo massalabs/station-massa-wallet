@@ -81,13 +81,15 @@
       "no-account": "No account found - redirecting to account creation page"
     }
   },
-  "send-coins": {
+  "transfer-coins": {
     "send-tab": "Send",
-    "receive-tab": "Receive",
+    "receive-tab": "Receive"
+  },
+  "send-coins": {
     "amount": "Amount",
     "account-balance": "Account Balance",
     "send-action": "Send Tokens",
-    "available-balance": "Available : ",
+    "available-balance": "Available: ",
     "recipient": "To : ",
     "transfer-between-acc": "Transfer between my accounts",
     "advanced": "Advanced",

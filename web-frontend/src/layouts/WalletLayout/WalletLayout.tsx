@@ -24,7 +24,7 @@ import {
 
 export enum MenuItem {
   Home = 'home',
-  SendCoins = 'send-coins',
+  TransferCoins = 'transfer-coins',
   Transactions = 'transactions',
   Contacts = 'contacts',
   Assets = 'assets',
@@ -90,10 +90,10 @@ function WalletLayout(props: IWalletLayoutProps) {
     {
       label: 'Send/Receive',
       icon: <FiArrowUpRight />,
-      active: isActive(MenuItem.SendCoins),
+      active: isActive(MenuItem.TransferCoins),
       footer: false,
       onClickItem: () =>
-        navigate(routeFor(`${nickname}/${MenuItem.SendCoins}`)),
+        navigate(routeFor(`${nickname}/${MenuItem.TransferCoins}`)),
     },
     {
       label: 'Contacts',

@@ -5,6 +5,7 @@ import { formatStandard, Unit, maskAddress } from '../../utils/MassaFormating';
 import { useResource } from '../../custom/api';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';
+import { TAB_SEND, TAB_RECEIVE } from '../../const/tabs/tabs';
 
 import WalletLayout, {
   MenuItem,
@@ -50,7 +51,9 @@ export default function Home() {
               variant="secondary"
               preIcon={<FiArrowDownLeft />}
               onClick={() =>
-                navigate(routeFor(`${nickname}/send-coins?tabIndex=1`))
+                navigate(
+                  routeFor(`${nickname}/transfer-coins?tab=${TAB_RECEIVE}`),
+                )
               }
             >
               {Intl.t('home.buttons.receive')}
@@ -58,7 +61,7 @@ export default function Home() {
             <Button
               preIcon={<FiArrowUpRight />}
               onClick={() =>
-                navigate(routeFor(`${nickname}/send-coins?tabIndex=0`))
+                navigate(routeFor(`${nickname}/transfer-coins?tab=${TAB_SEND}`))
               }
             >
               {Intl.t('home.buttons.send')}
