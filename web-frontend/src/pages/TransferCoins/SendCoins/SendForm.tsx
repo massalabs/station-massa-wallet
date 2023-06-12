@@ -50,13 +50,13 @@ export function SendForm({ ...props }) {
       <form onSubmit={handleSubmit}>
         {/* Balance Section */}
         <p className="mas-subtitle mb-5">
-          {Intl.t('sendcoins.account-balance')}
+          {Intl.t('send-coins.account-balance')}
         </p>
         <Balance customClass="mb-5" amount={formattedBalance} />
         <div className="flex flex-row justify-between w-full pb-3.5 ">
-          <p className="mas-body2"> {Intl.t('sendcoins.send-action')} </p>
+          <p className="mas-body2"> {Intl.t('send-coins.send-action')} </p>
           <p className="mas-body2">
-            {Intl.t('sendcoins.available-balance')} <u>{formattedBalance}</u>
+            {Intl.t('send-coins.available-balance')} <u>{formattedBalance}</u>
           </p>
         </div>
         <div className="pb-3.5">
@@ -76,7 +76,7 @@ export function SendForm({ ...props }) {
             <SendPercentage percentage={100} />
           </ul>
         </div>
-        <p className="pb-3.5 mas-body2">{Intl.t('sendcoins.recipient')}</p>
+        <p className="pb-3.5 mas-body2">{Intl.t('send-coins.recipient')}</p>
         <div className="pb-3.5">
           <Input
             placeholder={'Recipient'}
@@ -92,7 +92,7 @@ export function SendForm({ ...props }) {
             onClick={() => setModalAccounts(!modalAccounts)}
           >
             <u className="mas-body2">
-              {Intl.t('sendcoins.transfer-between-acc')}
+              {Intl.t('send-coins.transfer-between-acc')}
             </u>
           </p>
         </div>
@@ -103,12 +103,12 @@ export function SendForm({ ...props }) {
             variant={'secondary'}
             posIcon={<FiPlus />}
           >
-            {Intl.t('sendcoins.advanced')}
+            {Intl.t('send-coins.advanced')}
           </Button>
 
           <div>
             <Button type="submit" posIcon={<FiArrowUpRight />}>
-              {Intl.t('sendcoins.send')}
+              {Intl.t('send-coins.send')}
             </Button>
           </div>
         </div>
