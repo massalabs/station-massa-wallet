@@ -1,9 +1,10 @@
 import { ReactNode, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';
+import { IOutletContextType } from './../../pages/Base/Base';
 
 import {
   Dropdown,
@@ -18,7 +19,6 @@ import {
   FiUsers,
   FiDisc,
   FiSettings,
-  FiSun,
   FiPlus,
 } from 'react-icons/fi';
 
@@ -32,21 +32,26 @@ export enum MenuItem {
   LightTheme = 'light-theme',
 }
 
-interface WalletProps {
+interface IWalletLayoutProps {
   menuItem: MenuItem;
   children: ReactNode;
 }
 
-function WalletLayout(props: WalletProps) {
+function WalletLayout(props: IWalletLayoutProps) {
   const { menuItem } = props;
   const navigate = useNavigate();
   const { nickname } = useParams();
 
-  const { data: accounts = [], error } =
-    useResource<AccountObject[]>('accounts');
+  const { themeIcon, themeLabel, theme, handleSetTheme } =
+    useOutletContext<IOutletContextType>();
 
-  const isLoadingData = status === 'loading';
-  const hasAccounts = !isLoadingData && accounts;
+  const {
+    data: accounts = [],
+    error,
+    isLoading,
+  } = useResource<AccountObject[]>('accounts');
+
+  const hasAccounts = !isLoading && accounts;
 
   useEffect(() => {
     if (error) {
@@ -54,7 +59,7 @@ function WalletLayout(props: WalletProps) {
     } else if (!hasAccounts) {
       navigate('/index');
     }
-  }, [accounts, navigate]);
+  }, [accounts, error, navigate]);
 
   function isActive(item: MenuItem) {
     return item === menuItem;
@@ -112,10 +117,11 @@ function WalletLayout(props: WalletProps) {
       onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Settings}`)),
     },
     {
-      label: 'Light theme',
-      icon: <FiSun />,
+      label: themeLabel,
+      icon: themeIcon,
       active: isActive(MenuItem.LightTheme),
       footer: true,
+      onClickItem: () => handleSetTheme(),
     },
   ];
 
@@ -138,7 +144,10 @@ function WalletLayout(props: WalletProps) {
   );
 
   return (
-    <div className="bg-primary">
+    // TODO
+    // remove ${theme}
+    // this needs to be removed as soon we fix the steps to create an account
+    <div className={`${theme} bg-primary`}>
       <SideMenu conf={menuConf} items={menuItems} />
       <div className="flex justify-center items-center h-screen text-f-primary">
         {props?.children}
