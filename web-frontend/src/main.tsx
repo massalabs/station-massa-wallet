@@ -15,7 +15,7 @@ import '@massalabs/react-ui-kit/src/global.css';
 import { ENV } from './const/env/env';
 import './index.css';
 import mockServer from './mirage/server.js';
-import Welcome from './pages/Welcome/Welcome.tsx';
+import Index from './pages/Index/Index.tsx';
 import SelectAccount from './pages/SelectAccount/SelectAccount.tsx';
 import Error from './pages/Error.tsx';
 import AddAccount from './pages/AddAccount/AddAccount.tsx';
@@ -44,7 +44,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path={import.meta.env.VITE_BASE_APP} element={<Base />}>
       {/* routes for onboarding and account creation */}
-      <Route path="index" element={<Welcome />} />
+      <Route path="index" element={<Index />} />
       <Route path="account-select" element={<SelectAccount />} />
       <Route path="account-create" element={<AddAccount />} />
       <Route path="account-create-step-one" element={<StepOne />} />
