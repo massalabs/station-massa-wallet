@@ -9,9 +9,15 @@ function mockServer(environment = ENV.DEV) {
 
     models: {
       account: Model,
+      transfer: Model,
     },
 
     factories: {
+      transfer: Factory.extend({
+        operationId() {
+          return faker.number.int().toString();
+        },
+      }),
       account: Factory.extend({
         nickname() {
           return faker.internet.userName();
@@ -32,15 +38,19 @@ function mockServer(environment = ENV.DEV) {
       this.get(
         'accounts',
         (schema) => {
-          return schema.all('account').models;
+          let { models: accounts } = schema.accounts.all();
+
+          return accounts;
         },
-        { timing: 4000 },
+        { timing: 1000 },
       );
 
       this.get('accounts/:nickname', (schema, request) => {
         let nickname = request.params.nickname;
 
-        return schema.findBy('account', { nickname });
+        let { attrs: account } = schema.findBy('account', { nickname });
+
+        return { ...account };
       });
 
       this.put('accounts', (schema) => {
@@ -56,6 +66,25 @@ function mockServer(environment = ENV.DEV) {
         let account = schema.accounts.findBy({ nickname });
 
         return account.update({ nickname: newNickname });
+      });
+
+      this.post('accounts/:nickname', (schema, request) => {
+        let nickname = request.params.nickname;
+
+        return schema.accounts.create({ nickname });
+      });
+
+      this.post('accounts/:nickname/backup', {});
+
+      this.post('accounts/:nickname/transfer', (schema, request) => {
+        let { amount, fee, recipientAddress } = JSON.parse(request.requestBody);
+
+        if (!amount || !fee || !recipientAddress) {
+          // TODO
+          // we must handle here the missing payload fields
+        }
+
+        return schema.create('transfer');
       });
     },
   });
