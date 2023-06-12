@@ -29,12 +29,18 @@ export function SendConfirmation({ ...props }) {
   const formattedTotal = formatStandard(total, Unit.NanoMAS);
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const { mutate, isSuccess } = usePost<SendTransactionObject>(
+  const { mutate, isSuccess, error } = usePost<SendTransactionObject>(
     `accounts/${nickname}/transfer`,
   );
-  if (isSuccess) {
-    navigate(routeFor(`${nickname}/home`));
-  }
+
+  useEffect(() => {
+    if (error) {
+      navigate(routeFor('error'));
+    } else if (isSuccess) {
+      navigate(routeFor(`${nickname}/home`));
+    }
+  }, [isSuccess]);
+
   const handleTransfer = () => {
     const transferData: SendTransactionObject = {
       amount: amountInNanoMAS,

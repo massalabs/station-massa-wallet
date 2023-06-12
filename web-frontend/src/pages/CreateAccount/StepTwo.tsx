@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePost } from '../../custom/api/usePost';
 import { AccountObject } from '../../models/AccountModel';
@@ -10,15 +11,20 @@ import { FiLock } from 'react-icons/fi';
 
 export default function StepTwo() {
   const navigate = useNavigate();
-
   const { state } = useLocation();
   const nickname = state.nickname;
 
-  const { mutate, isSuccess } = usePost<AccountObject>(`accounts/${nickname}`);
+  const { mutate, isSuccess, error } = usePost<AccountObject>(
+    `accounts/${nickname}`,
+  );
 
-  if (isSuccess) {
-    navigate(routeFor('account-create-step-three'), { state: { nickname } });
-  }
+  useEffect(() => {
+    if (error) {
+      navigate(routeFor('error'));
+    } else if (isSuccess) {
+      navigate(routeFor('account-create-step-three'), { state: { nickname } });
+    }
+  }, [isSuccess]);
 
   return (
     <LandingPage>

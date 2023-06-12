@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Intl from '../../i18n/i18n';
 import { routeFor } from '../../utils';
@@ -11,17 +12,20 @@ import { usePost } from '../../custom/api';
 
 export default function StepThree() {
   const navigate = useNavigate();
-
   const { state } = useLocation();
-  const nickname: string = state.nickname;
 
-  const { mutate, isSuccess } = usePost<AccountObject>(
+  const nickname: string = state.nickname;
+  const { mutate, isSuccess, error } = usePost<AccountObject>(
     `accounts/${nickname}/backup`,
   );
 
-  if (isSuccess) {
-    navigate(routeFor(`${nickname}/home`));
-  }
+  useEffect(() => {
+    if (error) {
+      navigate(routeFor('error'));
+    } else if (isSuccess) {
+      navigate(routeFor(`${nickname}/home`));
+    }
+  }, [isSuccess]);
 
   return (
     <LandingPage>
