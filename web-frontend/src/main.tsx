@@ -56,7 +56,7 @@ const router = createBrowserRouter(
       <Route path=":nickname/home" element={<Home />} />
       <Route path=":nickname/transactions" element={<Transactions />} />
       <Route path=":nickname/send-coins" element={<SendCoins />} />
-      <Route path=":nickname/receive" element={<ReceiveCoins />} />
+      <Route path=":nickname/receive-coins" element={<ReceiveCoins />} />
       <Route path=":nickname/assets" element={<Assets />} />
       <Route path=":nickname/settings" element={<Settings />} />
       <Route path=":nickname/settings/update" element={<SettingsEdit />} />
