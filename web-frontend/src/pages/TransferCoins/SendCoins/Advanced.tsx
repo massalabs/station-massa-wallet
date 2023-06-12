@@ -90,10 +90,10 @@ function Modal({ ...props }) {
       <PopupModalHeader>
         <div className="flex flex-col gap-3.5">
           <label className="mas-title mb-6">
-            {Intl.t('sendcoins.advanced')}
+            {Intl.t('send-coins.advanced')}
           </label>
           <p className="mas-body mb-6">
-            {Intl.t('sendcoins.advanced-message')}
+            {Intl.t('send-coins.advanced-message')}
           </p>
         </div>
       </PopupModalHeader>
@@ -105,7 +105,7 @@ function Modal({ ...props }) {
               onClick={() => handlePresetGas()}
               {...presetArgs}
             />
-            <p className="h-full ml-3 pb-1">{Intl.t('sendcoins.preset')}</p>
+            <p className="h-full ml-3 pb-1">{Intl.t('send-coins.preset')}</p>
           </div>
           <div className="flex flex-row items-center w-full gap-4 mb-6">
             {feesTypes.map((type) => (
@@ -120,7 +120,7 @@ function Modal({ ...props }) {
               {...customArgs}
             />
             <p className="h-full ml-3 pb-1">
-              {Intl.t('sendcoins.custom-fees')}
+              {Intl.t('send-coins.custom-fees')}
             </p>
           </div>
           <Input
@@ -138,7 +138,7 @@ function Modal({ ...props }) {
             type="submit"
             onClick={(e) => handleConfirm(e)}
           >
-            {Intl.t('sendcoins.confirm-fees')}
+            {Intl.t('send-coins.confirm-fees')}
           </Button>
         </div>
       </PopupModalContent>

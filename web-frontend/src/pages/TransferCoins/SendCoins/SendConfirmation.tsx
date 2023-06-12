@@ -70,10 +70,10 @@ export function SendConfirmation({ ...props }) {
   }, [fees]);
 
   const content = `
-  ${Intl.t('sendcoins.gas-info', {
+  ${Intl.t('send-coins.gas-info', {
     default: customFees,
     gasFees: fees,
-  })}  \u26A0  ${Intl.t('sendcoins.gas-alert')}`;
+  })}  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
 
   const ToolTipArgs = {
     showTooltip,
@@ -88,13 +88,13 @@ export function SendConfirmation({ ...props }) {
       >
         <FiChevronLeft />
 
-        <u>{Intl.t('sendcoins.back-to-sending')}</u>
+        <u>{Intl.t('send-coins.back-to-sending')}</u>
       </div>
-      <p className="mb-6">{Intl.t('sendcoins.send-message')}</p>
+      <p className="mb-6">{Intl.t('send-coins.send-message')}</p>
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
         <div className="flex flex-row items-center pb-3 ">
           <div className="pr-2 text-s-info">
-            {Intl.t('sendcoins.send-confirmation', {
+            {Intl.t('send-coins.send-confirmation', {
               amount: formatStandard(reversedAmount),
               fees: fees,
             })}
@@ -112,7 +112,7 @@ export function SendConfirmation({ ...props }) {
           amount={formattedTotal}
         />
         <p className="text-s-info">
-          {Intl.t('sendcoins.recipient')}
+          {Intl.t('send-coins.recipient')}
           <u>{formattedRecipientAddress}</u>
         </p>
       </div>
@@ -121,7 +121,7 @@ export function SendConfirmation({ ...props }) {
           handleTransfer();
         }}
       >
-        {Intl.t('sendcoins.confirm-sign')}
+        {Intl.t('send-coins.confirm-sign')}
       </Button>
     </>
   );

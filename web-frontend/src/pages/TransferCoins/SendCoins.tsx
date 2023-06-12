@@ -27,11 +27,11 @@ function SendCoins() {
 
   const tabsConfig = [
     {
-      label: Intl.t('sendcoins.send-tab'),
+      label: Intl.t('send-coins.send-tab'),
       content: <Send account={account} />,
     },
     {
-      label: Intl.t('sendcoins.receive-tab'),
+      label: Intl.t('send-coins.receive-tab'),
       content: <ReceiveCoins />,
     },
   ];

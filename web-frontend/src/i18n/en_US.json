@@ -81,7 +81,7 @@
       "no-account": "No account found - redirecting to account creation page"
     }
   },
-  "sendcoins": {
+  "send-coins": {
     "send-tab": "Send",
     "receive-tab": "Receive",
     "amount": "Amount",
