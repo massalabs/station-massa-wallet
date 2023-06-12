@@ -130,7 +130,7 @@ function Modal({ ...props }) {
             value={!customGasFees ? '' : fees}
             disabled={!customGasFees}
             onChange={(e) => handleFees(e.target.value)}
-            error={errorAdvanced?.amount}
+            error={errorAdvanced?.fees}
           />
 
           <Button

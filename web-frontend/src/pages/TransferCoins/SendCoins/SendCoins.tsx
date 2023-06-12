@@ -1,9 +1,10 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 
 import {
-  validateInputs,
   SendInputsErrors,
-  validateAmount,
+  getAddressError,
+  getAmountFormatError,
+  getAmountTooHighError,
 } from '../../../validation/sendInputs';
 import { formatStandard, Unit } from '../../../utils/MassaFormating';
 import { parseForm } from '../../../utils/parseForm';
@@ -13,6 +14,7 @@ import { AccountObject } from '../../../models/AccountModel';
 
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
+import Intl from '../../../i18n/i18n';
 
 export interface SendCoinsProps {
   account: AccountObject;
@@ -39,18 +41,53 @@ function SendCoins(props: SendCoinsProps) {
   const unformattedBalance = account?.candidateBalance ?? '0.00';
   const balance = parseInt(unformattedBalance);
 
+  function validateSendForm(amount: string, recipient: string) {
+    const errorAmountFormat = getAmountFormatError(amount, true);
+    if (errorAmountFormat) {
+      setError({
+        amount: Intl.t(errorAmountFormat, { type: 'Amount', verb: 'is' }),
+      });
+      return false;
+    }
+    const errorAmountTooHigh = getAmountTooHighError(+amount, balance, true);
+    if (errorAmountTooHigh) {
+      setError({
+        amount: Intl.t(errorAmountTooHigh, { type: 'Amount', verb: 'is' }),
+      });
+      return false;
+    }
+    const addressError = getAddressError(recipient);
+    if (addressError) {
+      setError({ address: Intl.t(addressError) });
+      return false;
+    }
+    return true;
+  }
+
+  function validateAdvanced(fees: string) {
+    const errorAmountFormat = getAmountFormatError(fees);
+    if (errorAmountFormat) {
+      setErrorAdvanced({
+        fees: Intl.t(errorAmountFormat, { type: 'Fees', verb: 'are' }),
+      });
+
+      const errorAmountTooHigh = getAmountTooHighError(+fees, balance);
+      if (errorAmountTooHigh) {
+        setErrorAdvanced({
+          fees: Intl.t(errorAmountTooHigh, { type: 'Fees', verb: 'are' }),
+        });
+      }
+      return false;
+    }
+  }
+
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formObject = parseForm(e);
     const { amount, recipient } = formObject;
-    const errors = validateInputs(
-      amount,
-      recipient,
-      'Recipient',
-      unformattedBalance,
-    );
-    setError(errors);
-    if (errors !== null) return;
+    const errors = validateSendForm(amount, recipient);
+
+    if (!errors) return;
     setValid(!valid);
   }
 
@@ -85,24 +122,16 @@ function SendCoins(props: SendCoinsProps) {
     setAmount(e.target.value);
   }
 
-  function handleValidation(errors: object | null) {
-    if (errors !== null) {
-      return;
-    } else {
-      setModal(false);
-    }
-  }
-
   // we set the fees using a useState so they can render in the modal
   // We pass the validateAmount Fn as args directly ta handle the confirmation
   // Because the useState is too slow to be use as a param in th Fn
   function handleConfirm() {
-    setErrorAdvanced(
-      validateAmount(fees ?? '0.00', unformattedBalance, 'Fees'),
-    );
-    handleValidation(
-      validateAmount(fees ?? '0.00', unformattedBalance, 'Fees'),
-    );
+    const errors = validateAdvanced(fees);
+    if (!errors) {
+      return;
+    } else {
+      setModal(false);
+    }
   }
 
   function handleFees(num: string) {

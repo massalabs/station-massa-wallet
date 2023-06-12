@@ -14,8 +14,9 @@ import {
   Selector,
 } from '@massalabs/react-ui-kit';
 import {
-  validateInputs,
-  SendInputsErrors,
+  getAddressError,
+  getAmountFormatError,
+  getAmountTooHighError,
 } from '../../../validation/sendInputs';
 
 interface GenerateLinkProps {
@@ -37,9 +38,24 @@ function GenerateLink(props: GenerateLinkProps) {
   const formattedBalance = formatStandard(recipientBalance);
   const [linkToShare, setLinkTOShare] = useState('');
 
+  function validate(amount: string, provider: string) {
+    const errorAmountFormat = getAmountFormatError(amount, true);
+    if (errorAmountFormat) {
+      setError({
+        amount: Intl.t(errorAmountFormat, { type: 'Amount', verb: 'is' }),
+      });
+      return false;
+    }
+    if (!provider) return true;
+    const addressError = getAddressError(provider);
+    if (addressError) {
+      setError({ address: Intl.t(addressError) });
+      return false;
+    }
+    return true;
+  }
   const handleGenerate = () => {
-    const errors = validateInputs(amount, provider, 'provider');
-    setError(errors);
+    const errors = validate(amount, provider);
     if (errors !== null) return;
     const amountArg = amount ? `&amount=${amount}` : '';
     const providerArg = provider ? `&provider=${provider}` : '';
@@ -70,7 +86,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 placeholder={Intl.t('receive-coins.amount-to-ask')}
                 defaultValue=""
                 onChange={(e) => setAmount(e.target.value)}
-                error={error?.amount}
+                // error={error?.amount}
               />
             </div>
             <div className="flex flex-col gap-3 mb-6">
@@ -89,7 +105,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 placeholder={Intl.t('receive-coins.provider-description')}
                 defaultValue=""
                 onChange={(e) => setProvider(e.target.value)}
-                error={error?.address}
+                // error={error?.address}
               />
             </div>
             <div className="flex flex-col gap-3 mb-3">
