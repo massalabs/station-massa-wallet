@@ -33,18 +33,12 @@ function GenerateLink(props: GenerateLinkProps) {
   const [provider, setProvider] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
   const recipient = account.nickname;
-  const unformattedBalance = account.candidateBalance;
   const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
   const formattedBalance = formatStandard(recipientBalance);
   const [linkToShare, setLinkTOShare] = useState('');
 
   const handleGenerate = () => {
-    const errors = validateInputs(
-      amount,
-      provider,
-      'provider',
-      unformattedBalance,
-    );
+    const errors = validateInputs(amount, provider, 'provider');
     setError(errors);
     if (errors !== null) return;
     const amountArg = amount ? `&amount=${amount}` : '';
