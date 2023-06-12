@@ -46,6 +46,9 @@
   "settings": {
     "title-profil": "Account profil",
     "title-security": "Account security",
+    "inputs": {
+      "nickname": "Account name"
+    },
     "buttons": {
       "update": "Update",
       "delete": "Delete account",
@@ -61,8 +64,7 @@
   },
   "errors": {
     "nickname-required": "Nickname is required",
-    "nickname-already-exists": "This account name already exists",
-    "nickname-invalid-format": "The account name can't contain any special characters",
+    "account-invalid-format": "The account name can't contain any special characters",
     "unexpected-error": {
       "title": "Oops!",
       "description": "An unexpected error has occurred",
@@ -79,7 +81,20 @@
     "send-redirect": {
       "account-not-found": "Account not found - redirecting to account creation page. You can import this account with its private key",
       "no-account": "No account found - redirecting to account creation page"
-    }
+    },
+    "invalid-nickname": "Invalid nickname",
+    "invalid-password": "Wrong password",
+    "invalid-private-key": "Invalid private key",
+    "no-file": "No file selected",
+    "invalid-file": "Filesystem error",
+    "invalid-file-format": "Invalid account file format",
+    "unknown": "Unknown error, try again",
+    "duplicate-key": "Private key already exists",
+    "duplicate-nickname": "This account name already exists",
+    "timeout": "Timeout error",
+    "invalid-prompt-input": "Invalid user input",
+    "action-canceled": "Action canceled",
+    "password-required": "Password is required"
   },
   "transfer-coins": {
     "send-tab": "Send",
