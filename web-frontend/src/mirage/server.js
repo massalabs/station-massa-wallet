@@ -61,7 +61,7 @@ function mockServer(environment = ENV.DEV) {
       });
 
       this.put('accounts/:nickname', (schema, request) => {
-        let { newNickname } = JSON.parse(request.requestBody);
+        let { nickname: newNickname } = JSON.parse(request.requestBody);
         let nickname = request.params.nickname;
         let account = schema.accounts.findBy({ nickname });
 
