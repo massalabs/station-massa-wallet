@@ -32,6 +32,7 @@ import Assets from './pages/Assets/Assets.tsx';
 import SendRedirect from './pages/TransferCoins/SendCoins/SendRedirect.tsx';
 import Base from './pages/Base/Base.tsx';
 
+const baseURL = import.meta.env.VITE_BASE_APP;
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
   mockServer(import.meta.env.VITE_ENV);
@@ -41,7 +42,7 @@ const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path={import.meta.env.VITE_BASE_APP} element={<Base />}>
+    <Route path={baseURL} element={<Base />}>
       {/* routes for onboarding and account creation */}
       <Route path="index" element={<Index />} />
       <Route path="account-select" element={<AccountSelect />} />
@@ -63,7 +64,10 @@ const router = createBrowserRouter(
       {/* routes for errors */}
       <Route path="error" element={<Error />} />
       <Route path="*" element={<Error />} />
-      <Route path="/" element={<Navigate to="/index" />} />
+      <Route
+        path={`${baseURL}/`}
+        element={<Navigate to={`${baseURL}/index`} />}
+      />
     </Route>,
   ),
 );
