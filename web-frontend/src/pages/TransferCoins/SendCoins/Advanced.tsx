@@ -1,90 +1,103 @@
 import {
   Button,
-  Input,
+  Currency,
   PopupModal,
   PopupModalContent,
   PopupModalHeader,
   RadioButton,
 } from '@massalabs/react-ui-kit';
-import { presetFees } from '../../../utils/MassaFormating';
 import Intl from '../../../i18n/i18n';
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
+import { parseForm } from '../../../utils/parseForm';
 
-function Modal({ ...props }) {
-  const feesTypes = Object.keys(presetFees);
-  const {
-    fees,
-    modal,
-    setModal,
-    handleFees,
-    handleConfirm,
-    setErrorAdvanced,
-    errorAdvanced,
-  } = props;
-  const [presetGasFees, setPresetGasFees] = useState<boolean>(true);
-  const [customGasFees, setCustomFees] = useState<boolean>(false);
+export interface InputsErrors {
+  fees?: string;
+}
 
-  function PresetFeeSelector({ name }: { name: string }) {
-    const isDisabled = fees !== presetFees[name] || customGasFees;
-    const disabledButton = 'text-neutral bg-secondary';
+const PRESET_LOW = '1';
+const PRESET_STANDARD = '1000';
+const PRESET_HIGH = '5000';
 
-    const disabledButtonArgs = {
-      disabled: customGasFees,
-    };
+export const presetFees: { [key: string]: string } = {
+  low: PRESET_LOW,
+  standard: PRESET_STANDARD,
+  high: PRESET_HIGH,
+};
 
+function Advanced({ ...props }) {
+  const { onClose, fees: currentFees, setFees: setCurrentFees } = props;
+
+  const isOneOfPressedFees = Object.values(presetFees).includes(currentFees);
+  const initialFees = !isOneOfPressedFees ? currentFees : 0;
+  const initialPressetFees = !isOneOfPressedFees
+    ? 'none'
+    : currentFees || PRESET_STANDARD;
+  const initialCustomFees = !isOneOfPressedFees || false;
+
+  const [error, setError] = useState<InputsErrors | null>(null);
+  const [fees, setFees] = useState<number | string | undefined>(initialFees);
+  const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
+  const [presetFee, setPresetFee] = useState<string>(initialPressetFees);
+
+  function handleGasFeesOption(isCustomFees: boolean) {
+    setCustomFees(isCustomFees);
+    setError(null);
+    setFees(0);
+    
+    isCustomFees
+      ? setPresetFee('none')
+      : setPresetFee(PRESET_STANDARD);
+  }
+
+  function validate(formObject: any) {
+    const { fees } = formObject;
+    setError(null);
+
+    if (customFees && fees <= 0) {
+      setError({ fees: Intl.t('errors.send-coins.gas-fees-to-low') });
+      return false;
+    }
+
+    return true;
+  }
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formObject = parseForm(e);
+
+    if (!validate(formObject)) return;
+
+    let pickedFee = fees > 0 ? fees : presetFee;
+    setCurrentFees(pickedFee);
+    onClose?.(pickedFee);
+  }
+
+  function FeesSelector({ name }: { name: string }) {
+    const isDisabled = presetFee !== presetFees[name];
     return (
       <Button
-        {...disabledButtonArgs}
+        disabled={customFees}
+        name={name}
         customClass={
-          isDisabled ? `w-1/3 h-12 ${disabledButton}` : `w-1/3 h-12 bg-neutral`
+          isDisabled
+            ? 'w-1/3 h-12 text-neutral bg-secondary'
+            : 'w-1/3 h-12 bg-neutral'
         }
         variant="toggle"
-        onClick={() => handleFees(presetFees[name])}
+        onClick={() => setPresetFee(presetFees[name])}
       >
         {name}
-        <label className="text-tertiary text-xs flex pl-1 items-center">
+        <label className="text-tertiary text-xs flex pl-1 items-center cursor-pointer">
           ({presetFees[name]} nMAS)
         </label>
       </Button>
     );
   }
 
-  function handlePresetGas() {
-    setCustomFees(false);
-    setPresetGasFees(true);
-    handleFees('1000');
-    setErrorAdvanced(null);
-  }
-
-  function handleCustomGas() {
-    setCustomFees(true);
-    setPresetGasFees(false);
-    handleFees('');
-  }
-
-  const presetArgs = {
-    checked: presetGasFees,
-  };
-
-  const customArgs = {
-    checked: customGasFees,
-  };
-
-  function handleClose() {
-    setModal(!modal);
-    setErrorAdvanced(null);
-    handleFees('1000');
-  }
-
-  function handleOpen() {
-    handleFees('1000');
-  }
-
   return (
     <PopupModal
       fullMode={true}
-      onClose={handleClose}
-      onOpen={handleOpen}
+      onClose={onClose}
       customClass="!w-1/2 min-w-[775px]"
     >
       <PopupModalHeader>
@@ -99,51 +112,51 @@ function Modal({ ...props }) {
       </PopupModalHeader>
       <PopupModalContent>
         <div className="pb-10">
-          <div className="flex flex-row items-center mas-buttons mb-3">
-            <RadioButton
-              defaultChecked={true}
-              onClick={() => handlePresetGas()}
-              {...presetArgs}
-            />
-            <p className="h-full ml-3 pb-1">{Intl.t('send-coins.preset')}</p>
-          </div>
-          <div className="flex flex-row items-center w-full gap-4 mb-6">
-            {feesTypes.map((type) => (
-              <PresetFeeSelector key={type} name={type} />
-            ))}
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-row items-center mas-buttons mb-3">
+              <RadioButton
+                checked={!customFees}
+                onChange={() => handleGasFeesOption(false)}
+                name="gas"
+              />
+              <p className="h-full ml-3 pb-1 cursor-pointer" onClick={() => handleGasFeesOption(false)}>
+                {Intl.t('send-coins.preset')}
+              </p>
+            </div>
+            <div className="flex flex-row items-center w-full gap-4 mb-6">
+              {Object.keys(presetFees).map((type) => (
+                <FeesSelector key={type} name={type} />
+              ))}
+            </div>
 
-          <div className="flex flex-row items-center mas-buttons mb-3">
-            <RadioButton
-              defaultChecked={false}
-              onClick={() => handleCustomGas()}
-              {...customArgs}
+            <div className="flex flex-row items-center mas-buttons mb-3">
+              <RadioButton
+                checked={customFees}
+                onChange={() => handleGasFeesOption(true)}
+                name="gas"
+              />
+              <p className="h-full ml-3 pb-1 cursor-pointer" onClick={() => handleGasFeesOption(true)}>
+                {Intl.t('send-coins.custom-fees')}:
+              </p>
+            </div>
+            <Currency
+              placeholder={Intl.t('send-coins.custom-fees')}
+              name="fees"
+              variant="nMAS"
+              value={fees === 0 ? '' : fees}
+              disabled={!customFees}
+              onValueChange={(value) => setFees(value)}
+              error={error?.fees}
             />
-            <p className="h-full ml-3 pb-1">
-              {Intl.t('send-coins.custom-fees')}
-            </p>
-          </div>
-          <Input
-            type="text"
-            placeholder="Gas fees amount (nMAS)"
-            name="fees"
-            value={!customGasFees ? '' : fees}
-            disabled={!customGasFees}
-            onChange={(e) => handleFees(e.target.value)}
-            error={errorAdvanced?.amount}
-          />
-
-          <Button
-            customClass="mt-6"
-            type="submit"
-            onClick={(e) => handleConfirm(e)}
-          >
-            {Intl.t('send-coins.confirm-fees')}
-          </Button>
+            
+            <Button customClass="mt-6" type="submit">
+              {Intl.t('send-coins.confirm-fees')}
+            </Button>
+          </form>
         </div>
       </PopupModalContent>
     </PopupModal>
   );
 }
 
-export default Modal;
+export default Advanced;

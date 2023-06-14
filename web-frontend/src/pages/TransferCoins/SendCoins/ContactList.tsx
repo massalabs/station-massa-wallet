@@ -6,27 +6,29 @@ import {
   Identicon,
   MassaLogo,
 } from '@massalabs/react-ui-kit';
-import { formatStandard } from '../../../utils/MassaFormating';
+import { formatStandard } from '../../../utils/massaFormating';
 import { useResource } from '../../../custom/api';
 import { AccountObject } from '../../../models/AccountModel';
 
 function AccountSelect({ ...props }) {
-  const { modalAccounts, setModalAccounts, setRecipient, account } = props;
-  const selectedAccount = account;
+  const { onClose, setRecipient, account: currentAccount } = props;
+
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
   const filteredAccounts = accounts.filter(
-    (account: AccountObject) => account.nickname !== selectedAccount.nickname,
+    (account: AccountObject) => account.nickname !== currentAccount.nickname,
   );
 
-  function setRecipientAndClose(account: AccountObject) {
-    setRecipient(account.address);
-    setModalAccounts(false);
+  function handleSetRecipient(filteredAccount: AccountObject) {
+    let address = filteredAccount?.address || '';
+
+    setRecipient?.(address);
+    onClose?.();
   }
 
   return (
     <PopupModal
       fullMode={true}
-      onClose={() => setModalAccounts(!modalAccounts)}
+      onClose={() => onClose?.()}
       customClass="!w-1/2 h-1/2 "
     >
       <PopupModalHeader>
@@ -34,16 +36,18 @@ function AccountSelect({ ...props }) {
       </PopupModalHeader>
       <PopupModalContent>
         <div className="overflow-scroll h-80">
-          {filteredAccounts.map((account: AccountObject) => (
+          {filteredAccounts.map((filteredAccount: AccountObject) => (
             <Selector
               customClass="pb-4"
-              key={account.nickname}
-              preIcon={<Identicon username={account.nickname} size={32} />}
+              key={filteredAccount.nickname}
+              preIcon={<Identicon username={filteredAccount.nickname} />}
               posIcon={<MassaLogo size={24} />}
-              content={account.nickname}
+              content={filteredAccount.nickname}
               variant="secondary"
-              amount={formatStandard(+account.candidateBalance / 10 ** 9)}
-              onClick={() => setRecipientAndClose(account)}
+              amount={formatStandard(
+                +filteredAccount.candidateBalance / 10 ** 9,
+              )}
+              onClick={() => handleSetRecipient(filteredAccount)}
             />
           ))}
         </div>
