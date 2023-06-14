@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router';
 import { promptAction, promptRequest } from '../events/events';
 import { FiCheck } from 'react-icons/fi';
-import I18n from '../i18n/i18n';
+import Intl from '../i18n/i18n';
 import { Layout } from '../layouts/Layout/Layout';
 
 function Success() {
@@ -11,19 +11,19 @@ function Success() {
   function successMsg(req: promptRequest) {
     switch (req.Action) {
       case promptAction.deleteReq:
-        return I18n.t('success.delete');
+        return Intl.t('success.delete');
       case promptAction.newPasswordReq:
-        return I18n.t('success.new-password');
+        return Intl.t('success.new-password');
       case promptAction.importReq:
-        return I18n.t('success.import');
+        return Intl.t('success.import');
       case promptAction.signReq:
-        return I18n.t('success.sign');
+        return Intl.t('success.sign');
       case promptAction.backupReq:
-        return I18n.t('success.backup');
+        return Intl.t('success.backup');
       case promptAction.transferReq:
-        return I18n.t('success.transfer');
+        return Intl.t('success.transfer');
       default:
-        return I18n.t('success.success');
+        return Intl.t('success.success');
     }
   }
 
