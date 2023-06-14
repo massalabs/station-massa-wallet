@@ -1,54 +1,83 @@
-import { Balance, Button, Input } from '@massalabs/react-ui-kit';
+import { useState, FormEvent } from 'react';
+import { Balance, Button, Currency, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 import Intl from '../../../i18n/i18n';
-import Modal from './Advanced';
+import Advanced from './Advanced';
 import ContactList from './ContactList';
+import { parseForm } from '../../../utils/parseForm';
+import {
+  parseMAStoNMAS,
+  parseNMAStoMAS,
+} from '../../../utils/massaFormating';
+
+export interface InputsErrors {
+  amount?: string;
+  recipient?: string;
+}
 
 export function SendForm({ ...props }) {
-  const {
-    amount,
-    account,
-    formattedBalance,
-    recipient,
-    error,
-    setErrorAdvanced,
-    errorAdvanced,
-    fees,
-    modal,
-    setModal,
-    modalAccounts,
-    setModalAccounts,
-    handleModalAccounts,
-    handleConfirm,
-    handleFees,
-    setRecipient,
-    handleSubmit,
-    handleChange,
-    SendPercentage,
-  } = props;
+  const { handleSubmit: sendCoinsHandleSubmit, account, data } = props;
 
-  const modalArgsAdvanced = {
-    fees,
-    modal,
-    error,
-    setErrorAdvanced,
-    errorAdvanced,
-    setModal,
-    handleConfirm,
-    handleFees,
-  };
-  const modalArgsAccounts = {
-    modalAccounts,
-    setModalAccounts,
-    handleModalAccounts,
-    setRecipient,
-    account,
-  };
+  const balance = parseFloat(account?.candidateBalance || 0);
+  
+  const formattedBalance = parseNMAStoMAS(balance);
+
+  const [error, setError] = useState<InputsErrors | null>(null);
+  const [advancedModal, setAdvancedModal] = useState<boolean>(false);
+  const [ContactListModal, setContactListModal] = useState<boolean>(false);
+  const [amount, setAmount] = useState<number | string | undefined>(
+    data?.amount ? parseMAStoNMAS(data?.amount) : '',
+  );
+  const [fees, setFees] = useState(data?.fees ?? '1000');
+  const [recipient, setRecipient] = useState(data?.recipient ?? '');
+
+  function handlePercent(amount = 0, percent: number) {
+    let newAmount = amount * percent;
+
+    setAmount(parseMAStoNMAS(parseNMAStoMAS(newAmount)));
+  }
+
+  function validate(formObject: any) {
+    const { amount, recipient } = formObject;
+
+    setError(null);
+
+    if (!amount) {
+      setError({ amount: Intl.t('errors.send-coins.invalid-amount') });
+      return false;
+    }
+
+    if (amount > balance) {
+      setError({ amount: Intl.t('errors.send-coins.amount-to-high') });
+      return false;
+    }
+
+    if (!recipient) {
+      setError({ recipient: Intl.t('errors.send-coins.no-address') });
+      return false;
+    }
+
+    // It needs starts with AU and after AU have at least 4 chars
+    if (!/^AU.{4,}$/.test(recipient)) {
+      setError({ recipient: Intl.t('errors.send-coins.invalid-address') });
+      return false;
+    }
+
+    return true;
+  }
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formObject = parseForm(e);
+
+    if (!validate(formObject)) return;
+
+    sendCoinsHandleSubmit?.({ ...formObject, fees });
+  }
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        {/* Balance Section */}
         <p className="mas-subtitle mb-5">
           {Intl.t('send-coins.account-balance')}
         </p>
@@ -60,20 +89,40 @@ export function SendForm({ ...props }) {
           </p>
         </div>
         <div className="pb-3.5">
-          <Input
+          <Currency
             placeholder={'Amount to send'}
-            value={amount}
             name="amount"
-            onChange={(e) => handleChange(e)}
+            value={(amount)}
+            onValueChange={(value) => setAmount(value)}
             error={error?.amount}
           />
         </div>
         <div className="flex flex-row-reverse">
           <ul className="flex flex-row mas-body2">
-            <SendPercentage percentage={25} />
-            <SendPercentage percentage={50} />
-            <SendPercentage percentage={75} />
-            <SendPercentage percentage={100} />
+            <li
+              onClick={() => handlePercent(balance, 0.25)}
+              className="mr-3.5 hover:cursor-pointer"
+            >
+              25%
+            </li>
+            <li
+              onClick={() => handlePercent(balance, 0.5)}
+              className="mr-3.5 hover:cursor-pointer"
+            >
+              50%
+            </li>
+            <li
+              onClick={() => handlePercent(balance, 0.75)}
+              className="mr-3.5 hover:cursor-pointer"
+            >
+              75%
+            </li>
+            <li
+              onClick={() => handlePercent(balance, 1)}
+              className="mr-3.5 hover:cursor-pointer"
+            >
+              Max
+            </li>
           </ul>
         </div>
         <p className="pb-3.5 mas-body2">{Intl.t('send-coins.recipient')}</p>
@@ -81,25 +130,21 @@ export function SendForm({ ...props }) {
           <Input
             placeholder={'Recipient'}
             value={recipient}
-            onChange={(e) => setRecipient(e.target.value)}
             name="recipient"
-            error={error?.address}
+            onChange={(e) => setRecipient(e.target.value)}
+            error={error?.recipient}
           />
         </div>
         <div className="flex flex-row-reverse pb-3.5">
-          <p
-            className="hover:cursor-pointer"
-            onClick={() => setModalAccounts(!modalAccounts)}
-          >
-            <u className="mas-body2">
+          <p className="hover:cursor-pointer">
+            <u className="mas-body2" onClick={() => setContactListModal(true)}>
               {Intl.t('send-coins.transfer-between-acc')}
             </u>
           </p>
         </div>
-        {/* Button Section */}
         <div className="flex flex-col w-full gap-3.5">
           <Button
-            onClick={() => setModal(!modal)}
+            onClick={() => setAdvancedModal(!advancedModal)}
             variant={'secondary'}
             posIcon={<FiPlus />}
           >
@@ -113,15 +158,20 @@ export function SendForm({ ...props }) {
           </div>
         </div>
       </form>
-      <div>
-        <div>
-          {modal ? (
-            <Modal {...modalArgsAdvanced} />
-          ) : modalAccounts ? (
-            <ContactList {...modalArgsAccounts} />
-          ) : null}
-        </div>
-      </div>
+      {advancedModal && (
+        <Advanced
+          setFees={setFees}
+          fees={fees}
+          onClose={() => setAdvancedModal(false)}
+        />
+      )}
+      {ContactListModal && (
+        <ContactList
+          setRecipient={setRecipient}
+          account={account}
+          onClose={() => setContactListModal(false)}
+        />
+      )}
     </div>
   );
 }
