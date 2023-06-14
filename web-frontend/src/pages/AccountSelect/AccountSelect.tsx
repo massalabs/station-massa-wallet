@@ -5,7 +5,7 @@ import { routeFor } from '../../utils';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { toMAS } from '@massalabs/massa-web3';
-import { Loading } from '../../components';
+import { Loading } from './Loading';
 import Intl from '../../i18n/i18n';
 
 import LandingPage from '../../layouts/LandingPage/LandingPage';
@@ -22,17 +22,16 @@ export default function AccountSelect() {
 
   const {
     data: accounts,
-    status,
+    isLoading,
     error,
   } = useResource<AccountObject[]>('accounts');
 
-  const isLoadingData = status === 'loading';
   const hasAccounts = accounts?.length;
 
   useEffect(() => {
     if (error) {
       navigate(routeFor('error'));
-    } else if (!isLoadingData && !hasAccounts) {
+    } else if (!isLoading && !hasAccounts) {
       navigate(routeFor('index'));
     }
   }, [accounts, navigate]);
@@ -43,7 +42,7 @@ export default function AccountSelect() {
 
   return (
     <LandingPage>
-      {isLoadingData ? (
+      {isLoading ? (
         <Loading />
       ) : hasAccounts ? (
         <div className="flex flex-col justify-center items-center h-screen">

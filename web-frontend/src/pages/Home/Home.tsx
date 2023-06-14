@@ -6,6 +6,7 @@ import { useResource } from '../../custom/api';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';
 import { TAB_SEND, TAB_RECEIVE } from '../../const/tabs/tabs';
+import { Loading } from './Loading';
 
 import WalletLayout, {
   MenuItem,
@@ -19,15 +20,13 @@ export default function Home() {
   const {
     error,
     data: account,
-    status,
+    isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
-
-  const isLoadingData = status === 'loading';
 
   useEffect(() => {
     if (error) {
       navigate(routeFor('error'));
-    } else if (!account && !isLoadingData) {
+    } else if (!account && !isLoading) {
       navigate(routeFor('account-select'));
     }
   }, [account, navigate]);
@@ -40,48 +39,54 @@ export default function Home() {
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
-      <div className="flex flex-col justify-center items-center gap-5 w-1/2">
-        <div className="bg-secondary rounded-2xl w-full max-w-lg p-10">
-          <p className="mas-body text-f-primary mb-2">
-            {Intl.t('home.title-account-balance')}
-          </p>
-          <Balance size="lg" amount={formattedBalance} customClass="mb-6" />
-          <div className="flex gap-7">
-            <Button
-              variant="secondary"
-              preIcon={<FiArrowDownLeft />}
-              onClick={() =>
-                navigate(
-                  routeFor(`${nickname}/transfer-coins?tab=${TAB_RECEIVE}`),
-                )
-              }
-            >
-              {Intl.t('home.buttons.receive')}
-            </Button>
-            <Button
-              preIcon={<FiArrowUpRight />}
-              onClick={() =>
-                navigate(routeFor(`${nickname}/transfer-coins?tab=${TAB_SEND}`))
-              }
-            >
-              {Intl.t('home.buttons.send')}
-            </Button>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="flex flex-col justify-center items-center gap-5 w-1/2">
+          <div className="bg-secondary rounded-2xl w-full max-w-lg p-10">
+            <p className="mas-body text-f-primary mb-2">
+              {Intl.t('home.title-account-balance')}
+            </p>
+            <Balance size="lg" amount={formattedBalance} customClass="mb-6" />
+            <div className="flex gap-7">
+              <Button
+                variant="secondary"
+                preIcon={<FiArrowDownLeft />}
+                onClick={() =>
+                  navigate(
+                    routeFor(`${nickname}/transfer-coins?tab=${TAB_RECEIVE}`),
+                  )
+                }
+              >
+                {Intl.t('home.buttons.receive')}
+              </Button>
+              <Button
+                preIcon={<FiArrowUpRight />}
+                onClick={() =>
+                  navigate(
+                    routeFor(`${nickname}/transfer-coins?tab=${TAB_SEND}`),
+                  )
+                }
+              >
+                {Intl.t('home.buttons.send')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="bg-secondary rounded-2xl w-full max-w-lg p-10">
+            <p className="mas-body text-f-primary mb-6">
+              {Intl.t('home.title-account-address')}
+            </p>
+            <Clipboard
+              displayedContent={formattedAddress}
+              rawContent={address}
+              error={Intl.t('errors.no-content-to-copy')}
+              className="flex flex-row items-center mas-body2 justify-between
+              w-full h-12 px-3 rounded bg-primary cursor-pointer"
+            />
           </div>
         </div>
-
-        <div className="bg-secondary rounded-2xl w-full max-w-lg p-10">
-          <p className="mas-body text-f-primary mb-6">
-            {Intl.t('home.title-account-address')}
-          </p>
-          <Clipboard
-            displayedContent={formattedAddress}
-            rawContent={address}
-            error={Intl.t('errors.no-content-to-copy')}
-            className="flex flex-row items-center mas-body2 justify-between
-              w-full h-12 px-3 rounded bg-primary cursor-pointer"
-          />
-        </div>
-      </div>
+      )}
     </WalletLayout>
   );
 }

@@ -4,17 +4,16 @@ import { routeFor } from '../../utils';
 import { useResource, usePut } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import Intl from '../../i18n/i18n';
-import { Loading } from '../../components';
+import { Loading } from './Loading';
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
 import LandingPage from '../../layouts/LandingPage/LandingPage';
 import { FiArrowRight } from 'react-icons/fi';
 
 export default function Index() {
-  const { error, data, status } = useResource<AccountObject[]>('accounts');
+  const { error, data, isLoading } = useResource<AccountObject[]>('accounts');
   const { mutate } = usePut<AccountObject>('accounts');
   const navigate = useNavigate();
 
-  const isLoadingData = status === 'loading';
   const hasAccounts = data?.length;
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function Index() {
 
   return (
     <LandingPage>
-      {isLoadingData ? (
+      {isLoading ? (
         <Loading />
       ) : !hasAccounts ? (
         <div className="flex flex-col justify-center items-center h-screen">

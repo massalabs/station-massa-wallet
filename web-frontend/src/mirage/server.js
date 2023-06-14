@@ -48,13 +48,17 @@ function mockServer(environment = ENV.DEV) {
         { timing: 1000 },
       );
 
-      this.get('accounts/:nickname', (schema, request) => {
-        let nickname = request.params.nickname;
+      this.get(
+        'accounts/:nickname',
+        (schema, request) => {
+          let nickname = request.params.nickname;
 
-        let { attrs: account } = schema.findBy('account', { nickname });
+          let { attrs: account } = schema.findBy('account', { nickname });
 
-        return { ...account };
-      });
+          return { ...account };
+        },
+        { timing: 2000 },
+      );
 
       this.put('accounts', (schema) => {
         return schema.create('account', {
