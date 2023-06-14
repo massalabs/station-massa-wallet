@@ -16,7 +16,7 @@ import { Password, Button } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
 import Intl from '../i18n/i18n';
-import { formatStandard } from '../utils/MassaFormating';
+import { formatStandard } from '../utils/massaFormating';
 import { toMAS } from '@massalabs/massa-web3';
 
 interface PromptRequestDeleteData {

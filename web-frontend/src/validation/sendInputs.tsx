@@ -3,13 +3,14 @@ import Intl from '../i18n/i18n';
 import {
   checkAddressFormat,
   reverseFormatStandard,
-} from '../utils/MassaFormating';
+} from '../utils/massaFormating';
 
 export interface SendInputsErrors {
   unexpectedError?: string;
   amount?: string;
   address?: string;
   fees?: string;
+  link?: string;
 }
 
 /**

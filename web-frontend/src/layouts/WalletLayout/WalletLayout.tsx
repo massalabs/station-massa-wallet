@@ -153,7 +153,9 @@ function WalletLayout(props: IWalletLayoutProps) {
         {props?.children}
       </div>
       <div className="absolute top-0 right-0 p-6">
-        <Dropdown options={accountsItems} select={selectedAccountKey} />
+        <div className="w-64">
+          <Dropdown options={accountsItems} select={selectedAccountKey} />
+        </div>
       </div>
     </div>
   );
