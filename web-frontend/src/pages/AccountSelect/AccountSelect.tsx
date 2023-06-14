@@ -15,7 +15,7 @@ import {
   MassaLogo,
   Identicon,
 } from '@massalabs/react-ui-kit';
-import { formatStandard } from '../../utils/MassaFormating';
+import { formatStandard } from '../../utils/massaFormating';
 
 export default function AccountSelect() {
   const navigate = useNavigate();
