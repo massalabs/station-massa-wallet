@@ -1,89 +1,27 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { routeFor } from '../../../utils';
+import { useState } from 'react';
 import Intl from '../../../i18n/i18n';
-import { fromMAS } from '@massalabs/massa-web3';
-
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
-import {
-  Unit,
-  formatStandard,
-  maskAddress,
-  reverseFormatStandard,
-} from '../../../utils/MassaFormating';
-import { usePost } from '../../../custom/api';
-import { SendTransactionObject } from '../../../models/AccountModel';
+import { formatValue } from 'react-currency-input-field';
 
+import { maskAddress, parseMAStoNMAS } from '../../../utils/massaFormat';
 import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {
-  const { amount, nickname, recipient, valid, fees, setValid } = props;
+  const { data, handleConfirm, isLoading } = props;
+  const { amount, fees, recipient } = data;
 
-  const navigate = useNavigate();
   const formattedRecipientAddress = maskAddress(recipient);
-  const reversedAmount = reverseFormatStandard(amount);
-  const amountInNanoMAS = fromMAS(reversedAmount).toString();
-  const total = +amountInNanoMAS + +fees;
-  const formattedTotal = formatStandard(total, Unit.NanoMAS);
+  const total = parseMAStoNMAS(amount) + parseInt(fees);
+  const formattedTotal = formatValue({
+    value: total.toString(),
+  });
   const [showTooltip, setShowTooltip] = useState(false);
-
-  const { mutate, isSuccess, error } = usePost<SendTransactionObject>(
-    `accounts/${nickname}/transfer`,
-  );
-
-  useEffect(() => {
-    if (error) {
-      navigate(routeFor('error'));
-    } else if (isSuccess) {
-      navigate(routeFor(`${nickname}/home`));
-    }
-  }, [isSuccess]);
-
-  const handleTransfer = () => {
-    const transferData: SendTransactionObject = {
-      amount: amountInNanoMAS,
-      recipientAddress: recipient,
-      fee: fees.toString(),
-    };
-
-    mutate(transferData as SendTransactionObject);
-  };
-
-  const [customFees, setCustomFees] = useState<string>('Standard');
-
-  useEffect(() => {
-    switch (fees) {
-      case '1000':
-        setCustomFees('Standard');
-        break;
-      case '1':
-        setCustomFees('Low');
-        break;
-      case '5000':
-        setCustomFees('High');
-        break;
-      default:
-        setCustomFees('Custom');
-    }
-  }, [fees]);
-
-  const content = `
-  ${Intl.t('send-coins.gas-info', {
-    default: customFees,
-    gasFees: fees,
-  })}  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
-
-  const ToolTipArgs = {
-    showTooltip,
-    content,
-  };
 
   return (
     <>
       <div
-        onClick={() => setValid(!valid)}
+        onClick={() => handleConfirm(false)}
         className="flex flex-row just items-center hover:cursor-pointer mb-5 gap-2"
       >
         <FiChevronLeft />
@@ -95,7 +33,7 @@ export function SendConfirmation({ ...props }) {
         <div className="flex flex-row items-center pb-3 ">
           <div className="pr-2 text-s-info">
             {Intl.t('send-coins.send-confirmation', {
-              amount: formatStandard(reversedAmount),
+              amount,
               fees: fees,
             })}
           </div>
@@ -104,7 +42,10 @@ export function SendConfirmation({ ...props }) {
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
-            <ToolTip {...ToolTipArgs} />
+            <ToolTip
+              showTooltip={showTooltip}
+              content={Intl.t('send-coins.gas-info', { default: '1000' })}
+            />
           </div>
         </div>
         <Balance
@@ -116,11 +57,7 @@ export function SendConfirmation({ ...props }) {
           <u>{formattedRecipientAddress}</u>
         </p>
       </div>
-      <Button
-        onClick={() => {
-          handleTransfer();
-        }}
-      >
+      <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}
       </Button>
     </>

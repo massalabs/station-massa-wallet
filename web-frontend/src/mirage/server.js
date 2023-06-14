@@ -25,11 +25,14 @@ function mockServer(environment = ENV.DEV) {
         candidateBalance() {
           return faker.number.int().toString();
         },
+        address() {
+          return 'AU' + faker.string.alpha({ length: { min: 128, max: 256 } });
+        },
       }),
     },
 
     seeds(server) {
-      server.createList('account', 2);
+      server.createList('account', 5);
     },
 
     routes() {
@@ -76,16 +79,22 @@ function mockServer(environment = ENV.DEV) {
 
       this.post('accounts/:nickname/backup', {});
 
-      this.post('accounts/:nickname/transfer', (schema, request) => {
-        let { amount, fee, recipientAddress } = JSON.parse(request.requestBody);
+      this.post(
+        'accounts/:nickname/transfer',
+        (schema, request) => {
+          let { amount, fee, recipientAddress } = JSON.parse(
+            request.requestBody,
+          );
 
-        if (!amount || !fee || !recipientAddress) {
-          // TODO
-          // we must handle here the missing payload fields
-        }
+          if (!amount || !fee || !recipientAddress) {
+            // TODO
+            // we must handle here the missing payload fields
+          }
 
-        return schema.create('transfer');
-      });
+          return schema.create('transfer');
+        },
+        { timing: 3000 },
+      );
     },
   });
 

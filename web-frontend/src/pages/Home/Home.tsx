@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AccountObject } from '../../models/AccountModel';
-import { formatStandard, Unit, maskAddress } from '../../utils/MassaFormating';
+import { formatStandard, Unit, maskAddress } from '../../utils/massaFormat';
 import { useResource } from '../../custom/api';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';

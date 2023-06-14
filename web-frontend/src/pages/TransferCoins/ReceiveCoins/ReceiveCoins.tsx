@@ -1,32 +1,23 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { FiLink } from 'react-icons/fi';
 import QRCodeReact from 'qrcode.react';
-import { maskAddress } from '../../../utils/MassaFormating';
-import { AccountObject } from '../../../models/AccountModel';
-import { useResource } from '../../../custom/api';
-import { routeFor } from '../../../utils';
+import { maskAddress } from '../../../utils/massaFormat';
 import CopyContent from './CopyContent';
 import GenerateLink from './GenerateLink';
 import Intl from '../../../i18n/i18n';
 import { Button } from '@massalabs/react-ui-kit';
 
-function ReceiveCoins() {
-  const navigate = useNavigate();
-  const { nickname } = useParams();
-  const { data: account } = useResource<AccountObject>(`accounts/${nickname}`);
+const VITE_BASE_APP = import.meta.env.VITE_BASE_APP;
 
-  if (account === undefined) {
-    navigate(routeFor(`${nickname}/home`));
-    return null;
-  }
+function ReceiveCoins({ ...props }) {
+  const { account } = props;
 
-  const address = account.address;
+  const address = account?.address;
   const formattedAddress = maskAddress(address);
-  const VITE_BASE_APP = import.meta.env.VITE_BASE_APP;
   const baseURL = window.location.origin;
-  const [modal, setModal] = useState(false);
   const presetURL = `${baseURL}${VITE_BASE_APP}/send-redirect/?to=${address}`;
+
+  const [modal, setModal] = useState(false);
   const [url, setURL] = useState(presetURL);
 
   const modalArgs = {

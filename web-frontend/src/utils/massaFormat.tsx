@@ -14,6 +14,24 @@ export const presetFees: { [key: string]: string } = {
   high: '5000',
 };
 
+export function parseNMAStoMAS(
+  num: number,
+  unit = Unit.NanoMAS,
+  maximumFractionDigits = 9,
+): string {
+  const numInMas = unit === Unit.MAS ? num : toMAS(num).toNumber();
+  const locale = localStorage.getItem('locale') || 'en-US';
+  return numInMas.toLocaleString(locale, {
+    minimumFractionDigits: 9,
+    maximumFractionDigits,
+  });
+}
+
+export function parseMAStoNMAS(str: string): number {
+  const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
+  return Number(formattedString);
+}
+
 /**
  * Formats a number according to the specified unit and formatting options.
  * @param num - The number to format.
@@ -43,7 +61,7 @@ export function formatStandard(
 
 export function reverseFormatStandard(str: string): number {
   const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
-  return parseFloat(formattedString);
+  return Number(formattedString);
 }
 
 /**

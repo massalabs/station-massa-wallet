@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Tabs } from '@massalabs/react-ui-kit';
 import WalletLayout, {
   MenuItem,
@@ -5,27 +6,34 @@ import WalletLayout, {
 import Intl from '../../i18n/i18n';
 import SendCoins from './SendCoins/SendCoins';
 import ReceiveCoins from './ReceiveCoins/ReceiveCoins';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
-import { useQuery } from '../../custom/api/useQuery';
 import { TAB_SEND, TAB_RECEIVE } from '../../const/tabs/tabs';
 
 function TransferCoins() {
   const navigate = useNavigate();
-  const query = useQuery();
 
-  const tabName = query.get('tab') || TAB_SEND;
+  const [searchParams] = useSearchParams();
+
+  const tabName = searchParams.get('tab') || TAB_SEND;
   const tabIndex = tabName === TAB_RECEIVE ? 1 : 0;
 
   const { nickname } = useParams();
-  const { data: account } = useResource<AccountObject>(`accounts/${nickname}`);
+  const { data: account, error } = useResource<AccountObject>(
+    `accounts/${nickname}`,
+  );
 
-  if (account === undefined) {
-    navigate(routeFor(`${nickname}/home`));
-    return null;
-  }
+  window.history.replaceState(null, '', `/${nickname}/transfer-coins`);
+
+  useEffect(() => {
+    if (error) {
+      navigate('/error');
+    } else if (!account) {
+      navigate(routeFor(`${nickname}/home`));
+    }
+  }, [account, error, navigate]);
 
   const tabsConfig = [
     {
@@ -34,7 +42,7 @@ function TransferCoins() {
     },
     {
       label: Intl.t('transfer-coins.receive-tab'),
-      content: <ReceiveCoins />,
+      content: <ReceiveCoins account={account} />,
     },
   ];
 
