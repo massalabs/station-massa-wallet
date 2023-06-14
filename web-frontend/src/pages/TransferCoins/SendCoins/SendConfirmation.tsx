@@ -4,10 +4,7 @@ import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 import { formatValue } from 'react-currency-input-field';
 
-import {
-  maskAddress,
-  parseMAStoNMAS
-} from '../../../utils/massaFormating';
+import { maskAddress, parseMAStoNMAS } from '../../../utils/massaFormat';
 import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {
@@ -15,9 +12,9 @@ export function SendConfirmation({ ...props }) {
   const { amount, fees, recipient } = data;
 
   const formattedRecipientAddress = maskAddress(recipient);
-  const total = parseMAStoNMAS(amount) + parseInt(fees);  
+  const total = parseMAStoNMAS(amount) + parseInt(fees);
   const formattedTotal = formatValue({
-    value: total.toString()
+    value: total.toString(),
   });
   const [showTooltip, setShowTooltip] = useState(false);
 

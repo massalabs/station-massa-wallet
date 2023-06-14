@@ -5,10 +5,7 @@ import Intl from '../../../i18n/i18n';
 import Advanced from './Advanced';
 import ContactList from './ContactList';
 import { parseForm } from '../../../utils/parseForm';
-import {
-  parseMAStoNMAS,
-  parseNMAStoMAS,
-} from '../../../utils/massaFormating';
+import { parseMAStoNMAS, parseNMAStoMAS } from '../../../utils/massaFormat';
 
 export interface InputsErrors {
   amount?: string;
@@ -19,7 +16,7 @@ export function SendForm({ ...props }) {
   const { handleSubmit: sendCoinsHandleSubmit, account, data } = props;
 
   const balance = parseFloat(account?.candidateBalance || 0);
-  
+
   const formattedBalance = parseNMAStoMAS(balance);
 
   const [error, setError] = useState<InputsErrors | null>(null);
@@ -92,7 +89,7 @@ export function SendForm({ ...props }) {
           <Currency
             placeholder={'Amount to send'}
             name="amount"
-            value={(amount)}
+            value={amount}
             onValueChange={(value) => setAmount(value)}
             error={error?.amount}
           />

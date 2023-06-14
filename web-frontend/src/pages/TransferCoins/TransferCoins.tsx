@@ -19,7 +19,7 @@ function TransferCoins() {
 
   const tabName = searchParams.get('tab') || TAB_SEND;
   const tabIndex = tabName === TAB_RECEIVE ? 1 : 0;
-  
+
   const { nickname } = useParams();
   const { data: account, error } = useResource<AccountObject>(
     `accounts/${nickname}`,

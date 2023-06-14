@@ -6,7 +6,7 @@ import {
   Identicon,
   MassaLogo,
 } from '@massalabs/react-ui-kit';
-import { formatStandard } from '../../../utils/massaFormating';
+import { formatStandard } from '../../../utils/massaFormat';
 import { useResource } from '../../../custom/api';
 import { AccountObject } from '../../../models/AccountModel';
 

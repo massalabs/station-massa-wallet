@@ -1,3 +1,3 @@
 export * from './parseErrors';
 export * from './parseForm';
-export * from './MassaFormating';
+export * from './massaFormat';

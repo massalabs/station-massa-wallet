@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { formatStandard } from '../../../utils/massaFormating';
+import { formatStandard } from '../../../utils/massaFormat';
 import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
 import { parseForm } from '../../../utils/parseForm';

@@ -3,7 +3,7 @@ import Intl from '../i18n/i18n';
 import {
   checkAddressFormat,
   reverseFormatStandard,
-} from '../utils/massaFormating';
+} from '../utils/massaFormat';
 
 export interface SendInputsErrors {
   unexpectedError?: string;

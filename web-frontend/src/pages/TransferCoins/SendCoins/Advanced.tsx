@@ -43,10 +43,8 @@ function Advanced({ ...props }) {
     setCustomFees(isCustomFees);
     setError(null);
     setFees(0);
-    
-    isCustomFees
-      ? setPresetFee('none')
-      : setPresetFee(PRESET_STANDARD);
+
+    isCustomFees ? setPresetFee('none') : setPresetFee(PRESET_STANDARD);
   }
 
   function validate(formObject: any) {
@@ -67,7 +65,8 @@ function Advanced({ ...props }) {
 
     if (!validate(formObject)) return;
 
-    let pickedFee = fees > 0 ? fees : presetFee;
+    let pickedFee = Number(fees) > 0 ? fees : presetFee;
+
     setCurrentFees(pickedFee);
     onClose?.(pickedFee);
   }
@@ -119,7 +118,10 @@ function Advanced({ ...props }) {
                 onChange={() => handleGasFeesOption(false)}
                 name="gas"
               />
-              <p className="h-full ml-3 pb-1 cursor-pointer" onClick={() => handleGasFeesOption(false)}>
+              <p
+                className="h-full ml-3 pb-1 cursor-pointer"
+                onClick={() => handleGasFeesOption(false)}
+              >
                 {Intl.t('send-coins.preset')}
               </p>
             </div>
@@ -135,7 +137,10 @@ function Advanced({ ...props }) {
                 onChange={() => handleGasFeesOption(true)}
                 name="gas"
               />
-              <p className="h-full ml-3 pb-1 cursor-pointer" onClick={() => handleGasFeesOption(true)}>
+              <p
+                className="h-full ml-3 pb-1 cursor-pointer"
+                onClick={() => handleGasFeesOption(true)}
+              >
                 {Intl.t('send-coins.custom-fees')}:
               </p>
             </div>
@@ -148,7 +153,7 @@ function Advanced({ ...props }) {
               onValueChange={(value) => setFees(value)}
               error={error?.fees}
             />
-            
+
             <Button customClass="mt-6" type="submit">
               {Intl.t('send-coins.confirm-fees')}
             </Button>
