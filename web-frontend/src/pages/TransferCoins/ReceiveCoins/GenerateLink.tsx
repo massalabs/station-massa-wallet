@@ -3,7 +3,6 @@ import { formatStandard } from '../../../utils/massaFormat';
 import { AccountObject } from '../../../models/AccountModel';
 import Intl from '../../../i18n/i18n';
 import { parseForm } from '../../../utils/parseForm';
-import { FiCopy, FiCheckCircle } from 'react-icons/fi';
 import {
   Button,
   Identicon,
@@ -14,6 +13,7 @@ import {
   PopupModalContent,
   PopupModalHeader,
   Selector,
+  Clipboard,
 } from '@massalabs/react-ui-kit';
 import { SendInputsErrors } from '../../../validation/sendInputs';
 
@@ -28,7 +28,6 @@ interface GenerateLinkProps {
 function GenerateLink(props: GenerateLinkProps) {
   const { account, presetURL, setURL, setModal } = props;
 
-  const colorSuccess = '#1AE19D';
   const recipient = account.nickname;
   const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
   const formattedBalance = formatStandard(recipientBalance);
@@ -37,7 +36,6 @@ function GenerateLink(props: GenerateLinkProps) {
   const [provider, setProvider] = useState('');
   const [link, setLink] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
 
   function validate(formObject: any) {
     const { amount } = formObject;
@@ -65,18 +63,6 @@ function GenerateLink(props: GenerateLinkProps) {
 
     setURL(newURL);
     setLink(newURL);
-  }
-
-  function handleCopyToClipboard() {
-    setError(null);
-
-    if (!link) {
-      setError({ link: Intl.t('errors.receive-coins.no-link') });
-      return;
-    }
-
-    navigator.clipboard.writeText(link);
-    setSuccess(true);
   }
 
   return (
@@ -127,24 +113,14 @@ function GenerateLink(props: GenerateLinkProps) {
             </div>
             <div className="flex flex-col gap-3 mb-3">
               <p className="mas-body2">
-                {Intl.t('receive-coins.link-to-share')}{' '}
-                {success && (
-                  <label className="text-s-success">
-                    {Intl.t('receive-coins.copied')}
-                  </label>
-                )}
+                {Intl.t('receive-coins.link-to-share')}
               </p>
-              <Input
-                placeholder={Intl.t('receive-coins.link-to-share')}
-                value={link}
-                name="link"
-                icon={
-                  success ? <FiCheckCircle color={colorSuccess} /> : <FiCopy />
-                }
-                onClickIcon={handleCopyToClipboard}
-                onChange={(e) => setLink(e.target.value)}
-                error={error?.link}
-              />
+              <div className="h-16">
+                <Clipboard
+                  rawContent={link}
+                  error={Intl.t('errors.no-content-to-copy')}
+                />
+              </div>
             </div>
             <div className="pb-3">
               <Button type="submit">

@@ -10,8 +10,8 @@ import { TAB_SEND, TAB_RECEIVE } from '../../const/tabs/tabs';
 import WalletLayout, {
   MenuItem,
 } from '../../layouts/WalletLayout/WalletLayout';
-import { Button, Balance } from '@massalabs/react-ui-kit';
-import { FiArrowDownLeft, FiArrowUpRight, FiCopy } from 'react-icons/fi';
+import { Button, Balance, Clipboard } from '@massalabs/react-ui-kit';
+import { FiArrowDownLeft, FiArrowUpRight } from 'react-icons/fi';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -68,18 +68,18 @@ export default function Home() {
             </Button>
           </div>
         </div>
+
         <div className="bg-secondary rounded-2xl w-full max-w-lg p-10">
           <p className="mas-body text-f-primary mb-6">
             {Intl.t('home.title-account-address')}
           </p>
-          <div
+          <Clipboard
+            displayedContent={formattedAddress}
+            rawContent={address}
+            error={Intl.t('errors.no-content-to-copy')}
             className="flex flex-row items-center mas-body2 justify-between
               w-full h-12 px-3 rounded bg-primary cursor-pointer"
-            onClick={() => navigator.clipboard.writeText(address)}
-          >
-            <u>{formattedAddress}</u>
-            <FiCopy size={24} />
-          </div>
+          />
         </div>
       </div>
     </WalletLayout>

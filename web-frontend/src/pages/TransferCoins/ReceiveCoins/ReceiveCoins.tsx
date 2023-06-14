@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { FiLink } from 'react-icons/fi';
 import QRCodeReact from 'qrcode.react';
 import { maskAddress } from '../../../utils/massaFormat';
-import CopyContent from './CopyContent';
 import GenerateLink from './GenerateLink';
 import Intl from '../../../i18n/i18n';
-import { Button } from '@massalabs/react-ui-kit';
+import { Button, Clipboard } from '@massalabs/react-ui-kit';
 
 const VITE_BASE_APP = import.meta.env.VITE_BASE_APP;
 
@@ -33,7 +32,13 @@ function ReceiveCoins({ ...props }) {
       <QRCodeReact value={url} size={165} />
       <div className="flex flex-col w-full gap-3.5">
         <p>{Intl.t('receive-coins.account-address')}</p>
-        <CopyContent content={address} formattedContent={formattedAddress} />
+        <div className="h-16">
+          <Clipboard
+            displayedContent={formattedAddress}
+            rawContent={address}
+            error={Intl.t('errors.no-content-to-copy')}
+          />
+        </div>
         <Button onClick={() => setModal(!modal)} preIcon={<FiLink size={24} />}>
           {Intl.t('receive-coins.receive-account')}
         </Button>
