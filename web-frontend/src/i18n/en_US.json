@@ -70,17 +70,20 @@
       "description": "An unexpected error has occurred",
       "link": "Go back to the Welcome page!"
     },
-    "send": {
-      "invalid-amount": "{type} {verb} invalid",
-      "invalid-amount-decimals": "{type} can't have decimals",
-      "amount-to-high": "Insufficient funds on balance",
-      "amount-to-low": "{type} must be greater than 0",
-      "no-address": "{type} is required",
-      "invalid-address": "{type}'s address doesn't seem to be a valid Massa address"
+    "send-coins": {
+      "invalid-amount": "invalid amount",
+      "amount-to-high": "Insufficient funds",
+      "amount-to-low": "Amount must be greater than zero",
+      "gas-fees-to-low": "Gas fees must be greater than zero",
+      "no-address": "Recipient is required",
+      "invalid-address": "Recipient address is not a valid Massa address"
     },
     "send-redirect": {
       "account-not-found": "Account not found - redirecting to account creation page. You can import this account with its private key",
       "no-account": "No account found - redirecting to account creation page"
+    },
+    "receive-coins": {
+      "no-link": "there's no link to copy. Please, generate one!"
     },
     "invalid-nickname": "Invalid nickname",
     "invalid-password": "Wrong password",
@@ -113,12 +116,12 @@
     "send-message": "You're going to send:",
     "mas-gas": " MAS + gas fee ",
     "preset": "Preset:",
-    "custom-fees": "Custom fees: ",
+    "custom-fees": "Custom fees",
     "nano-mas": " nMAS",
     "confirm-sign": "Confirm and sign with password",
     "advanced-message": "You pay gas fees to reward block validators and maximize your chances to see your transaction validated. It is a tip for people that support the blockchain network.",
     "confirm-fees": "Confirm fees ",
-    "gas-info": "{default} gas fees are {gasFees} nMAS, to set custom fees head to the Advanced section on the previous step.",
+    "gas-info": "Default gas fees are {default} defined by Massa Labs to assure minimum tip to block validator. If you want to custom them go to advanced section in previous screen",
     "gas-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
     "send-confirmation": "Amount ({amount} MAS) + fees ({fees} nMAS)"
   },
@@ -130,7 +133,8 @@
     "recipient": "Recipient",
     "provider": "Provider (optional):",
     "provider-description": "Address to withdraw",
-    "link-to-share": "Link to share"
+    "link-to-share": "Link to share",
+    "copied": ", copied!"
   },
   "placeholder": {
     "teaser-banner": "Our new feature is coming soon",
