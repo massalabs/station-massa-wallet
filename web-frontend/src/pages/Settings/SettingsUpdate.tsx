@@ -65,7 +65,7 @@ export default function SettingsUpdate() {
 
   return (
     <WalletLayout menuItem={MenuItem.Settings}>
-      <form ref={form} onSubmit={handleSubmit} className="w-full max-w-2xl">
+      <form ref={form} onSubmit={handleSubmit} className="w-1/2">
         <div className="flex flex-col justify-center items-center gap-9">
           <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
             <p className="mas-body text-f-primary pb-5">
