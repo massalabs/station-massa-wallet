@@ -11,10 +11,11 @@ function SendCoins({ ...props }) {
   const { account, redirect } = props;
 
   const navigate = useNavigate();
+  const { nickname } = useParams();
+
   const [submit, setSubmit] = useState<boolean>(false);
   const [data, setData] = useState<object>();
-  const [final, setFinal] = useState<object>();
-  const { nickname } = useParams();
+  const [payloadData, setPayloadData] = useState<object>();
 
   const { mutate, isSuccess, isLoading, error } =
     usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
@@ -30,8 +31,7 @@ function SendCoins({ ...props }) {
   function handleSubmit({ ...data }) {
     setData(data);
 
-    setFinal({
-      ...data,
+    setPayloadData({
       fee: data.fees,
       recipientAddress: data.recipient,
       amount: toNanoMASS(data.amount).toString(),
@@ -44,7 +44,7 @@ function SendCoins({ ...props }) {
     if (!confirmed) {
       setSubmit(false);
     } else {
-      mutate(final as SendTransactionObject);
+      mutate(payloadData as SendTransactionObject);
     }
   }
 

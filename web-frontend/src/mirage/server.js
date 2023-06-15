@@ -1,4 +1,4 @@
-import { createServer, Model, Factory } from 'miragejs';
+import { createServer, Model, Factory, Response } from 'miragejs';
 import { ENV } from '../const/env/env';
 import { faker } from '@faker-js/faker';
 
@@ -91,8 +91,10 @@ function mockServer(environment = ENV.DEV) {
           );
 
           if (!amount || !fee || !recipientAddress) {
-            // TODO
-            // we must handle here the missing payload fields
+            return new Response(400, {
+              code: '0001',
+              message: 'missing fields',
+            });
           }
 
           return schema.create('transfer');
