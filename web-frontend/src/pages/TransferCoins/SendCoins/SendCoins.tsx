@@ -29,7 +29,13 @@ function SendCoins({ ...props }) {
 
   function handleSubmit({ ...data }) {
     setData(data);
-    setFinal({ ...data, amount: toNanoMASS(data.amount).toString() });
+
+    setFinal({
+      ...data,
+      fee: data.fees,
+      recipientAddress: data.recipient,
+      amount: toNanoMASS(data.amount).toString(),
+    });
 
     setSubmit(true);
   }
