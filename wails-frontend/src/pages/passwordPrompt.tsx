@@ -16,7 +16,7 @@ import { Password, Button } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
 import Intl from '../i18n/i18n';
-import { formatStandard } from '../utils/massaFormat';
+import { formatStandard, Unit } from '../utils/massaFormat';
 import { toMAS } from '@massalabs/massa-web3';
 
 interface PromptRequestDeleteData {
@@ -76,9 +76,11 @@ function PasswordPrompt() {
         const transferData = req.Data as PromptRequestTransferData;
         return `Transfer ${formatStandard(
           toMAS(transferData.Amount).toString(),
-        )} Massa from ${transferData.NicknameFrom} to
-        ${transferData.RecipientAddress},
-         with fee(s) ${transferData.Fee} nonaMassa`;
+          Unit.MAS,
+          9,
+        )} Massa from ${transferData.NicknameFrom} to ${
+          transferData.RecipientAddress
+        }, with fee(s) of ${transferData.Fee} nanoMassa`;
       }
       default:
         return Intl.t('password-prompt.subtitle.default');
