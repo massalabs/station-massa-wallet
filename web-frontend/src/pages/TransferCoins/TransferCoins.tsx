@@ -29,7 +29,7 @@ function TransferCoins() {
     `accounts/${nickname}`,
   );
 
-  window.history.replaceState(null, '', `/${nickname}/transfer-coins`);
+  window.history.replaceState(null, '', routeFor(`${nickname}/transfer-coins`));
 
   useEffect(() => {
     if (error) {
