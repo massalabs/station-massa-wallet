@@ -54,7 +54,7 @@ export function SendForm({ ...props }) {
       return false;
     }
 
-    if (amount > balance) {
+    if (toMASS(toNanoMASS(amount)) > toMASS(balance)) {
       setError({ amount: Intl.t('errors.send-coins.amount-to-high') });
       return false;
     }
