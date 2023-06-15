@@ -55,9 +55,9 @@ function WalletLayout(props: IWalletLayoutProps) {
 
   useEffect(() => {
     if (error) {
-      navigate('/error');
+      navigate(routeFor('error'));
     } else if (!hasAccounts) {
-      navigate('/index');
+      navigate(routeFor('index'));
     }
   }, [accounts, error, navigate]);
 
