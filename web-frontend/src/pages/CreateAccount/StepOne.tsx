@@ -39,7 +39,7 @@ export default function StepOne() {
     }
 
     if (!isNicknameValid(nickname)) {
-      setError({ nickname: Intl.t('errors.nickname-invalid-format') });
+      setError({ nickname: Intl.t('errors.account-invalid-format') });
       return false;
     }
 

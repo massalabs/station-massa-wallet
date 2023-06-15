@@ -18,7 +18,7 @@ const t = (key: string): string => {
   const errors: Record<string, string> = {
     'nickname-required': 'The account name is required',
     'nickname-already-exists': 'This account name already exists',
-    'nickname-invalid-format':
+    'account-invalid-format':
       "The account name can't contain any special characters",
   };
 
@@ -50,7 +50,7 @@ function PromptNickname() {
 
     const nicknameIsValid = await IsNicknameValid(nickname);
     if (!nicknameIsValid) {
-      setError({ nickname: t('nickname-invalid-format') });
+      setError({ nickname: t('account-invalid-format') });
       return false;
     }
 
