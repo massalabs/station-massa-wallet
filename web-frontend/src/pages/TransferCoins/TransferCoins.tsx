@@ -33,7 +33,7 @@ function TransferCoins() {
 
   useEffect(() => {
     if (error) {
-      navigate('/error');
+      navigate(routeFor('/error'));
     } else if (!account && !redirect) {
       navigate(routeFor(`${nickname}/home`));
     }
