@@ -33,7 +33,7 @@ export default function Home() {
 
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);
-  const formattedBalance = formatStandard(balance, Unit.NanoMAS, 2);
+  const formattedBalance = formatStandard(balance, Unit.NanoMAS);
   const address = account?.address ?? '';
   const formattedAddress = maskAddress(address);
 

@@ -1,11 +1,11 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Balance, Button, Currency, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 import Intl from '../../../i18n/i18n';
 import Advanced from './Advanced';
 import ContactList from './ContactList';
 import { parseForm } from '../../../utils/parseForm';
-import { parseMAStoNMAS, parseNMAStoMAS } from '../../../utils/massaFormat';
+import { toNanoMASS, toMASS, formatStandard } from '../../../utils/massaFormat';
 
 export interface InputsErrors {
   amount?: string;
@@ -13,25 +13,35 @@ export interface InputsErrors {
 }
 
 export function SendForm({ ...props }) {
-  const { handleSubmit: sendCoinsHandleSubmit, account, data } = props;
+  const {
+    handleSubmit: sendCoinsHandleSubmit,
+    account,
+    data,
+    redirect,
+  } = props;
+  const { amount: redirectAmount, to } = redirect;
 
-  const balance = parseFloat(account?.candidateBalance || 0);
-
-  const formattedBalance = parseNMAStoMAS(balance);
+  const balance = Number(account?.candidateBalance || 0);
+  const formattedBalance = formatStandard(toMASS(balance));
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
   const [amount, setAmount] = useState<number | string | undefined>(
-    data?.amount ? parseMAStoNMAS(data?.amount) : '',
+    data?.amount ? toMASS(toNanoMASS(data.amount)) : '',
   );
   const [fees, setFees] = useState(data?.fees ?? '1000');
   const [recipient, setRecipient] = useState(data?.recipient ?? '');
 
+  useEffect(() => {
+    setAmount(redirectAmount);
+    setRecipient(to);
+  }, []);
+
   function handlePercent(amount = 0, percent: number) {
     let newAmount = amount * percent;
 
-    setAmount(parseMAStoNMAS(parseNMAStoMAS(newAmount)));
+    setAmount(toMASS(newAmount));
   }
 
   function validate(formObject: any) {

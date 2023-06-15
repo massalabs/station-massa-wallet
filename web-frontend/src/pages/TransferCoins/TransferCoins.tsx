@@ -17,6 +17,10 @@ function TransferCoins() {
 
   const [searchParams] = useSearchParams();
 
+  const redirect = {
+    to: searchParams.get('to'),
+    amount: searchParams.get('amount'),
+  };
   const tabName = searchParams.get('tab') || TAB_SEND;
   const tabIndex = tabName === TAB_RECEIVE ? 1 : 0;
 
@@ -30,7 +34,7 @@ function TransferCoins() {
   useEffect(() => {
     if (error) {
       navigate('/error');
-    } else if (!account) {
+    } else if (!account && !redirect) {
       navigate(routeFor(`${nickname}/home`));
     }
   }, [account, error, navigate]);
@@ -38,7 +42,7 @@ function TransferCoins() {
   const tabsConfig = [
     {
       label: Intl.t('transfer-coins.send-tab'),
-      content: <SendCoins account={account} />,
+      content: <SendCoins account={account} redirect={redirect} />,
     },
     {
       label: Intl.t('transfer-coins.receive-tab'),
