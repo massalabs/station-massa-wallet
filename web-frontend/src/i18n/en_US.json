@@ -127,7 +127,7 @@
     "confirm-fees": "Confirm fees ",
     "gas-info": "Default gas fees are {default} defined by Massa Labs to assure minimum tip to block validator. If you want to custom them go to advanced section in previous screen",
     "gas-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
-    "send-confirmation": "Amount ({amount} MAS) + fees ({fees} nMAS)"
+    "send-confirmation": "Amount ({amount}) + fees ({fees} nMAS)"
   },
   "receive-coins": {
     "receive-account": "Generate link",

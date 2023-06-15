@@ -45,7 +45,7 @@ function mockServer(environment = ENV.DEV) {
 
           return accounts;
         },
-        { timing: 1000 },
+        { timing: 500 },
       );
 
       this.get(
@@ -57,7 +57,7 @@ function mockServer(environment = ENV.DEV) {
 
           return { ...account };
         },
-        { timing: 2000 },
+        { timing: 500 },
       );
 
       this.put('accounts', (schema) => {
@@ -97,7 +97,7 @@ function mockServer(environment = ENV.DEV) {
 
           return schema.create('transfer');
         },
-        { timing: 3000 },
+        { timing: 500 },
       );
     },
   });

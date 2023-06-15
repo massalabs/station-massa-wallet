@@ -5,13 +5,15 @@ import { usePost } from '../../../custom/api';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 import { SendTransactionObject } from '../../../models/AccountModel';
+import { toNanoMASS } from '../../../utils/massaFormat';
 
 function SendCoins({ ...props }) {
-  const { account } = props;
+  const { account, redirect } = props;
 
   const navigate = useNavigate();
   const [submit, setSubmit] = useState<boolean>(false);
   const [data, setData] = useState<object>();
+  const [final, setFinal] = useState<object>();
   const { nickname } = useParams();
 
   const { mutate, isSuccess, isLoading, error } =
@@ -27,6 +29,8 @@ function SendCoins({ ...props }) {
 
   function handleSubmit({ ...data }) {
     setData(data);
+    setFinal({ ...data, amount: toNanoMASS(data.amount).toString() });
+
     setSubmit(true);
   }
 
@@ -34,7 +38,7 @@ function SendCoins({ ...props }) {
     if (!confirmed) {
       setSubmit(false);
     } else {
-      mutate(data as SendTransactionObject);
+      mutate(final as SendTransactionObject);
     }
   }
 
@@ -47,7 +51,12 @@ function SendCoins({ ...props }) {
           isLoading={isLoading}
         />
       ) : (
-        <SendForm handleSubmit={handleSubmit} data={data} account={account} />
+        <SendForm
+          handleSubmit={handleSubmit}
+          redirect={redirect}
+          data={data}
+          account={account}
+        />
       )}
     </div>
   );

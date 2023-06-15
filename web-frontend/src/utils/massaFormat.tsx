@@ -1,4 +1,4 @@
-import { toMAS } from '@massalabs/massa-web3';
+import { fromMAS, toMAS } from '@massalabs/massa-web3';
 
 /**
  * Enumeration for unit options.
@@ -14,22 +14,16 @@ export const presetFees: { [key: string]: string } = {
   high: '5000',
 };
 
-export function parseNMAStoMAS(
-  num: number,
-  unit = Unit.NanoMAS,
-  maximumFractionDigits = 9,
-): string {
-  const numInMas = unit === Unit.MAS ? num : toMAS(num).toNumber();
-  const locale = localStorage.getItem('locale') || 'en-US';
-  return numInMas.toLocaleString(locale, {
-    minimumFractionDigits: 9,
-    maximumFractionDigits,
-  });
+export function toMASS(num: string | number): number {
+  return Number(toMAS(num));
 }
 
-export function parseMAStoNMAS(str: string): number {
+export function toNanoMASS(str: string): number {
   const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
-  return Number(formattedString);
+
+  // fromMAS -> MassaToNano
+  // toMASS -> NanotoMASSsa
+  return Number(fromMAS(formattedString));
 }
 
 /**
@@ -45,7 +39,7 @@ export function formatStandard(
   unit = Unit.MAS,
   maximumFractionDigits = 2,
 ): string {
-  const numInMas = unit === Unit.MAS ? num : toMAS(num).toNumber();
+  const numInMas = unit === Unit.MAS ? num : Number(toMAS(num));
   const locale = localStorage.getItem('locale') || 'en-US';
   return numInMas.toLocaleString(locale, {
     minimumFractionDigits: 2,
