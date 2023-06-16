@@ -5,7 +5,12 @@ import Intl from '../../../i18n/i18n';
 import Advanced from './Advanced';
 import ContactList from './ContactList';
 import { parseForm } from '../../../utils/parseForm';
-import { toNanoMASS, toMASS, formatStandard } from '../../../utils/massaFormat';
+import {
+  toNanoMASS,
+  toMASS,
+  formatStandard,
+  reverseFormatStandard,
+} from '../../../utils/massaFormat';
 
 export interface InputsErrors {
   amount?: string;
@@ -51,6 +56,11 @@ export function SendForm({ ...props }) {
 
     if (!amount) {
       setError({ amount: Intl.t('errors.send-coins.invalid-amount') });
+      return false;
+    }
+
+    if (reverseFormatStandard(amount) <= 0) {
+      setError({ amount: Intl.t('errors.send-coins.amount-to-low') });
       return false;
     }
 
