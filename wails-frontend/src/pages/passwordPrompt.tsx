@@ -35,16 +35,17 @@ function TransferLayout(props: PromptRequestTransferData) {
   let { Amount, NicknameFrom, RecipientAddress, Fee } = props;
 
   return (
-    <div className="mb-3">
-      <Balance size="xs" amount={formatStandard(Number(toMAS(Amount)))} />
-      <div className="mb-4 mas-caption">
+    <div className="ml-2 p-4 mb-4 bg-secondary rounded-lg w-full">
+      <Balance amount={formatStandard(Number(toMAS(Amount)))} />
+      <div className="mb-4 mt-2 mas-caption">
         {Intl.t('password-prompt.transfer.fee', { fee: Fee })}
       </div>
       <div>
-        {Intl.t('password-prompt.transfer.from')}: <b>{NicknameFrom}</b>
+        {Intl.t('password-prompt.transfer.from')}
+        <b>{NicknameFrom}</b>
       </div>
       <div>
-        {Intl.t('password-prompt.transfer.to')}:
+        {Intl.t('password-prompt.transfer.to')}
         <u>{maskAddress(RecipientAddress)}</u>
       </div>
     </div>
