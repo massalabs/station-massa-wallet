@@ -17,8 +17,8 @@
   },
   "password-prompt": {
     "transfer": {
-      "from": "from",
-      "to": "to",
+      "from": "from: ",
+      "to": "to: ",
       "fee": "applied fee: {fee} nMas"
     },
     "title": {
