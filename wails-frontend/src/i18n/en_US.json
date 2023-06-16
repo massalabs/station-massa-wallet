@@ -16,6 +16,11 @@
     }
   },
   "password-prompt": {
+    "transfer": {
+      "from": "from",
+      "to": "to",
+      "fee": "applied fee: {fee} nMas"
+    },
     "title": {
       "transfer-request": "Sign a transaction",
       "sign": "Sign a transaction",

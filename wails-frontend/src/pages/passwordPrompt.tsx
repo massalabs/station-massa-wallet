@@ -12,11 +12,11 @@ import { handleApplyResult, handleCancel } from '../utils/utils';
 import { parseForm } from '../utils/parseForm';
 
 import { FiLock, FiTrash2 } from 'react-icons/fi';
-import { Password, Button } from '@massalabs/react-ui-kit';
+import { Password, Button, Balance } from '@massalabs/react-ui-kit';
 import { ErrorCode, IErrorObject } from '../utils';
 import { Layout } from '../layouts/Layout/Layout';
 import Intl from '../i18n/i18n';
-import { formatStandard, Unit } from '../utils/massaFormat';
+import { formatStandard, maskAddress } from '../utils/massaFormat';
 import { toMAS } from '@massalabs/massa-web3';
 
 interface PromptRequestDeleteData {
@@ -31,13 +31,32 @@ interface PromptRequestTransferData {
   RecipientAddress: string;
 }
 
+function TransferLayout(props: PromptRequestTransferData) {
+  let { Amount, NicknameFrom, RecipientAddress, Fee } = props;
+
+  return (
+    <div className="mb-3">
+      <Balance size="xs" amount={formatStandard(Number(toMAS(Amount)))} />
+      <div className="mb-4 mas-caption">
+        {Intl.t('password-prompt.transfer.fee', { fee: Fee })}
+      </div>
+      <div>
+        {Intl.t('password-prompt.transfer.from')}: <b>{NicknameFrom}</b>
+      </div>
+      <div>
+        {Intl.t('password-prompt.transfer.to')}:
+        <u>{maskAddress(RecipientAddress)}</u>
+      </div>
+    </div>
+  );
+}
+
 function PasswordPrompt() {
   const navigate = useNavigate();
   const form = useRef(null);
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
-
   const data: PromptRequestDeleteData | PromptRequestTransferData = req.Data;
 
   const { deleteReq, signReq, transferReq } = promptAction;
@@ -74,13 +93,7 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.subtitle.sign');
       case promptAction.transferReq: {
         const transferData = req.Data as PromptRequestTransferData;
-        return `Transfer ${formatStandard(
-          toMAS(transferData.Amount).toString(),
-          Unit.MAS,
-          9,
-        )} Massa from ${transferData.NicknameFrom} to ${
-          transferData.RecipientAddress
-        }, with fee(s) of ${transferData.Fee} nanoMassa`;
+        return <TransferLayout {...transferData} />;
       }
       default:
         return Intl.t('password-prompt.subtitle.default');
@@ -158,7 +171,9 @@ function PasswordPrompt() {
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title">{getTitle()}</h1>
-        <p className="mas-body pt-4 break-words max-w-xs">{getSubtitle()}</p>
+        <div className="mas-body pt-4 break-words max-w-xs">
+          {getSubtitle()}
+        </div>
         <div className="pt-4">
           <Password
             defaultValue=""
