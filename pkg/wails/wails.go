@@ -12,10 +12,11 @@ import (
 func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application {
 	// Create a new Wails application
 	return application.NewWithOptions(&options.App{
-		Title:       "MassaStation Wallet",
-		Width:       513,
-		Height:      440,
-		StartHidden: true,
+		Title:         "MassaStation Wallet",
+		Width:         513,
+		Height:        440,
+		StartHidden:   true,
+		DisableResize: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

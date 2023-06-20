@@ -4,7 +4,8 @@ wallet_*.json
 wallet-plugin*
 
 coverage.out
-build
+build/*
+!build/appicon.png
 node_modules
 wails-frontend/dist
 
