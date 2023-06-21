@@ -11,6 +11,7 @@ This section helps developer getting started.
 If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 ### Install Task
+
 Follow the installation instructions here:
 [task-install](https://taskfile.dev/installation/)
 
@@ -34,7 +35,6 @@ task build
 
 This will create a binary file `wallet-plugin{.exe}` in `build/wallet-plugin` folder.
 
-
 ### Test
 
 ```shell
@@ -50,6 +50,7 @@ task run
 ```
 
 All in one build & run:
+
 ```shell
 task build-run
 ```
