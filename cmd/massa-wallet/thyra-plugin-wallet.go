@@ -5,13 +5,13 @@ import (
 	"os"
 
 	"github.com/bluele/gcache"
+	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi"
 	"github.com/massalabs/station-massa-wallet/internal/handler"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	constants "github.com/massalabs/station-massa-wallet/pkg/plugin"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
 )
 
 func StartServer(app *walletApp.WalletApp) {
