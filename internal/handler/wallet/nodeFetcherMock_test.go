@@ -3,8 +3,8 @@ package wallet
 import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
-	"github.com/massalabs/thyra/pkg/node"
-	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
+	"github.com/massalabs/station/pkg/node"
+	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 )
 
 type NodeFetcherMock struct {

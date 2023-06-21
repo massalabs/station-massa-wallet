@@ -1,7 +1,7 @@
 package network
 
 import (
-	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
+	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 )
 
 // MakeRPCCall makes a new RPC call by calling Thyra source code sendOperation.MakeRPCCall function.

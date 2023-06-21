@@ -6,7 +6,7 @@ require (
 	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/massalabs/thyra v0.1.15-0.20230509154116-6ed827ad0840
+	github.com/massalabs/station v0.2.3
 	github.com/massalabs/thyra-plugin-hello-world v0.0.7-0.20230601150735-ea4f20201e11
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1

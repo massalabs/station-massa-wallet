@@ -12,9 +12,9 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
-	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
-	"github.com/massalabs/thyra/pkg/node/sendoperation/buyrolls"
-	"github.com/massalabs/thyra/pkg/node/sendoperation/sellrolls"
+	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
+	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
+	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
 )
 
 func NewTradeRolls(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TradeRollsHandler {
