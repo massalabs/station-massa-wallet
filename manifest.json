@@ -1,9 +1,9 @@
 {
-    "author" : "Massa Labs",
-    "name" : "wallet",
-    "description" : "wallet plugin",
-    "logo" : "wallet.svg",
-    "home" : "",
-    "version" : "0.0.12",
-    "apispec":""
+  "author": "Massa Labs",
+  "name": "Massa Wallet",
+  "description": "Massa blockchain official wallet",
+  "logo": "wallet.svg",
+  "home": "",
+  "version": "0.1.2",
+  "apispec": ""
 }
