@@ -1,8 +1,8 @@
 package wallet
 
 import (
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 )
 
 const WalletBackupFilepath = "walletBackup.yaml"

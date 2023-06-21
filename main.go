@@ -4,9 +4,9 @@ import (
 	"embed"
 	"fmt"
 
-	walletServer "github.com/massalabs/thyra-plugin-wallet/cmd/massa-wallet"
-	walletApp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wails"
+	walletServer "github.com/massalabs/station-massa-wallet/cmd/massa-wallet"
+	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/wails"
 )
 
 //nolint:typecheck,nolintlint

@@ -1,8 +1,8 @@
 package wallet
 
 import (
-	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/thyra/pkg/node"
 	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
 )

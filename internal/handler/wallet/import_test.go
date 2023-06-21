@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 

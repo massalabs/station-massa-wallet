@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/stretchr/testify/assert"
 )
 

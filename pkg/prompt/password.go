@@ -3,8 +3,8 @@ package prompt
 import (
 	"fmt"
 
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
 func handlePasswordPrompt(prompterApp WalletPrompterInterface, input interface{}, wallet *wallet.Wallet) (*string, bool, error) {

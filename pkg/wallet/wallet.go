@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"

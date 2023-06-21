@@ -3,7 +3,7 @@ package prompt
 import (
 	"sync"
 
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 )
 
 // WalletPrompterInterface is used to mock the WalletPrompter struct in tests.
