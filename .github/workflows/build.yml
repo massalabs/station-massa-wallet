@@ -69,8 +69,6 @@ jobs:
           export CC=${{ matrix.cc }}
           export CGO_LDFLAGS="${{ matrix.cgo_ldflags }}"
           go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
-      - name: copy the logo
-        run: cp web/html/wallet.svg .
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:

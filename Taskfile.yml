@@ -91,7 +91,7 @@ tasks:
         platforms: [linux, darwin]
       - cmd: cp build/wallet-plugin/wallet-plugin /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
-      - cmd: cp web/html/wallet.svg /usr/local/share/massastation/plugins/wallet-plugin
+      - cmd: cp wallet.svg /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
       - cmd: cp manifest.json /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
