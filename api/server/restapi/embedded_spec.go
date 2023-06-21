@@ -609,41 +609,6 @@ func init() {
           }
         }
       }
-    },
-    "/web/{resource}": {
-      "get": {
-        "description": "Route for legacy web application (in /web directory)",
-        "produces": [
-          "application/json",
-          "text/javascript",
-          "text/html",
-          "text/css",
-          "text/webp",
-          "image/png"
-        ],
-        "operationId": "web",
-        "parameters": [
-          {
-            "type": "string",
-            "default": "index.html",
-            "description": "Website resource.",
-            "name": "resource",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Page found"
-          },
-          "404": {
-            "description": "Resource not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
     }
   },
   "definitions": {
@@ -1509,41 +1474,6 @@ func init() {
           "text/webp"
         ],
         "operationId": "webApp",
-        "parameters": [
-          {
-            "type": "string",
-            "default": "index.html",
-            "description": "Website resource.",
-            "name": "resource",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Page found"
-          },
-          "404": {
-            "description": "Resource not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/web/{resource}": {
-      "get": {
-        "description": "Route for legacy web application (in /web directory)",
-        "produces": [
-          "application/json",
-          "image/png",
-          "text/css",
-          "text/html",
-          "text/javascript",
-          "text/webp"
-        ],
-        "operationId": "web",
         "parameters": [
           {
             "type": "string",
