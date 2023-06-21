@@ -12,8 +12,8 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/rs/cors"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-wallet/internal/handler/html"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/station-massa-wallet/internal/handler/html"
 )
 
 //go:generate swagger generate server --target ../../server --name MassaWallet --spec ../../walletApi-V0.yml --principal interface{} --exclude-main

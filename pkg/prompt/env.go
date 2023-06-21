@@ -3,7 +3,7 @@ package prompt
 import (
 	"os"
 
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 )
 
 type envPrompter struct {

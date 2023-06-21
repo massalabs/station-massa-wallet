@@ -35,19 +35,19 @@ Help us keep this project open and inclusive and keep our community approachable
 ## Bug Reports
 
 If you find any bugs, feel free to open an issue in the
-[issue tracker](https://github.com/massalabs/thyra-plugin-wallet/issues). Please include as much information as possible,
+[issue tracker](https://github.com/massalabs/station-massa-wallet/issues). Please include as much information as possible,
 such as operating system, browser version, etc.
 
 ## Feature Requests
 
 If you have an idea for a new feature, feel free to open an issue in the
-[issue tracker](https://github.com/massalabs/thyra-plugin-wallet/issues). Please include as much information as possible,
+[issue tracker](https://github.com/massalabs/station-massa-wallet/issues). Please include as much information as possible,
 such as what the feature would do, why it would be useful, etc.
 
 ## Code Contributions
 
 We are always looking for developers to help us improve the codebase. If you are interested in contributing code, please
-take a look at the [open issues](https://github.com/massalabs/thyra-plugin-wallet/issues) and follow the steps below:
+take a look at the [open issues](https://github.com/massalabs/station-massa-wallet/issues) and follow the steps below:
 
 1. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository
 2. Create a feature branch off of the `main` branch
@@ -66,7 +66,7 @@ When contributing:
 ## Questions
 
 If you have any questions, feel free to open an issue in the
-[issue tracker](https://github.com/massalabs/thyra-plugin-wallet/issues).
+[issue tracker](https://github.com/massalabs/station-massa-wallet/issues).
 
 *Thank you for taking the time to contribute to our project! We look forward to seeing your contributions!*
 

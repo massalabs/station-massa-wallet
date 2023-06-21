@@ -6,13 +6,13 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
-	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
 type PromptRequestDeleteData struct {

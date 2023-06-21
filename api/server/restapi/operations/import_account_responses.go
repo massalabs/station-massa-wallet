@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
 // ImportAccountOKCode is the HTTP code returned for type ImportAccountOK

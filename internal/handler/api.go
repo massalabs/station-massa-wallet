@@ -3,12 +3,12 @@ package handler
 import (
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/loads"
-	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi"
-	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-wallet/internal/handler/html"
-	walletHandler "github.com/massalabs/thyra-plugin-wallet/internal/handler/wallet"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/network"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/station-massa-wallet/internal/handler/html"
+	walletHandler "github.com/massalabs/station-massa-wallet/internal/handler/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 )
 
 // InitializeAPI initializes the API handlers

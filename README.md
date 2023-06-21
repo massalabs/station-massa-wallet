@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/massalabs/thyra-plugin-wallet/branch/main/graph/badge.svg?token=RZ6AN1ISEA)](https://codecov.io/gh/massalabs/thyra-plugin-wallet)
+[![codecov](https://codecov.io/gh/massalabs/station-massa-wallet/branch/main/graph/badge.svg?token=RZ6AN1ISEA)](https://codecov.io/gh/massalabs/station-massa-wallet)
 
 # Massa Wallet Plugin
 

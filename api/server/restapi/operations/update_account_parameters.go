@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/validate"
 
-	"github.com/massalabs/thyra-plugin-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
 // NewUpdateAccountParams creates a new UpdateAccountParams object

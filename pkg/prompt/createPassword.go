@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	walletapp "github.com/massalabs/thyra-plugin-wallet/pkg/app"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
 func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interface{}) (*string, bool, error) {

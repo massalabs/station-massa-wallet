@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/massalabs/thyra-plugin-wallet/pkg/utils"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 

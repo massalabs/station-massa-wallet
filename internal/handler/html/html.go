@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/massalabs/thyra-plugin-wallet/api/server/restapi/operations"
-	"github.com/massalabs/thyra-plugin-wallet/pkg/openapi"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/station-massa-wallet/pkg/openapi"
 )
 
 const (
