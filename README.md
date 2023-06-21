@@ -58,7 +58,7 @@ task build-run
 The `STANDALONE` environment variable is to run the plugin without MassaStation.
 
 Now navigate into <http://localhost:8080>. Note that some features will not work if
-[MassaStation-server](https://github.com/massalabs/thyra) is not running.
+[MassaStation-server](https://github.com/massalabs/station) is not running.
 
 **Install manually the plugin for Massa Station:**
 
