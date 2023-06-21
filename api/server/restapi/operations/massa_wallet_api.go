@@ -92,9 +92,6 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		DefaultPageHandler: DefaultPageHandlerFunc(func(params DefaultPageParams) middleware.Responder {
 			return middleware.NotImplemented("operation DefaultPage has not yet been implemented")
 		}),
-		WebHandler: WebHandlerFunc(func(params WebParams) middleware.Responder {
-			return middleware.NotImplemented("operation Web has not yet been implemented")
-		}),
 		WebAppHandler: WebAppHandlerFunc(func(params WebAppParams) middleware.Responder {
 			return middleware.NotImplemented("operation WebApp has not yet been implemented")
 		}),
@@ -174,8 +171,6 @@ type MassaWalletAPI struct {
 	UpdateAccountHandler UpdateAccountHandler
 	// DefaultPageHandler sets the operation handler for the default page operation
 	DefaultPageHandler DefaultPageHandler
-	// WebHandler sets the operation handler for the web operation
-	WebHandler WebHandler
 	// WebAppHandler sets the operation handler for the web app operation
 	WebAppHandler WebAppHandler
 
@@ -305,9 +300,6 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.DefaultPageHandler == nil {
 		unregistered = append(unregistered, "DefaultPageHandler")
-	}
-	if o.WebHandler == nil {
-		unregistered = append(unregistered, "WebHandler")
 	}
 	if o.WebAppHandler == nil {
 		unregistered = append(unregistered, "WebAppHandler")
@@ -463,10 +455,6 @@ func (o *MassaWalletAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/web/{resource}"] = NewWeb(o.context, o.WebHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
 	o.handlers["GET"]["/web-app/{resource}"] = NewWebApp(o.context, o.WebAppHandler)
 }
 
@@ -509,6 +497,6 @@ func (o *MassaWalletAPI) AddMiddlewareFor(method, path string, builder middlewar
 	}
 	o.Init()
 	if h, ok := o.handlers[um][path]; ok {
-		o.handlers[um][path] = builder(h)
+		o.handlers[method][path] = builder(h)
 	}
 }
