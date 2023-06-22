@@ -3,7 +3,7 @@ package network
 import (
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
-	"github.com/massalabs/thyra/pkg/node"
+	"github.com/massalabs/station/pkg/node"
 )
 
 func newMassaClient() (*node.Client, error) {

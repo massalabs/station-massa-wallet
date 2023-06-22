@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
-	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
+	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 )
 
-// MakeOperation makes a new operation by calling Thyra source code sendOperation.MakeOperation function.
+// MakeOperation makes a new operation by calling Massa Station source code sendOperation.MakeOperation function.
 func (n *NodeFetcher) MakeOperation(fee uint64, operation sendOperation.Operation) ([]byte, error) {
 	client, err := newMassaClient()
 	if err != nil {

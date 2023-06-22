@@ -135,10 +135,10 @@ github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
-github.com/massalabs/thyra v0.1.15-0.20230509154116-6ed827ad0840 h1:KP43sQCHzGkiFxajmPDlgFVXV4tkGo+I01NTExk4ung=
-github.com/massalabs/thyra v0.1.15-0.20230509154116-6ed827ad0840/go.mod h1:swX79kVCZb89XNbWA4JMnS6XNLs4Kw3Q0n+QsdJE1N8=
-github.com/massalabs/thyra-plugin-hello-world v0.0.7-0.20230601150735-ea4f20201e11 h1:acqyy7blXg+i2sNqiHK2VxoO1lw93QKRjTh8C4PHY10=
-github.com/massalabs/thyra-plugin-hello-world v0.0.7-0.20230601150735-ea4f20201e11/go.mod h1:7gjot7QNu6tm8q7uJjsGN89gOm2yMljjrxNpRh+iAXo=
+github.com/massalabs/station v0.2.3 h1:XzylpEBzeQE+QcGkeSbN0BZXljOQCJhJF5cOktXTyDY=
+github.com/massalabs/station v0.2.3/go.mod h1:DyGhfxXQQ0BPGPDLuZ79M3OEwme1f757XklYBB+jqro=
+github.com/massalabs/station-massa-hello-world v0.0.9 h1:R/ME/Tjk6+baOjOvY0HwMHWHp+tpu+cTRywtb+0y9ew=
+github.com/massalabs/station-massa-hello-world v0.0.9/go.mod h1:K1mf69YpRPPZziE53KHXE5IKlTMqU3r1wuLL0MWM21k=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
 github.com/matryer/is v1.4.0/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
 github.com/mattn/go-colorable v0.1.11 h1:nQ+aFkoE2TMGc0b68U2OKSexC+eq46+XwZzWXHRmPYs=

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/massalabs/thyra-plugin-hello-world/pkg/plugin"
+	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
 )
 
 const (

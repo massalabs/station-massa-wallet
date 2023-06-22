@@ -12,8 +12,8 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
-	sendOperation "github.com/massalabs/thyra/pkg/node/sendoperation"
-	"github.com/massalabs/thyra/pkg/node/sendoperation/transaction"
+	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
+	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
 
 type PromptRequestTransferData struct {
