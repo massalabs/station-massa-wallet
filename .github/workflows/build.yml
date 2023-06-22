@@ -52,6 +52,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       TARGET_NAME: wallet-plugin_${{ matrix.target }}-${{ matrix.arch }}
+      GOOS: ${{ matrix.target }}
+      GOARCH: ${{ matrix.arch }}
+      CGO_ENABLED: 1
+      CC: ${{ matrix.cc }}
+      CGO_LDFLAGS: ${{ matrix.cgo_ldflags }}
     steps:
       - uses: actions/checkout@v3
       - name: Check the manifest version
@@ -66,15 +71,18 @@ jobs:
       - uses: ./.github/actions/install
         with:
           os: ${{ matrix.os }}
-      - name: Build binary and prepare archive for publish
+      - name: Build binary for ${{ matrix.target }} ${{ matrix.arch }}
+        if: matrix.target != 'darwin'
         shell: bash
         run: |
-          export GOOS=${{ matrix.target }}
-          export GOARCH=${{ matrix.arch }}
-          export CGO_ENABLED=1
-          export CC=${{ matrix.cc }}
-          export CGO_LDFLAGS="${{ matrix.cgo_ldflags }}"
           go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
+      - name: Build binary for MacOS ${{ matrix.arch }}
+        if: matrix.target == 'darwin'
+        uses: dAppServer/wails-build-action@v2.2
+        with:
+          build-name: $TARGET_NAME${{ matrix.ext }}
+          build-platform: darwin/universal
+          package: false
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:

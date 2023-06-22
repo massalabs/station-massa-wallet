@@ -53,13 +53,13 @@ tasks:
     platforms: [linux]
     cmds:
       - cmd: mkdir -p build/wallet-plugin
-      - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production  -ldflags "-w -s" main.go
+      - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production -ldflags "-w -s" main.go
 
   build-macos:
     platforms: [darwin]
     cmds:
       - cmd: mkdir -p build/wallet-plugin
-      - cmd: go build -tags desktop,production -ldflags "-w -s" -o build/wallet-plugin/wallet-plugin main.go
+      - cmd: wails build -s
     env:
       CGO_LDFLAGS: -framework UniformTypeIdentifiers
 
@@ -99,8 +99,10 @@ tasks:
 
   run:
     cmds:
+      - cmd: open -n ./build/bin/wallet-plugin.app/
+        platforms: [darwin]
       - cmd: ./build/wallet-plugin/wallet-plugin
-        platforms: [linux, darwin]
+        platforms: [linux]
       - cmd: ./build/wallet-plugin/wallet-plugin.exe
         platforms: [windows]
     env:
