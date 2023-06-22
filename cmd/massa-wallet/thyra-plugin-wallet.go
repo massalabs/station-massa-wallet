@@ -10,7 +10,6 @@ import (
 	"github.com/massalabs/station-massa-wallet/internal/handler"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
-	constants "github.com/massalabs/station-massa-wallet/pkg/plugin"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 )
 
@@ -50,10 +49,7 @@ func StartServer(app *walletApp.WalletApp) {
 		log.Fatalln(err)
 	}
 
-	plugin.RegisterPlugin(listener, plugin.Info{
-		Name: constants.PluginName, Author: constants.PluginAuthor,
-		Description: constants.PluginDescription, APISpec: "", Logo: "web/wallet.svg",
-	})
+	plugin.RegisterPlugin(listener, plugin.Info{})
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
