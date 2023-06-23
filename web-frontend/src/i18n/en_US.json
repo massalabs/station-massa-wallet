@@ -63,7 +63,10 @@
     }
   },
   "success": {
-    "copied": " Copied!"
+    "copied": " Copied!",
+    "send-coins": {
+      "sent": "Yah! You just had sent {amount} to {recipient}"
+    }
   },
   "errors": {
     "no-content-to-copy": "There's no content to be copied",
@@ -80,7 +83,8 @@
       "amount-to-low": "Amount must be greater than zero",
       "gas-fees-to-low": "Gas fees must be greater than zero",
       "no-address": "Recipient is required",
-      "invalid-address": "Recipient address is not a valid Massa address"
+      "invalid-address": "Recipient address is not a valid Massa address",
+      "sent": "Oops! Something went wrong in your transfer. Please, try again later..."
     },
     "send-redirect": {
       "account-not-found": "Account not found - redirecting to account creation page. You can import this account with its private key",
