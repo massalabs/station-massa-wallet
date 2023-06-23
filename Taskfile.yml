@@ -27,7 +27,8 @@ tasks:
   fmt:
     cmds:
       - cmd: go mod tidy
-      - cmd: gofumpt -w .
+      - cmd: gofumpt -l -w .
+      - cmd: gci write .
       - cmd: golangci-lint run
       - task: fmt-wails
       - task: fmt-web
