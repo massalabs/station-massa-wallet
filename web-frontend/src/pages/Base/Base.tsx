@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { useLocalStorage } from '../../custom/useLocalStorage';
 import { FiSun, FiMoon } from 'react-icons/fi';
+import { Toast } from '@massalabs/react-ui-kit';
 
 type ThemeSettings = {
   [key: string]: {
@@ -46,6 +47,7 @@ function Base() {
     // this needs to be removed as soon we fix the steps to create an account
     <div className={`${theme} theme-dark`}>
       <Outlet context={context} />
+      <Toast theme={theme} />
     </div>
   );
 }
