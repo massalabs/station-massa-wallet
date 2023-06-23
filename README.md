@@ -33,8 +33,6 @@ task generate
 task build
 ```
 
-This will create a binary file `wallet-plugin{.exe}` in `build/wallet-plugin` folder.
-
 ### Test
 
 ```shell
