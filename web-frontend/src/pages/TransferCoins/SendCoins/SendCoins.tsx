@@ -5,7 +5,13 @@ import { usePost } from '../../../custom/api';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
 import { SendTransactionObject } from '../../../models/AccountModel';
-import { toNanoMASS } from '../../../utils/massaFormat';
+import { toNanoMASS, maskAddress } from '../../../utils/massaFormat';
+import { toast } from '@massalabs/react-ui-kit';
+import Intl from './../../../i18n/i18n';
+
+interface IData {
+  [key: string]: string;
+}
 
 function SendCoins({ ...props }) {
   const { account, redirect } = props;
@@ -14,7 +20,7 @@ function SendCoins({ ...props }) {
   const { nickname } = useParams();
 
   const [submit, setSubmit] = useState<boolean>(false);
-  const [data, setData] = useState<object>();
+  const [data, setData] = useState<IData>();
   const [payloadData, setPayloadData] = useState<object>();
 
   const { mutate, isSuccess, isLoading, error } =
@@ -22,14 +28,22 @@ function SendCoins({ ...props }) {
 
   useEffect(() => {
     if (error) {
-      navigate(routeFor('error'));
+      toast.error(Intl.t(`errors.send-coins.sent`));
     } else if (isSuccess) {
+      let { amount, recipient } = data as IData;
+      toast.success(
+        Intl.t(`success.send-coins.sent`, {
+          amount,
+          recipient: maskAddress(recipient),
+        }),
+      );
+
       navigate(routeFor(`${nickname}/home`));
     }
   }, [isSuccess]);
 
   function handleSubmit({ ...data }) {
-    setData(data);
+    setData(data as IData);
 
     setPayloadData({
       fee: data.fees,
