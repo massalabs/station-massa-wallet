@@ -8,7 +8,6 @@ coverage.out
 build/*
 !build/appicon.png
 node_modules
-wails-frontend/dist
 
 internal/handler/wallet/*.yaml
 internal/handler/html/dist
