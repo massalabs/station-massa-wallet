@@ -1,0 +1,26 @@
+{
+  "index.css": {
+    "file": "index-75e75c06.css",
+    "src": "index.css"
+  },
+  "index.html": {
+    "assets": [
+      "Urbane-Medium-6f715f20.ttf",
+      "Poppins-Regular-cdedb172.ttf"
+    ],
+    "css": [
+      "index-75e75c06.css"
+    ],
+    "file": "index-bf71a5f5.js",
+    "isEntry": true,
+    "src": "index.html"
+  },
+  "node_modules/@massalabs/react-ui-kit/src/assets/fonts/Poppins/Poppins-Regular.ttf": {
+    "file": "Poppins-Regular-cdedb172.ttf",
+    "src": "node_modules/@massalabs/react-ui-kit/src/assets/fonts/Poppins/Poppins-Regular.ttf"
+  },
+  "node_modules/@massalabs/react-ui-kit/src/assets/fonts/Urbane/Urbane-Medium.ttf": {
+    "file": "Urbane-Medium-6f715f20.ttf",
+    "src": "node_modules/@massalabs/react-ui-kit/src/assets/fonts/Urbane/Urbane-Medium.ttf"
+  }
+}
