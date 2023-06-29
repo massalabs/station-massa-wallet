@@ -10,6 +10,7 @@ import Intl from '../i18n/i18n';
 import { Password, Button, Clipboard } from '@massalabs/react-ui-kit';
 import { Layout } from '../layouts/Layout/Layout';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
+import { handleKeyDown } from '../utils/handleKeyDown';
 
 function EnterKey() {
   return (
@@ -96,8 +97,8 @@ function BackupKeyPairs() {
 
   return (
     <Layout>
-      <form ref={form} onSubmit={handleSubmit}>
-        <div className="flex items-end gap-3 mb-4">
+      <form ref={form} onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+        <div className="flex items-end gap-3">
           <h1 className="mas-title">{Intl.t('backup.title')}</h1>
           <span>/</span>
           <h2 className="mas-h2">{walletName}</h2>

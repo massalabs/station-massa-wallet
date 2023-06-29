@@ -8,6 +8,7 @@ import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
 import { Layout } from '../../layouts/Layout/Layout';
 
 import { IMPORT_STEPS } from '../../const/stepper';
+import { handleKeyDown } from '../../utils/handleKeyDown';
 
 // TODO: create i18n and move this to translation file
 const t = (key: string): string => {
@@ -58,7 +59,7 @@ function PromptPrivateKey() {
   return (
     <Layout>
       <Stepper step={0} steps={IMPORT_STEPS} />
-      <form ref={form} onSubmit={handleSubmit}>
+      <form ref={form} onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
         <h1 className="mas-title pt-6">{req.Msg}</h1>
         <p className="mas-body pt-4">Enter your Private Key</p>
         <div className="pt-4">
