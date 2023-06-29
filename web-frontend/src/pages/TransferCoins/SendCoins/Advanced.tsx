@@ -30,7 +30,7 @@ function Advanced({ ...props }) {
   const isOneOfPressedFees = Object.values(presetFees).includes(currentFees);
   const initialFees = !isOneOfPressedFees ? currentFees : 0;
   const initialPressetFees = !isOneOfPressedFees
-    ? 'none'
+    ? '0'
     : currentFees || PRESET_STANDARD;
   const initialCustomFees = !isOneOfPressedFees || false;
 
@@ -44,12 +44,16 @@ function Advanced({ ...props }) {
     setError(null);
     setFees(0);
 
-    isCustomFees ? setPresetFee('none') : setPresetFee(PRESET_STANDARD);
+    isCustomFees ? setPresetFee('0') : setPresetFee(PRESET_STANDARD);
   }
 
   function validate(formObject: any) {
     const { fees } = formObject;
     setError(null);
+    if (customFees && !fees) {
+      setError({ fees: Intl.t('errors.send-coins.no-gas-fees') });
+      return false;
+    }
 
     if (customFees && fees <= 0) {
       setError({ fees: Intl.t('errors.send-coins.gas-fees-to-low') });
