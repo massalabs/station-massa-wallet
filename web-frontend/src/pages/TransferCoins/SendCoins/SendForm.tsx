@@ -45,6 +45,10 @@ export function SendForm({ ...props }) {
 
   function handlePercent(amount = 0, percent: number) {
     let newAmount = amount * percent;
+    const feesAsNumber = Number(fees);
+
+    if (newAmount > balance - feesAsNumber)
+      newAmount = Math.max(balance - feesAsNumber, 0);
 
     setAmount(toMASS(newAmount));
   }
@@ -66,6 +70,13 @@ export function SendForm({ ...props }) {
 
     if (toMASS(toNanoMASS(amount)) > toMASS(balance)) {
       setError({ amount: Intl.t('errors.send-coins.amount-to-high') });
+      return false;
+    }
+
+    if (toNanoMASS(amount) + Number(fees) > balance) {
+      setError({
+        amount: Intl.t('errors.send-coins.amount-plus-fees-to-high'),
+      });
       return false;
     }
 
