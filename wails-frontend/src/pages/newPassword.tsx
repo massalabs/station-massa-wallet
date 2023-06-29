@@ -14,6 +14,7 @@ import { FiLock } from 'react-icons/fi';
 import { Layout } from '../layouts/Layout/Layout';
 import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
 import { IErrorObject } from '../utils';
+import { handleKeyDown } from '../utils/handleKeyDown';
 
 function NewPassword() {
   const navigate = useNavigate();
@@ -105,7 +106,7 @@ function NewPassword() {
           />
         </div>
       )}
-      <form ref={form} onSubmit={handleSubmit}>
+      <form ref={form} onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
         <h1 className="mas-title">{req.Msg}</h1>
         <p className="mas-body pt-4">{getSubtitle()}</p>
         <div className="pt-4">
