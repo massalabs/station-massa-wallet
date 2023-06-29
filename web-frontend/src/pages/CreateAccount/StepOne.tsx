@@ -34,7 +34,7 @@ export default function StepOne() {
     }
 
     if (isAlreadyExists(nickname, accounts)) {
-      setError({ nickname: Intl.t('errors.nickname-already-exists') });
+      setError({ nickname: Intl.t('errors.duplicate-nickname') });
       return false;
     }
 
