@@ -18,6 +18,7 @@ import { Layout } from '../layouts/Layout/Layout';
 import Intl from '../i18n/i18n';
 import { formatStandard, maskAddress } from '../utils/massaFormat';
 import { toMAS } from '@massalabs/massa-web3';
+import { handleKeyDown } from '../utils/handleKeyDown';
 
 interface PromptRequestDeleteData {
   Nickname: string;
@@ -170,7 +171,7 @@ function PasswordPrompt() {
 
   return (
     <Layout>
-      <form ref={form} onSubmit={handleSubmit}>
+      <form ref={form} onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
         <h1 className="mas-title">{getTitle()}</h1>
         <div className="mas-body pt-4 break-words max-w-xs">
           {getSubtitle()}
