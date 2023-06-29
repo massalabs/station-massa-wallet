@@ -7,16 +7,10 @@ import {
   MassaLogo,
 } from '@massalabs/react-ui-kit';
 import { formatStandard } from '../../../utils/massaFormat';
-import { useResource } from '../../../custom/api';
 import { AccountObject } from '../../../models/AccountModel';
 
 function AccountSelect({ ...props }) {
-  const { onClose, setRecipient, account: currentAccount } = props;
-
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  const filteredAccounts = accounts.filter(
-    (account: AccountObject) => account.nickname !== currentAccount.nickname,
-  );
+  const { onClose, setRecipient, filteredAccounts } = props;
 
   function handleSetRecipient(filteredAccount: AccountObject) {
     let address = filteredAccount?.address || '';
