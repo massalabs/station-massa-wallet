@@ -54,8 +54,10 @@ function NewPassword() {
   const [errorConfirm, setErrorConfirm] = useState<IErrorObject | null>(null);
 
   function validate(e: SyntheticEvent) {
+    console.log('validate called');
     let valid = true;
     const form = parseForm(e);
+    console.log('formData: ', form);
     const { password, passwordConfirm } = form;
 
     // reset error state
@@ -96,6 +98,10 @@ function NewPassword() {
     save(e);
   }
 
+  function handleKeyDownWrapper(event: React.KeyboardEvent<HTMLFormElement>) {
+    handleKeyDown(event, handleSubmit);
+  }
+
   return (
     <Layout>
       {isImportAction && (
@@ -106,7 +112,7 @@ function NewPassword() {
           />
         </div>
       )}
-      <form ref={form} onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+      <form ref={form} onSubmit={handleSubmit} onKeyDown={handleKeyDownWrapper}>
         <h1 className="mas-title">{req.Msg}</h1>
         <p className="mas-body pt-4">{getSubtitle()}</p>
         <div className="pt-4">
