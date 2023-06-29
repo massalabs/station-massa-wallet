@@ -80,6 +80,7 @@
     "send-coins": {
       "invalid-amount": "invalid amount",
       "amount-to-high": "Insufficient funds",
+      "amount-plus-fees-to-high": "Insufficient funds to pay fees",
       "amount-to-low": "Amount must be greater than zero",
       "gas-fees-to-low": "Gas fees must be greater than or equal to zero",
       "no-gas-fees": "Gas fees are required",
