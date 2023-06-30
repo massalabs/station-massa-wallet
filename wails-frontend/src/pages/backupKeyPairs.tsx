@@ -7,7 +7,7 @@ import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
 import { ErrorCode, IErrorObject, handleCancel } from '../utils';
 import Intl from '../i18n/i18n';
 
-import { Password, Button } from '@massalabs/react-ui-kit';
+import { Password, Button, Clipboard } from '@massalabs/react-ui-kit';
 import { Layout } from '../layouts/Layout/Layout';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
 
@@ -49,6 +49,8 @@ function BackupKeyPairs() {
   const walletName: string = req.Msg;
 
   const [privateKey, setPrivateKey] = useState<string | undefined>(undefined);
+  const [publicKey, setPublicKey] = useState<string | undefined>(undefined);
+
   const [error, setError] = useState<IErrorObject | null>(null);
 
   function validate(e: SyntheticEvent) {
@@ -77,7 +79,8 @@ function BackupKeyPairs() {
         });
       }
     }
-    setPrivateKey(result.Data);
+    setPrivateKey(result.Data.privateKey);
+    setPublicKey(result.Data.publicKey);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
@@ -94,7 +97,7 @@ function BackupKeyPairs() {
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <div className="flex items-end gap-3">
+        <div className="flex items-end gap-3 mb-4">
           <h1 className="mas-title">{Intl.t('backup.title')}</h1>
           <span>/</span>
           <h2 className="mas-h2">{walletName}</h2>
@@ -106,12 +109,28 @@ function BackupKeyPairs() {
         )}
         <div className="pt-4">
           {privateKey ? (
-            <Password
-              defaultValue=""
-              name="privateKey"
-              placeholder={Intl.t('backup.inputs.private-key.placeholder')}
-              value={privateKey}
-            />
+            <>
+              <div className="mb-3">
+                <p className="mb-2 mas-body">
+                  {Intl.t('backup.subtitle.public-key-title')}
+                </p>
+                <Clipboard
+                  displayedContent={publicKey}
+                  rawContent={publicKey as string}
+                />
+              </div>
+              <div>
+                <p className="mb-2 mas-body">
+                  {Intl.t('backup.subtitle.private-key-title')}
+                </p>
+                <Password
+                  defaultValue=""
+                  name="privateKey"
+                  placeholder={Intl.t('backup.inputs.private-key.placeholder')}
+                  value={privateKey}
+                />
+              </div>
+            </>
           ) : (
             <Password
               defaultValue=""

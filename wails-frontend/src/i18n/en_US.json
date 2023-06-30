@@ -43,7 +43,9 @@
     "title": "Back up",
     "subtitle": {
       "choose-method": "Choose a back up method",
-      "private-key": "Enter your password to show your private key."
+      "private-key": "Enter your password to show your private key.",
+      "public-key-title": "Public key:",
+      "private-key-title": "Private key:"
     },
     "inputs": {
       "private-key": {
@@ -56,7 +58,7 @@
     "buttons": {
       "download": "Download a .yaml file",
       "show": "Show key pairs",
-      "copy": "Copy to clipboard",
+      "copy": "Copy Private Key",
       "next": "Next",
       "cancel": "Cancel"
     }
