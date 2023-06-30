@@ -18,6 +18,11 @@ export interface InputsErrors {
   amount?: string;
   recipient?: string;
 }
+export interface ContactListProps {
+  setRecipient: React.Dispatch<string>;
+  accounts: AccountObject[];
+  onClose: () => void;
+}
 
 export function SendForm({ ...props }) {
   const {
@@ -206,7 +211,7 @@ export function SendForm({ ...props }) {
       {ContactListModal && (
         <ContactList
           setRecipient={setRecipient}
-          filteredAccounts={filteredAccounts}
+          accounts={filteredAccounts}
           onClose={() => setContactListModal(false)}
         />
       )}

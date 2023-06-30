@@ -8,9 +8,10 @@ import {
 } from '@massalabs/react-ui-kit';
 import { formatStandard } from '../../../utils/massaFormat';
 import { AccountObject } from '../../../models/AccountModel';
+import { ContactListProps } from './SendForm';
 
-function AccountSelect({ ...props }) {
-  const { onClose, setRecipient, filteredAccounts } = props;
+function AccountSelect(props: ContactListProps) {
+  const { onClose, setRecipient, accounts } = props;
 
   function handleSetRecipient(filteredAccount: AccountObject) {
     let address = filteredAccount?.address || '';
@@ -30,7 +31,7 @@ function AccountSelect({ ...props }) {
       </PopupModalHeader>
       <PopupModalContent>
         <div className="overflow-scroll h-80">
-          {filteredAccounts.map((filteredAccount: AccountObject) => (
+          {accounts.map((filteredAccount: AccountObject) => (
             <Selector
               customClass="pb-4"
               key={filteredAccount.nickname}
