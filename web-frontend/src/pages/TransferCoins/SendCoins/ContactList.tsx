@@ -8,7 +8,12 @@ import {
 } from '@massalabs/react-ui-kit';
 import { formatStandard } from '../../../utils/massaFormat';
 import { AccountObject } from '../../../models/AccountModel';
-import { ContactListProps } from './SendForm';
+
+interface ContactListProps {
+  setRecipient: React.Dispatch<string>;
+  accounts: AccountObject[];
+  onClose: () => void;
+}
 
 function AccountSelect(props: ContactListProps) {
   const { onClose, setRecipient, accounts } = props;
@@ -31,10 +36,10 @@ function AccountSelect(props: ContactListProps) {
       </PopupModalHeader>
       <PopupModalContent>
         <div className="overflow-scroll h-80">
-          {accounts.map((filteredAccount: AccountObject) => (
+          {accounts.map((filteredAccount: AccountObject, index: number) => (
             <Selector
               customClass="pb-4"
-              key={filteredAccount.nickname}
+              key={index}
               preIcon={<Identicon username={filteredAccount.nickname} />}
               posIcon={<MassaLogo size={24} />}
               content={filteredAccount.nickname}

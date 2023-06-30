@@ -4,7 +4,7 @@ import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 import Intl from '../../../i18n/i18n';
 import Advanced from './Advanced';
 import ContactList from './ContactList';
-import { parseForm } from '../../../utils/parseForm';
+import { IForm, parseForm } from '../../../utils/parseForm';
 import {
   toNanoMASS,
   toMASS,
@@ -14,14 +14,9 @@ import {
 import { useResource } from '../../../custom/api';
 import { AccountObject } from '../../../models/AccountModel';
 
-export interface InputsErrors {
+interface InputsErrors {
   amount?: string;
   recipient?: string;
-}
-export interface ContactListProps {
-  setRecipient: React.Dispatch<string>;
-  accounts: AccountObject[];
-  onClose: () => void;
 }
 
 export function SendForm({ ...props }) {
@@ -42,8 +37,8 @@ export function SendForm({ ...props }) {
   const [amount, setAmount] = useState<number | string | undefined>(
     data?.amount ? toMASS(toNanoMASS(data.amount)) : '',
   );
-  const [fees, setFees] = useState(data?.fees ?? '1000');
-  const [recipient, setRecipient] = useState(data?.recipient ?? '');
+  const [fees, setFees] = useState<string>(data?.fees ?? '1000');
+  const [recipient, setRecipient] = useState<string>(data?.recipient ?? '');
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
   const filteredAccounts = accounts.filter(
     (account: AccountObject) => account.nickname !== currentAccount.nickname,
@@ -63,7 +58,7 @@ export function SendForm({ ...props }) {
     setAmount(toMASS(newAmount));
   }
 
-  function validate(formObject: any) {
+  function validate(formObject: IForm) {
     const { amount, recipient } = formObject;
 
     setError(null);
