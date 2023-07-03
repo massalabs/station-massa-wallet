@@ -4,15 +4,17 @@ import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 import Intl from '../../../i18n/i18n';
 import Advanced from './Advanced';
 import ContactList from './ContactList';
-import { parseForm } from '../../../utils/parseForm';
+import { IForm, parseForm } from '../../../utils/parseForm';
 import {
   toNanoMASS,
   toMASS,
   formatStandard,
   reverseFormatStandard,
 } from '../../../utils/massaFormat';
+import { useResource } from '../../../custom/api';
+import { AccountObject } from '../../../models/AccountModel';
 
-export interface InputsErrors {
+interface InputsErrors {
   amount?: string;
   recipient?: string;
 }
@@ -20,13 +22,13 @@ export interface InputsErrors {
 export function SendForm({ ...props }) {
   const {
     handleSubmit: sendCoinsHandleSubmit,
-    account,
+    account: currentAccount,
     data,
     redirect,
   } = props;
   const { amount: redirectAmount, to } = redirect;
 
-  const balance = Number(account?.candidateBalance || 0);
+  const balance = Number(currentAccount?.candidateBalance || 0);
   const formattedBalance = formatStandard(toMASS(balance));
 
   const [error, setError] = useState<InputsErrors | null>(null);
@@ -35,9 +37,12 @@ export function SendForm({ ...props }) {
   const [amount, setAmount] = useState<number | string | undefined>(
     data?.amount ? toMASS(toNanoMASS(data.amount)) : '',
   );
-  const [fees, setFees] = useState(data?.fees ?? '1000');
-  const [recipient, setRecipient] = useState(data?.recipient ?? '');
-
+  const [fees, setFees] = useState<string>(data?.fees ?? '1000');
+  const [recipient, setRecipient] = useState<string>(data?.recipient ?? '');
+  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
+  const filteredAccounts = accounts.filter(
+    (account: AccountObject) => account.nickname !== currentAccount.nickname,
+  );
   useEffect(() => {
     setAmount(redirectAmount);
     setRecipient(to);
@@ -53,7 +58,7 @@ export function SendForm({ ...props }) {
     setAmount(toMASS(newAmount));
   }
 
-  function validate(formObject: any) {
+  function validate(formObject: IForm) {
     const { amount, recipient } = formObject;
 
     setError(null);
@@ -163,13 +168,18 @@ export function SendForm({ ...props }) {
             error={error?.recipient}
           />
         </div>
-        <div className="flex flex-row-reverse pb-3.5">
-          <p className="hover:cursor-pointer">
-            <u className="mas-body2" onClick={() => setContactListModal(true)}>
-              {Intl.t('send-coins.transfer-between-acc')}
-            </u>
-          </p>
-        </div>
+        {filteredAccounts.length > 0 && (
+          <div className="flex flex-row-reverse pb-3.5">
+            <p className="hover:cursor-pointer">
+              <u
+                className="mas-body2"
+                onClick={() => setContactListModal(true)}
+              >
+                {Intl.t('send-coins.transfer-between-acc')}
+              </u>
+            </p>
+          </div>
+        )}
         <div className="flex flex-col w-full gap-3.5">
           <Button
             onClick={() => setAdvancedModal(!advancedModal)}
@@ -196,7 +206,7 @@ export function SendForm({ ...props }) {
       {ContactListModal && (
         <ContactList
           setRecipient={setRecipient}
-          account={account}
+          accounts={filteredAccounts}
           onClose={() => setContactListModal(false)}
         />
       )}

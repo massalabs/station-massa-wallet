@@ -7,16 +7,16 @@ import {
   MassaLogo,
 } from '@massalabs/react-ui-kit';
 import { formatStandard } from '../../../utils/massaFormat';
-import { useResource } from '../../../custom/api';
 import { AccountObject } from '../../../models/AccountModel';
 
-function AccountSelect({ ...props }) {
-  const { onClose, setRecipient, account: currentAccount } = props;
+interface ContactListProps {
+  setRecipient: React.Dispatch<string>;
+  accounts: AccountObject[];
+  onClose: () => void;
+}
 
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  const filteredAccounts = accounts.filter(
-    (account: AccountObject) => account.nickname !== currentAccount.nickname,
-  );
+function AccountSelect(props: ContactListProps) {
+  const { onClose, setRecipient, accounts } = props;
 
   function handleSetRecipient(filteredAccount: AccountObject) {
     let address = filteredAccount?.address || '';
@@ -36,10 +36,10 @@ function AccountSelect({ ...props }) {
       </PopupModalHeader>
       <PopupModalContent>
         <div className="overflow-scroll h-80">
-          {filteredAccounts.map((filteredAccount: AccountObject) => (
+          {accounts.map((filteredAccount: AccountObject, index: number) => (
             <Selector
               customClass="pb-4"
-              key={filteredAccount.nickname}
+              key={index}
               preIcon={<Identicon username={filteredAccount.nickname} />}
               posIcon={<MassaLogo size={24} />}
               content={filteredAccount.nickname}
