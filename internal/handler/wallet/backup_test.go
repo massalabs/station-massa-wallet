@@ -128,7 +128,11 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		assert.Equal(t, wlt.GetPrivKey(), result.Data)
+		data, ok := result.Data.(KeyPair)
+		assert.True(t, ok, "Data is not of expected type")
+
+		assert.Equal(t, wlt.GetPrivKey(), data.PrivateKey)
+		assert.Equal(t, wlt.GetPupKey(), data.PublicKey)
 
 		checkResultChannel(t, result, true, "Backup Success")
 	})

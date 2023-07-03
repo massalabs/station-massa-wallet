@@ -14,6 +14,12 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
+// KeyPair represents a pair of private and public keys.
+type KeyPair struct {
+	PrivateKey string `json:"privateKey"`
+	PublicKey  string `json:"publicKey"`
+}
+
 func NewBackupAccount(prompterApp prompt.WalletPrompterInterface) operations.BackupAccountHandler {
 	return &walletBackupAccount{prompterApp: prompterApp}
 }
@@ -46,6 +52,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	_, ok := promptOutput.(*prompt.BackupMethod)
 	isYmlBackup := ok
 	var privateKey string = ""
+	var publicKey string = ""
 
 	if isYmlBackup {
 		walletErr := w.saveAccountFile(params.Nickname)
@@ -59,12 +66,18 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 				})
 		}
 	} else {
-		// for private key backup, send the private key to the wails frontend
+
 		privateKey = wlt.GetPrivKey()
+		publicKey = wlt.GetPupKey()
+	}
+
+	data := KeyPair{
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgBackupSuccess, Data: privateKey})
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgBackupSuccess, Data: data})
 
 	return operations.NewBackupAccountNoContent()
 }
