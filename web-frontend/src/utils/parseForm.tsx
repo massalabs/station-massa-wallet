@@ -1,6 +1,6 @@
 import { BaseSyntheticEvent } from 'react';
 
-interface IForm {
+export interface IForm {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }

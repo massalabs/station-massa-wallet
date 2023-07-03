@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AccountObject } from '../../models/AccountModel';
-import { formatStandard, Unit, maskAddress } from '../../utils/massaFormat';
+import { formatStandard, Unit } from '../../utils/massaFormat';
 import { useResource } from '../../custom/api';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';
@@ -35,7 +35,6 @@ export default function Home() {
   const balance = parseInt(unformattedBalance);
   const formattedBalance = formatStandard(balance, Unit.NanoMAS);
   const address = account?.address ?? '';
-  const formattedAddress = maskAddress(address);
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
@@ -78,7 +77,7 @@ export default function Home() {
               {Intl.t('home.title-account-address')}
             </p>
             <Clipboard
-              displayedContent={formattedAddress}
+              displayedContent={address}
               rawContent={address}
               error={Intl.t('errors.no-content-to-copy')}
               className="flex flex-row items-center mas-body2 justify-between
