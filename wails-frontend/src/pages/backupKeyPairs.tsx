@@ -85,6 +85,7 @@ function BackupKeyPairs() {
   }
 
   async function handleSubmit(e: SyntheticEvent) {
+    console.log('submit');
     e.preventDefault();
     if (!validate(e)) return;
 
