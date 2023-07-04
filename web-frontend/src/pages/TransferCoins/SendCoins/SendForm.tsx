@@ -118,7 +118,7 @@ export function SendForm({ ...props }) {
         <div className="flex flex-row justify-between w-full pb-3.5 ">
           <p className="mas-body2"> {Intl.t('send-coins.send-action')} </p>
           <p className="mas-body2">
-            {Intl.t('send-coins.available-balance')} <p>{formattedBalance}</p>
+            {Intl.t('send-coins.available-balance')} <u>{formattedBalance}</u>
           </p>
         </div>
         <div className="pb-3.5">
