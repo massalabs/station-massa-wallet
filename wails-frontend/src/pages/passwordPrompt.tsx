@@ -46,7 +46,7 @@ function TransferLayout(props: PromptRequestTransferData) {
       </div>
       <div>
         {Intl.t('password-prompt.transfer.to')}
-        <p>{maskAddress(RecipientAddress)}</p>
+        <u>{maskAddress(RecipientAddress)}</u>
       </div>
     </div>
   );

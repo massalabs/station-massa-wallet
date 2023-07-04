@@ -497,6 +497,6 @@ func (o *MassaWalletAPI) AddMiddlewareFor(method, path string, builder middlewar
 	}
 	o.Init()
 	if h, ok := o.handlers[um][path]; ok {
-		o.handlers[um][path] = builder(h)
+		o.handlers[method][path] = builder(h)
 	}
 }
