@@ -96,7 +96,7 @@ function BackupKeyPairs() {
 
   return (
     <Layout>
-      <form ref={form} onSubmit={handleSubmit} className="max-w-xs">
+      <form ref={form} onSubmit={handleSubmit}>
         <div className="flex items-end gap-3 mb-4">
           <h1 className="mas-title">{Intl.t('backup.title')}</h1>
           <span>/</span>
