@@ -28,7 +28,7 @@ export function SendConfirmation({ ...props }) {
         className="flex flex-row just items-center hover:cursor-pointer mb-5 gap-2"
       >
         <FiChevronLeft />
-        <u>{Intl.t('send-coins.back-to-sending')}</u>
+        <p>{Intl.t('send-coins.back-to-sending')}</p>
       </div>
       <p className="mb-6">{Intl.t('send-coins.send-message')}</p>
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
@@ -53,7 +53,7 @@ export function SendConfirmation({ ...props }) {
         />
         <p className="text-s-info">
           {Intl.t('send-coins.recipient')}
-          <u>{formattedRecipientAddress}</u>
+          <p>{formattedRecipientAddress}</p>
         </p>
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
