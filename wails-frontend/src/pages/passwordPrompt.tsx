@@ -35,7 +35,7 @@ function TransferLayout(props: PromptRequestTransferData) {
   let { Amount, NicknameFrom, RecipientAddress, Fee } = props;
 
   return (
-    <div className="ml-2 p-4 mb-4 bg-secondary rounded-lg w-full">
+    <div className="p-4 mb-2 bg-secondary rounded-lg w-full">
       <Balance amount={formatStandard(Number(toMAS(Amount)))} />
       <div className="mb-4 mt-2 mas-caption">
         {Intl.t('password-prompt.transfer.fee', { fee: Fee })}
@@ -172,9 +172,7 @@ function PasswordPrompt() {
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title">{getTitle()}</h1>
-        <div className="mas-body pt-4 break-words max-w-xs">
-          {getSubtitle()}
-        </div>
+        <div className="mas-body pt-4 break-words">{getSubtitle()}</div>
         <div className="pt-4">
           <Password
             defaultValue=""
