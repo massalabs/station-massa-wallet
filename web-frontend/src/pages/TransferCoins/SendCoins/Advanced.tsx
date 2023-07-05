@@ -10,7 +10,7 @@ import Intl from '../../../i18n/i18n';
 import { useState, FormEvent } from 'react';
 import { parseForm } from '../../../utils/parseForm';
 
-export interface InputsErrors {
+interface InputsErrors {
   fees?: string;
 }
 
