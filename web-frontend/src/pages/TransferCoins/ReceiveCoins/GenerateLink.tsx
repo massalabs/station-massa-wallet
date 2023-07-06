@@ -119,6 +119,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 <Clipboard
                   rawContent={link}
                   error={Intl.t('errors.no-content-to-copy')}
+                  toggleHover={false}
                 />
               </div>
             </div>

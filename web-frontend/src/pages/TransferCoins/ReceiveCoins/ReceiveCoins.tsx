@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FiLink } from 'react-icons/fi';
 import QRCodeReact from 'qrcode.react';
-import { maskAddress } from '../../../utils/massaFormat';
 import GenerateLink from './GenerateLink';
 import Intl from '../../../i18n/i18n';
 import { Button, Clipboard } from '@massalabs/react-ui-kit';
@@ -12,7 +11,6 @@ function ReceiveCoins({ ...props }) {
   const { account } = props;
 
   const address = account?.address;
-  const formattedAddress = maskAddress(address);
   const baseURL = window.location.origin;
   const presetURL = `${baseURL}${VITE_BASE_APP}/send-redirect/?to=${address}`;
 
@@ -34,9 +32,10 @@ function ReceiveCoins({ ...props }) {
         <p>{Intl.t('receive-coins.account-address')}</p>
         <div className="h-16">
           <Clipboard
-            displayedContent={formattedAddress}
+            displayedContent={address}
             rawContent={address}
             error={Intl.t('errors.no-content-to-copy')}
+            toggleHover={false}
           />
         </div>
         <Button onClick={() => setModal(!modal)} preIcon={<FiLink size={24} />}>
