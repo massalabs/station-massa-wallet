@@ -10,13 +10,6 @@ type ThemeSettings = {
   };
 };
 
-export interface IOutletContextType {
-  themeIcon: JSX.Element;
-  themeLabel: string;
-  theme: string;
-  handleSetTheme: () => void;
-}
-
 export const themeSettings: ThemeSettings = {
   'theme-dark': {
     icon: <FiSun />,
