@@ -4,7 +4,6 @@ import { useResource } from '../../custom/api';
 import { AccountObject } from '../../models/AccountModel';
 import { routeFor } from '../../utils';
 import Intl from '../../i18n/i18n';
-import { IOutletContextType } from './../../pages/Base/Base';
 
 import {
   Dropdown,
@@ -35,6 +34,13 @@ export enum MenuItem {
 interface IWalletLayoutProps {
   menuItem: MenuItem;
   children: ReactNode;
+}
+
+interface IOutletContextType {
+  themeIcon: JSX.Element;
+  themeLabel: string;
+  theme: string;
+  handleSetTheme: () => void;
 }
 
 function WalletLayout(props: IWalletLayoutProps) {
