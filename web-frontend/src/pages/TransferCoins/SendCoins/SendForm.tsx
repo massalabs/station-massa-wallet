@@ -40,8 +40,8 @@ export function SendForm({ ...props }) {
   const [fees, setFees] = useState<string>(data?.fees ?? '1000');
   const [recipient, setRecipient] = useState<string>(data?.recipient ?? '');
   const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
-  const filteredAccounts = accounts.filter(
-    (account: AccountObject) => account.nickname !== currentAccount.nickname,
+  const filteredAccounts = accounts?.filter(
+    (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );
   useEffect(() => {
     setAmount(redirectAmount);
