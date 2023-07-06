@@ -40,11 +40,11 @@ function TransferLayout(props: PromptRequestTransferData) {
       <div className="mb-4 mt-2 mas-caption">
         {Intl.t('password-prompt.transfer.fee', { fee: Fee })}
       </div>
-      <div>
+      <div className="flex items-center gap-2">
         {Intl.t('password-prompt.transfer.from')}
         <b>{NicknameFrom}</b>
       </div>
-      <div>
+      <div className="flex items-center gap-2">
         {Intl.t('password-prompt.transfer.to')}
         <p>{maskAddress(RecipientAddress)}</p>
       </div>
