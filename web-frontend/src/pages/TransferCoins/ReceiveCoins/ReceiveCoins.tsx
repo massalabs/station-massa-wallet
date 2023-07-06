@@ -34,8 +34,8 @@ function ReceiveCoins({ ...props }) {
           <Clipboard
             displayedContent={address}
             rawContent={address}
-            error={Intl.t('errors.no-content-to-copy')}
             toggleHover={false}
+            error={Intl.t('errors.no-content-to-copy')}
           />
         </div>
         <Button onClick={() => setModal(!modal)} preIcon={<FiLink size={24} />}>
