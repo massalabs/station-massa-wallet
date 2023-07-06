@@ -51,10 +51,10 @@ export function SendConfirmation({ ...props }) {
           customClass="p-0 bg-transparent mb-3"
           amount={formattedTotal}
         />
-        <p className="text-s-info">
+        <div className="text-s-info flex items-center gap-2">
           {Intl.t('send-coins.recipient')}
           <p>{formattedRecipientAddress}</p>
-        </p>
+        </div>
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}
