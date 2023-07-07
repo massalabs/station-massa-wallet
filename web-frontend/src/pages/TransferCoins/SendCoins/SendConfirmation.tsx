@@ -15,11 +15,39 @@ export function SendConfirmation({ ...props }) {
   const { data, handleConfirm, isLoading } = props;
   const { amount, fees, recipient } = data;
 
+  const GAS_STANDARD = `${Intl.t('send-coins.gas-standard')}`;
+  const GAS_LOW = `${Intl.t('send-coins.gas-low')}`;
+  const GAS_HIGH = `${Intl.t('send-coins.gas-high')}`;
+  const GAS_CUSTOM = `${Intl.t('send-coins.gas-custom')}`;
+
   const formattedRecipientAddress = maskAddress(recipient);
   const total = toNanoMASS(amount) + parseInt(fees);
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
+  let selectedFees;
+
+  switch (fees) {
+    case '1000':
+      selectedFees = GAS_STANDARD;
+      break;
+    case '1':
+      selectedFees = GAS_LOW;
+      break;
+    case '5000':
+      selectedFees = GAS_HIGH;
+      break;
+    default:
+      selectedFees = GAS_CUSTOM;
+      break;
+  }
+
+  const gasInfo = `${Intl.t('send-coins.gas-info', {
+    gasType: selectedFees,
+    gasFees: fees,
+  })}`;
+  const gasAlert = `  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
+  let content = selectedFees == GAS_STANDARD ? gasInfo + gasAlert : gasAlert;
 
   return (
     <>
@@ -41,10 +69,7 @@ export function SendConfirmation({ ...props }) {
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
-            <ToolTip
-              showTooltip={showTooltip}
-              content={Intl.t('send-coins.gas-info', { default: '1000' })}
-            />
+            <ToolTip showTooltip={showTooltip} content={content} />
           </div>
         </div>
         <Balance

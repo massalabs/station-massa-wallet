@@ -81,7 +81,7 @@ export function validateAmount(
   }
 
   if (!balance) return null;
-  if (+balance === undefined)
+  if (isNaN(+balance))
     return { unexpectedError: Intl.t('errors.unexpected-error.description') };
   if (balance?.length > 0 && amountInNanoMassa > +balance) {
     return { amount: Intl.t('errors.send.amount-to-high') };
