@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Intl from '../../../i18n/i18n';
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -25,30 +25,22 @@ export function SendConfirmation({ ...props }) {
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
-  const [customFees, setCustomFees] = useState<string>(GAS_STANDARD);
+  const selectedFees =
+    fees == '1000'
+      ? GAS_STANDARD
+      : fees == '1'
+      ? GAS_LOW
+      : fees == '5000'
+      ? GAS_HIGH
+      : GAS_CUSTOM;
 
   const gasInfo = `${Intl.t('send-coins.gas-info', {
-    default: customFees,
+    default: selectedFees,
     gasFees: fees,
   })}`;
   const gasAlert = `  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
-  let content = customFees == GAS_STANDARD ? gasInfo + gasAlert : gasAlert;
+  let content = selectedFees == GAS_STANDARD ? gasInfo + gasAlert : gasAlert;
 
-  useEffect(() => {
-    switch (fees) {
-      case '1000':
-        setCustomFees(GAS_STANDARD);
-        break;
-      case '1':
-        setCustomFees(GAS_LOW);
-        break;
-      case '5000':
-        setCustomFees(GAS_HIGH);
-        break;
-      default:
-        setCustomFees(GAS_CUSTOM);
-    }
-  }, [fees]);
   return (
     <>
       <div
