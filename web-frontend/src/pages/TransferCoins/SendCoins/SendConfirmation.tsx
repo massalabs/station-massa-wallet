@@ -35,7 +35,7 @@ export function SendConfirmation({ ...props }) {
       : GAS_CUSTOM;
 
   const gasInfo = `${Intl.t('send-coins.gas-info', {
-    default: selectedFees,
+    gasType: selectedFees,
     gasFees: fees,
   })}`;
   const gasAlert = `  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
