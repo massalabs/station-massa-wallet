@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Intl from '../../../i18n/i18n';
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -20,7 +20,29 @@ export function SendConfirmation({ ...props }) {
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
+  const [customFees, setCustomFees] = useState<string>('Standard');
 
+  const content = `
+  ${Intl.t('send-coins.gas-info', {
+    default: customFees,
+    gasFees: fees,
+  })}  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
+
+  useEffect(() => {
+    switch (fees) {
+      case '1000':
+        setCustomFees('Standard');
+        break;
+      case '1':
+        setCustomFees('Low');
+        break;
+      case '5000':
+        setCustomFees('High');
+        break;
+      default:
+        setCustomFees('Custom');
+    }
+  }, [fees]);
   return (
     <>
       <div
@@ -41,10 +63,7 @@ export function SendConfirmation({ ...props }) {
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
-            <ToolTip
-              showTooltip={showTooltip}
-              content={Intl.t('send-coins.gas-info', { default: '1000' })}
-            />
+            <ToolTip showTooltip={showTooltip} content={content} />
           </div>
         </div>
         <Balance
