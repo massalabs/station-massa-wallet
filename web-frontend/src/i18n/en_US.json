@@ -133,6 +133,10 @@
     "confirm-fees": "Confirm fees ",
     "gas-info": "{default} gas fees are {gasFees} nMAS, to set custom fees head to the Advanced section on the previous step.",
     "gas-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
+    "gas-standard": "Standard",
+    "gas-low": "Low",
+    "gas-high": "High",
+    "gas-custom": "Custom",
     "send-confirmation": "Amount ({amount}) + fees ({fees} nMAS)"
   },
   "receive-coins": {

@@ -15,32 +15,38 @@ export function SendConfirmation({ ...props }) {
   const { data, handleConfirm, isLoading } = props;
   const { amount, fees, recipient } = data;
 
+  const GAS_STANDARD = `${Intl.t('send-coins.gas-standard')}`;
+  const GAS_LOW = `${Intl.t('send-coins.gas-low')}`;
+  const GAS_HIGH = `${Intl.t('send-coins.gas-high')}`;
+  const GAS_CUSTOM = `${Intl.t('send-coins.gas-custom')}`;
+
   const formattedRecipientAddress = maskAddress(recipient);
   const total = toNanoMASS(amount) + parseInt(fees);
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
-  const [customFees, setCustomFees] = useState<string>('Standard');
+  const [customFees, setCustomFees] = useState<string>(GAS_STANDARD);
 
-  const content = `
-  ${Intl.t('send-coins.gas-info', {
+  const gasInfo = `${Intl.t('send-coins.gas-info', {
     default: customFees,
     gasFees: fees,
-  })}  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
+  })}`;
+  const gasAlert = `  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
+  let content = customFees == GAS_STANDARD ? gasInfo + gasAlert : gasAlert;
 
   useEffect(() => {
     switch (fees) {
       case '1000':
-        setCustomFees('Standard');
+        setCustomFees(GAS_STANDARD);
         break;
       case '1':
-        setCustomFees('Low');
+        setCustomFees(GAS_LOW);
         break;
       case '5000':
-        setCustomFees('High');
+        setCustomFees(GAS_HIGH);
         break;
       default:
-        setCustomFees('Custom');
+        setCustomFees(GAS_CUSTOM);
     }
   }, [fees]);
   return (
