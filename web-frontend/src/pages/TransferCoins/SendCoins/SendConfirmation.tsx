@@ -25,14 +25,22 @@ export function SendConfirmation({ ...props }) {
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
-  const selectedFees =
-    fees == '1000'
-      ? GAS_STANDARD
-      : fees == '1'
-      ? GAS_LOW
-      : fees == '5000'
-      ? GAS_HIGH
-      : GAS_CUSTOM;
+  let selectedFees;
+
+  switch (fees) {
+    case '1000':
+      selectedFees = GAS_STANDARD;
+      break;
+    case '1':
+      selectedFees = GAS_LOW;
+      break;
+    case '5000':
+      selectedFees = GAS_HIGH;
+      break;
+    default:
+      selectedFees = GAS_CUSTOM;
+      break;
+  }
 
   const gasInfo = `${Intl.t('send-coins.gas-info', {
     gasType: selectedFees,
