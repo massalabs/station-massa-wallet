@@ -66,8 +66,8 @@ tasks:
   build-windows:
     platforms: [windows]
     cmds:
-      - cmd: mkdir build\wallet-plugin
-      - cmd: go build -tags desktop,production -ldflags "-w -s -H windowsgui" -o build\wallet-plugin\wallet-plugin.exe main.go
+      - cmd: mkdir -p build/wallet-plugin
+      - cmd: go build -tags desktop,production -ldflags "-w -s -H windowsgui" -o build/wallet-plugin/wallet-plugin.exe main.go
 
   build-webapp:
     dir: web-frontend

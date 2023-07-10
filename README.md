@@ -15,6 +15,8 @@ If you want to contribute, please refer to our [CONTRIBUTING](CONTRIBUTING.md) g
 Follow the installation instructions here:
 [task-install](https://taskfile.dev/installation/)
 
+On Windows, we recommend to run `go install github.com/go-task/task/v3/cmd/task@latest` and yo use task commands in a git bash terminal.
+
 ### Install dependencies
 
 ```shell
