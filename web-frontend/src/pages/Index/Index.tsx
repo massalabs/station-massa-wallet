@@ -11,7 +11,7 @@ import { FiArrowRight } from 'react-icons/fi';
 
 export default function Index() {
   const { error, data, isLoading } = useResource<AccountObject[]>('accounts');
-  const { mutate } = usePut<AccountObject>('accounts');
+  const { mutate, isSuccess } = usePut<AccountObject>('accounts');
   const navigate = useNavigate();
 
   const hasAccounts = data?.length;
@@ -19,10 +19,10 @@ export default function Index() {
   useEffect(() => {
     if (error) {
       navigate(routeFor('error'));
-    } else if (hasAccounts) {
+    } else if (hasAccounts || isSuccess) {
       navigate(routeFor('account-select'));
     }
-  }, [data, navigate]);
+  }, [data, navigate, hasAccounts, error, isSuccess]);
 
   return (
     <LandingPage>
