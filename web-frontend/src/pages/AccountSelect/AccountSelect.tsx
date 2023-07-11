@@ -34,7 +34,7 @@ export default function AccountSelect() {
     } else if (!isLoading && !hasAccounts) {
       navigate(routeFor('index'));
     }
-  }, [accounts, navigate]);
+  }, [accounts, navigate, hasAccounts, error, isLoading]);
 
   function getFormattedBalance(account: AccountObject): string {
     return formatStandard(toMAS(account.candidateBalance).toNumber());
