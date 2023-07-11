@@ -6,8 +6,8 @@ import {
   Identicon,
   MassaLogo,
 } from '@massalabs/react-ui-kit';
-import { formatStandard } from '../../../utils/massaFormat';
-import { AccountObject } from '../../../models/AccountModel';
+import { formatStandard } from '@/utils/massaFormat';
+import { AccountObject } from '@/models/AccountModel';
 
 interface ContactListProps {
   setRecipient: React.Dispatch<string>;

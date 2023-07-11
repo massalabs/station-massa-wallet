@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import Intl from '../i18n/i18n';
-import { routeFor } from '../utils';
-import LandingPage from '../layouts/LandingPage/LandingPage';
+import Intl from '@/i18n/i18n';
+import { routeFor } from '@/utils';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
 
 export default function Error() {
   return (

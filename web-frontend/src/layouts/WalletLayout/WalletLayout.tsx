@@ -43,7 +43,7 @@ interface IOutletContextType {
   handleSetTheme: () => void;
 }
 
-function WalletLayout(props: IWalletLayoutProps) {
+export function WalletLayout(props: IWalletLayoutProps) {
   const { menuItem } = props;
   const navigate = useNavigate();
   const { nickname } = useParams();
@@ -166,5 +166,3 @@ function WalletLayout(props: IWalletLayoutProps) {
     </div>
   );
 }
-
-export default WalletLayout;

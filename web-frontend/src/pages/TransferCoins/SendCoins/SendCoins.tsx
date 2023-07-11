@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { routeFor } from '../../../utils';
-import { usePost } from '../../../custom/api';
+import { routeFor, toNanoMASS, maskAddress } from '@/utils';
+import { usePost } from '@/custom/api';
 import { SendForm } from './SendForm';
 import { SendConfirmation } from './SendConfirmation';
-import { SendTransactionObject } from '../../../models/AccountModel';
-import { toNanoMASS, maskAddress } from '../../../utils/massaFormat';
+import { SendTransactionObject } from '@/models/AccountModel';
 import { toast } from '@massalabs/react-ui-kit';
-import Intl from './../../../i18n/i18n';
+import Intl from '@/i18n/i18n';
 
 interface IData {
   [key: string]: string;

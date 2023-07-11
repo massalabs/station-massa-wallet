@@ -11,26 +11,26 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import '@massalabs/react-ui-kit/src/global.css';
+import './index.css';
 
 import { ENV } from './const/env/env';
-import './index.css';
-import mockServer from './mirage/server.js';
-import Index from './pages/Index/Index.tsx';
-import AccountSelect from './pages/AccountSelect/AccountSelect.tsx';
-import Error from './pages/Error.tsx';
-import AccountCreate from './pages/AccountCreate/AccountCreate.tsx';
-import StepTwo from './pages/CreateAccount/StepTwo.tsx';
-import StepOne from './pages/CreateAccount/StepOne.tsx';
-import StepThree from './pages/CreateAccount/StepThree.tsx';
-import TransferCoins from './pages/TransferCoins/TransferCoins.tsx';
-import Home from './pages/Home/Home.tsx';
-import Settings from './pages/Settings/Settings.tsx';
-import SettingsUpdate from './pages/Settings/SettingsUpdate.tsx';
-import Transactions from './pages/Transactions/Transactions.tsx';
-import Contacts from './pages/Contacts/Contacts.tsx';
-import Assets from './pages/Assets/Assets.tsx';
-import SendRedirect from './pages/TransferCoins/SendCoins/SendRedirect.tsx';
-import Base from './pages/Base/Base.tsx';
+import mockServer from '@/mirage/server.js';
+import Index from '@/pages/Index/Index.tsx';
+import AccountSelect from '@/pages/AccountSelect/AccountSelect.tsx';
+import Error from '@/pages/Error.tsx';
+import AccountCreate from '@/pages/AccountCreate/AccountCreate.tsx';
+import StepTwo from '@/pages/CreateAccount/StepTwo.tsx';
+import StepOne from '@/pages/CreateAccount/StepOne.tsx';
+import StepThree from '@/pages/CreateAccount/StepThree.tsx';
+import TransferCoins from '@/pages/TransferCoins/TransferCoins.tsx';
+import Home from '@/pages/Home/Home.tsx';
+import Settings from '@/pages/Settings/Settings.tsx';
+import SettingsUpdate from '@/pages/Settings/SettingsUpdate.tsx';
+import Transactions from '@/pages/Transactions/Transactions.tsx';
+import Contacts from '@/pages/Contacts/Contacts.tsx';
+import Assets from '@/pages/Assets/Assets.tsx';
+import SendRedirect from '@/pages/TransferCoins/SendCoins/SendRedirect.tsx';
+import Base from '@/pages/Base/Base.tsx';
 
 const baseURL = import.meta.env.VITE_BASE_APP;
 // Add ENV.STANDALONE to the array to enable MirageJS

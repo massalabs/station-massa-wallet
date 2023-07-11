@@ -1,4 +1,4 @@
-import { AccountObject } from '../models/AccountModel';
+import { AccountObject } from '@/models/AccountModel';
 
 export function isAlreadyExists(
   nickname: string,

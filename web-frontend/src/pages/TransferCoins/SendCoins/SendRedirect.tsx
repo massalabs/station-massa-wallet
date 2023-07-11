@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useResource } from '../../../custom/api';
-import { AccountObject } from '../../../models/AccountModel';
-import { routeFor } from '../../../utils';
+import { useResource } from '@/custom/api';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor } from '@/utils';
 
 export default function Redirect() {
   const navigate = useNavigate();
