@@ -101,18 +101,18 @@ func (account *Wallet) ToAccountSerialized() AccountSerialized {
 	return accountSerialized
 }
 
-// aead returns a authenticated encryption with associated data.
+// aead returns an authenticated encryption with associated data.
 func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 	secretKey := pbkdf2.Key([]byte(password), salt, PBKDF2NbRound, SecretKeyLength, sha256.New)
 
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
-		return nil, fmt.Errorf("intializing block ciphering: %w", err)
+		return nil, fmt.Errorf("initializing block ciphering: %w", err)
 	}
 
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, fmt.Errorf("intializing the AES block cipher wrapped in a Gallois Counter Mode ciphering: %w", err)
+		return nil, fmt.Errorf("initializing the AES block cipher wrapped in a Galois Counter Mode ciphering: %w", err)
 	}
 
 	return aesGCM, nil
@@ -398,13 +398,13 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 		return nil, &WalletError{fmt.Errorf("invalid private key"), utils.ErrInvalidPrivateKey}
 	}
 
-	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
+	seed, _, err := base58.CheckDecode(privateKeyB58V[1:]) // omit the first byte because it's 'S' for secret key
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
 
 	// The ed25519 seed is in fact what we call a private key in cryptography...
-	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
+	privateKey := ed25519.NewKeyFromSeed(seed)
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
 
