@@ -1,13 +1,12 @@
 import { SyntheticEvent, useRef, useState } from 'react';
-import { promptRequest } from '../../events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { handleCancel } from '../../utils/utils';
-import { IErrorObject, parseForm } from '../../utils';
+import { promptRequest } from '@/events/events';
+import { IErrorObject, parseForm, handleCancel } from '@/utils';
 
 import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
-import { Layout } from '../../layouts/Layout/Layout';
+import { Layout } from '@/layouts/Layout/Layout';
 
-import { IMPORT_STEPS } from '../../const/stepper';
+import { IMPORT_STEPS } from '@/const/stepper';
 
 // TODO: create i18n and move this to translation file
 const t = (key: string): string => {

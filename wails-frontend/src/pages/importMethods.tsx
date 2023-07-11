@@ -1,8 +1,8 @@
-import { promptRequest } from '../events/events';
+import { promptRequest } from '@/events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Button } from '@massalabs/react-ui-kit';
-import { Layout } from '../layouts/Layout/Layout';
+import { Layout } from '@/layouts/Layout/Layout';
 
 const ImportMethods = () => {
   const navigate = useNavigate();

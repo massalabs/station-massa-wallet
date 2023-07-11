@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { backupMethods, events, promptRequest } from '../events/events';
-import { EventsOnce } from '../../wailsjs/runtime/runtime';
-import { handleApplyResult } from '../utils';
-import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
-import Intl from '../i18n/i18n';
+import { backupMethods, events, promptRequest } from '@/events/events';
+import { EventsOnce } from '@wailsjs/runtime/runtime';
+import { handleApplyResult } from '@/utils';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
+import Intl from '@/i18n/i18n';
 
-import { Layout } from '../layouts/Layout/Layout';
+import { Layout } from '@/layouts/Layout/Layout';
 import { Button } from '@massalabs/react-ui-kit';
 
 function BackupMethods() {

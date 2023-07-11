@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router';
-import { promptAction, promptRequest } from '../events/events';
+import { promptAction, promptRequest } from '@/events/events';
 import { FiCheck } from 'react-icons/fi';
-import Intl from '../i18n/i18n';
-import { Layout } from '../layouts/Layout/Layout';
+import Intl from '@/i18n/i18n';
+import { Layout } from '@/layouts/Layout/Layout';
 
 function Success() {
   const { state } = useLocation();

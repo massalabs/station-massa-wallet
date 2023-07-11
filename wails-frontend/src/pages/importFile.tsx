@@ -2,15 +2,15 @@ import { useState } from 'react';
 import {
   SendPromptInput,
   SelectAccountFile,
-} from '../../wailsjs/go/walletapp/WalletApp';
-import { events, promptRequest } from '../events/events';
+} from '@wailsjs/go/walletapp/WalletApp';
+import { events, promptRequest } from '@/events/events';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { handleApplyResult, handleCancel } from '../utils/utils';
-import { walletapp } from '../../wailsjs/go/models';
-import { EventsOnce } from '../../wailsjs/runtime/runtime';
+import { handleApplyResult, handleCancel } from '@/utils';
+import { walletapp } from '@wailsjs/go/models';
+import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { Button } from '@massalabs/react-ui-kit';
-import { Layout } from '../layouts/Layout/Layout';
-import Intl from '../i18n/i18n';
+import { Layout } from '@/layouts/Layout/Layout';
+import Intl from '@/i18n/i18n';
 
 const ImportFile = () => {
   const nav = useNavigate();
