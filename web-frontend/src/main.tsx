@@ -1,5 +1,4 @@
 import React from 'react';
-
 import ReactDOM from 'react-dom/client';
 import {
   RouterProvider,
@@ -13,8 +12,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@massalabs/react-ui-kit/src/global.css';
 import './index.css';
 
-import { ENV } from './const/env/env';
-import mockServer from '@/mirage/server.js';
+import { ENV } from '@/const/env/env';
+import { mockServer } from '@/mirage';
 import Index from '@/pages/Index/Index.tsx';
 import AccountSelect from '@/pages/AccountSelect/AccountSelect.tsx';
 import Error from '@/pages/Error.tsx';
@@ -33,8 +32,10 @@ import SendRedirect from '@/pages/TransferCoins/SendCoins/SendRedirect.tsx';
 import Base from '@/pages/Base/Base.tsx';
 
 const baseURL = import.meta.env.VITE_BASE_APP;
+const baseENV = import.meta.env.VITE_ENV;
+
 // Add ENV.STANDALONE to the array to enable MirageJS
-if ([ENV.DEV, ENV.TEST].includes(import.meta.env.VITE_ENV)) {
+if ([ENV.DEV, ENV.TEST].includes(baseENV)) {
   mockServer(import.meta.env.VITE_ENV);
 }
 
