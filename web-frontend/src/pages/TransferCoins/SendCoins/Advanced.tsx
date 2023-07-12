@@ -6,9 +6,9 @@ import {
   PopupModalHeader,
   RadioButton,
 } from '@massalabs/react-ui-kit';
-import Intl from '../../../i18n/i18n';
+import Intl from '@/i18n/i18n';
 import { useState, FormEvent } from 'react';
-import { parseForm } from '../../../utils/parseForm';
+import { parseForm } from '@/utils/parseForm';
 
 interface InputsErrors {
   fees?: string;

@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import Intl from '../i18n/i18n';
+import Intl from '@/i18n/i18n';
 
 interface IBackendErrorObject {
   code?: string;

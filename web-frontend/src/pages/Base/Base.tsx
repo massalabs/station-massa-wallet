@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { useLocalStorage } from '../../custom/useLocalStorage';
+import { useLocalStorage } from '@/custom/useLocalStorage';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import { Toast } from '@massalabs/react-ui-kit';
 

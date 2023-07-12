@@ -1,16 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AccountObject } from '../../models/AccountModel';
-import { formatStandard, Unit } from '../../utils/massaFormat';
-import { useResource } from '../../custom/api';
-import { routeFor } from '../../utils';
-import Intl from '../../i18n/i18n';
-import { TAB_SEND, TAB_RECEIVE } from '../../const/tabs/tabs';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor, formatStandard, Unit } from '@/utils';
+import { useResource } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import { TAB_SEND, TAB_RECEIVE } from '@/const/tabs/tabs';
 import { Loading } from './Loading';
 
-import WalletLayout, {
-  MenuItem,
-} from '../../layouts/WalletLayout/WalletLayout';
+import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { Button, Balance, Clipboard } from '@massalabs/react-ui-kit';
 import { FiArrowDownLeft, FiArrowUpRight } from 'react-icons/fi';
 

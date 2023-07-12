@@ -1,14 +1,9 @@
 import { useState } from 'react';
-import Intl from '../../../i18n/i18n';
+import Intl from '@/i18n/i18n';
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 
-import {
-  maskAddress,
-  formatStandard,
-  toNanoMASS,
-  toMASS,
-} from '../../../utils/massaFormat';
+import { maskAddress, formatStandard, toNanoMASS, toMASS } from '@/utils';
 import ToolTip from './ToolTip';
 
 export function SendConfirmation({ ...props }) {

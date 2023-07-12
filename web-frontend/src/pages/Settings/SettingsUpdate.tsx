@@ -1,16 +1,13 @@
 import { useState, useRef, SyntheticEvent, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { usePut } from '../../custom/api';
-import { AccountObject } from '../../models/AccountModel';
-import { routeFor } from '../../utils';
-import Intl from '../../i18n/i18n';
-import { isNicknameValid } from '../../validation/nickname';
-import { parseForm, parseErrors } from '../../utils/index';
+import { usePut } from '@/custom/api';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor, parseForm, parseErrors } from '@/utils';
+import Intl from '@/i18n/i18n';
+import { isNicknameValid } from '@/validation/nickname';
 
-import WalletLayout, {
-  MenuItem,
-} from '../../layouts/WalletLayout/WalletLayout';
+import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 
 import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { SettingsOption } from './SettingsOption';

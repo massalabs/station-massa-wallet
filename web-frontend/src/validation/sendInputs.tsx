@@ -1,9 +1,6 @@
 import { fromMAS } from '@massalabs/massa-web3';
-import Intl from '../i18n/i18n';
-import {
-  checkAddressFormat,
-  reverseFormatStandard,
-} from '../utils/massaFormat';
+import Intl from '@/i18n/i18n';
+import { checkAddressFormat, reverseFormatStandard } from '@/utils';
 
 export interface SendInputsErrors {
   unexpectedError?: string;

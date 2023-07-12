@@ -1,15 +1,14 @@
 import { useState, useRef, SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Intl from '../../i18n/i18n';
-import { routeFor } from '../../utils';
-import { parseForm } from '../../utils/parseForm';
+import Intl from '@/i18n/i18n';
+import { routeFor, parseForm } from '@/utils';
 
 import { Input, Stepper, Button } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
-import LandingPage from '../../layouts/LandingPage/LandingPage';
-import { useResource } from '../../custom/api';
-import { AccountObject } from '../../models/AccountModel';
-import { isAlreadyExists, isNicknameValid } from '../../validation/nickname';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { useResource } from '@/custom/api';
+import { AccountObject } from '@/models/AccountModel';
+import { isAlreadyExists, isNicknameValid } from '@/validation/nickname';
 
 interface IErrorObject {
   nickname: string;

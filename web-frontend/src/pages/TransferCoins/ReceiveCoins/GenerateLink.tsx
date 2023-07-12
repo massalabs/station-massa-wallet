@@ -1,8 +1,7 @@
 import { useState, FormEvent } from 'react';
-import { formatStandard } from '../../../utils/massaFormat';
-import { AccountObject } from '../../../models/AccountModel';
-import Intl from '../../../i18n/i18n';
-import { parseForm } from '../../../utils/parseForm';
+import { parseForm, formatStandard } from '@/utils/';
+import { AccountObject } from '@/models/AccountModel';
+import Intl from '@/i18n/i18n';
 import {
   Button,
   Identicon,
@@ -15,7 +14,7 @@ import {
   Selector,
   Clipboard,
 } from '@massalabs/react-ui-kit';
-import { SendInputsErrors } from '../../../validation/sendInputs';
+import { SendInputsErrors } from '@/validation/sendInputs';
 
 interface GenerateLinkProps {
   account: AccountObject;

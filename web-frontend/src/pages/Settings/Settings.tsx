@@ -1,11 +1,8 @@
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-import { routeFor } from '../../utils';
-import Intl from '../../i18n/i18n';
+import { useNavigate, useParams } from 'react-router-dom';
+import { routeFor } from '@/utils';
+import Intl from '@/i18n/i18n';
 
-import WalletLayout, {
-  MenuItem,
-} from '../../layouts/WalletLayout/WalletLayout';
+import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 
 import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { FiEdit } from 'react-icons/fi';
