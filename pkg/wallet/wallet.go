@@ -30,6 +30,7 @@ const (
 	PBKDF2NbRound             = 600_000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
+	PubKeyVersion             = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
@@ -531,22 +532,28 @@ func AddressIsUnique(address string) error {
 
 // GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
-	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, Base58Version)
+	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, PubKeyVersion)
 }
 
 // VersionedPubKey returns the public key of the wallet with a version byte prepended.
 func (wallet *Wallet) VersionedPubKey() []byte {
-	return append([]byte{Base58Version}, wallet.KeyPair.PublicKey...)
+	return append([]byte{PubKeyVersion}, wallet.KeyPair.PublicKey...)
 }
 
 // CheckPukKeyVersion checks the version byte of a public key.
 // Return an error if the version byte is unknown.
 // Return the public key without the version byte otherwise.
 func CheckPukKeyVersion(versionedPubKey []byte) ([]byte, error) {
-	if versionedPubKey[0] != Base58Version {
-		return nil, fmt.Errorf("invalid version byte")
+	// Declare here all known public key versions.
+	knownVersions := []byte{PubKeyVersion}
+
+	for _, version := range knownVersions {
+		if versionedPubKey[0] == version {
+			return versionedPubKey[1:], nil
+		}
 	}
-	return versionedPubKey[1:], nil
+
+	return nil, fmt.Errorf("invalid version byte")
 }
 
 // GetPrivKey returns the private key of the wallet.
