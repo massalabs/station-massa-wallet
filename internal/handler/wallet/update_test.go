@@ -8,7 +8,6 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
-
 	"github.com/stretchr/testify/assert"
 )
 
