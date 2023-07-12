@@ -1,10 +1,10 @@
 import { NavigateFunction } from 'react-router-dom';
-import { Hide, AbortAction } from '../../wailsjs/go/walletapp/WalletApp';
-import { WindowReloadApp } from '../../wailsjs/runtime';
-import { promptResult, promptRequest } from '../events/events';
+import { Hide, AbortAction } from '@wailsjs/go/walletapp/WalletApp';
+import { WindowReloadApp } from '@wailsjs/runtime/runtime';
+import { promptResult, promptRequest } from '@/events/events';
 import { IErrorObject } from './errors';
-import Intl from '../i18n/i18n';
-import { useConfigStore } from '../store/store';
+import Intl from '@/i18n/i18n';
+import { useConfigStore } from '@/store/store';
 
 export const handleCancel = () => {
   AbortAction();

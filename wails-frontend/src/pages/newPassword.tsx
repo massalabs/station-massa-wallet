@@ -3,17 +3,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ImportPrivateKey,
   SendPromptInput,
-} from '../../wailsjs/go/walletapp/WalletApp';
-import { EventsOnce } from '../../wailsjs/runtime';
-import { events, promptAction, promptRequest } from '../events/events';
-import { handleApplyResult, handleCancel } from '../utils/utils';
-import { parseForm } from '../utils/parseForm';
-import { hasMoreThanFiveChars, hasSamePassword } from '../validation/password';
+} from '@wailsjs/go/walletapp/WalletApp';
+import { EventsOnce } from '@wailsjs/runtime';
+import { events, promptAction, promptRequest } from '@/events/events';
+import {
+  parseForm,
+  handleApplyResult,
+  handleCancel,
+  IErrorObject,
+} from '@/utils';
+import { hasMoreThanFiveChars, hasSamePassword } from '@/validation/password';
 
 import { FiLock } from 'react-icons/fi';
-import { Layout } from '../layouts/Layout/Layout';
+import { Layout } from '@/layouts/Layout/Layout';
 import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
-import { IErrorObject } from '../utils';
 
 function NewPassword() {
   const navigate = useNavigate();

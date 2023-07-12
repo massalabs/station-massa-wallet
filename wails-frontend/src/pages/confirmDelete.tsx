@@ -1,11 +1,11 @@
 import { Button } from '@massalabs/react-ui-kit';
-import { Layout } from '../layouts/Layout/Layout';
+import { Layout } from '@/layouts/Layout/Layout';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { events, promptRequest } from '../events/events';
+import { events, promptRequest } from '@/events/events';
 import { FiAlertTriangle, FiTrash2 } from 'react-icons/fi';
-import { handleApplyResult, handleCancel } from '../utils/utils';
-import { EventsOnce } from '../../wailsjs/runtime/runtime';
-import { SendPromptInput } from '../../wailsjs/go/walletapp/WalletApp';
+import { handleApplyResult, handleCancel } from '@/utils';
+import { EventsOnce } from '@wailsjs/runtime/runtime';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 
 function ConfirmDelete() {
   const navigate = useNavigate();

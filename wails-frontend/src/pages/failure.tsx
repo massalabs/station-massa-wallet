@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router';
 import { FiX } from 'react-icons/fi';
-import { promptRequest } from '../events/events';
-import { Layout } from '../layouts/Layout/Layout';
+import { promptRequest } from '@/events/events';
+import { Layout } from '@/layouts/Layout/Layout';
 
 const Failure = () => {
   const locationState = useLocation().state as { req: promptRequest };
