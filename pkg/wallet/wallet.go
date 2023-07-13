@@ -451,7 +451,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
-	versionedPubKey := append([]byte{Base58Version}, publicKey...)
+	versionedPubKey := append([]byte{PubKeyVersion}, publicKey...)
 
 	address := addressFromPublicKey(versionedPubKey)
 
@@ -582,12 +582,9 @@ func addressFromPublicKey(pubKeyBytes []byte) string {
 // Sign signs the given operation with the wallet.
 // The operation is a base64 encoded string.
 func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
-	pubKey := wallet.KeyPair.PublicKey
 	privKey := wallet.KeyPair.PrivateKey
 
-	versionedPubKey := append([]byte{Base58Version}, pubKey...)
-
-	digest := blake3.Sum256(append(versionedPubKey, operation...))
+	digest := blake3.Sum256(append(wallet.VersionedPubKey(), operation...))
 
 	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey, digest[:])...)
 
