@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"bytes"
+	"crypto/ed25519"
 	cryptorand "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
@@ -174,7 +175,8 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 func generateCorrelationId() (models.CorrelationID, error) {
 	rand := cryptorand.Reader
 
-	correlationId := make([]byte, 64) // 64 is the private key size, correlation id must have the same size
+	// Correlation id must have the same size as the versioned private key.
+	correlationId := make([]byte, ed25519.PrivateKeySize+1)
 	if _, err := io.ReadFull(rand, correlationId); err != nil {
 		return nil, err
 	}

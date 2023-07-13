@@ -32,6 +32,7 @@ const (
 	Base58Version             = 0x00
 	PubKeyVersion             = 0x00
 	SignatureVersion          = 0x00
+	PrivKeyVersion            = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
@@ -85,7 +86,7 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 		Nickname: accountSerialized.Nickname,
 		Address:  accountSerialized.Address,
 		KeyPair: KeyPair{
-			PrivateKey: make([]byte, 0),
+			PrivateKey: accountSerialized.CipheredData,
 			PublicKey:  publicKey,
 			Salt:       accountSerialized.Salt,
 			Nonce:      accountSerialized.Nonce,
@@ -103,7 +104,7 @@ func (account *Wallet) toAccountSerialized() AccountSerialized {
 		Address:      account.Address,
 		Salt:         account.KeyPair.Salt,
 		Nonce:        account.KeyPair.Nonce,
-		CipheredData: make([]byte, 0),
+		CipheredData: account.KeyPair.PrivateKey, // account is protected so PrivateKey is encrypted
 		PublicKey:    account.VersionedPubKey(),
 	}
 
@@ -127,7 +128,7 @@ func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 	return aesGCM, nil
 }
 
-// Protect encrypts the private key using the given guiModal.
+// Protect encrypts the private key.
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
@@ -159,7 +160,12 @@ func (w *Wallet) Unprotect(password string) *WalletError {
 		return &WalletError{fmt.Errorf("opening the private key seal: %w", err), utils.WrongPassword}
 	}
 
-	w.KeyPair.PrivateKey = pk
+	privateKey, err := CheckPrivKeyVersion(pk)
+	if err != nil {
+		return &WalletError{fmt.Errorf("while checking private key version: %w", err), utils.ErrInvalidPrivateKey}
+	}
+
+	w.KeyPair.PrivateKey = privateKey
 
 	return nil
 }
@@ -189,9 +195,6 @@ func Xor(a, b []byte) ([]byte, error) {
 // Note: the wallet is stored in YAML format and in Massa Station wallet directory.
 func (w *Wallet) Persist() error {
 	accountSerialized := w.toAccountSerialized()
-
-	// account is protected so PrivateKey is encrypted
-	accountSerialized.CipheredData = w.KeyPair.PrivateKey
 
 	yamlMarshaled, err := yaml.Marshal(accountSerialized)
 	if err != nil {
@@ -310,7 +313,6 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	if err != nil {
 		return Wallet{}, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
-	account.KeyPair.PrivateKey = accountSerialized.CipheredData
 
 	return account, nil
 }
@@ -405,17 +407,21 @@ func (w *Wallet) FilePath() (string, error) {
 	return FilePath(w.Nickname)
 }
 
+// Import instantiates a new wallet from a private key, protects with the given password, and persists it.
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *WalletError) {
 	if len(privateKeyB58V) < 2 {
 		return nil, &WalletError{fmt.Errorf("invalid private key"), utils.ErrInvalidPrivateKey}
 	}
 
-	seed, _, err := base58.CheckDecode(privateKeyB58V[1:]) // omit the first byte because it's 'S' for secret key
+	seed, version, err := base58.CheckDecode(privateKeyB58V[1:]) // omit the first byte because it's 'S' for secret key
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
+	if !PrivKeyVersionIsKnown(version) {
+		return nil, &WalletError{fmt.Errorf("unknown private key version: %d", version), utils.ErrInvalidPrivateKey}
+	}
 
-	// The ed25519 seed is in fact what we call a private key in cryptography...
+	// The ed25519 seed is in fact what we call a private key in cryptography.
 	privateKey := ed25519.NewKeyFromSeed(seed)
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
@@ -433,6 +439,9 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 	return wallet, nil
 }
 
+// createAccountFromKeys creates a new account from a private key and a public key.
+// It add the versions to the keys.
+// It protects the private key with the given password.
 func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, *WalletError) {
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
@@ -472,8 +481,8 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		Nickname: nickname,
 		Address:  address,
 		KeyPair: KeyPair{
-			PrivateKey: privateKey,
-			PublicKey:  publicKey,
+			PrivateKey: addPrivKeyVersion(privateKey),
+			PublicKey:  addPubKeyVersion(publicKey),
 			Salt:       salt,
 			Nonce:      nonce,
 		},
@@ -486,6 +495,8 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 
 	return &wallet, nil
 }
+
+// Validation functions
 
 func NicknameIsUnique(nickname string) error {
 	// Load all accounts
@@ -533,39 +544,102 @@ func AddressIsUnique(address string) error {
 	return nil
 }
 
+// Helpers: public key
+
 // GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
-	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, PubKeyVersion)
+	return PublicKeyPrefix + base58.CheckEncode(RemovePubKeyVersion(wallet.KeyPair.PublicKey), PubKeyVersion)
 }
 
 // VersionedPubKey returns the public key of the wallet with a version byte prepended.
 func (wallet *Wallet) VersionedPubKey() []byte {
-	return append([]byte{PubKeyVersion}, wallet.KeyPair.PublicKey...)
+	return addPubKeyVersion(wallet.KeyPair.PublicKey)
+}
+
+func addPubKeyVersion(pubKey []byte) []byte {
+	if len(pubKey) == ed25519.PublicKeySize {
+		return append([]byte{PubKeyVersion}, pubKey...)
+	}
+
+	return pubKey
+}
+
+// RemovePubKeyVersion removes the version byte of a public key if the public key has a version byte.
+func RemovePubKeyVersion(versionedPubKey []byte) []byte {
+	if len(versionedPubKey) == ed25519.PublicKeySize+1 {
+		return versionedPubKey[1:]
+	}
+
+	return versionedPubKey
 }
 
 // CheckPukKeyVersion checks the version byte of a public key.
 // Return an error if the version byte is unknown.
-// Return the public key without the version byte otherwise.
+// Return the public key with the version byte otherwise.
 func CheckPukKeyVersion(versionedPubKey []byte) ([]byte, error) {
 	// Declare here all known public key versions.
 	knownVersions := []byte{PubKeyVersion}
 
 	for _, version := range knownVersions {
 		if versionedPubKey[0] == version {
-			return versionedPubKey[1:], nil
+			return versionedPubKey, nil
 		}
 	}
 
 	return nil, fmt.Errorf("invalid version byte")
 }
 
+// Helpers: private key
+
 // GetPrivKey returns the private key of the wallet.
 // This function requires that the private key is not protected.
 func (wallet *Wallet) GetPrivKey() string {
-	seed := ed25519.PrivateKey(wallet.KeyPair.PrivateKey).Seed()
-	return PrivateKeyPrefix + base58.CheckEncode(seed, Base58Version)
+	seed := ed25519.PrivateKey(RemovePrivKeyVersion(wallet.KeyPair.PrivateKey)).Seed()
+	return PrivateKeyPrefix + base58.CheckEncode(seed, PrivKeyVersion)
 }
 
+func addPrivKeyVersion(privKey []byte) []byte {
+	if len(privKey) == ed25519.PrivateKeySize {
+		return append([]byte{PrivKeyVersion}, privKey...)
+	}
+
+	return privKey
+}
+
+// RemovePrivKeyVersion removes the first byte if the private key is versioned.
+func RemovePrivKeyVersion(privKey []byte) []byte {
+	if len(privKey) == ed25519.PrivateKeySize+1 {
+		return privKey[1:]
+	}
+
+	return privKey
+}
+
+// CheckPrivKeyVersion checks the version byte of a private key.
+// Return an error if the version byte is unknown.
+// Return the private key with the version byte otherwise.
+func CheckPrivKeyVersion(versionedPrivKey []byte) ([]byte, error) {
+	if PrivKeyVersionIsKnown(versionedPrivKey[0]) {
+		return versionedPrivKey, nil
+	}
+
+	return nil, fmt.Errorf("invalid version byte")
+}
+
+func PrivKeyVersionIsKnown(version byte) bool {
+	// Declare here all known private key versions.
+	knownVersions := []byte{PrivKeyVersion}
+
+	for _, v := range knownVersions {
+		if version == v {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Helpers
 func (wallet *Wallet) GetSalt() string {
 	return base58.CheckEncode(wallet.KeyPair.Salt[:], Base58Version)
 }
@@ -584,9 +658,9 @@ func addressFromPublicKey(pubKeyBytes []byte) string {
 func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
 	privKey := wallet.KeyPair.PrivateKey
 
-	digest := blake3.Sum256(append(wallet.VersionedPubKey(), operation...))
+	digest := blake3.Sum256(append(wallet.KeyPair.PublicKey, operation...))
 
-	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey, digest[:])...)
+	signature := append([]byte{SignatureVersion}, ed25519.Sign(RemovePrivKeyVersion(privKey), digest[:])...)
 
 	return signature, nil
 }
