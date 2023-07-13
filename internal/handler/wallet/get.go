@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
-
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
