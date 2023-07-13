@@ -31,6 +31,7 @@ const (
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
 	PubKeyVersion             = 0x00
+	SignatureVersion          = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
@@ -450,7 +451,9 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
-	address := addressFromPublicKey(publicKey)
+	versionedPubKey := append([]byte{PubKeyVersion}, publicKey...)
+
+	address := addressFromPublicKey(versionedPubKey)
 
 	// Validate unique private key
 	err = AddressIsUnique(address)
@@ -579,11 +582,11 @@ func addressFromPublicKey(pubKeyBytes []byte) string {
 // Sign signs the given operation with the wallet.
 // The operation is a base64 encoded string.
 func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
-	pubKey := wallet.KeyPair.PublicKey
 	privKey := wallet.KeyPair.PrivateKey
 
-	digest := blake3.Sum256(append(pubKey, operation...))
+	digest := blake3.Sum256(append(wallet.VersionedPubKey(), operation...))
 
-	signature := ed25519.Sign(privKey, digest[:])
+	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey, digest[:])...)
+
 	return signature, nil
 }
