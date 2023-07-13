@@ -30,6 +30,7 @@ const (
 	PBKDF2NbRound             = 600_000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
+	AddressVersion            = 0x00
 	PubKeyVersion             = 0x00
 	SignatureVersion          = 0x00
 	PrivKeyVersion            = 0x00
@@ -460,9 +461,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
-	versionedPubKey := append([]byte{PubKeyVersion}, publicKey...)
-
-	address := addressFromPublicKey(versionedPubKey)
+	address := addressFromPublicKey(publicKey)
 
 	// Validate unique private key
 	err = AddressIsUnique(address)
@@ -649,8 +648,10 @@ func (wallet *Wallet) GetNonce() string {
 }
 
 func addressFromPublicKey(pubKeyBytes []byte) string {
-	addr := blake3.Sum256(pubKeyBytes)
-	return UserAddressPrefix + base58.CheckEncode(addr[:], Base58Version)
+	versionedPubKey := append([]byte{PubKeyVersion}, pubKeyBytes...)
+
+	addr := blake3.Sum256(versionedPubKey)
+	return UserAddressPrefix + base58.CheckEncode(addr[:], AddressVersion)
 }
 
 // Sign signs the given operation with the wallet.
