@@ -38,6 +38,7 @@ const (
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
 	MaxNicknameLength         = 32
+	AccountVersion            = 1
 )
 
 func ErrorAccountNotFound(nickname string) error {
@@ -476,7 +477,7 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	}
 
 	wallet := Wallet{
-		Version:  0,
+		Version:  AccountVersion,
 		Nickname: nickname,
 		Address:  address,
 		KeyPair: KeyPair{
