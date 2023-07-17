@@ -23,6 +23,24 @@ on:
         default: true
 
 jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update Manifest
+        run: |
+          # Retrieve the latest tag name
+          TAG_NAME=${{ github.event.inputs.tag_name }}
+          
+          # Update the version field in the manifest.json file
+          sed -i "s/\"version\": \".*\",/\"version\": \"$TAG_NAME\",/" manifest.json
+      - name: Commit changes
+        run: |
+          git add ../../manifest.json
+          git commit -m "Update version in manifest.json" --no-verify
+          git push
   build-release:
     uses: ./.github/workflows/build.yml
     with:
