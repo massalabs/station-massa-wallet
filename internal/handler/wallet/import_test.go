@@ -32,7 +32,7 @@ func Test_walletImport_Handle(t *testing.T) {
 		nickname := "walletToBeImported"
 
 		walletFile := fmt.Sprintf(
-			`Version: 0
+			`Version: 1
 Nickname: %s
 Address: AU12rjXkQ1hzo5hQ9Vvd4wdckdevZWAmT458WkbthGCgLoQ1C8BkB
 Salt: [137, 167, 117, 16, 181, 186, 226, 139, 151, 228, 119, 194, 80, 40, 37, 138]
@@ -78,7 +78,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 	})
 
 	t.Run("import invalid path file", func(t *testing.T) {
-		walletFile := "InvalidWalet"
+		walletFile := "InvalidWallet"
 
 		filePath := "importMe.yaml"
 		// Write wallet file
@@ -104,7 +104,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 	})
 
 	t.Run("import invalid account file", func(t *testing.T) {
-		walletFile := "InvalidWalet"
+		walletFile := "InvalidWallet"
 
 		filePath := "importMe.yaml"
 		// Write wallet file
@@ -133,7 +133,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		nickname := "créated"
 
 		walletFile := fmt.Sprintf(
-			`Version: 0
+			`Version: 1
 Nickname: %s
 Address: AU12rjXkQ1hzo5hQ9Vvd4wdckdevZWAmT458WkbthGCgLoQ1C8BkB
 Salt: [137, 167, 117, 16, 181, 186, 226, 139, 151, 228, 119, 194, 80, 40, 37, 138]

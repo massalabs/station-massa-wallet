@@ -104,7 +104,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
-	t.Run("sign transation batch OK", func(t *testing.T) {
+	t.Run("sign transaction batch OK", func(t *testing.T) {
 		transactionDataBatch := `{"operation":"MjIzM3QyNHQ=","batch":true}`
 		testResult := make(chan walletapp.EventData)
 

@@ -96,7 +96,7 @@ func assertWallet(t *testing.T, nickname string) {
 	wallet, err := wallet.Load(nickname)
 	assert.NoError(t, err)
 
-	assert.Equal(t, uint8(0), wallet.Version)
+	assert.Equal(t, uint8(1), wallet.Version)
 	assert.Equal(t, nickname, wallet.Nickname)
 
 	minAddrLen := 51
