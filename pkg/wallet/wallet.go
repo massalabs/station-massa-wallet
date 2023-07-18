@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/labstack/gommon/log"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"golang.org/x/crypto/pbkdf2"
@@ -245,7 +246,8 @@ func LoadAll() ([]Wallet, error) {
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			wallet, loadErr := LoadFile(filePath)
 			if loadErr != nil {
-				return nil, loadErr.Err
+				log.Errorf("while loading wallet '%s': %s", filePath, loadErr.Err)
+				continue
 			}
 
 			wallets = append(wallets, wallet)
