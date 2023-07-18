@@ -108,7 +108,7 @@ func (account *Wallet) toAccountSerialized() AccountSerialized {
 		Salt:         account.KeyPair.Salt,
 		Nonce:        account.KeyPair.Nonce,
 		CipheredData: account.KeyPair.PrivateKey, // account is protected so PrivateKey is encrypted
-		PublicKey:    account.VersionedPubKey(),
+		PublicKey:    account.KeyPair.PublicKey,
 	}
 
 	return accountSerialized
@@ -553,26 +553,13 @@ func (wallet *Wallet) GetPupKey() string {
 	return PublicKeyPrefix + base58.CheckEncode(RemovePubKeyVersion(wallet.KeyPair.PublicKey), PubKeyVersion)
 }
 
-// VersionedPubKey returns the public key of the wallet with a version byte prepended.
-func (wallet *Wallet) VersionedPubKey() []byte {
-	return addPubKeyVersion(wallet.KeyPair.PublicKey)
-}
-
 func addPubKeyVersion(pubKey []byte) []byte {
-	if len(pubKey) == ed25519.PublicKeySize {
-		return append([]byte{PubKeyVersion}, pubKey...)
-	}
-
-	return pubKey
+	return append([]byte{PubKeyVersion}, pubKey...)
 }
 
 // RemovePubKeyVersion removes the version byte of a public key if the public key has a version byte.
 func RemovePubKeyVersion(versionedPubKey []byte) []byte {
-	if len(versionedPubKey) == ed25519.PublicKeySize+1 {
-		return versionedPubKey[1:]
-	}
-
-	return versionedPubKey
+	return versionedPubKey[1:]
 }
 
 // CheckPukKeyVersion checks the version byte of a public key.
@@ -593,28 +580,21 @@ func CheckPukKeyVersion(versionedPubKey []byte) ([]byte, error) {
 
 // Helpers: private key
 
-// GetPrivKey returns the private key of the wallet.
+// GetPrivKey returns the versioned string representation of private key of the wallet.
 // This function requires that the private key is not protected.
 func (wallet *Wallet) GetPrivKey() string {
 	seed := ed25519.PrivateKey(RemovePrivKeyVersion(wallet.KeyPair.PrivateKey)).Seed()
 	return PrivateKeyPrefix + base58.CheckEncode(seed, PrivKeyVersion)
 }
 
+// addPrivKeyVersion adds the version byte to a private key.
 func addPrivKeyVersion(privKey []byte) []byte {
-	if len(privKey) == ed25519.PrivateKeySize {
-		return append([]byte{PrivKeyVersion}, privKey...)
-	}
-
-	return privKey
+	return append([]byte{PrivKeyVersion}, privKey...)
 }
 
-// RemovePrivKeyVersion removes the first byte if the private key is versioned.
+// RemovePrivKeyVersion removes the first byte.
 func RemovePrivKeyVersion(privKey []byte) []byte {
-	if len(privKey) == ed25519.PrivateKeySize+1 {
-		return privKey[1:]
-	}
-
-	return privKey
+	return privKey[1:]
 }
 
 // CheckPrivKeyVersion checks the version byte of a private key.
@@ -659,6 +639,7 @@ func addressFromPublicKey(pubKeyBytes []byte) string {
 
 // Sign signs the given operation with the wallet.
 // The operation is a base64 encoded string.
+// This function requires that the private key is not protected.
 func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
 	privKey := wallet.KeyPair.PrivateKey
 
