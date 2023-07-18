@@ -6,8 +6,9 @@ require (
 	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
+	github.com/labstack/gommon v0.3.1
 	github.com/massalabs/station v0.2.3
-	github.com/massalabs/station-massa-hello-world v0.0.9
+	github.com/massalabs/station-massa-hello-world v0.0.8
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
@@ -25,7 +26,6 @@ require (
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/labstack/echo/v4 v4.9.0 // indirect
-	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/leaanthony/go-ansi-parser v1.0.1 // indirect
 	github.com/leaanthony/gosod v1.0.3 // indirect
 	github.com/leaanthony/slicer v1.5.0 // indirect
