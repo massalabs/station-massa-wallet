@@ -151,6 +151,7 @@ function PasswordPrompt() {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
         return;
       }
+      handleApplyResult(navigate, req, setError, false)(result);
     } else {
       handleApplyResult(navigate, req, setError, false)(result);
     }
