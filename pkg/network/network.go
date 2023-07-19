@@ -11,8 +11,8 @@ import (
 
 const (
 	massaStationNodeEndpoint = plugin.MassaStationBaseURL + "/massa/node"
-	defaultNetwork           = "buildnet"
-	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
+	defaultNetwork           = "testnet"
+	defaultNodeUrl           = "https://test.massa.net/api/v2"
 	fallbackMsg              = "Fallback to default network. "
 )
 
