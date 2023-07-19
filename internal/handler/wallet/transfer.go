@@ -80,11 +80,11 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
-	if err != nil {
-		errStr := fmt.Sprintf("error transferring coin: %v", err.Error())
+	operation, transferError := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	if transferError != nil {
+		errStr := fmt.Sprintf("error transferring coin: %v", transferError.Err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
+			walletapp.EventData{Success: false, CodeMessage: transferError.CodeErr})
 		return operations.NewTransferCoinInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
@@ -100,10 +100,10 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		})
 }
 
-func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
+func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, *wallet.WalletError) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
-		return nil, fmt.Errorf("Error during transaction creation: %w", err)
+		return nil, &wallet.WalletError{Err: fmt.Errorf("Error during transaction creation: %w", err), CodeErr: errorTransferCoin}
 	}
 
 	return network.SendOperation(wlt, massaClient, operation, fee)
