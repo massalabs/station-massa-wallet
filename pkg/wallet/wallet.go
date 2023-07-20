@@ -68,18 +68,18 @@ type Wallet struct {
 }
 
 type AccountSerialized struct {
-	Version      *uint8   `yaml:"Version"`
-	Nickname     string   `yaml:"Nickname"`
-	Address      string   `yaml:"Address"`
-	Salt         [16]byte `yaml:"Salt,flow"`
-	Nonce        [12]byte `yaml:"Nonce,flow"`
-	CipheredData []byte   `yaml:"CipheredData,flow"`
-	PublicKey    []byte   `yaml:"PublicKey,flow"`
+	Version      *uint8       `yaml:"Version"`
+	Nickname     string       `yaml:"Nickname"`
+	Address      string       `yaml:"Address"`
+	Salt         [16]byte     `yaml:"Salt,flow"`
+	Nonce        [12]byte     `yaml:"Nonce,flow"`
+	CipheredData []byte       `yaml:"CipheredData,flow"`
+	PublicKey    VersionedKey `yaml:"PublicKey,flow"`
 }
 
 // toAccount returns a Wallet from an AccountSerialized.
 func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
-	publicKey, err := CheckPukKeyVersion(accountSerialized.PublicKey)
+	publicKey, err := accountSerialized.PublicKey.CheckVersion([]byte{PubKeyVersion})
 	if err != nil {
 		return Wallet{}, fmt.Errorf("while checking public key version: %w", err)
 	}
@@ -163,7 +163,7 @@ func (w *Wallet) Unprotect(password string) *WalletError {
 		return &WalletError{fmt.Errorf("opening the private key seal: %w", err), utils.WrongPassword}
 	}
 
-	privateKey, err := CheckPrivKeyVersion(pk)
+	privateKey, err := VersionedKey(pk).CheckVersion([]byte{PrivKeyVersion})
 	if err != nil {
 		return &WalletError{fmt.Errorf("while checking private key version: %w", err), utils.ErrInvalidPrivateKey}
 	}
@@ -421,7 +421,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
-	if !PrivKeyVersionIsKnown(version) {
+	if !VersionIsKnown(version, []byte{PrivKeyVersion}) {
 		return nil, &WalletError{fmt.Errorf("unknown private key version: %d", version), utils.ErrInvalidPrivateKey}
 	}
 
@@ -546,30 +546,12 @@ func AddressIsUnique(address string) error {
 	return nil
 }
 
-// Helpers: public key
+// Helpers
 
 // GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
 	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey.RemoveVersion(), PubKeyVersion)
 }
-
-// CheckPukKeyVersion checks the version byte of a public key.
-// Return an error if the version byte is unknown.
-// Return the public key with the version byte otherwise.
-func CheckPukKeyVersion(versionedPubKey []byte) ([]byte, error) {
-	// Declare here all known public key versions.
-	knownVersions := []byte{PubKeyVersion}
-
-	for _, version := range knownVersions {
-		if versionedPubKey[0] == version {
-			return versionedPubKey, nil
-		}
-	}
-
-	return nil, fmt.Errorf("invalid version byte")
-}
-
-// Helpers: private key
 
 // GetPrivKey returns the versioned string representation of private key of the wallet.
 // This function requires that the private key is not protected.
@@ -578,39 +560,17 @@ func (wallet *Wallet) GetPrivKey() string {
 	return PrivateKeyPrefix + base58.CheckEncode(seed, PrivKeyVersion)
 }
 
-// CheckPrivKeyVersion checks the version byte of a private key.
-// Return an error if the version byte is unknown.
-// Return the private key with the version byte otherwise.
-func CheckPrivKeyVersion(versionedPrivKey []byte) ([]byte, error) {
-	if PrivKeyVersionIsKnown(versionedPrivKey[0]) {
-		return versionedPrivKey, nil
-	}
-
-	return nil, fmt.Errorf("invalid version byte")
-}
-
-func PrivKeyVersionIsKnown(version byte) bool {
-	// Declare here all known private key versions.
-	knownVersions := []byte{PrivKeyVersion}
-
-	for _, v := range knownVersions {
-		if version == v {
-			return true
-		}
-	}
-
-	return false
-}
-
-// Helpers
+// GetSalt returns the versioned string representation of the salt of the wallet.
 func (wallet *Wallet) GetSalt() string {
 	return base58.CheckEncode(wallet.KeyPair.Salt[:], Base58Version)
 }
 
+// GetNonce returns the versioned string representation of the nonce of the wallet.
 func (wallet *Wallet) GetNonce() string {
 	return base58.CheckEncode(wallet.KeyPair.Nonce[:], Base58Version)
 }
 
+// addressFromPublicKey returns the versioned string representation of the address of the wallet.
 func addressFromPublicKey(pubKeyBytes VersionedKey) string {
 	addr := blake3.Sum256(pubKeyBytes.AddVersion(PubKeyVersion))
 	return UserAddressPrefix + base58.CheckEncode(addr[:], AddressVersion)
