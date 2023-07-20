@@ -53,8 +53,8 @@ type WalletError struct {
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
-	PrivateKey []byte
-	PublicKey  []byte
+	PrivateKey VersionedKey
+	PublicKey  VersionedKey
 	Salt       [16]byte
 	Nonce      [12]byte
 }
@@ -353,7 +353,7 @@ func Generate(nickname string, password string) (*Wallet, *WalletError) {
 		return nil, &WalletError{fmt.Errorf("generating ed25519 keypair: %w", err), utils.ErrUnknown}
 	}
 
-	wallet, createErr := createAccountFromKeys(nickname, privateKey, publicKey, password)
+	wallet, createErr := createAccountFromKeys(nickname, VersionedKey(privateKey), VersionedKey(publicKey), password)
 	if createErr != nil {
 		return nil, createErr
 	}
@@ -430,7 +430,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
 
-	wallet, createErr := createAccountFromKeys(nickname, privateKey, pubKeyBytes, password)
+	wallet, createErr := createAccountFromKeys(nickname, VersionedKey(privateKey), pubKeyBytes, password)
 	if createErr != nil {
 		return nil, &WalletError{fmt.Errorf("creating account: %w", createErr.Err), createErr.CodeErr}
 	}
@@ -446,7 +446,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 // createAccountFromKeys creates a new account from a private key and a public key.
 // It add the versions to the keys.
 // It protects the private key with the given password.
-func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, *WalletError) {
+func createAccountFromKeys(nickname string, privateKey, publicKey VersionedKey, password string) (*Wallet, *WalletError) {
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {
@@ -483,8 +483,8 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 		Nickname: nickname,
 		Address:  address,
 		KeyPair: KeyPair{
-			PrivateKey: addPrivKeyVersion(privateKey),
-			PublicKey:  addPubKeyVersion(publicKey),
+			PrivateKey: privateKey.AddVersion(PrivKeyVersion),
+			PublicKey:  publicKey.AddVersion(PubKeyVersion),
 			Salt:       salt,
 			Nonce:      nonce,
 		},
@@ -550,16 +550,7 @@ func AddressIsUnique(address string) error {
 
 // GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
-	return PublicKeyPrefix + base58.CheckEncode(RemovePubKeyVersion(wallet.KeyPair.PublicKey), PubKeyVersion)
-}
-
-func addPubKeyVersion(pubKey []byte) []byte {
-	return append([]byte{PubKeyVersion}, pubKey...)
-}
-
-// RemovePubKeyVersion removes the version byte of a public key if the public key has a version byte.
-func RemovePubKeyVersion(versionedPubKey []byte) []byte {
-	return versionedPubKey[1:]
+	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey.RemoveVersion(), PubKeyVersion)
 }
 
 // CheckPukKeyVersion checks the version byte of a public key.
@@ -583,18 +574,8 @@ func CheckPukKeyVersion(versionedPubKey []byte) ([]byte, error) {
 // GetPrivKey returns the versioned string representation of private key of the wallet.
 // This function requires that the private key is not protected.
 func (wallet *Wallet) GetPrivKey() string {
-	seed := ed25519.PrivateKey(RemovePrivKeyVersion(wallet.KeyPair.PrivateKey)).Seed()
+	seed := ed25519.PrivateKey(wallet.KeyPair.PrivateKey.RemoveVersion()).Seed()
 	return PrivateKeyPrefix + base58.CheckEncode(seed, PrivKeyVersion)
-}
-
-// addPrivKeyVersion adds the version byte to a private key.
-func addPrivKeyVersion(privKey []byte) []byte {
-	return append([]byte{PrivKeyVersion}, privKey...)
-}
-
-// RemovePrivKeyVersion removes the first byte.
-func RemovePrivKeyVersion(privKey []byte) []byte {
-	return privKey[1:]
 }
 
 // CheckPrivKeyVersion checks the version byte of a private key.
@@ -645,7 +626,7 @@ func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
 
 	digest := blake3.Sum256(append(wallet.KeyPair.PublicKey, operation...))
 
-	signature := append([]byte{SignatureVersion}, ed25519.Sign(RemovePrivKeyVersion(privKey), digest[:])...)
+	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey.RemoveVersion(), digest[:])...)
 
 	return signature, nil
 }
