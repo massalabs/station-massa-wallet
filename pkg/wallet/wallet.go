@@ -611,10 +611,8 @@ func (wallet *Wallet) GetNonce() string {
 	return base58.CheckEncode(wallet.KeyPair.Nonce[:], Base58Version)
 }
 
-func addressFromPublicKey(pubKeyBytes []byte) string {
-	versionedPubKey := append([]byte{PubKeyVersion}, pubKeyBytes...)
-
-	addr := blake3.Sum256(versionedPubKey)
+func addressFromPublicKey(pubKeyBytes VersionedKey) string {
+	addr := blake3.Sum256(pubKeyBytes.AddVersion(PubKeyVersion))
 	return UserAddressPrefix + base58.CheckEncode(addr[:], AddressVersion)
 }
 
