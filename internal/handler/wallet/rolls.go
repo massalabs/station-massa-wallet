@@ -66,11 +66,11 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	operation, err := doTradeRolls(wlt, amount, fee, *params.Body.Side, t.massaClient)
-	if err != nil {
-		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
+	operation, tradeRollError := doTradeRolls(wlt, amount, fee, *params.Body.Side, t.massaClient)
+	if tradeRollError != nil {
+		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, tradeRollError.Err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
+			walletapp.EventData{Success: false, CodeMessage: tradeRollError.CodeErr})
 		return operations.NewTradeRollsInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
@@ -86,7 +86,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		})
 }
 
-func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, error) {
+func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, *wallet.WalletError) {
 	var operation sendOperation.Operation
 	if side == "buy" {
 		operation = buyrolls.New(amount)

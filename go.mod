@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/labstack/gommon v0.3.1
-	github.com/massalabs/station v0.2.3
+	github.com/massalabs/station v0.2.6-0.20230720083118-12777a937305
 	github.com/massalabs/station-massa-hello-world v0.0.8
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
@@ -40,6 +40,10 @@ require (
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	github.com/ybbus/jsonrpc/v3 v3.1.4 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/zap v1.24.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 require (

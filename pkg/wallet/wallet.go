@@ -31,10 +31,15 @@ const (
 	PBKDF2NbRound             = 600_000
 	FileModeUserReadWriteOnly = 0o600
 	Base58Version             = 0x00
+	AddressVersion            = 0x00
+	PubKeyVersion             = 0x00
+	SignatureVersion          = 0x00
+	PrivKeyVersion            = 0x00
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
 	MaxNicknameLength         = 32
+	AccountVersion            = 1
 )
 
 func ErrorAccountNotFound(nickname string) error {
@@ -48,8 +53,8 @@ type WalletError struct {
 
 // KeyPair structure contains all the information necessary to save a key pair securely.
 type KeyPair struct {
-	PrivateKey []byte
-	PublicKey  []byte
+	PrivateKey VersionedKey
+	PublicKey  VersionedKey
 	Salt       [16]byte
 	Nonce      [12]byte
 }
@@ -63,63 +68,70 @@ type Wallet struct {
 }
 
 type AccountSerialized struct {
-	Version      *uint8   `yaml:"Version"`
-	Nickname     string   `yaml:"Nickname"`
-	Address      string   `yaml:"Address"`
-	Salt         [16]byte `yaml:"Salt,flow"`
-	Nonce        [12]byte `yaml:"Nonce,flow"`
-	CipheredData []byte   `yaml:"CipheredData,flow"`
-	PublicKey    []byte   `yaml:"PublicKey,flow"`
+	Version      *uint8       `yaml:"Version"`
+	Nickname     string       `yaml:"Nickname"`
+	Address      string       `yaml:"Address"`
+	Salt         [16]byte     `yaml:"Salt,flow"`
+	Nonce        [12]byte     `yaml:"Nonce,flow"`
+	CipheredData []byte       `yaml:"CipheredData,flow"`
+	PublicKey    VersionedKey `yaml:"PublicKey,flow"`
 }
 
-func (accountSerialized *AccountSerialized) ToAccount() Wallet {
+// toAccount returns a Wallet from an AccountSerialized.
+func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
+	publicKey, err := accountSerialized.PublicKey.CheckVersion([]byte{PubKeyVersion})
+	if err != nil {
+		return Wallet{}, fmt.Errorf("while checking public key version: %w", err)
+	}
+
 	wallet := Wallet{
 		Version:  *accountSerialized.Version,
 		Nickname: accountSerialized.Nickname,
 		Address:  accountSerialized.Address,
 		KeyPair: KeyPair{
-			PrivateKey: make([]byte, 0),
-			PublicKey:  accountSerialized.PublicKey,
+			PrivateKey: accountSerialized.CipheredData,
+			PublicKey:  publicKey,
 			Salt:       accountSerialized.Salt,
 			Nonce:      accountSerialized.Nonce,
 		},
 	}
 
-	return wallet
+	return wallet, nil
 }
 
-func (account *Wallet) ToAccountSerialized() AccountSerialized {
+// toAccountSerialized returns an AccountSerialized from a Wallet.
+func (account *Wallet) toAccountSerialized() AccountSerialized {
 	accountSerialized := AccountSerialized{
 		Version:      &account.Version,
 		Nickname:     account.Nickname,
 		Address:      account.Address,
 		Salt:         account.KeyPair.Salt,
 		Nonce:        account.KeyPair.Nonce,
-		CipheredData: make([]byte, 0),
+		CipheredData: account.KeyPair.PrivateKey, // account is protected so PrivateKey is encrypted
 		PublicKey:    account.KeyPair.PublicKey,
 	}
 
 	return accountSerialized
 }
 
-// aead returns a authenticated encryption with associated data.
+// aead returns an authenticated encryption with associated data.
 func aead(password []byte, salt []byte) (cipher.AEAD, error) {
 	secretKey := pbkdf2.Key([]byte(password), salt, PBKDF2NbRound, SecretKeyLength, sha256.New)
 
 	block, err := aes.NewCipher(secretKey)
 	if err != nil {
-		return nil, fmt.Errorf("intializing block ciphering: %w", err)
+		return nil, fmt.Errorf("initializing block ciphering: %w", err)
 	}
 
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, fmt.Errorf("intializing the AES block cipher wrapped in a Gallois Counter Mode ciphering: %w", err)
+		return nil, fmt.Errorf("initializing the AES block cipher wrapped in a Galois Counter Mode ciphering: %w", err)
 	}
 
 	return aesGCM, nil
 }
 
-// Protect encrypts the private key using the given guiModal.
+// Protect encrypts the private key.
 // The encryption algorithm used to protect the private key is AES-GCM and
 // the secret key is derived from the given password using the PBKDF2 algorithm.
 func (w *Wallet) Protect(password string) error {
@@ -151,7 +163,12 @@ func (w *Wallet) Unprotect(password string) *WalletError {
 		return &WalletError{fmt.Errorf("opening the private key seal: %w", err), utils.WrongPassword}
 	}
 
-	w.KeyPair.PrivateKey = pk
+	privateKey, err := VersionedKey(pk).CheckVersion([]byte{PrivKeyVersion})
+	if err != nil {
+		return &WalletError{fmt.Errorf("while checking private key version: %w", err), utils.ErrInvalidPrivateKey}
+	}
+
+	w.KeyPair.PrivateKey = privateKey
 
 	return nil
 }
@@ -180,10 +197,7 @@ func Xor(a, b []byte) ([]byte, error) {
 // Persist stores the wallet on the file system.
 // Note: the wallet is stored in YAML format and in Massa Station wallet directory.
 func (w *Wallet) Persist() error {
-	accountSerialized := w.ToAccountSerialized()
-
-	// account is protected so PrivateKey is encrypted
-	accountSerialized.CipheredData = w.KeyPair.PrivateKey
+	accountSerialized := w.toAccountSerialized()
 
 	yamlMarshaled, err := yaml.Marshal(accountSerialized)
 	if err != nil {
@@ -299,8 +313,10 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 		return Wallet{}, errMissingFields
 	}
 
-	account := accountSerialized.ToAccount()
-	account.KeyPair.PrivateKey = accountSerialized.CipheredData
+	account, err := accountSerialized.toAccount()
+	if err != nil {
+		return Wallet{}, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
+	}
 
 	return account, nil
 }
@@ -337,7 +353,7 @@ func Generate(nickname string, password string) (*Wallet, *WalletError) {
 		return nil, &WalletError{fmt.Errorf("generating ed25519 keypair: %w", err), utils.ErrUnknown}
 	}
 
-	wallet, createErr := createAccountFromKeys(nickname, privateKey, publicKey, password)
+	wallet, createErr := createAccountFromKeys(nickname, VersionedKey(privateKey), VersionedKey(publicKey), password)
 	if createErr != nil {
 		return nil, createErr
 	}
@@ -395,22 +411,26 @@ func (w *Wallet) FilePath() (string, error) {
 	return FilePath(w.Nickname)
 }
 
+// Import instantiates a new wallet from a private key, protects with the given password, and persists it.
 func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *WalletError) {
 	if len(privateKeyB58V) < 2 {
 		return nil, &WalletError{fmt.Errorf("invalid private key"), utils.ErrInvalidPrivateKey}
 	}
 
-	privateKeyBytes, _, err := base58.CheckDecode(privateKeyB58V[1:])
+	seed, version, err := base58.CheckDecode(privateKeyB58V[1:]) // omit the first byte because it's 'S' for secret key
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
+	if !VersionIsKnown(version, []byte{PrivKeyVersion}) {
+		return nil, &WalletError{fmt.Errorf("unknown private key version: %d", version), utils.ErrInvalidPrivateKey}
+	}
 
-	// The ed25519 seed is in fact what we call a private key in cryptography...
-	privateKey := ed25519.NewKeyFromSeed(privateKeyBytes)
+	// The ed25519 seed is in fact what we call a private key in cryptography.
+	privateKey := ed25519.NewKeyFromSeed(seed)
 
 	pubKeyBytes := reflect.ValueOf(privateKey.Public()).Bytes() // force conversion to byte array
 
-	wallet, createErr := createAccountFromKeys(nickname, privateKey, pubKeyBytes, password)
+	wallet, createErr := createAccountFromKeys(nickname, VersionedKey(privateKey), pubKeyBytes, password)
 	if createErr != nil {
 		return nil, &WalletError{fmt.Errorf("creating account: %w", createErr.Err), createErr.CodeErr}
 	}
@@ -423,7 +443,10 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 	return wallet, nil
 }
 
-func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte, password string) (*Wallet, *WalletError) {
+// createAccountFromKeys creates a new account from a private key and a public key.
+// It add the versions to the keys.
+// It protects the private key with the given password.
+func createAccountFromKeys(nickname string, privateKey, publicKey VersionedKey, password string) (*Wallet, *WalletError) {
 	var salt [16]byte
 	_, err := rand.Read(salt[:])
 	if err != nil {
@@ -456,12 +479,12 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 	}
 
 	wallet := Wallet{
-		Version:  0,
+		Version:  AccountVersion,
 		Nickname: nickname,
 		Address:  address,
 		KeyPair: KeyPair{
-			PrivateKey: privateKey,
-			PublicKey:  publicKey,
+			PrivateKey: privateKey.AddVersion(PrivKeyVersion),
+			PublicKey:  publicKey.AddVersion(PubKeyVersion),
 			Salt:       salt,
 			Nonce:      nonce,
 		},
@@ -474,6 +497,8 @@ func createAccountFromKeys(nickname string, privateKey []byte, publicKey []byte,
 
 	return &wallet, nil
 }
+
+// Validation functions
 
 func NicknameIsUnique(nickname string) error {
 	// Load all accounts
@@ -521,39 +546,45 @@ func AddressIsUnique(address string) error {
 	return nil
 }
 
+// Helpers
+
 // GetPupKey returns the public key of the wallet.
 func (wallet *Wallet) GetPupKey() string {
-	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey, Base58Version)
+	return PublicKeyPrefix + base58.CheckEncode(wallet.KeyPair.PublicKey.RemoveVersion(), PubKeyVersion)
 }
 
-// GetPrivKey returns the private key of the wallet.
+// GetPrivKey returns the versioned string representation of private key of the wallet.
 // This function requires that the private key is not protected.
 func (wallet *Wallet) GetPrivKey() string {
-	seed := ed25519.PrivateKey(wallet.KeyPair.PrivateKey).Seed()
-	return PrivateKeyPrefix + base58.CheckEncode(seed, Base58Version)
+	seed := ed25519.PrivateKey(wallet.KeyPair.PrivateKey.RemoveVersion()).Seed()
+	return PrivateKeyPrefix + base58.CheckEncode(seed, PrivKeyVersion)
 }
 
+// GetSalt returns the versioned string representation of the salt of the wallet.
 func (wallet *Wallet) GetSalt() string {
 	return base58.CheckEncode(wallet.KeyPair.Salt[:], Base58Version)
 }
 
+// GetNonce returns the versioned string representation of the nonce of the wallet.
 func (wallet *Wallet) GetNonce() string {
 	return base58.CheckEncode(wallet.KeyPair.Nonce[:], Base58Version)
 }
 
-func addressFromPublicKey(pubKeyBytes []byte) string {
-	addr := blake3.Sum256(pubKeyBytes)
-	return UserAddressPrefix + base58.CheckEncode(addr[:], Base58Version)
+// addressFromPublicKey returns the versioned string representation of the address of the wallet.
+func addressFromPublicKey(pubKeyBytes VersionedKey) string {
+	addr := blake3.Sum256(pubKeyBytes.AddVersion(PubKeyVersion))
+	return UserAddressPrefix + base58.CheckEncode(addr[:], AddressVersion)
 }
 
 // Sign signs the given operation with the wallet.
 // The operation is a base64 encoded string.
+// This function requires that the private key is not protected.
 func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
-	pubKey := wallet.KeyPair.PublicKey
 	privKey := wallet.KeyPair.PrivateKey
 
-	digest := blake3.Sum256(append(pubKey, operation...))
+	digest := blake3.Sum256(append(wallet.KeyPair.PublicKey, operation...))
 
-	signature := ed25519.Sign(privKey, digest[:])
+	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey.RemoveVersion(), digest[:])...)
+
 	return signature, nil
 }

@@ -13,7 +13,6 @@ const (
 	massaStationNodeEndpoint = plugin.MassaStationBaseURL + "/massa/node"
 	defaultNetwork           = "buildnet"
 	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
-	fallbackMsg              = "Fallback to default network. "
 )
 
 type NetworkInfo struct {
@@ -22,26 +21,30 @@ type NetworkInfo struct {
 	DNS     string `json:"dns"`
 }
 
+func logFallback(action string, err error) {
+	log.Warnf("Fallback to default network: failed to %s: %v", action, err)
+}
+
 // retrieve network info from endpoint
 func GetNetworkInfo() (*NetworkInfo, error) {
 	resp, err := http.Get(massaStationNodeEndpoint)
 	if err != nil {
-		log.Warnf(fallbackMsg+"Failed to make GET request: %v", err)
+		logFallback("GET massa station node endpoint", err)
 		return &NetworkInfo{Network: defaultNetwork, URL: defaultNodeUrl}, nil
-
 	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Warnf(fallbackMsg+"Failed to read response body: %v", err)
+		logFallback("read response body", err)
 		return &NetworkInfo{Network: defaultNetwork, URL: defaultNodeUrl}, nil
 	}
 
 	var data NetworkInfo
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		log.Warnf(fallbackMsg+"Failed to parse JSON: %v", err)
+		logFallback("parse JSON", err)
 		return &NetworkInfo{Network: defaultNetwork, URL: defaultNodeUrl}, nil
 	}
 

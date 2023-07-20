@@ -32,7 +32,7 @@ func Test_walletImport_Handle(t *testing.T) {
 		nickname := "walletToBeImported"
 
 		walletFile := fmt.Sprintf(
-			`Version: 0
+			`Version: 1
 Nickname: %s
 Address: AU12rjXkQ1hzo5hQ9Vvd4wdckdevZWAmT458WkbthGCgLoQ1C8BkB
 Salt: [137, 167, 117, 16, 181, 186, 226, 139, 151, 228, 119, 194, 80, 40, 37, 138]
@@ -42,7 +42,7 @@ CipheredData: [9, 32, 11, 154, 176, 82, 30, 97, 4, 142, 233, 194, 12, 192, 138, 
   54, 140, 186, 101, 64, 0, 194, 238, 105, 240, 46, 162, 168, 168, 238, 177, 175,
   202, 9, 17, 5, 153, 159, 34, 189, 231, 34, 116, 129, 72, 222, 174, 149, 22, 7, 210,
   167, 30, 252, 241, 63, 60, 190, 199, 8, 180]
-PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 113,
+PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 113,
   4, 133, 59, 3, 213, 78, 33, 118, 49, 207, 180, 77, 78, 128, 37, 131]
 `, nickname)
 
@@ -78,7 +78,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	})
 
 	t.Run("import invalid path file", func(t *testing.T) {
-		walletFile := "InvalidWalet"
+		walletFile := "InvalidWallet"
 
 		filePath := "importMe.yaml"
 		// Write wallet file
@@ -104,7 +104,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 	})
 
 	t.Run("import invalid account file", func(t *testing.T) {
-		walletFile := "InvalidWalet"
+		walletFile := "InvalidWallet"
 
 		filePath := "importMe.yaml"
 		// Write wallet file
@@ -133,7 +133,7 @@ PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 1
 		nickname := "créated"
 
 		walletFile := fmt.Sprintf(
-			`Version: 0
+			`Version: 1
 Nickname: %s
 Address: AU12rjXkQ1hzo5hQ9Vvd4wdckdevZWAmT458WkbthGCgLoQ1C8BkB
 Salt: [137, 167, 117, 16, 181, 186, 226, 139, 151, 228, 119, 194, 80, 40, 37, 138]
@@ -143,7 +143,7 @@ CipheredData: [9, 32, 11, 154, 176, 82, 30, 97, 4, 142, 233, 194, 12, 192, 138, 
   54, 140, 186, 101, 64, 0, 194, 238, 105, 240, 46, 162, 168, 168, 238, 177, 175,
   202, 9, 17, 5, 153, 159, 34, 189, 231, 34, 116, 129, 72, 222, 174, 149, 22, 7, 210,
   167, 30, 252, 241, 63, 60, 190, 199, 8, 180]
-PublicKey: [164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 113,
+PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41, 113,
   4, 133, 59, 3, 213, 78, 33, 118, 49, 207, 180, 77, 78, 128, 37, 131]
 `, nickname)
 

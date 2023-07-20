@@ -66,7 +66,6 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 				})
 		}
 	} else {
-
 		privateKey = wlt.GetPrivKey()
 		publicKey = wlt.GetPupKey()
 	}
