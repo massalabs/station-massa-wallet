@@ -17,7 +17,7 @@ const (
 )
 
 //nolint:typecheck,nolintlint
-//go:embed dist
+//go:embed all:dist
 var contentWebApp embed.FS
 
 // Handle a Web request.
