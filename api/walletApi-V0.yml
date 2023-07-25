@@ -381,7 +381,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   /api/assets:
-  get:
+    get:
       operationId: GetAllAssets
       description: Retrieve all assets (MRC-20) info.
       produces:
