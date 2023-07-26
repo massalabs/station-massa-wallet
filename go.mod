@@ -8,7 +8,7 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/labstack/gommon v0.3.1
 	github.com/massalabs/station v0.2.6-0.20230720083118-12777a937305
-	github.com/massalabs/station-massa-hello-world v0.0.8
+	github.com/massalabs/station-massa-hello-world v0.0.9
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.1
