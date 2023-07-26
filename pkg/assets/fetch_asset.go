@@ -15,6 +15,16 @@ import (
 
 const assetsJSONPath = "assets.json"
 
+type assetData struct {
+	Assets []struct {
+		ContractAddress string `json:"contractAddress"`
+		Name            string `json:"name"`
+		Symbol          string `json:"symbol"`
+		Decimals        int64  `json:"decimals"`
+	} `json:"assets"`
+}
+
+
 // AssetsStore encapsulates the contract assets and mutex.
 type AssetsStore struct {
 	ContractAssets      map[string]models.AssetInfo
@@ -114,6 +124,7 @@ func NewAssetsStore() (*AssetsStore, error) {
 	if err := store.loadContractAssets(); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
+
 	return store, nil
 }
 
@@ -130,9 +141,24 @@ func (s *AssetsStore) loadContractAssets() error {
 		return errors.Wrap(err, "failed to read assets JSON data")
 	}
 
-	// Unmarshal the JSON data into the ContractAssets map
-	if err := json.Unmarshal(data, &s.ContractAssets); err != nil {
-		return errors.Wrap(err, "failed to unmarshal JSON data into ContractAssets")
+	// Unmarshal the JSON data into the assetData struct
+	var assetsData assetData
+	if err := json.Unmarshal(data, &assetsData); err != nil {
+		return errors.Wrap(err, "failed to unmarshal JSON data")
+	}
+
+	// Update the ContractAssets map with the new asset information
+	s.contractAssetsMutex.Lock()
+	defer s.contractAssetsMutex.Unlock()
+
+	for _, asset := range assetsData.Assets {
+		assetInfo := models.AssetInfo{
+			Name:     asset.Name,
+			Symbol:   asset.Symbol,
+			Decimals: &asset.Decimals,
+		}
+
+		s.ContractAssets[asset.ContractAddress] = assetInfo
 	}
 
 	return nil
@@ -154,8 +180,25 @@ var ErrAssetInfoNotFound = errors.New("asset information not found")
 
 // persistAssets saves the ContractAssets map to the specified JSON file.
 func (s *AssetsStore) persistAssets() error {
-	// Convert the ContractAssets map to JSON data
-	data, err := json.MarshalIndent(s.ContractAssets, "", "    ")
+	// Convert the ContractAssets map to the format of assetData
+	var assetsData assetData
+	for contractAddress, assetInfo := range s.ContractAssets {
+		asset := struct {
+			ContractAddress string `json:"contractAddress"`
+			Name            string `json:"name"`
+			Symbol          string `json:"symbol"`
+			Decimals        int64  `json:"decimals"`
+		}{
+			ContractAddress: contractAddress,
+			Name:            assetInfo.Name,
+			Symbol:          assetInfo.Symbol,
+			Decimals:        *assetInfo.Decimals,
+		}
+		assetsData.Assets = append(assetsData.Assets, asset)
+	}
+
+	// Marshal the assetData to JSON data
+	data, err := json.MarshalIndent(assetsData, "", "    ")
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal ContractAssets to JSON data")
 	}
@@ -167,6 +210,7 @@ func (s *AssetsStore) persistAssets() error {
 
 	return nil
 }
+
 
 // getAssetInfoFromSC retrieves the asset information for a given contract address by making a smart contract call.
 func (s *AssetsStore) getAssetInfoFromSC(contractAddress string) (*models.AssetInfo, error) {
