@@ -382,8 +382,8 @@ paths:
             $ref: "#/definitions/Error"
   /api/assets:
     post:
-      operationId: RetrieveAssetInfoList
-      description: Retrieve MRC-20 token information for a list of asset addresses and persist it for future use.
+      operationId: AddAsset
+      description: Add MRC-20 token information and persist it for future use.
       produces:
         - application/json
       parameters:
@@ -395,7 +395,7 @@ paths:
           required: true
           description: List of asset addresses (MRC-20 token addresses) to retrieve info for.
       responses:
-        200:
+        201:
           description: Asset information retrieved successfully.
           schema:
             type: object

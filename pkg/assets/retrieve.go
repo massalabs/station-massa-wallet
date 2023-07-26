@@ -15,7 +15,7 @@ type AssetInfoListResponse struct {
 	Assets []models.AssetInfo `json:"assets"`
 }
 
-func NewRetrieveAssetInfoList(assetsStore *AssetsStore) operations.RetrieveAssetInfoListHandler {
+func NewRetrieveAssetInfoList(assetsStore *AssetsStore) operations.AddAssetHandler{
 	return &retrieveAssetInfoList{
 		assetsStore: assetsStore,
 	}
@@ -25,7 +25,7 @@ type retrieveAssetInfoList struct {
 	assetsStore *AssetsStore
 }
 
-func (h *retrieveAssetInfoList) Handle(params operations.RetrieveAssetInfoListParams) middleware.Responder {
+func (h *retrieveAssetInfoList) Handle(params operations.AddAssetParams) middleware.Responder {
 	// Retrieve the asset information for the list of contract addresses
 	assetInfoList, retrievalErr := h.assetsStore.RetrieveAssetsInfo(params.AssetAddresses)
 
@@ -33,16 +33,16 @@ func (h *retrieveAssetInfoList) Handle(params operations.RetrieveAssetInfoListPa
 		// If some asset information was retrieved successfully
 		if len(assetInfoList) > 0 {
 			// Create the response containing the partial asset information list
-			response := operations.RetrieveAssetInfoListPartialContentBody{
+			response := operations.AddAssetPartialContentBody{
 				Assets: assetInfoList,
 			}
 
 			// Return the response with the partial list using 206 Partial Content
-			return operations.NewRetrieveAssetInfoListPartialContent().WithPayload(&response)
+			return operations.NewAddAssetPartialContent().WithPayload(&response)
 		}
 
 		// If there is no retrieved asset information, return the internal server error
-		return operations.NewRetrieveAssetInfoListInternalServerError().WithPayload(
+		return operations.NewAddAssetInternalServerError().WithPayload(
 			&models.Error{
 				Code:    "internal_server_error",
 				Message: "Failed to retrieve asset information",
@@ -53,12 +53,12 @@ func (h *retrieveAssetInfoList) Handle(params operations.RetrieveAssetInfoListPa
 	// All asset information retrieved successfully
 
 	// Create the response containing the asset information list
-	response := operations.RetrieveAssetInfoListOKBody{
+	response := operations.AddAssetCreatedBody{
 		Assets: assetInfoList,
 	}
 
 	// Return the response with the full list of retrieved asset information using 200 OK
-	return operations.NewRetrieveAssetInfoListOK().WithPayload(&response)
+	return operations.NewAddAssetCreated().WithPayload(&response)
 }
 
 
@@ -128,7 +128,7 @@ func (s *AssetsStore) RetrieveAssetInfo(contractAddress string) (*models.AssetIn
 		s.ContractAssets[contractAddress] = *assetInfoFromSC
 
 		// Persist the updated ContractAssets map back to the JSON file
-		if err := s.persistContractAssets(); err != nil {
+		if err := s.persistAssets(); err != nil {
 			log.Errorf("failed to persist contract assets to JSON file: %v", err)
 		}
 

@@ -65,8 +65,8 @@ func (s *AssetsStore) getAssetInfoFromJSON(contractAddress string) (*models.Asse
 // ErrAssetInfoNotFound is an error indicating that the asset information is not found in the JSON.
 var ErrAssetInfoNotFound = errors.New("asset information not found")
 
-// persistContractAssets saves the ContractAssets map to the specified JSON file.
-func (s *AssetsStore) persistContractAssets() error {
+// persistAssets saves the ContractAssets map to the specified JSON file.
+func (s *AssetsStore) persistAssets() error {
 	// Convert the ContractAssets map to JSON data
 	data, err := json.MarshalIndent(s.ContractAssets, "", "    ")
 	if err != nil {
