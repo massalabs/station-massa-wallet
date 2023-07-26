@@ -14,7 +14,7 @@ import (
 )
 
 func Test_getWallets_handler(t *testing.T) {
-	api, _, _, err := MockAPI()
+	api, _, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	// test empty configuration first.
@@ -61,7 +61,7 @@ func Test_getWallets_handler(t *testing.T) {
 }
 
 func Test_getWallet_handler(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}")

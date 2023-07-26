@@ -26,7 +26,7 @@ func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname stri
 }
 
 func Test_walletSign_Handle(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	transactionData := `{"operation":"MjIzM3QyNHQ="}`

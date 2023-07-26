@@ -12,7 +12,7 @@ import (
 )
 
 func Test_ModifyWallets_handler(t *testing.T) {
-	api, _, _, err := MockAPI()
+	api, _, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	// Create account

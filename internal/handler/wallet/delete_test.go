@@ -23,7 +23,7 @@ func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 }
 
 func Test_walletDelete_Handle(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	testResult := make(chan walletapp.EventData)

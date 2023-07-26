@@ -25,7 +25,7 @@ func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.Respon
 }
 
 func Test_walletImport_Handle(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	t.Run("import wallet file", func(t *testing.T) {
