@@ -381,9 +381,9 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   /api/assets:
-    get:
-      operationId: GetAllAssets
-      description: Retrieve all assets (MRC-20) info.
+    post:
+      operationId: RetrieveAssetInfoList
+      description: Retrieve MRC-20 token information for a list of asset addresses and persist it for future use.
       produces:
         - application/json
       parameters:
@@ -604,9 +604,6 @@ definitions:
       symbol:
         type: string
       decimals:
-        type: integer
-        minimum: 0
-      currentBalance:
         type: integer
         minimum: 0
     description: Asset information.
