@@ -1,0 +1,22 @@
+{
+    "assets": [
+        {
+            "contractAddress": "0xContractAddressA",
+            "name": "Token A",
+            "symbol": "TKA",
+            "decimals": 6
+        },
+        {
+            "contractAddress": "0xContractAddressB",
+            "name": "Token B",
+            "symbol": "TKB",
+            "decimals": 6
+        },
+        {
+            "contractAddress": "0xContractAddressC",
+            "name": "Token C",
+            "symbol": "TKC",
+            "decimals": 6
+        }
+    ]
+}
