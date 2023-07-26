@@ -19,10 +19,6 @@ import (
 // swagger:model AssetInfo
 type AssetInfo struct {
 
-	// current balance
-	// Minimum: 0
-	CurrentBalance *int64 `json:"currentBalance,omitempty"`
-
 	// decimals
 	// Minimum: 0
 	Decimals *int64 `json:"decimals,omitempty"`
@@ -38,10 +34,6 @@ type AssetInfo struct {
 func (m *AssetInfo) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateCurrentBalance(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateDecimals(formats); err != nil {
 		res = append(res, err)
 	}
@@ -49,18 +41,6 @@ func (m *AssetInfo) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *AssetInfo) validateCurrentBalance(formats strfmt.Registry) error {
-	if swag.IsZero(m.CurrentBalance) { // not required
-		return nil
-	}
-
-	if err := validate.MinimumInt("currentBalance", "body", *m.CurrentBalance, 0, false); err != nil {
-		return err
-	}
-
 	return nil
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi"
 	"github.com/massalabs/station-massa-wallet/internal/handler"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 )
@@ -26,10 +27,16 @@ func StartServer(app *walletApp.WalletApp) {
 		promptApp = prompt.NewEnvPrompter(app)
 	}
 
+	assetStore, err := assets.NewAssetsStore()
+	if err != nil {
+		log.Fatalf("Failed to create AssetsStore: %v", err)
+	}
+
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
 		promptApp,
 		massaClient,
+		assetStore,
 		gc,
 	)
 	if err != nil {
