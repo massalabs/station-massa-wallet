@@ -110,7 +110,7 @@ func (s *AssetsStore) RetrieveAssetsInfo(contractAddresses []string) ([]models.A
 // RetrieveAssetInfo retrieves the asset information for a given contract address.
 func (s *AssetsStore) RetrieveAssetInfo(contractAddress string) (*models.AssetInfo, error) {
 	// Check if the asset information exists in the JSON
-	assetInfo, err := s.getAssetInfoFromJSON(contractAddress)
+	assetInfo, err := s.AssetInfo(contractAddress)
 	if err == nil {
 		// Asset information found in the JSON
 		return assetInfo, nil

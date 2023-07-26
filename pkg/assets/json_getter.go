@@ -51,8 +51,8 @@ func (s *AssetsStore) loadContractAssets() error {
 	return nil
 }
 
-// getAssetInfoFromJSON retrieves the asset information for a given contract address from the JSON.
-func (s *AssetsStore) getAssetInfoFromJSON(contractAddress string) (*models.AssetInfo, error) {
+// AssetInfo retrieves the asset information for a given contract address from the JSON.
+func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, error) {
 	// Look up the asset information in the ContractAssets map
 	assetInfo, found := s.ContractAssets[contractAddress]
 	if !found {
