@@ -58,6 +58,51 @@ func (o *RetrieveAssetInfoListOK) WriteResponse(rw http.ResponseWriter, producer
 	}
 }
 
+// RetrieveAssetInfoListPartialContentCode is the HTTP code returned for type RetrieveAssetInfoListPartialContent
+const RetrieveAssetInfoListPartialContentCode int = 206
+
+/*
+RetrieveAssetInfoListPartialContent Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.
+
+swagger:response retrieveAssetInfoListPartialContent
+*/
+type RetrieveAssetInfoListPartialContent struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *RetrieveAssetInfoListPartialContentBody `json:"body,omitempty"`
+}
+
+// NewRetrieveAssetInfoListPartialContent creates RetrieveAssetInfoListPartialContent with default headers values
+func NewRetrieveAssetInfoListPartialContent() *RetrieveAssetInfoListPartialContent {
+
+	return &RetrieveAssetInfoListPartialContent{}
+}
+
+// WithPayload adds the payload to the retrieve asset info list partial content response
+func (o *RetrieveAssetInfoListPartialContent) WithPayload(payload *RetrieveAssetInfoListPartialContentBody) *RetrieveAssetInfoListPartialContent {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the retrieve asset info list partial content response
+func (o *RetrieveAssetInfoListPartialContent) SetPayload(payload *RetrieveAssetInfoListPartialContentBody) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *RetrieveAssetInfoListPartialContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(206)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // RetrieveAssetInfoListBadRequestCode is the HTTP code returned for type RetrieveAssetInfoListBadRequest
 const RetrieveAssetInfoListBadRequestCode int = 400
 

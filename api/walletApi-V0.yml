@@ -404,6 +404,15 @@ paths:
                 type: array
                 items:
                   $ref: "#/definitions/AssetInfo"
+        206:
+          description: Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.
+          schema:
+            type: object
+            properties:
+              assets:
+                type: array
+                items:
+                  $ref: "#/definitions/AssetInfo"
         400:
           description: Bad request.
           schema:

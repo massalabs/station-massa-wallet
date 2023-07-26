@@ -155,3 +155,97 @@ func (o *RetrieveAssetInfoListOKBody) UnmarshalBinary(b []byte) error {
 	*o = res
 	return nil
 }
+
+// RetrieveAssetInfoListPartialContentBody retrieve asset info list partial content body
+//
+// swagger:model RetrieveAssetInfoListPartialContentBody
+type RetrieveAssetInfoListPartialContentBody struct {
+
+	// assets
+	Assets []models.AssetInfo `json:"assets"`
+}
+
+// Validate validates this retrieve asset info list partial content body
+func (o *RetrieveAssetInfoListPartialContentBody) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := o.validateAssets(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (o *RetrieveAssetInfoListPartialContentBody) validateAssets(formats strfmt.Registry) error {
+	if swag.IsZero(o.Assets) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(o.Assets); i++ {
+
+		if err := o.Assets[i].Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("retrieveAssetInfoListPartialContent" + "." + "assets" + "." + strconv.Itoa(i))
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("retrieveAssetInfoListPartialContent" + "." + "assets" + "." + strconv.Itoa(i))
+			}
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+// ContextValidate validate this retrieve asset info list partial content body based on the context it is used
+func (o *RetrieveAssetInfoListPartialContentBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := o.contextValidateAssets(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (o *RetrieveAssetInfoListPartialContentBody) contextValidateAssets(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(o.Assets); i++ {
+
+		if err := o.Assets[i].ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("retrieveAssetInfoListPartialContent" + "." + "assets" + "." + strconv.Itoa(i))
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("retrieveAssetInfoListPartialContent" + "." + "assets" + "." + strconv.Itoa(i))
+			}
+			return err
+		}
+
+	}
+
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (o *RetrieveAssetInfoListPartialContentBody) MarshalBinary() ([]byte, error) {
+	if o == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(o)
+}
+
+// UnmarshalBinary interface implementation
+func (o *RetrieveAssetInfoListPartialContentBody) UnmarshalBinary(b []byte) error {
+	var res RetrieveAssetInfoListPartialContentBody
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*o = res
+	return nil
+}
