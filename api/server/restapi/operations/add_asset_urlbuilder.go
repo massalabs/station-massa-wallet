@@ -13,8 +13,8 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// RetrieveAssetInfoListURL generates an URL for the retrieve asset info list operation
-type RetrieveAssetInfoListURL struct {
+// AddAssetURL generates an URL for the add asset operation
+type AddAssetURL struct {
 	AssetAddresses []string
 
 	_basePath string
@@ -25,7 +25,7 @@ type RetrieveAssetInfoListURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *RetrieveAssetInfoListURL) WithBasePath(bp string) *RetrieveAssetInfoListURL {
+func (o *AddAssetURL) WithBasePath(bp string) *AddAssetURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -33,12 +33,12 @@ func (o *RetrieveAssetInfoListURL) WithBasePath(bp string) *RetrieveAssetInfoLis
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *RetrieveAssetInfoListURL) SetBasePath(bp string) {
+func (o *AddAssetURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *RetrieveAssetInfoListURL) Build() (*url.URL, error) {
+func (o *AddAssetURL) Build() (*url.URL, error) {
 	var _result url.URL
 
 	var _path = "/api/assets"
@@ -71,7 +71,7 @@ func (o *RetrieveAssetInfoListURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *RetrieveAssetInfoListURL) Must(u *url.URL, err error) *url.URL {
+func (o *AddAssetURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -82,17 +82,17 @@ func (o *RetrieveAssetInfoListURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *RetrieveAssetInfoListURL) String() string {
+func (o *AddAssetURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *RetrieveAssetInfoListURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *AddAssetURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on RetrieveAssetInfoListURL")
+		return nil, errors.New("scheme is required for a full url on AddAssetURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on RetrieveAssetInfoListURL")
+		return nil, errors.New("host is required for a full url on AddAssetURL")
 	}
 
 	base, err := o.Build()
@@ -106,6 +106,6 @@ func (o *RetrieveAssetInfoListURL) BuildFull(scheme, host string) (*url.URL, err
 }
 
 // StringFull returns the string representation of a complete url
-func (o *RetrieveAssetInfoListURL) StringFull(scheme, host string) string {
+func (o *AddAssetURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

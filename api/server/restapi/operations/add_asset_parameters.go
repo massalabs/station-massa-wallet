@@ -15,19 +15,19 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// NewGetAllAssetsParams creates a new GetAllAssetsParams object
+// NewAddAssetParams creates a new AddAssetParams object
 //
 // There are no default values defined in the spec.
-func NewGetAllAssetsParams() GetAllAssetsParams {
+func NewAddAssetParams() AddAssetParams {
 
-	return GetAllAssetsParams{}
+	return AddAssetParams{}
 }
 
-// GetAllAssetsParams contains all the bound params for the get all assets operation
+// AddAssetParams contains all the bound params for the add asset operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters GetAllAssets
-type GetAllAssetsParams struct {
+// swagger:parameters AddAsset
+type AddAssetParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -42,8 +42,8 @@ type GetAllAssetsParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewGetAllAssetsParams() beforehand.
-func (o *GetAllAssetsParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewAddAssetParams() beforehand.
+func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
@@ -63,7 +63,7 @@ func (o *GetAllAssetsParams) BindRequest(r *http.Request, route *middleware.Matc
 // bindAssetAddresses binds and validates array parameter AssetAddresses from query.
 //
 // Arrays are parsed according to CollectionFormat: "" (defaults to "csv" when empty).
-func (o *GetAllAssetsParams) bindAssetAddresses(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *AddAssetParams) bindAssetAddresses(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	if !hasKey {
 		return errors.Required("assetAddresses", "query", rawData)
 	}
