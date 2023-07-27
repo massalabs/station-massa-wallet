@@ -25,7 +25,7 @@ type AddAssetCreated struct {
 	/*
 	  In: Body
 	*/
-	Payload *AddAssetCreatedBody `json:"body,omitempty"`
+	Payload *models.AssetInfo `json:"body,omitempty"`
 }
 
 // NewAddAssetCreated creates AddAssetCreated with default headers values
@@ -35,13 +35,13 @@ func NewAddAssetCreated() *AddAssetCreated {
 }
 
 // WithPayload adds the payload to the add asset created response
-func (o *AddAssetCreated) WithPayload(payload *AddAssetCreatedBody) *AddAssetCreated {
+func (o *AddAssetCreated) WithPayload(payload *models.AssetInfo) *AddAssetCreated {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the add asset created response
-func (o *AddAssetCreated) SetPayload(payload *AddAssetCreatedBody) {
+func (o *AddAssetCreated) SetPayload(payload *models.AssetInfo) {
 	o.Payload = payload
 }
 
@@ -49,51 +49,6 @@ func (o *AddAssetCreated) SetPayload(payload *AddAssetCreatedBody) {
 func (o *AddAssetCreated) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(201)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
-}
-
-// AddAssetPartialContentCode is the HTTP code returned for type AddAssetPartialContent
-const AddAssetPartialContentCode int = 206
-
-/*
-AddAssetPartialContent Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.
-
-swagger:response addAssetPartialContent
-*/
-type AddAssetPartialContent struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *AddAssetPartialContentBody `json:"body,omitempty"`
-}
-
-// NewAddAssetPartialContent creates AddAssetPartialContent with default headers values
-func NewAddAssetPartialContent() *AddAssetPartialContent {
-
-	return &AddAssetPartialContent{}
-}
-
-// WithPayload adds the payload to the add asset partial content response
-func (o *AddAssetPartialContent) WithPayload(payload *AddAssetPartialContentBody) *AddAssetPartialContent {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the add asset partial content response
-func (o *AddAssetPartialContent) SetPayload(payload *AddAssetPartialContentBody) {
-	o.Payload = payload
-}
-
-// WriteResponse to the client
-func (o *AddAssetPartialContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-
-	rw.WriteHeader(206)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

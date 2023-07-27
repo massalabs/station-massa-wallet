@@ -14,7 +14,7 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// AssetInfo Asset information.
+// AssetInfo Token informations
 //
 // swagger:model AssetInfo
 type AssetInfo struct {

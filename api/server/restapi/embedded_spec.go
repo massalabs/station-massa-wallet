@@ -584,11 +584,9 @@ func init() {
         "operationId": "AddAsset",
         "parameters": [
           {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of asset addresses (MRC-20 token addresses) to retrieve info for.",
+            "pattern": "^AS[0-9a-zA-Z]+$",
+            "type": "string",
+            "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddresses",
             "in": "query",
             "required": true
@@ -598,29 +596,7 @@ func init() {
           "201": {
             "description": "Asset information retrieved successfully.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "assets": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/AssetInfo"
-                  }
-                }
-              }
-            }
-          },
-          "206": {
-            "description": "Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "assets": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/AssetInfo"
-                  }
-                }
-              }
+              "$ref": "#/definitions/AssetInfo"
             }
           },
           "400": {
@@ -720,7 +696,7 @@ func init() {
       "x-nullable": false
     },
     "AssetInfo": {
-      "description": "Asset information.",
+      "description": "Token informations",
       "type": "object",
       "properties": {
         "decimals": {
@@ -1556,11 +1532,9 @@ func init() {
         "operationId": "AddAsset",
         "parameters": [
           {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "List of asset addresses (MRC-20 token addresses) to retrieve info for.",
+            "pattern": "^AS[0-9a-zA-Z]+$",
+            "type": "string",
+            "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddresses",
             "in": "query",
             "required": true
@@ -1570,29 +1544,7 @@ func init() {
           "201": {
             "description": "Asset information retrieved successfully.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "assets": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/AssetInfo"
-                  }
-                }
-              }
-            }
-          },
-          "206": {
-            "description": "Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "assets": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/AssetInfo"
-                  }
-                }
-              }
+              "$ref": "#/definitions/AssetInfo"
             }
           },
           "400": {
@@ -1692,7 +1644,7 @@ func init() {
       "x-nullable": false
     },
     "AssetInfo": {
-      "description": "Asset information.",
+      "description": "Token informations",
       "type": "object",
       "properties": {
         "decimals": {

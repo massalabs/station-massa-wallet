@@ -9,13 +9,11 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
-
-	"github.com/go-openapi/swag"
 )
 
 // AddAssetURL generates an URL for the add asset operation
 type AddAssetURL struct {
-	AssetAddresses []string
+	AssetAddresses string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -48,21 +46,9 @@ func (o *AddAssetURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
-	var assetAddressesIR []string
-	for _, assetAddressesI := range o.AssetAddresses {
-		assetAddressesIS := assetAddressesI
-		if assetAddressesIS != "" {
-			assetAddressesIR = append(assetAddressesIR, assetAddressesIS)
-		}
-	}
-
-	assetAddresses := swag.JoinByFormat(assetAddressesIR, "")
-
-	if len(assetAddresses) > 0 {
-		qsv := assetAddresses[0]
-		if qsv != "" {
-			qs.Set("assetAddresses", qsv)
-		}
+	assetAddressesQ := o.AssetAddresses
+	if assetAddressesQ != "" {
+		qs.Set("assetAddresses", assetAddressesQ)
 	}
 
 	_result.RawQuery = qs.Encode()

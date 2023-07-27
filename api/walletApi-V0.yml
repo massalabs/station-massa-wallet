@@ -389,30 +389,15 @@ paths:
       parameters:
         - in: query
           name: assetAddresses
-          type: array
-          items:
-            type: string
+          type: string
+          pattern: ^AS[0-9a-zA-Z]+$
           required: true
-          description: List of asset addresses (MRC-20 token addresses) to retrieve info for.
+          description: The asset address (MRC-20 token address) to retrieve info for. It must start with "AS" and contain only alphanumeric characters.
       responses:
         201:
           description: Asset information retrieved successfully.
           schema:
-            type: object
-            properties:
-              assets:
-                type: array
-                items:
-                  $ref: "#/definitions/AssetInfo"
-        206:
-          description: Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.
-          schema:
-            type: object
-            properties:
-              assets:
-                type: array
-                items:
-                  $ref: "#/definitions/AssetInfo"
+            $ref: "#/definitions/AssetInfo"
         400:
           description: Bad request.
           schema:
@@ -615,7 +600,6 @@ definitions:
       decimals:
         type: integer
         minimum: 0
-    description: Asset information.
     x-nullable: false
 
     

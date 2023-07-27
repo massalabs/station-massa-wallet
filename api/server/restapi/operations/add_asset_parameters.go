@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // NewAddAssetParams creates a new AddAssetParams object
@@ -32,11 +32,12 @@ type AddAssetParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*List of asset addresses (MRC-20 token addresses) to retrieve info for.
+	/*The asset address (MRC-20 token address) to retrieve info for. It must start with "AS" and contain only alphanumeric characters.
 	  Required: true
+	  Pattern: ^AS[0-9a-zA-Z]+$
 	  In: query
 	*/
-	AssetAddresses []string
+	AssetAddresses string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -60,32 +61,37 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 	return nil
 }
 
-// bindAssetAddresses binds and validates array parameter AssetAddresses from query.
-//
-// Arrays are parsed according to CollectionFormat: "" (defaults to "csv" when empty).
+// bindAssetAddresses binds and validates parameter AssetAddresses from query.
 func (o *AddAssetParams) bindAssetAddresses(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	if !hasKey {
 		return errors.Required("assetAddresses", "query", rawData)
 	}
-	var qvAssetAddresses string
+	var raw string
 	if len(rawData) > 0 {
-		qvAssetAddresses = rawData[len(rawData)-1]
+		raw = rawData[len(rawData)-1]
 	}
 
-	// CollectionFormat:
-	assetAddressesIC := swag.SplitByFormat(qvAssetAddresses, "")
-	if len(assetAddressesIC) == 0 {
-		return errors.Required("assetAddresses", "query", assetAddressesIC)
+	// Required: true
+	// AllowEmptyValue: false
+
+	if err := validate.RequiredString("assetAddresses", "query", raw); err != nil {
+		return err
+	}
+	o.AssetAddresses = raw
+
+	if err := o.validateAssetAddresses(formats); err != nil {
+		return err
 	}
 
-	var assetAddressesIR []string
-	for _, assetAddressesIV := range assetAddressesIC {
-		assetAddressesI := assetAddressesIV
+	return nil
+}
 
-		assetAddressesIR = append(assetAddressesIR, assetAddressesI)
+// validateAssetAddresses carries on validations for parameter AssetAddresses
+func (o *AddAssetParams) validateAssetAddresses(formats strfmt.Registry) error {
+
+	if err := validate.Pattern("assetAddresses", "query", o.AssetAddresses, `^AS[0-9a-zA-Z]+$`); err != nil {
+		return err
 	}
-
-	o.AssetAddresses = assetAddressesIR
 
 	return nil
 }
