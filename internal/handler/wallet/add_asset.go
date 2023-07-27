@@ -45,13 +45,8 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorFetchAssetSC, Message: errorMsg})
 	}
 
-	// Update the ContractAssets map with the new asset information
-	h.assetsStore.ContractAssetsMutex.Lock()
-	defer h.assetsStore.ContractAssetsMutex.Unlock()
-	h.assetsStore.ContractAssets[params.AssetAddress] = *assetInfoFromSC
-
-	// Add the assets to the persisted JSON file.
-	if err := h.assetsStore.AddAsset(); err != nil {
+	// Add Asset and persist in JSON file.
+	if err := h.assetsStore.AddAsset(params.AssetAddress, *assetInfoFromSC); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to add the asset to the JSON file."
 		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorAddAssetJSON, Message: errorMsg})
