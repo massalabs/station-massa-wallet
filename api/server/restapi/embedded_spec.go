@@ -575,6 +575,75 @@ func init() {
         }
       }
     },
+    "/api/assets": {
+      "post": {
+        "description": "Add MRC-20 token information and persist it for future use.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddAsset",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of asset addresses (MRC-20 token addresses) to retrieve info for.",
+            "name": "assetAddresses",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Asset information retrieved successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "assets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/AssetInfo"
+                  }
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "assets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/AssetInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found - At least one of the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/web-app/{resource}": {
       "get": {
         "description": "Route for the ReactJS front-end web application (in /web-frontend)",
@@ -648,6 +717,22 @@ func init() {
     "Amount": {
       "description": "Mas amount in nanoMassa.",
       "type": "string",
+      "x-nullable": false
+    },
+    "AssetInfo": {
+      "description": "Asset information.",
+      "type": "object",
+      "properties": {
+        "decimals": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        }
+      },
       "x-nullable": false
     },
     "CorrelationId": {
@@ -1462,6 +1547,75 @@ func init() {
         }
       }
     },
+    "/api/assets": {
+      "post": {
+        "description": "Add MRC-20 token information and persist it for future use.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddAsset",
+        "parameters": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of asset addresses (MRC-20 token addresses) to retrieve info for.",
+            "name": "assetAddresses",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Asset information retrieved successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "assets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/AssetInfo"
+                  }
+                }
+              }
+            }
+          },
+          "206": {
+            "description": "Partial Content - Some asset information retrieved successfully, but there might be missing or incomplete information due to retrieval errors.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "assets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/AssetInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found - At least one of the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/web-app/{resource}": {
       "get": {
         "description": "Route for the ReactJS front-end web application (in /web-frontend)",
@@ -1535,6 +1689,23 @@ func init() {
     "Amount": {
       "description": "Mas amount in nanoMassa.",
       "type": "string",
+      "x-nullable": false
+    },
+    "AssetInfo": {
+      "description": "Asset information.",
+      "type": "object",
+      "properties": {
+        "decimals": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        }
+      },
       "x-nullable": false
     },
     "CorrelationId": {

@@ -22,7 +22,7 @@ type addAsset struct {
 }
 
 func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
-	// Retrieve the asset information for the list of contract addresses
+	// fetch the assets information for the list of contract addresses
 	assetInfoList, retrievalErr := h.assetsStore.RetrieveAssetsInfo(params.AssetAddresses)
 
 	if retrievalErr != nil {

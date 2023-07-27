@@ -24,7 +24,6 @@ type assetData struct {
 	} `json:"assets"`
 }
 
-
 // AssetsStore encapsulates the contract assets and mutex.
 type AssetsStore struct {
 	ContractAssets      map[string]models.AssetInfo
@@ -210,7 +209,6 @@ func (s *AssetsStore) persistAssets() error {
 
 	return nil
 }
-
 
 // getAssetInfoFromSC retrieves the asset information for a given contract address by making a smart contract call.
 func (s *AssetsStore) getAssetInfoFromSC(contractAddress string) (*models.AssetInfo, error) {
