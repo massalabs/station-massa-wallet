@@ -410,6 +410,22 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+    get:
+      operationId: GetAllAssets
+      description: Get all assets with their balance.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: All assets retrieved successfully.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AssetInfoWithBalance"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
 
 parameters:
   nickname:
@@ -601,5 +617,12 @@ definitions:
         type: integer
         minimum: 0
     x-nullable: false
+  AssetInfoWithBalance:
+    allOf:
+      - $ref: "#/definitions/AssetInfo"
+      - type: object
+        properties:
+          balance:
+            type: number
 
     

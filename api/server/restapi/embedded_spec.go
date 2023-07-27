@@ -576,6 +576,30 @@ func init() {
       }
     },
     "/api/assets": {
+      "get": {
+        "description": "Get all assets with their balance.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetAllAssets",
+        "responses": {
+          "200": {
+            "description": "All assets retrieved successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AssetInfoWithBalance"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Add MRC-20 token information and persist it for future use.",
         "produces": [
@@ -710,6 +734,21 @@ func init() {
         }
       },
       "x-nullable": false
+    },
+    "AssetInfoWithBalance": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AssetInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "balance": {
+              "type": "number"
+            }
+          }
+        }
+      ]
     },
     "CorrelationId": {
       "description": "Correlation id of the operation batch",
@@ -1524,6 +1563,30 @@ func init() {
       }
     },
     "/api/assets": {
+      "get": {
+        "description": "Get all assets with their balance.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetAllAssets",
+        "responses": {
+          "200": {
+            "description": "All assets retrieved successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AssetInfoWithBalance"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "description": "Add MRC-20 token information and persist it for future use.",
         "produces": [
@@ -1659,6 +1722,21 @@ func init() {
         }
       },
       "x-nullable": false
+    },
+    "AssetInfoWithBalance": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/AssetInfo"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "balance": {
+              "type": "number"
+            }
+          }
+        }
+      ]
     },
     "CorrelationId": {
       "description": "Correlation id of the operation batch",
