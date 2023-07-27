@@ -40,11 +40,34 @@ func NewAssetsStore() (*AssetsStore, error) {
 	return store, nil
 }
 
-// loadContractAssets loads the JSON file into the ContractAssets map.
+func createEmptyAssetsJSONFile(path string) error {
+	emptyData := make(map[string]struct {
+		ContractAddress string `json:"contractAddress"`
+		Name            string `json:"name"`
+		Symbol          string `json:"symbol"`
+		Decimals        int64  `json:"decimals"`
+	})
+	emptyDataBytes, err := json.MarshalIndent(emptyData, "", "    ")
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal empty JSON data")
+	}
+	if err := os.WriteFile(path, emptyDataBytes, 0o644); err != nil {
+		return errors.Wrap(err, "failed to create assets JSON file")
+	}
+	return nil
+}
+
 func (s *AssetsStore) loadContractAssets() error {
 	assetsJSONPath, err := GetAssetsJSONPath()
 	if err != nil {
 		return errors.Wrap(err, "error getting assets JSON file")
+	}
+
+	// Check if the file exists, and if not, create a new one with an empty object
+	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
+		if err := createEmptyAssetsJSONFile(assetsJSONPath); err != nil {
+			return errors.Wrap(err, "failed to create assets JSON file")
+		}
 	}
 
 	file, err := os.Open(assetsJSONPath)
