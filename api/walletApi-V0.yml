@@ -388,7 +388,7 @@ paths:
         - application/json
       parameters:
         - in: query
-          name: assetAddresses
+          name: assetAddress
           type: string
           pattern: ^AS[0-9a-zA-Z]+$
           required: true

@@ -22,4 +22,8 @@ const (
 	errorExportWallet
 	errorTransferCoin
 	errorSaveAccount
+	errorInvalidAssetAddress
+	errorAssetExists
+	errorFetchAssetSC
+	errorAddAssetJSON
 )

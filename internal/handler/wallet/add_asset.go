@@ -5,6 +5,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
+	address "github.com/massalabs/station/pkg/dnshelper"
 )
 
 type AssetInfoListResponse struct {
@@ -22,37 +23,40 @@ type addAsset struct {
 }
 
 func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
-	// fetch the assets information for the list of contract addresses
-	assetInfoList, retrievalErr := h.assetsStore.RetrieveAssetsInfo(params.AssetAddresses)
-
-	if retrievalErr != nil {
-		// If some asset information was retrieved successfully
-		if len(assetInfoList) > 0 {
-			// Create the response containing the partial asset information list
-			response := operations.AddAssetPartialContentBody{
-				Assets: assetInfoList,
-			}
-
-			// Return the response with the partial list using 206 Partial Content
-			return operations.NewAddAssetPartialContent().WithPayload(&response)
-		}
-
-		// If there is no retrieved asset information, return the internal server error
-		return operations.NewAddAssetInternalServerError().WithPayload(
-			&models.Error{
-				Code:    "internal_server_error",
-				Message: "Failed to retrieve asset information",
-			},
-		)
+	// Check if the address is valid
+	if !address.IsValidAddress(params.AssetAddress) {
+		// Return an error indicating the address is not valid
+		errorMsg := "Invalid address format"
+		return operations.NewAddAssetBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
 	}
 
-	// All asset information retrieved successfully
-
-	// Create the response containing the asset information list
-	response := operations.AddAssetCreatedBody{
-		Assets: assetInfoList,
+	// Check if the address exists in the loaded JSON
+	if h.assetsStore.AssetExists(params.AssetAddress) {
+		// Return that the asset already exists
+		errorMsg := "Asset with the provided address already exists."
+		return operations.NewAddAssetBadRequest().WithPayload(&models.Error{Code: errorAssetExists, Message: errorMsg})
 	}
 
-	// Return the response with the full list of retrieved asset information using 200 OK
-	return operations.NewAddAssetCreated().WithPayload(&response)
+	// Fetch the asset information from the SC
+	assetInfoFromSC, err := h.assetsStore.AssetInfo(params.AssetAddress)
+	if err != nil {
+		// Return error occurred during SC fetch
+		errorMsg := "Failed to fetch asset information from the smart contract."
+		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorFetchAssetSC, Message: errorMsg})
+	}
+
+	// Update the ContractAssets map with the new asset information
+	h.assetsStore.ContractAssetsMutex.Lock()
+	defer h.assetsStore.ContractAssetsMutex.Unlock()
+	h.assetsStore.ContractAssets[params.AssetAddress] = *assetInfoFromSC
+
+	// Add the assets to the persisted JSON file.
+	if err := h.assetsStore.AddAsset(); err != nil {
+		// Return error occurred while persisting the asset
+		errorMsg := "Failed to add the asset to the JSON file."
+		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorAddAssetJSON, Message: errorMsg})
+	}
+
+	// Return success response with the retrieved asset information
+	return operations.NewAddAssetCreated().WithPayload(assetInfoFromSC)
 }

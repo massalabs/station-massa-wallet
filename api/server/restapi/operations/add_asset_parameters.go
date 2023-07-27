@@ -37,7 +37,7 @@ type AddAssetParams struct {
 	  Pattern: ^AS[0-9a-zA-Z]+$
 	  In: query
 	*/
-	AssetAddresses string
+	AssetAddress string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -51,8 +51,8 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 
 	qs := runtime.Values(r.URL.Query())
 
-	qAssetAddresses, qhkAssetAddresses, _ := qs.GetOK("assetAddresses")
-	if err := o.bindAssetAddresses(qAssetAddresses, qhkAssetAddresses, route.Formats); err != nil {
+	qAssetAddress, qhkAssetAddress, _ := qs.GetOK("assetAddress")
+	if err := o.bindAssetAddress(qAssetAddress, qhkAssetAddress, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -61,10 +61,10 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 	return nil
 }
 
-// bindAssetAddresses binds and validates parameter AssetAddresses from query.
-func (o *AddAssetParams) bindAssetAddresses(rawData []string, hasKey bool, formats strfmt.Registry) error {
+// bindAssetAddress binds and validates parameter AssetAddress from query.
+func (o *AddAssetParams) bindAssetAddress(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	if !hasKey {
-		return errors.Required("assetAddresses", "query", rawData)
+		return errors.Required("assetAddress", "query", rawData)
 	}
 	var raw string
 	if len(rawData) > 0 {
@@ -74,22 +74,22 @@ func (o *AddAssetParams) bindAssetAddresses(rawData []string, hasKey bool, forma
 	// Required: true
 	// AllowEmptyValue: false
 
-	if err := validate.RequiredString("assetAddresses", "query", raw); err != nil {
+	if err := validate.RequiredString("assetAddress", "query", raw); err != nil {
 		return err
 	}
-	o.AssetAddresses = raw
+	o.AssetAddress = raw
 
-	if err := o.validateAssetAddresses(formats); err != nil {
+	if err := o.validateAssetAddress(formats); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// validateAssetAddresses carries on validations for parameter AssetAddresses
-func (o *AddAssetParams) validateAssetAddresses(formats strfmt.Registry) error {
+// validateAssetAddress carries on validations for parameter AssetAddress
+func (o *AddAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 
-	if err := validate.Pattern("assetAddresses", "query", o.AssetAddresses, `^AS[0-9a-zA-Z]+$`); err != nil {
+	if err := validate.Pattern("assetAddress", "query", o.AssetAddress, `^AS[0-9a-zA-Z]+$`); err != nil {
 		return err
 	}
 

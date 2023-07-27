@@ -587,7 +587,7 @@ func init() {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
             "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
-            "name": "assetAddresses",
+            "name": "assetAddress",
             "in": "query",
             "required": true
           }
@@ -1535,7 +1535,7 @@ func init() {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
             "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
-            "name": "assetAddresses",
+            "name": "assetAddress",
             "in": "query",
             "required": true
           }

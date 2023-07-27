@@ -13,7 +13,7 @@ import (
 
 // AddAssetURL generates an URL for the add asset operation
 type AddAssetURL struct {
-	AssetAddresses string
+	AssetAddress string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -46,9 +46,9 @@ func (o *AddAssetURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
-	assetAddressesQ := o.AssetAddresses
-	if assetAddressesQ != "" {
-		qs.Set("assetAddresses", assetAddressesQ)
+	assetAddressQ := o.AssetAddress
+	if assetAddressQ != "" {
+		qs.Set("assetAddress", assetAddressQ)
 	}
 
 	_result.RawQuery = qs.Encode()
