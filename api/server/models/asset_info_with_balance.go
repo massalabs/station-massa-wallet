@@ -20,7 +20,7 @@ type AssetInfoWithBalance struct {
 	AssetInfo
 
 	// balance
-	Balance float64 `json:"balance,omitempty"`
+	Balance string `json:"balance,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -34,7 +34,7 @@ func (m *AssetInfoWithBalance) UnmarshalJSON(raw []byte) error {
 
 	// AO1
 	var dataAO1 struct {
-		Balance float64 `json:"balance,omitempty"`
+		Balance string `json:"balance,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
@@ -55,7 +55,7 @@ func (m AssetInfoWithBalance) MarshalJSON() ([]byte, error) {
 	}
 	_parts = append(_parts, aO0)
 	var dataAO1 struct {
-		Balance float64 `json:"balance,omitempty"`
+		Balance string `json:"balance,omitempty"`
 	}
 
 	dataAO1.Balance = m.Balance

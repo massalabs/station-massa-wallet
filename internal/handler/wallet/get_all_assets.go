@@ -36,7 +36,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 // getBalance is a function to get the balance for an asset.
 // For now, it returns 10.0 as the balance.
-func getBalance(assetAddress string) float64 {
+func getBalance(assetAddress string) string {
 	// For now, we are returning a mocked balance of 10.0.
-	return 10.0
+	return "10.0"
 }

@@ -623,4 +623,4 @@ definitions:
       - type: object
         properties:
           balance:
-            type: number
+            type: string

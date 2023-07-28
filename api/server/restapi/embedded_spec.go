@@ -744,7 +744,7 @@ func init() {
           "type": "object",
           "properties": {
             "balance": {
-              "type": "number"
+              "type": "string"
             }
           }
         }
@@ -1732,7 +1732,7 @@ func init() {
           "type": "object",
           "properties": {
             "balance": {
-              "type": "number"
+              "type": "string"
             }
           }
         }
