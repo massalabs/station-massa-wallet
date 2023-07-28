@@ -6,7 +6,7 @@ import (
 
 // MakeRPCCall makes a new RPC call by calling Massa Station source code sendOperation.MakeRPCCall function.
 func (n *NodeFetcher) MakeRPCCall(msg []byte, signature []byte, publicKey string) ([]string, error) {
-	client, err := newMassaClient()
+	client, err := NewMassaClient()
 	if err != nil {
 		return nil, err
 	}

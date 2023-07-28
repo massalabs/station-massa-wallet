@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/go-openapi/swag"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/pkg/errors"
@@ -149,18 +148,4 @@ func GetAssetsJSONPath() (string, error) {
 		return "", err
 	}
 	return filepath.Join(walletDir, "assets.json"), nil
-}
-
-// AssetInfo retrieves the asset information for a given contract address by making a smart contract call.
-func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, error) {
-	// mocking for now implementation to call the smart contract and retrieve asset information goes here.
-	// todo : Replace the following dummy assetInfo with the actual asset information retrieved from the smart contract.
-
-	assetInfoFromSC := &models.AssetInfo{
-		Name:     "Token SC",
-		Symbol:   "TKSC",
-		Decimals: swag.Int64(6),
-	}
-
-	return assetInfoFromSC, nil
 }

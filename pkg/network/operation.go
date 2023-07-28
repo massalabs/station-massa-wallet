@@ -10,7 +10,7 @@ import (
 
 // MakeOperation makes a new operation by calling Massa Station source code sendOperation.MakeOperation function.
 func (n *NodeFetcher) MakeOperation(fee uint64, operation sendOperation.Operation) ([]byte, error) {
-	client, err := newMassaClient()
+	client, err := NewMassaClient()
 	if err != nil {
 		return nil, err
 	}
