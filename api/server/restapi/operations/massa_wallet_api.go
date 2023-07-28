@@ -77,6 +77,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		GetAccountHandler: GetAccountHandlerFunc(func(params GetAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetAccount has not yet been implemented")
 		}),
+		GetAllAssetsHandler: GetAllAssetsHandlerFunc(func(params GetAllAssetsParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetAllAssets has not yet been implemented")
+		}),
 		ImportAccountHandler: ImportAccountHandlerFunc(func(params ImportAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation ImportAccount has not yet been implemented")
 		}),
@@ -164,6 +167,8 @@ type MassaWalletAPI struct {
 	ExportAccountFileHandler ExportAccountFileHandler
 	// GetAccountHandler sets the operation handler for the get account operation
 	GetAccountHandler GetAccountHandler
+	// GetAllAssetsHandler sets the operation handler for the get all assets operation
+	GetAllAssetsHandler GetAllAssetsHandler
 	// ImportAccountHandler sets the operation handler for the import account operation
 	ImportAccountHandler ImportAccountHandler
 	// SignHandler sets the operation handler for the sign operation
@@ -290,6 +295,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.GetAccountHandler == nil {
 		unregistered = append(unregistered, "GetAccountHandler")
+	}
+	if o.GetAllAssetsHandler == nil {
+		unregistered = append(unregistered, "GetAllAssetsHandler")
 	}
 	if o.ImportAccountHandler == nil {
 		unregistered = append(unregistered, "ImportAccountHandler")
@@ -440,6 +448,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/api/accounts/{nickname}"] = NewGetAccount(o.context, o.GetAccountHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/api/assets"] = NewGetAllAssets(o.context, o.GetAllAssetsHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
