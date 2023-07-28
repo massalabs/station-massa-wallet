@@ -576,6 +576,21 @@ func init() {
       }
     },
     "/api/assets": {
+      "post": {
+        "description": "Add MRC-20 token information and persist it for future use.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddAsset",
+        "parameters": [
+          {
+            "pattern": "^AS[0-9a-zA-Z]+$",
+            "type": "string",
+            "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
+            "name": "assetAddress",
+            "in": "query",
+            "required": true
+          },
       "get": {
         "description": "Get all assets with their balance.",
         "produces": [
@@ -599,22 +614,7 @@ func init() {
             }
           }
         }
-      },
-      "post": {
-        "description": "Add MRC-20 token information and persist it for future use.",
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "AddAsset",
-        "parameters": [
-          {
-            "pattern": "^AS[0-9a-zA-Z]+$",
-            "type": "string",
-            "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
-            "name": "assetAddress",
-            "in": "query",
-            "required": true
-          }
+      }
         ],
         "responses": {
           "201": {

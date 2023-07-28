@@ -624,5 +624,3 @@ definitions:
         properties:
           balance:
             type: number
-
-    
