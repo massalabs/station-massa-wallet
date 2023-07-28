@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"fmt"
+
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -18,25 +20,32 @@ type getAllAssets struct {
 }
 
 func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
-	// Retrieve all assets from the asset store
+	wlt, resp := loadWallet(params.WalletNickname)
+	if resp != nil {
+		return resp
+	}
+
 	assets := make([]*models.AssetInfoWithBalance, 0)
 
+	// Retrieve all assets from the asset store
 	for assetAddress, assetInfo := range h.assetsStore.ContractAssets {
-		// For now, mock the balance to 10 for each asset
+		balance, err := h.assetsStore.Balance(assetAddress, wlt.Address)
+		if err != nil {
+			// Handle the error and return an internal server error response
+			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
+			return operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
+				Code:    errorFetchAssetBalance,
+				Message: errorMsg,
+			})
+		}
+
 		assetWithBalance := &models.AssetInfoWithBalance{
 			AssetInfo: assetInfo,
-			Balance:   getBalance(assetAddress),
+			Balance:   balance,
 		}
 		assets = append(assets, assetWithBalance)
 	}
 
-	// Return the list of assets without balance
+	// Return the list of assets with balance
 	return operations.NewGetAllAssetsOK().WithPayload(assets)
-}
-
-// getBalance is a function to get the balance for an asset.
-// For now, it returns 10.0 as the balance.
-func getBalance(assetAddress string) string {
-	// For now, we are returning a mocked balance of 10.0.
-	return "10.0"
 }

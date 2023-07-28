@@ -582,6 +582,15 @@ func init() {
           "application/json"
         ],
         "operationId": "GetAllAssets",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The nickname of the wallet to retrieve assets for.",
+            "name": "walletNickname",
+            "in": "query",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "All assets retrieved successfully.",
@@ -1569,6 +1578,15 @@ func init() {
           "application/json"
         ],
         "operationId": "GetAllAssets",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The nickname of the wallet to retrieve assets for.",
+            "name": "walletNickname",
+            "in": "query",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "All assets retrieved successfully.",

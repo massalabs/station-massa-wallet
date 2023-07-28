@@ -2,6 +2,7 @@ package assets
 
 import (
 	"fmt"
+	"math/big"
 	"sync"
 
 	"github.com/go-openapi/swag"
@@ -11,10 +12,44 @@ import (
 )
 
 const (
-	NAME_KEY     = "NAME"
-	SYMBOL_KEY   = "SYMBOL"
-	DECIMALS_KEY = "DECIMALS"
+	NAME_KEY           = "NAME"
+	SYMBOL_KEY         = "SYMBOL"
+	DECIMALS_KEY       = "DECIMALS"
+	BALANCE_KEY_PREFIX = "BALANCE"
 )
+
+// Function to convert an address to a storage key using the balance key prefix
+func balanceKey(address string) []byte {
+	return []byte(BALANCE_KEY_PREFIX + address)
+}
+
+// BytesToU256 decodes the given bytes (u256 representation) into a string.
+func BytesToU256(bytes []byte) (string, error) {
+	// Create a big.Int and set its bytes representation
+	u256Value := new(big.Int).SetBytes(bytes)
+
+	return u256Value.String(), nil
+}
+
+// Balance retrieves the balance of a user for a given asset contract address by making a smart contract call.
+func (s *AssetsStore) Balance(assetContractAddress, userAddress string) (string, error) {
+	client, err := network.NewMassaClient()
+	if err != nil {
+		return "", fmt.Errorf("failed to create Massa client: %w", err)
+	}
+
+	balanceData, err := node.DatastoreEntry(client, assetContractAddress, balanceKey(userAddress))
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch user balance: %w", err)
+	}
+
+	balanceValue, err := BytesToU256(balanceData.CandidateValue)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse user balance: %w", err)
+	}
+
+	return fmt.Sprint(balanceValue), nil
+}
 
 // AssetInfo retrieves the asset information for a given contract address by making a smart contract call.
 func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, error) {
