@@ -7,7 +7,7 @@ import (
 	"github.com/massalabs/station/pkg/node"
 )
 
-func newMassaClient() (*node.Client, error) {
+func NewMassaClient() (*node.Client, error) {
 	networkInfo, err := GetNetworkInfo()
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ type AccountInfos struct {
 }
 
 func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]AccountInfos, error) {
-	client, err := newMassaClient()
+	client, err := NewMassaClient()
 	if err != nil {
 		return nil, err
 	}
