@@ -11,7 +11,7 @@ import (
 )
 
 func Test_transfer_handler(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/transfer")

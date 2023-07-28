@@ -59,6 +59,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		AccountListHandler: AccountListHandlerFunc(func(params AccountListParams) middleware.Responder {
 			return middleware.NotImplemented("operation AccountList has not yet been implemented")
 		}),
+		AddAssetHandler: AddAssetHandlerFunc(func(params AddAssetParams) middleware.Responder {
+			return middleware.NotImplemented("operation AddAsset has not yet been implemented")
+		}),
 		BackupAccountHandler: BackupAccountHandlerFunc(func(params BackupAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation BackupAccount has not yet been implemented")
 		}),
@@ -149,6 +152,8 @@ type MassaWalletAPI struct {
 
 	// AccountListHandler sets the operation handler for the account list operation
 	AccountListHandler AccountListHandler
+	// AddAssetHandler sets the operation handler for the add asset operation
+	AddAssetHandler AddAssetHandler
 	// BackupAccountHandler sets the operation handler for the backup account operation
 	BackupAccountHandler BackupAccountHandler
 	// CreateAccountHandler sets the operation handler for the create account operation
@@ -267,6 +272,9 @@ func (o *MassaWalletAPI) Validate() error {
 
 	if o.AccountListHandler == nil {
 		unregistered = append(unregistered, "AccountListHandler")
+	}
+	if o.AddAssetHandler == nil {
+		unregistered = append(unregistered, "AddAssetHandler")
 	}
 	if o.BackupAccountHandler == nil {
 		unregistered = append(unregistered, "BackupAccountHandler")
@@ -408,6 +416,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/api/accounts"] = NewAccountList(o.context, o.AccountListHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/api/assets"] = NewAddAsset(o.context, o.AddAssetHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

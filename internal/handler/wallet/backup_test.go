@@ -25,7 +25,7 @@ func backupWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 }
 
 func Test_walletBackupAccount_Handle(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "walletToBackup"

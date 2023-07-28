@@ -380,6 +380,36 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+  /api/assets:
+    post:
+      operationId: AddAsset
+      description: Add MRC-20 token information and persist it for future use.
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: assetAddress
+          type: string
+          pattern: ^AS[0-9a-zA-Z]+$
+          required: true
+          description: The asset address (MRC-20 token address) to retrieve info for. It must start with "AS" and contain only alphanumeric characters.
+      responses:
+        201:
+          description: Asset information retrieved successfully.
+          schema:
+            $ref: "#/definitions/AssetInfo"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found - At least one of the provided addresses is not valid.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
 
 parameters:
   nickname:
@@ -559,3 +589,17 @@ definitions:
         type: string
         format: base58check
         x-nullable: false
+  AssetInfo:
+    description: Token informations
+    type: object
+    properties:
+      name:
+        type: string
+      symbol:
+        type: string
+      decimals:
+        type: integer
+        minimum: 0
+    x-nullable: false
+
+    

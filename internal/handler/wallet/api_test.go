@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,13 +36,13 @@ type PrivateKeyPrompt struct {
 
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
-func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, chan walletapp.EventData, error) {
+func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *assets.AssetsStore, chan walletapp.EventData, error) {
 	os.Setenv("STANDALONE", "1")
 
 	// Load the Swagger specification
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 	// Create a new MassaWalletAPI instance
 	massaWalletAPI := operations.NewMassaWalletAPI(swaggerSpec)
@@ -49,15 +51,20 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, chan
 
 	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
+	assetStore, err := assets.NewAssetsStore()
+	if err != nil {
+		log.Fatalf("Failed to create AssetsStore: %v", err)
+	}
+
 	massaNodeMock := NewNodeFetcherMock()
 	// Set wallet API endpoints
-	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, gcache.New(20).LRU().Build())
+	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, assetStore, gcache.New(20).LRU().Build())
 
 	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	return massaWalletAPI, prompterApp, resultChannel, err
+	return massaWalletAPI, prompterApp, assetStore, resultChannel, err
 }
 
 // processHTTPRequest simulates the processing of an HTTP request on the given API.

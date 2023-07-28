@@ -14,7 +14,7 @@ import (
 )
 
 func Test_walletCreate_Handle(t *testing.T) {
-	api, prompterApp, resChan, err := MockAPI()
+	api, prompterApp, _, resChan, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
