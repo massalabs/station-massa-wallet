@@ -1,0 +1,626 @@
+consumes:
+  - application/json
+info:
+  description: MassaStation plugin - Wallet
+  title: massa-wallet
+  version: 0.0.1
+host: localhost:8080
+produces:
+  - application/json
+schemes:
+  - http
+swagger: "2.0"
+paths:
+  /:
+    get:
+      operationId: defaultPage
+      responses:
+        "301":
+          description: Move to the default endpoint
+  /web-app/{resource}:
+    get:
+      operationId: webApp
+      description: Route for the ReactJS front-end web application (in /web-frontend)
+      produces:
+        - application/json
+        - text/javascript
+        - text/html
+        - text/css
+        - text/webp
+        - image/png
+      parameters:
+        - in: path
+          name: resource
+          type: string
+          default: index.html
+          required: true
+          description: Website resource.
+      responses:
+        200:
+          description: Page found
+        404:
+          description: Resource not found.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts:
+    get:
+      operationId: AccountList
+      description: Get all the accounts.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Accounts retrieved
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Account"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      operationId: ImportAccount
+      description: Import a new account
+      produces:
+        - application/json  
+      responses:
+        200:
+          description: Account imported.
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}:
+    get:
+      operationId: GetAccount
+      description: Get the account associated with the provided nickname in the path, with the option to return the ciphered private key.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/ciphered"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Account retrieved.
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication. Only possible if ciphered is false.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      operationId: CreateAccount
+      description: Generate a new account with new random keys
+      parameters:
+        - $ref: "#/parameters/nickname"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: New account created.
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      operationId: DeleteAccount
+      description: Delete the account associated with the provided nickname in the path, the user will be prompt to confirm the deletion.
+      parameters:
+        - $ref: "#/parameters/nickname"
+      produces:
+        - application/json
+      responses:
+        204:
+          description: Account deleted successfully.
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    put:
+      operationId: UpdateAccount
+      description: Update the account associated with the provided nickname in the path.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/UpdateAccountRequest"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Account edited successfully.
+          schema:
+            $ref: "#/definitions/Account"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/exportFile:
+    get:
+      operationId: ExportAccountFile
+      description: Download the account file corresponding to the nickname given in path.
+      produces:
+        - application/octet-stream
+      parameters:
+        - $ref: "#/parameters/nickname"
+      responses:
+        200:
+          description: Download the account file
+          schema:
+            type: file
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/sign:
+    post:
+      operationId: Sign
+      description: Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/SignRequest"
+      produces:
+        - application/json
+      responses:
+        200:
+          description:  Returns the signature, public key, and correlationId (if provided).
+          schema:
+            $ref: "#/definitions/SignResponse"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/transfer:
+    post:
+      operationId: TransferCoin
+      description: Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/TransferRequest"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Operation id
+          schema:
+            $ref: "#/definitions/OperationResponse"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/rolls:
+    post:
+      operationId: TradeRolls
+      description: Buy or sell rolls.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/RollsRequest"
+      responses:
+        200:
+          description: Operation id
+          schema:
+            $ref: "#/definitions/OperationResponse"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/accounts/{nickname}/backup:
+    post:
+      operationId: BackupAccount
+      description: Export the account associated with the provided nickname in the path. Will ask the user to enter its account password.
+      parameters:
+        - $ref: "#/parameters/nickname"
+      produces:
+        - application/json
+      responses:
+        204:
+          description: Account backup
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+  /api/assets:
+    post:
+      operationId: AddAsset
+      description: Add MRC-20 token information and persist it for future use.
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: assetAddress
+          type: string
+          pattern: ^AS[0-9a-zA-Z]+$
+          required: true
+          description: The asset address (MRC-20 token address) to retrieve info for. It must start with "AS" and contain only alphanumeric characters.
+      responses:
+        201:
+          description: Asset information retrieved successfully.
+          schema:
+            $ref: "#/definitions/AssetInfo"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found - At least one of the provided addresses is not valid.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    get:
+      operationId: GetAllAssets
+      description: Get all assets with their balance.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: All assets retrieved successfully.
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AssetInfoWithBalance"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+
+parameters:
+  nickname:
+    in: path
+    name: nickname
+    type: string
+    required: true
+    description: Account's short name.
+    x-nullable: false
+  ciphered:
+    in: query
+    name: ciphered
+    type: boolean
+    required: false
+    default: true
+    description: whether to return the data ciphered or not
+    x-nullable: true
+definitions:
+  Error:
+    type: object
+    description: Error object.
+    required:
+      - code
+      - message
+    properties:
+      code:
+        description: error code.
+        type: string
+        x-nullable: false
+      message:
+        description: error message.
+        type: string
+        x-nullable: false
+  SignRequest:
+    type: object
+    required:
+      - operation
+    properties:
+      operation:
+        description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
+        type: string
+        format: byte
+      batch:
+        description: A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.
+        type: boolean
+      correlationId:
+        $ref: "#/definitions/CorrelationId"
+  TransferRequest:
+    type: object
+    properties:
+      fee:
+        $ref: "#/definitions/Amount"
+      amount:
+        $ref: "#/definitions/Amount"
+      recipientAddress:
+        type: string
+    required:
+      - fee
+      - amount
+      - recipientAddress
+  RollsRequest:
+    type: object
+    properties:
+      fee:
+        $ref: "#/definitions/Amount"
+      amount:
+        $ref: "#/definitions/Amount"
+      side:
+        type: string
+        enum: [buy, sell]
+    required:
+      - fee
+      - amount
+      - side
+  UpdateAccountRequest:
+    type: object
+    description: Account object (V0).
+    required:
+      - nickname
+    properties:
+      nickname:
+        $ref: "#/definitions/Nickname"
+      candidateBalance:
+        $ref: "#/definitions/Amount"
+      balance:
+        $ref: "#/definitions/Amount"
+      address:
+        $ref: "#/definitions/Address"
+      keyPair:
+        $ref: "#/definitions/KeyPair"
+  OperationResponse:
+    type: object
+    properties:
+      operationId:
+        type: string
+        readOnly: true
+  SignResponse:
+    type: object
+    description: Signature of a sent operation.
+    properties:
+      publicKey:
+        description: Public part of the key pair used to sign the operation.
+        type: string
+        x-nullable: false
+        readOnly: true
+      signature:
+        description: Hash of the operation attributes encrypted with the private part of the key pair.
+        type: string
+        format: byte
+        x-nullable: false
+        readOnly: true
+      correlationId:
+        $ref: "#/definitions/CorrelationId"
+  CorrelationId:
+    description: Correlation id of the operation batch
+    type: string
+    format: byte
+  Nickname:
+    description: Account's short name.
+    type: string
+    x-nullable: false
+  Amount:
+    description: Mas amount in nanoMassa.
+    type: string
+    x-nullable: false
+  Account:
+    type: object
+    description: Account object (V0).
+    required:
+      - nickname
+      - address
+      - keyPair
+      - balance
+      - candidateBalance
+    properties:
+      nickname:
+        $ref: "#/definitions/Nickname"
+      candidateBalance:
+        $ref: "#/definitions/Amount"
+      balance:
+        $ref: "#/definitions/Amount"
+      address:
+        $ref: "#/definitions/Address"
+      keyPair:
+        $ref: "#/definitions/KeyPair"
+  Address:
+    description: Account's address.
+    type: string
+    x-nullable: false
+  KeyPair:
+    description: Account's key pair.
+    type: object
+    x-nullable: false
+    required:
+      - privateKey
+      - publicKey
+      - salt
+      - nonce
+    properties:
+      privateKey:
+        description: Key pair's private key.
+        type: string
+        format: base58check
+        x-nullable: false
+      publicKey:
+        description: Key pair's public key.
+        type: string
+        format: base58check
+        x-nullable: false
+      salt:
+        description: Salt used by the PBKDF that generates the secret key used to protect the key pair's private key.
+        type: string
+        format: base58check
+        x-nullable: false
+      nonce:
+        description: Nonce used by the AES-GCM algorithm used to protect the key pair's private key.
+        type: string
+        format: base58check
+        x-nullable: false
+  AssetInfo:
+    description: Token informations
+    type: object
+    properties:
+      name:
+        type: string
+      symbol:
+        type: string
+      decimals:
+        type: integer
+        minimum: 0
+    x-nullable: false
+  AssetInfoWithBalance:
+    allOf:
+      - $ref: "#/definitions/AssetInfo"
+      - type: object
+        properties:
+          balance:
+            type: number
