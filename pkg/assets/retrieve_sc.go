@@ -20,7 +20,7 @@ const (
 
 // Function to convert an address to a storage key using the balance key prefix
 func balanceKey(address string) []byte {
-	return []byte(BALANCE_KEY_PREFIX + address)
+	return convert.ToBytes(BALANCE_KEY_PREFIX + address)
 }
 
 // Balance retrieves the balance of a user for a given asset contract address by making a smart contract call.
