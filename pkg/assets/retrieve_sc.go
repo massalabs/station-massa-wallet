@@ -2,12 +2,12 @@ package assets
 
 import (
 	"fmt"
-	"math/big"
 	"sync"
 
 	"github.com/go-openapi/swag"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	network "github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station/pkg/convert"
 	"github.com/massalabs/station/pkg/node"
 )
 
@@ -23,14 +23,6 @@ func balanceKey(address string) []byte {
 	return []byte(BALANCE_KEY_PREFIX + address)
 }
 
-// BytesToU256 decodes the given bytes (u256 representation) into a string.
-func BytesToU256(bytes []byte) (string, error) {
-	// Create a big.Int and set its bytes representation
-	u256Value := new(big.Int).SetBytes(bytes)
-
-	return u256Value.String(), nil
-}
-
 // Balance retrieves the balance of a user for a given asset contract address by making a smart contract call.
 func (s *AssetsStore) Balance(assetContractAddress, userAddress string) (string, error) {
 	client, err := network.NewMassaClient()
@@ -43,12 +35,12 @@ func (s *AssetsStore) Balance(assetContractAddress, userAddress string) (string,
 		return "", fmt.Errorf("failed to fetch user balance: %w", err)
 	}
 
-	balanceValue, err := BytesToU256(balanceData.CandidateValue)
+	balanceValue, err := convert.BytesToU256(balanceData.CandidateValue)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse user balance: %w", err)
 	}
 
-	return fmt.Sprint(balanceValue), nil
+	return fmt.Sprint(balanceValue.String()), nil
 }
 
 // AssetInfo retrieves the asset information for a given contract address by making a smart contract call.
@@ -71,7 +63,7 @@ func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, erro
 	// Concurrently fetch asset name
 	go func() {
 		defer wg.Done()
-		nameData, err := node.DatastoreEntry(client, contractAddress, []byte(NAME_KEY))
+		nameData, err := node.DatastoreEntry(client, contractAddress, convert.ToBytes(NAME_KEY))
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset name: %w", err)
 			return
@@ -82,7 +74,7 @@ func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, erro
 	// Concurrently fetch asset symbol
 	go func() {
 		defer wg.Done()
-		symbolData, err := node.DatastoreEntry(client, contractAddress, []byte(SYMBOL_KEY))
+		symbolData, err := node.DatastoreEntry(client, contractAddress, convert.ToBytes(SYMBOL_KEY))
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset symbol: %w", err)
 			return
@@ -93,7 +85,7 @@ func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, erro
 	// Concurrently fetch asset decimals
 	go func() {
 		defer wg.Done()
-		decimals, err := node.DatastoreEntry(client, contractAddress, []byte(DECIMALS_KEY))
+		decimals, err := node.DatastoreEntry(client, contractAddress, convert.ToBytes(DECIMALS_KEY))
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset decimals: %w", err)
 			return
