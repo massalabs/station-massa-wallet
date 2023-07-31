@@ -32,12 +32,17 @@ type AddAssetParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*The asset address (MRC-20 token address) to retrieve info for. It must start with "AS" and contain only alphanumeric characters.
+	/*The asset address (MRC-20 token address) to add to the wallet. It must start with "AS" and contain only alphanumeric characters.
 	  Required: true
 	  Pattern: ^AS[0-9a-zA-Z]+$
 	  In: query
 	*/
 	AssetAddress string
+	/*The nickname of the wallet to add the asset to.
+	  Required: true
+	  In: query
+	*/
+	WalletNickname string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -53,6 +58,11 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 
 	qAssetAddress, qhkAssetAddress, _ := qs.GetOK("assetAddress")
 	if err := o.bindAssetAddress(qAssetAddress, qhkAssetAddress, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qWalletNickname, qhkWalletNickname, _ := qs.GetOK("walletNickname")
+	if err := o.bindWalletNickname(qWalletNickname, qhkWalletNickname, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -92,6 +102,27 @@ func (o *AddAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 	if err := validate.Pattern("assetAddress", "query", o.AssetAddress, `^AS[0-9a-zA-Z]+$`); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+// bindWalletNickname binds and validates parameter WalletNickname from query.
+func (o *AddAssetParams) bindWalletNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	if !hasKey {
+		return errors.Required("walletNickname", "query", rawData)
+	}
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+	// AllowEmptyValue: false
+
+	if err := validate.RequiredString("walletNickname", "query", raw); err != nil {
+		return err
+	}
+	o.WalletNickname = raw
 
 	return nil
 }
