@@ -415,6 +415,12 @@ paths:
       description: Get all assets with their balance.
       produces:
         - application/json
+      parameters:
+        - in: query
+          name: walletNickname
+          type: string
+          required: true
+          description: The nickname of the wallet to retrieve assets for.
       responses:
         200:
           description: All assets retrieved successfully.

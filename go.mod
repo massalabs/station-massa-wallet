@@ -7,12 +7,12 @@ require (
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/labstack/gommon v0.3.1
-	github.com/massalabs/station v0.2.6-0.20230720083118-12777a937305
+	github.com/massalabs/station v0.3.1-0.20230731130249-39be5001dbe2
 	github.com/massalabs/station-massa-hello-world v0.0.9
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	github.com/wailsapp/wails/v2 v2.5.1
 	golang.org/x/crypto v0.3.0
 	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
