@@ -12,6 +12,13 @@
       "receive": "Receive"
     }
   },
+  "assets": {
+    "title": "Assets",
+    "import": "Import token",
+    "add": "Add token",
+    "import-title": "Import A Fungible Token",
+    "import-subtitle": "Input the FT1 token’s address hash"
+  },
   "account": {
     "header": {
       "title": "Hey!"
