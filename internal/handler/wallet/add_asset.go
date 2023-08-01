@@ -38,7 +38,7 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Fetch the asset information from the SC
-	assetInfoFromSC, err := h.accountsStore.AssetInfo(params.AssetAddress)
+	assetInfoFromSC, err := assets.AssetInfo(params.AssetAddress)
 	if err != nil {
 		// Return error occurred during SC fetch
 		errorMsg := "Failed to fetch asset information from the smart contract."

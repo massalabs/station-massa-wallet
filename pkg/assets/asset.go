@@ -18,15 +18,17 @@ type AccountsStore struct {
 	StoreMutex sync.Mutex
 }
 
+// Account encapsulates the contract assets associated with a specific wallet.
 type Account struct {
 	ContractAssets map[string]models.AssetInfo
 }
 
+// assetsData represents the data structure for asset information in JSON format.
 type assetsData struct {
 	Assets []assetData `json:"assets"`
 }
 
-// Define the struct for asset information
+// assetData defines the structure for asset information in JSON format.
 type assetData struct {
 	ContractAddress string `json:"contractAddress"`
 	Name            string `json:"name"`
@@ -46,6 +48,7 @@ func NewAccountsStore() (*AccountsStore, error) {
 	return store, nil
 }
 
+// loadWalletsStore loads the data from the assets JSON file into the AccountsStore.
 func (s *AccountsStore) loadWalletsStore() error {
 	assetsJSONPath, err := GetAssetsJSONPath()
 	if err != nil {
@@ -116,6 +119,7 @@ func (s *AccountsStore) AssetExists(walletNickname, contractAddress string) bool
 	return assetFound
 }
 
+// AddAsset adds the asset information for a given wallet nickname in the JSON.
 func (s *AccountsStore) AddAsset(walletNickname, assetAddress string, assetInfo models.AssetInfo) error {
 	// Update the ContractAssets map with the new asset information
 	s.updateAccounts(walletNickname, assetAddress, assetInfo)
@@ -185,6 +189,7 @@ func (s *AccountsStore) updateAccounts(walletNickname, assetAddress string, asse
 	s.Accounts[walletNickname] = account
 }
 
+// createJSONFile creates an empty JSON file at the specified path.
 func createJSONFile(path string) error {
 	if err := os.WriteFile(path, []byte("{}"), 0o644); err != nil {
 		return err

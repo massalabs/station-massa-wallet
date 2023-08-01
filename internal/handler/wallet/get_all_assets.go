@@ -25,11 +25,11 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		return resp
 	}
 
-	assets := make([]*models.AssetInfoWithBalance, 0)
+	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Retrieve all assets from the selected account
 	for assetAddress, assetInfo := range h.accountsStore.Accounts[params.WalletNickname].ContractAssets {
-		balance, err := h.accountsStore.Balance(assetAddress, wlt.Address)
+		balance, err := assets.Balance(assetAddress, wlt.Address)
 		if err != nil {
 			// Handle the error and return an internal server error response
 			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
@@ -43,9 +43,9 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 			AssetInfo: assetInfo,
 			Balance:   balance,
 		}
-		assets = append(assets, assetWithBalance)
+		AssetsWithBalance = append(AssetsWithBalance, assetWithBalance)
 	}
 
 	// Return the list of assets with balance
-	return operations.NewGetAllAssetsOK().WithPayload(assets)
+	return operations.NewGetAllAssetsOK().WithPayload(AssetsWithBalance)
 }
