@@ -388,7 +388,7 @@ paths:
         - application/json
       parameters:
         - in: path
-          name: walletNickname
+          name: nickname
           type: string
           required: true
           description: The nickname of the wallet to add the asset to.
@@ -422,7 +422,7 @@ paths:
         - application/json
       parameters:
         - in: path
-          name: walletNickname
+          name: nickname
           type: string
           required: true
           description: The nickname of the wallet to retrieve assets for.
