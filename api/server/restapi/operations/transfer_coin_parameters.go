@@ -14,7 +14,6 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/validate"
-
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
