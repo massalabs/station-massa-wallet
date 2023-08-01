@@ -13,7 +13,7 @@ import (
 
 // AppendEndpoints appends wallet endpoints to the API
 // Note: the password prompter is mandatory for sign endpoint
-func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface, assetsStore *assets.AssetsStore, gc gcache.Cache) {
+func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface, AssetsStore *assets.AssetsStore, gc gcache.Cache) {
 	api.CreateAccountHandler = NewCreateAccount(prompterApp, massaClient)
 	api.DeleteAccountHandler = NewDelete(prompterApp, massaClient)
 	api.ImportAccountHandler = NewImport(prompterApp, massaClient)
@@ -25,8 +25,8 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.TradeRollsHandler = NewTradeRolls(prompterApp, massaClient)
 	api.BackupAccountHandler = NewBackupAccount(prompterApp)
 	api.UpdateAccountHandler = NewUpdateAccount(prompterApp, massaClient)
-	api.AddAssetHandler = NewAddAsset(assetsStore)
-	api.GetAllAssetsHandler = NewGetAllAssets(assetsStore)
+	api.AddAssetHandler = NewAddAsset(AssetsStore)
+	api.GetAllAssetsHandler = NewGetAllAssets(AssetsStore)
 }
 
 // loadWallet loads a wallet from the file system or returns an error.

@@ -27,7 +27,7 @@ func StartServer(app *walletApp.WalletApp) {
 		promptApp = prompt.NewEnvPrompter(app)
 	}
 
-	assetStore, err := assets.NewAssetsStore()
+	AssetsStore, err := assets.NewAssetsStore()
 	if err != nil {
 		log.Fatalf("Failed to create AssetsStore: %v", err)
 	}
@@ -36,7 +36,7 @@ func StartServer(app *walletApp.WalletApp) {
 	massaWalletAPI, err := handler.InitializeAPI(
 		promptApp,
 		massaClient,
-		assetStore,
+		AssetsStore,
 		gc,
 	)
 	if err != nil {

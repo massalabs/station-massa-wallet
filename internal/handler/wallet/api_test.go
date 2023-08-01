@@ -51,20 +51,20 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 
 	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
-	assetStore, err := assets.NewAssetsStore()
+	AssetsStore, err := assets.NewAssetsStore()
 	if err != nil {
 		log.Fatalf("Failed to create AssetsStore: %v", err)
 	}
 
 	massaNodeMock := NewNodeFetcherMock()
 	// Set wallet API endpoints
-	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, assetStore, gcache.New(20).LRU().Build())
+	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, AssetsStore, gcache.New(20).LRU().Build())
 
 	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	return massaWalletAPI, prompterApp, assetStore, resultChannel, err
+	return massaWalletAPI, prompterApp, AssetsStore, resultChannel, err
 }
 
 // processHTTPRequest simulates the processing of an HTTP request on the given API.

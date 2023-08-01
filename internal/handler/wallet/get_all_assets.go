@@ -9,14 +9,14 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 )
 
-func NewGetAllAssets(assetsStore *assets.AssetsStore) operations.GetAllAssetsHandler {
+func NewGetAllAssets(AssetsStore *assets.AssetsStore) operations.GetAllAssetsHandler {
 	return &getAllAssets{
-		assetsStore: assetsStore,
+		AssetsStore: AssetsStore,
 	}
 }
 
 type getAllAssets struct {
-	assetsStore *assets.AssetsStore
+	AssetsStore *assets.AssetsStore
 }
 
 func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
@@ -25,11 +25,11 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		return resp
 	}
 
-	assets := make([]*models.AssetInfoWithBalance, 0)
+	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
-	// Retrieve all assets from the asset store
-	for assetAddress, assetInfo := range h.assetsStore.ContractAssets {
-		balance, err := h.assetsStore.Balance(assetAddress, wlt.Address)
+	// Retrieve all assets from the selected WalletNickname
+	for assetAddress, assetInfo := range h.AssetsStore.WalletsAssets[params.WalletNickname].ContractAssets {
+		balance, err := assets.Balance(assetAddress, wlt.Address)
 		if err != nil {
 			// Handle the error and return an internal server error response
 			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
@@ -43,9 +43,9 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 			AssetInfo: assetInfo,
 			Balance:   balance,
 		}
-		assets = append(assets, assetWithBalance)
+		AssetsWithBalance = append(AssetsWithBalance, assetWithBalance)
 	}
 
 	// Return the list of assets with balance
-	return operations.NewGetAllAssetsOK().WithPayload(assets)
+	return operations.NewGetAllAssetsOK().WithPayload(AssetsWithBalance)
 }

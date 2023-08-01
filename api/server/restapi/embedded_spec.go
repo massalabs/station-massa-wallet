@@ -617,9 +617,16 @@ func init() {
         "operationId": "AddAsset",
         "parameters": [
           {
+            "type": "string",
+            "description": "The nickname of the wallet to add the asset to.",
+            "name": "walletNickname",
+            "in": "query",
+            "required": true
+          },
+          {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true
@@ -1613,9 +1620,16 @@ func init() {
         "operationId": "AddAsset",
         "parameters": [
           {
+            "type": "string",
+            "description": "The nickname of the wallet to add the asset to.",
+            "name": "walletNickname",
+            "in": "query",
+            "required": true
+          },
+          {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (MRC-20 token address) to retrieve info for. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true

@@ -24,7 +24,7 @@ func balanceKey(address string) []byte {
 }
 
 // Balance retrieves the balance of a user for a given asset contract address by making a smart contract call.
-func (s *AssetsStore) Balance(assetContractAddress, userAddress string) (string, error) {
+func Balance(assetContractAddress, userAddress string) (string, error) {
 	client, err := network.NewMassaClient()
 	if err != nil {
 		return "", fmt.Errorf("failed to create Massa client: %w", err)
@@ -44,7 +44,7 @@ func (s *AssetsStore) Balance(assetContractAddress, userAddress string) (string,
 }
 
 // AssetInfo retrieves the asset information for a given contract address by making a smart contract call.
-func (s *AssetsStore) AssetInfo(contractAddress string) (*models.AssetInfo, error) {
+func AssetInfo(contractAddress string) (*models.AssetInfo, error) {
 	client, err := network.NewMassaClient()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Massa client: %w", err)
