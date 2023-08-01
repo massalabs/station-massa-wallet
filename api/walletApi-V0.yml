@@ -455,10 +455,8 @@ paths:
           required: true
           description: The asset address (MRC-20 token address) to delete from the wallet. It must start with "AS" and contain only alphanumeric characters.
       responses:
-        200:
+        201:
           description: Asset information deleted successfully.
-          schema:
-            $ref: "#/definitions/AssetInfo"
         400:
           description: Bad request.
           schema:

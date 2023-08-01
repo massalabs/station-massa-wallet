@@ -12,49 +12,29 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
-// DeleteAssetOKCode is the HTTP code returned for type DeleteAssetOK
-const DeleteAssetOKCode int = 200
+// DeleteAssetCreatedCode is the HTTP code returned for type DeleteAssetCreated
+const DeleteAssetCreatedCode int = 201
 
 /*
-DeleteAssetOK Asset information deleted successfully.
+DeleteAssetCreated Asset information deleted successfully.
 
-swagger:response deleteAssetOK
+swagger:response deleteAssetCreated
 */
-type DeleteAssetOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.AssetInfo `json:"body,omitempty"`
+type DeleteAssetCreated struct {
 }
 
-// NewDeleteAssetOK creates DeleteAssetOK with default headers values
-func NewDeleteAssetOK() *DeleteAssetOK {
+// NewDeleteAssetCreated creates DeleteAssetCreated with default headers values
+func NewDeleteAssetCreated() *DeleteAssetCreated {
 
-	return &DeleteAssetOK{}
-}
-
-// WithPayload adds the payload to the delete asset o k response
-func (o *DeleteAssetOK) WithPayload(payload *models.AssetInfo) *DeleteAssetOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the delete asset o k response
-func (o *DeleteAssetOK) SetPayload(payload *models.AssetInfo) {
-	o.Payload = payload
+	return &DeleteAssetCreated{}
 }
 
 // WriteResponse to the client
-func (o *DeleteAssetOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *DeleteAssetCreated) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(201)
 }
 
 // DeleteAssetBadRequestCode is the HTTP code returned for type DeleteAssetBadRequest

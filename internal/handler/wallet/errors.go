@@ -27,4 +27,6 @@ const (
 	errorFetchAssetSC
 	errorAddAssetJSON
 	errorFetchAssetBalance
+	errorAssetNotExists
+	errorDeleteAssetJSON
 )

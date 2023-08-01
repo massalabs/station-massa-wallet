@@ -119,11 +119,8 @@ func (s *AssetsStore) AssetExists(walletNickname, contractAddress string) bool {
 	return assetFound
 }
 
-// AddAsset adds the asset information for a given wallet nickname in the JSON.
-func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo models.AssetInfo) error {
-	// Update the ContractAssets map with the new asset information
-	s.AddAssetToMemory(walletNickname, assetAddress, assetInfo)
-
+// synchronizeMemoryToJSON converts the AssetsStore map to JSON format and writes it to the file.
+func (s *AssetsStore) synchronizeMemoryToJSON() error {
 	// Convert the AssetsStore map to the format of accountsData
 	accountsData := struct {
 		Accounts map[string]struct {
@@ -170,6 +167,19 @@ func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo mo
 	return nil
 }
 
+// AddAsset adds the asset information for a given wallet nickname in the JSON.
+func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo models.AssetInfo) error {
+	// Update the ContractAssets map with the new asset information
+	s.AddAssetToMemory(walletNickname, assetAddress, assetInfo)
+
+	// Synchronize the AssetsStore map to JSON and write to the file
+	if err := s.synchronizeMemoryToJSON(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // AddAssetToMemory adds the asset information for a given wallet nickname to the AssetsStore.
 func (s *AssetsStore) AddAssetToMemory(walletNickname, assetAddress string, assetInfo models.AssetInfo) {
 	s.StoreMutex.Lock()
@@ -187,6 +197,37 @@ func (s *AssetsStore) AddAssetToMemory(walletNickname, assetAddress string, asse
 	// Update the ContractAssets map of the specific *assets.AssetsStore with the new asset information
 	walletAssets.ContractAssets[assetAddress] = assetInfo
 	s.Assets[walletNickname] = walletAssets
+}
+
+// DeleteAssetFromMemory removes the asset information for a given wallet nickname and asset address from the AssetsStore.
+func (s *AssetsStore) DeleteAssetFromMemory(walletNickname, assetAddress string) {
+	s.StoreMutex.Lock()
+	defer s.StoreMutex.Unlock()
+
+	// Check if the walletAssets exists in the WalletsAssets map
+	walletAssets, found := s.Assets[walletNickname]
+	if !found {
+		// If the walletAssets does not exist, there's nothing to delete, so return early.
+		return
+	}
+
+	// Delete the asset from the ContractAssets map of the specific *assets.AssetsStore
+	delete(walletAssets.ContractAssets, assetAddress)
+
+	// Update the asset information in the AssetsStore
+	s.Assets[walletNickname] = walletAssets
+}
+
+// DeleteAsset deletes the asset information for a given wallet nickname in the JSON.
+func (s *AssetsStore) DeleteAsset(walletNickname, assetAddress string) error {
+	s.DeleteAssetFromMemory(walletNickname, assetAddress)
+
+	// Synchronize the AssetsStore map to JSON and write to the file
+	if err := s.synchronizeMemoryToJSON(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // createJSONFile creates an empty JSON file at the specified path.

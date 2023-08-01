@@ -414,11 +414,8 @@ func init() {
           }
         ],
         "responses": {
-          "200": {
-            "description": "Asset information deleted successfully.",
-            "schema": {
-              "$ref": "#/definitions/AssetInfo"
-            }
+          "201": {
+            "description": "Asset information deleted successfully."
           },
           "400": {
             "description": "Bad request.",
@@ -1442,11 +1439,8 @@ func init() {
           }
         ],
         "responses": {
-          "200": {
-            "description": "Asset information deleted successfully.",
-            "schema": {
-              "$ref": "#/definitions/AssetInfo"
-            }
+          "201": {
+            "description": "Asset information deleted successfully."
           },
           "400": {
             "description": "Bad request.",
