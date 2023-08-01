@@ -427,7 +427,7 @@ func (o *MassaWalletAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/api/assets"] = NewAddAsset(o.context, o.AddAssetHandler)
+	o.handlers["POST"]["/api/accounts/{nickname}/assets"] = NewAddAsset(o.context, o.AddAssetHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -451,7 +451,7 @@ func (o *MassaWalletAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/api/assets"] = NewGetAllAssets(o.context, o.GetAllAssetsHandler)
+	o.handlers["GET"]["/api/accounts/{nickname}/assets"] = NewGetAllAssets(o.context, o.GetAllAssetsHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
@@ -521,6 +521,6 @@ func (o *MassaWalletAPI) AddMiddlewareFor(method, path string, builder middlewar
 	}
 	o.Init()
 	if h, ok := o.handlers[um][path]; ok {
-		o.handlers[um][path] = builder(h)
+		o.handlers[method][path] = builder(h)
 	}
 }

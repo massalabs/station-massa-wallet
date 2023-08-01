@@ -306,6 +306,91 @@ func init() {
         }
       }
     },
+    "/api/accounts/{nickname}/assets": {
+      "get": {
+        "description": "Get all assets with their balance.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetAllAssets",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The nickname of the wallet to retrieve assets for.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All assets retrieved successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AssetInfoWithBalance"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Add MRC-20 token information and persist it for future use.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddAsset",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The nickname of the wallet to add the asset to.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "pattern": "^AS[0-9a-zA-Z]+$",
+            "type": "string",
+            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "name": "assetAddress",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Asset information retrieved successfully.",
+            "schema": {
+              "$ref": "#/definitions/AssetInfo"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found - At least one of the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{nickname}/backup": {
       "post": {
         "description": "Export the account associated with the provided nickname in the path. Will ask the user to enter its account password.",
@@ -562,91 +647,6 @@ func init() {
           },
           "422": {
             "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/api/assets": {
-      "get": {
-        "description": "Get all assets with their balance.",
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "GetAllAssets",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "The nickname of the wallet to retrieve assets for.",
-            "name": "walletNickname",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "All assets retrieved successfully.",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/AssetInfoWithBalance"
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Add MRC-20 token information and persist it for future use.",
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "AddAsset",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "The nickname of the wallet to add the asset to.",
-            "name": "walletNickname",
-            "in": "query",
-            "required": true
-          },
-          {
-            "pattern": "^AS[0-9a-zA-Z]+$",
-            "type": "string",
-            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
-            "name": "assetAddress",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Asset information retrieved successfully.",
-            "schema": {
-              "$ref": "#/definitions/AssetInfo"
-            }
-          },
-          "400": {
-            "description": "Bad request.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Not found - At least one of the provided addresses is not valid.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1284,6 +1284,91 @@ func init() {
         }
       }
     },
+    "/api/accounts/{nickname}/assets": {
+      "get": {
+        "description": "Get all assets with their balance.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetAllAssets",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The nickname of the wallet to retrieve assets for.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All assets retrieved successfully.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AssetInfoWithBalance"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Add MRC-20 token information and persist it for future use.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddAsset",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "The nickname of the wallet to add the asset to.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "pattern": "^AS[0-9a-zA-Z]+$",
+            "type": "string",
+            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "name": "assetAddress",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Asset information retrieved successfully.",
+            "schema": {
+              "$ref": "#/definitions/AssetInfo"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not found - At least one of the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{nickname}/backup": {
       "post": {
         "description": "Export the account associated with the provided nickname in the path. Will ask the user to enter its account password.",
@@ -1565,91 +1650,6 @@ func init() {
           },
           "422": {
             "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/api/assets": {
-      "get": {
-        "description": "Get all assets with their balance.",
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "GetAllAssets",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "The nickname of the wallet to retrieve assets for.",
-            "name": "walletNickname",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "All assets retrieved successfully.",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/AssetInfoWithBalance"
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Add MRC-20 token information and persist it for future use.",
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "AddAsset",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "The nickname of the wallet to add the asset to.",
-            "name": "walletNickname",
-            "in": "query",
-            "required": true
-          },
-          {
-            "pattern": "^AS[0-9a-zA-Z]+$",
-            "type": "string",
-            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
-            "name": "assetAddress",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Asset information retrieved successfully.",
-            "schema": {
-              "$ref": "#/definitions/AssetInfo"
-            }
-          },
-          "400": {
-            "description": "Bad request.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Not found - At least one of the provided addresses is not valid.",
             "schema": {
               "$ref": "#/definitions/Error"
             }

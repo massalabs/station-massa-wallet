@@ -30,7 +30,7 @@ func NewAddAsset(ctx *middleware.Context, handler AddAssetHandler) *AddAsset {
 }
 
 /*
-	AddAsset swagger:route POST /api/assets addAsset
+	AddAsset swagger:route POST /api/accounts/{nickname}/assets addAsset
 
 Add MRC-20 token information and persist it for future use.
 */
