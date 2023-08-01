@@ -9,11 +9,12 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 )
 
 // GetAllAssetsURL generates an URL for the get all assets operation
 type GetAllAssetsURL struct {
-	WalletNickname string
+	Nickname string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -39,19 +40,17 @@ func (o *GetAllAssetsURL) SetBasePath(bp string) {
 func (o *GetAllAssetsURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/api/assets"
+	var _path = "/api/accounts/{nickname}/assets"
+
+	nickname := o.Nickname
+	if nickname != "" {
+		_path = strings.Replace(_path, "{nickname}", nickname, -1)
+	} else {
+		return nil, errors.New("nickname is required on GetAllAssetsURL")
+	}
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
-
-	qs := make(url.Values)
-
-	walletNicknameQ := o.WalletNickname
-	if walletNicknameQ != "" {
-		qs.Set("walletNickname", walletNicknameQ)
-	}
-
-	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }

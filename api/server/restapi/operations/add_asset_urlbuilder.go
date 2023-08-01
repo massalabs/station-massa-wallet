@@ -9,12 +9,14 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 )
 
 // AddAssetURL generates an URL for the add asset operation
 type AddAssetURL struct {
-	AssetAddress   string
-	WalletNickname string
+	Nickname string
+
+	AssetAddress string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -40,7 +42,14 @@ func (o *AddAssetURL) SetBasePath(bp string) {
 func (o *AddAssetURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/api/assets"
+	var _path = "/api/accounts/{nickname}/assets"
+
+	nickname := o.Nickname
+	if nickname != "" {
+		_path = strings.Replace(_path, "{nickname}", nickname, -1)
+	} else {
+		return nil, errors.New("nickname is required on AddAssetURL")
+	}
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
@@ -50,11 +59,6 @@ func (o *AddAssetURL) Build() (*url.URL, error) {
 	assetAddressQ := o.AssetAddress
 	if assetAddressQ != "" {
 		qs.Set("assetAddress", assetAddressQ)
-	}
-
-	walletNicknameQ := o.WalletNickname
-	if walletNicknameQ != "" {
-		qs.Set("walletNickname", walletNicknameQ)
 	}
 
 	_result.RawQuery = qs.Encode()
