@@ -9,14 +9,14 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 )
 
-func NewGetAllAssets(accountsStore *assets.AccountsStore) operations.GetAllAssetsHandler {
+func NewGetAllAssets(AssetsStore *assets.AssetsStore) operations.GetAllAssetsHandler {
 	return &getAllAssets{
-		accountsStore: accountsStore,
+		AssetsStore: AssetsStore,
 	}
 }
 
 type getAllAssets struct {
-	accountsStore *assets.AccountsStore
+	AssetsStore *assets.AssetsStore
 }
 
 func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
@@ -27,8 +27,8 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
-	// Retrieve all assets from the selected account
-	for assetAddress, assetInfo := range h.accountsStore.Accounts[params.WalletNickname].ContractAssets {
+	// Retrieve all assets from the selected WalletNickname
+	for assetAddress, assetInfo := range h.AssetsStore.WalletsAssets[params.WalletNickname].ContractAssets {
 		balance, err := assets.Balance(assetAddress, wlt.Address)
 		if err != nil {
 			// Handle the error and return an internal server error response

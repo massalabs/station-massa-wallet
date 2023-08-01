@@ -12,14 +12,14 @@ type AssetInfoListResponse struct {
 	Assets []models.AssetInfo `json:"assets"`
 }
 
-func NewAddAsset(accountsStore *assets.AccountsStore) operations.AddAssetHandler {
+func NewAddAsset(AssetsStore *assets.AssetsStore) operations.AddAssetHandler {
 	return &addAsset{
-		accountsStore: accountsStore,
+		AssetsStore: AssetsStore,
 	}
 }
 
 type addAsset struct {
-	accountsStore *assets.AccountsStore
+	AssetsStore *assets.AssetsStore
 }
 
 func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
@@ -31,7 +31,7 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Check if the address exists in the loaded JSON
-	if h.accountsStore.AssetExists(params.WalletNickname, params.AssetAddress) {
+	if h.AssetsStore.AssetExists(params.WalletNickname, params.AssetAddress) {
 		// Return that the asset already exists
 		errorMsg := "Asset with the provided address already exists."
 		return operations.NewAddAssetBadRequest().WithPayload(&models.Error{Code: errorAssetExists, Message: errorMsg})
@@ -46,7 +46,7 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Add Asset and persist in JSON file.
-	if err := h.accountsStore.AddAsset(params.WalletNickname, params.AssetAddress, *assetInfoFromSC); err != nil {
+	if err := h.AssetsStore.AddAsset(params.WalletNickname, params.AssetAddress, *assetInfoFromSC); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to add the asset to the JSON file."
 		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorAddAssetJSON, Message: errorMsg})

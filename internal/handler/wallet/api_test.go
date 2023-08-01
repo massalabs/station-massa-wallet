@@ -36,7 +36,7 @@ type PrivateKeyPrompt struct {
 
 // MockAPI mocks the wallet API.
 // All the wallet endpoints are mocked. You can use the Prompt channel to drive the password entry expected values.
-func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *assets.AccountsStore, chan walletapp.EventData, error) {
+func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *assets.AssetsStore, chan walletapp.EventData, error) {
 	os.Setenv("STANDALONE", "1")
 
 	// Load the Swagger specification
@@ -51,20 +51,20 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 
 	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
-	accountsStore, err := assets.NewAccountsStore()
+	AssetsStore, err := assets.NewAssetsStore()
 	if err != nil {
-		log.Fatalf("Failed to create AccountsStore: %v", err)
+		log.Fatalf("Failed to create AssetsStore: %v", err)
 	}
 
 	massaNodeMock := NewNodeFetcherMock()
 	// Set wallet API endpoints
-	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, accountsStore, gcache.New(20).LRU().Build())
+	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, AssetsStore, gcache.New(20).LRU().Build())
 
 	// instantiates the server configure its API.
 	server := restapi.NewServer(massaWalletAPI)
 	server.ConfigureAPI()
 
-	return massaWalletAPI, prompterApp, accountsStore, resultChannel, err
+	return massaWalletAPI, prompterApp, AssetsStore, resultChannel, err
 }
 
 // processHTTPRequest simulates the processing of an HTTP request on the given API.
