@@ -380,15 +380,15 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
-  /api/assets:
+  /api/accounts/{nickname}/assets:
     post:
       operationId: AddAsset
       description: Add MRC-20 token information and persist it for future use.
       produces:
         - application/json
       parameters:
-        - in: query
-          name: walletNickname
+        - in: path
+          name: nickname
           type: string
           required: true
           description: The nickname of the wallet to add the asset to.
@@ -421,8 +421,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - in: query
-          name: walletNickname
+        - in: path
+          name: nickname
           type: string
           required: true
           description: The nickname of the wallet to retrieve assets for.

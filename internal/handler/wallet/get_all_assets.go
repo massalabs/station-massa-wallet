@@ -20,7 +20,7 @@ type getAllAssets struct {
 }
 
 func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
-	wlt, resp := loadWallet(params.WalletNickname)
+	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -28,7 +28,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Retrieve all assets from the selected WalletNickname
-	for assetAddress, assetInfo := range h.AssetsStore.WalletsAssets[params.WalletNickname].ContractAssets {
+	for assetAddress, assetInfo := range h.AssetsStore.Assets[params.Nickname].ContractAssets {
 		balance, err := assets.Balance(assetAddress, wlt.Address)
 		if err != nil {
 			// Handle the error and return an internal server error response

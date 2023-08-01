@@ -30,7 +30,7 @@ func NewGetAllAssets(ctx *middleware.Context, handler GetAllAssetsHandler) *GetA
 }
 
 /*
-	GetAllAssets swagger:route GET /api/assets getAllAssets
+	GetAllAssets swagger:route GET /api/accounts/{nickname}/assets getAllAssets
 
 Get all assets with their balance.
 */

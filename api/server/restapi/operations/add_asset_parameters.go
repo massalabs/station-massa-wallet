@@ -40,9 +40,9 @@ type AddAssetParams struct {
 	AssetAddress string
 	/*The nickname of the wallet to add the asset to.
 	  Required: true
-	  In: query
+	  In: path
 	*/
-	WalletNickname string
+	Nickname string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -61,8 +61,8 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 		res = append(res, err)
 	}
 
-	qWalletNickname, qhkWalletNickname, _ := qs.GetOK("walletNickname")
-	if err := o.bindWalletNickname(qWalletNickname, qhkWalletNickname, route.Formats); err != nil {
+	rNickname, rhkNickname, _ := route.Params.GetOK("nickname")
+	if err := o.bindNickname(rNickname, rhkNickname, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -106,23 +106,16 @@ func (o *AddAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 	return nil
 }
 
-// bindWalletNickname binds and validates parameter WalletNickname from query.
-func (o *AddAssetParams) bindWalletNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	if !hasKey {
-		return errors.Required("walletNickname", "query", rawData)
-	}
+// bindNickname binds and validates parameter Nickname from path.
+func (o *AddAssetParams) bindNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
 	}
 
 	// Required: true
-	// AllowEmptyValue: false
-
-	if err := validate.RequiredString("walletNickname", "query", raw); err != nil {
-		return err
-	}
-	o.WalletNickname = raw
+	// Parameter is provided by construction from the route
+	o.Nickname = raw
 
 	return nil
 }

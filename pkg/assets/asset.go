@@ -12,14 +12,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-// AssetsStore encapsulates all the walletNicknames with their related contract assets.
+// AssetsStore encapsulates all the nicknames with their related contract assets.
 type AssetsStore struct {
-	WalletsAssets map[string]WalletAssets
-	StoreMutex    sync.Mutex
+	Assets     map[string]Assets
+	StoreMutex sync.Mutex
 }
 
-// WalletAssets encapsulates the contract assets associated with a specific wallet.
-type WalletAssets struct {
+// Assets encapsulates the contract assets associated with a specific wallet.
+type Assets struct {
 	ContractAssets map[string]models.AssetInfo
 }
 
@@ -39,7 +39,7 @@ type assetData struct {
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
 func NewAssetsStore() (*AssetsStore, error) {
 	store := &AssetsStore{
-		WalletsAssets: make(map[string]WalletAssets),
+		Assets: make(map[string]Assets),
 	}
 	if err := store.loadWalletsStore(); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
@@ -84,7 +84,7 @@ func (s *AssetsStore) loadWalletsStore() error {
 	}
 
 	for walletName, walletData := range accountsData.Accounts {
-		walletAssets := WalletAssets{
+		walletAssets := Assets{
 			ContractAssets: make(map[string]models.AssetInfo),
 		}
 
@@ -97,7 +97,7 @@ func (s *AssetsStore) loadWalletsStore() error {
 			walletAssets.ContractAssets[asset.ContractAddress] = assetInfo
 		}
 
-		s.WalletsAssets[walletName] = walletAssets
+		s.Assets[walletName] = walletAssets
 	}
 
 	return nil
@@ -109,7 +109,7 @@ func (s *AssetsStore) AssetExists(walletNickname, contractAddress string) bool {
 	defer s.StoreMutex.Unlock()
 
 	// Check if the wallet exists in the WalletsStore
-	walletAssets, found := s.WalletsAssets[walletNickname]
+	walletAssets, found := s.Assets[walletNickname]
 	if !found {
 		return false
 	}
@@ -135,7 +135,7 @@ func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo mo
 		}),
 	}
 
-	for walletName, walletAssets := range s.WalletsAssets {
+	for walletName, walletAssets := range s.Assets {
 		var assetsData assetsData
 		for contractAddress, assetInfo := range walletAssets.ContractAssets {
 			asset := assetData{
@@ -176,17 +176,17 @@ func (s *AssetsStore) AddAssetToMemory(walletNickname, assetAddress string, asse
 	defer s.StoreMutex.Unlock()
 
 	// Check if the walletAssets exists in the WalletsAssets map
-	walletAssets, found := s.WalletsAssets[walletNickname]
+	walletAssets, found := s.Assets[walletNickname]
 	if !found {
 		// If the walletAssets does not exist, initialize it with an empty map
-		walletAssets = WalletAssets{
+		walletAssets = Assets{
 			ContractAssets: make(map[string]models.AssetInfo),
 		}
 	}
 
 	// Update the ContractAssets map of the specific *assets.AssetsStore with the new asset information
 	walletAssets.ContractAssets[assetAddress] = assetInfo
-	s.WalletsAssets[walletNickname] = walletAssets
+	s.Assets[walletNickname] = walletAssets
 }
 
 // createJSONFile creates an empty JSON file at the specified path.
