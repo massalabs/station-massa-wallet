@@ -14,8 +14,8 @@ import (
 
 // AssetsStore encapsulates all the nicknames with their related contract assets.
 type AssetsStore struct {
-	Assets map[string]Assets
-	StoreMutex    sync.Mutex
+	Assets     map[string]Assets
+	StoreMutex sync.Mutex
 }
 
 // Assets encapsulates the contract assets associated with a specific wallet.
