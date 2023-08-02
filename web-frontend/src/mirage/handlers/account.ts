@@ -49,6 +49,25 @@ export function routesForAccounts(server: Server) {
     { timing: 500 },
   );
 
+  server.get(
+    'accounts/:nickname/assets',
+    (schema: AppSchema, request) => {
+      const { nickname } = request.params;
+      const data = schema.findBy('account', { nickname });
+
+      if (!data)
+        return new Response(
+          404,
+          {},
+          { code: '404', error: 'Failed to retreive assets' },
+        );
+      const assets = data.attrs.assets;
+
+      return new Response(200, {}, assets);
+    },
+    { timing: 500 },
+  );
+
   server.put('accounts', (schema: AppSchema) => {
     return schema.create(
       'account',
