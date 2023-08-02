@@ -341,7 +341,7 @@ func init() {
         }
       },
       "post": {
-        "description": "Add MRC-20 token information and persist it for future use.",
+        "description": "Add token information and persist it for future use.",
         "produces": [
           "application/json"
         ],
@@ -357,7 +357,7 @@ func init() {
           {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true
@@ -391,7 +391,7 @@ func init() {
         }
       },
       "delete": {
-        "description": "Delete MRC-20 token information from a wallet.",
+        "description": "Delete token information from a wallet.",
         "produces": [
           "application/json"
         ],
@@ -399,7 +399,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "description": "The nickname of the wallet from which to delete the asset.",
+            "description": "The nickname of the account from which to delete the asset.",
             "name": "nickname",
             "in": "path",
             "required": true
@@ -407,7 +407,7 @@ func init() {
           {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (MRC-20 token address) to delete from the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (token address) to delete from the account. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true
@@ -1366,7 +1366,7 @@ func init() {
         }
       },
       "post": {
-        "description": "Add MRC-20 token information and persist it for future use.",
+        "description": "Add token information and persist it for future use.",
         "produces": [
           "application/json"
         ],
@@ -1382,7 +1382,7 @@ func init() {
           {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (MRC-20 token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true
@@ -1416,7 +1416,7 @@ func init() {
         }
       },
       "delete": {
-        "description": "Delete MRC-20 token information from a wallet.",
+        "description": "Delete token information from a wallet.",
         "produces": [
           "application/json"
         ],
@@ -1424,7 +1424,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "description": "The nickname of the wallet from which to delete the asset.",
+            "description": "The nickname of the account from which to delete the asset.",
             "name": "nickname",
             "in": "path",
             "required": true
@@ -1432,7 +1432,7 @@ func init() {
           {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (MRC-20 token address) to delete from the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (token address) to delete from the account. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true

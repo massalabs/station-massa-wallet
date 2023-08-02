@@ -32,7 +32,7 @@ func NewDeleteAsset(ctx *middleware.Context, handler DeleteAssetHandler) *Delete
 /*
 	DeleteAsset swagger:route DELETE /api/accounts/{nickname}/assets deleteAsset
 
-Delete MRC-20 token information from a wallet.
+Delete token information from a wallet.
 */
 type DeleteAsset struct {
 	Context *middleware.Context

@@ -119,8 +119,8 @@ func (s *AssetsStore) AssetExists(walletNickname, contractAddress string) bool {
 	return assetFound
 }
 
-// synchronizeMemoryToJSON converts the AssetsStore map to JSON format and writes it to the file.
-func (s *AssetsStore) synchronizeMemoryToJSON() error {
+// save converts the AssetsStore map to JSON format and writes it to the file.
+func (s *AssetsStore) save() error {
 	// Convert the AssetsStore map to the format of accountsData
 	accountsData := struct {
 		Accounts map[string]struct {
@@ -173,7 +173,7 @@ func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo mo
 	s.AddAssetToMemory(walletNickname, assetAddress, assetInfo)
 
 	// Synchronize the AssetsStore map to JSON and write to the file
-	if err := s.synchronizeMemoryToJSON(); err != nil {
+	if err := s.save(); err != nil {
 		return err
 	}
 
@@ -223,7 +223,7 @@ func (s *AssetsStore) DeleteAsset(walletNickname, assetAddress string) error {
 	s.DeleteAssetFromMemory(walletNickname, assetAddress)
 
 	// Synchronize the AssetsStore map to JSON and write to the file
-	if err := s.synchronizeMemoryToJSON(); err != nil {
+	if err := s.save(); err != nil {
 		return err
 	}
 

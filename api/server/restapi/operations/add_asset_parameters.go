@@ -32,7 +32,7 @@ type AddAssetParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*The asset address (MRC-20 token address) to add to the wallet. It must start with "AS" and contain only alphanumeric characters.
+	/*The asset address (token address) to add to the wallet. It must start with "AS" and contain only alphanumeric characters.
 	  Required: true
 	  Pattern: ^AS[0-9a-zA-Z]+$
 	  In: query
