@@ -5,12 +5,20 @@ type keyPairObject = {
   salt: string;
 };
 
+export interface IToken {
+  name: string;
+  symbol: string;
+  decimals: number;
+  balance: string;
+}
+
 export type AccountObject = {
   address: string;
   balance: string;
   candidateBalance: string;
   keyPair: keyPairObject;
   nickname: string;
+  assets: IToken[];
 };
 
 export type SendTransactionObject = {

@@ -1,6 +1,6 @@
 import { Factory } from 'miragejs';
 import { faker } from '@faker-js/faker';
-import { AccountObject } from '../../models/AccountModel';
+import { AccountObject, IToken } from '../../models/AccountModel';
 
 export const accountFactory = Factory.extend<AccountObject>({
   nickname() {
@@ -22,5 +22,22 @@ export const accountFactory = Factory.extend<AccountObject>({
       nonce: faker.string.alpha({ length: 30 }),
       salt: faker.string.alpha({ length: 30 }),
     };
+  },
+  assets() {
+    const initialTokens: IToken[] = [
+      {
+        name: faker.word.sample(5) + 'Token',
+        symbol: faker.word.sample(5).slice(0, 3).toUpperCase(),
+        decimals: 9,
+        balance: faker.number.int().toString(),
+      },
+      {
+        name: faker.word.sample(5) + 'Token',
+        symbol: faker.word.sample(5).slice(0, 3).toUpperCase(),
+        decimals: 9,
+        balance: faker.number.int().toString(),
+      },
+    ];
+    return initialTokens;
   },
 });
