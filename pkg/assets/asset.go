@@ -18,7 +18,7 @@ type AssetsStore struct {
 	StoreMutex sync.Mutex
 }
 
-// Assets encapsulates the contract assets associated with a specific wallet.
+// Assets encapsulates the contract assets associated with a specific account.
 type Assets struct {
 	ContractAssets map[string]models.AssetInfo
 }
@@ -41,15 +41,15 @@ func NewAssetsStore() (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets: make(map[string]Assets),
 	}
-	if err := store.loadWalletsStore(); err != nil {
+	if err := store.loadaccountsStore(); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
 	return store, nil
 }
 
-// loadWalletsStore loads the data from the assets JSON file into the AssetsStore.
-func (s *AssetsStore) loadWalletsStore() error {
+// loadaccountsStore loads the data from the assets JSON file into the AssetsStore.
+func (s *AssetsStore) loadaccountsStore() error {
 	assetsJSONPath, err := GetAssetsJSONPath()
 	if err != nil {
 		return errors.Wrap(err, "error getting assets JSON file")
@@ -73,31 +73,31 @@ func (s *AssetsStore) loadWalletsStore() error {
 		return errors.Wrap(err, "failed to read assets JSON data")
 	}
 
-	// Unmarshal the JSON data into the walletsData struct
+	// Unmarshal the JSON data into the accountsData struct
 	var accountsData struct {
 		Accounts map[string]struct {
 			Assets []assetData `json:"assets"`
-		} `json:"wallets"`
+		} `json:"accounts"`
 	}
 	if err := json.Unmarshal(data, &accountsData); err != nil {
 		return errors.Wrap(err, "failed to unmarshal JSON data")
 	}
 
-	for walletName, walletData := range accountsData.Accounts {
-		walletAssets := Assets{
+	for accountName, accountData := range accountsData.Accounts {
+		accountAssets := Assets{
 			ContractAssets: make(map[string]models.AssetInfo),
 		}
 
-		for _, asset := range walletData.Assets {
+		for _, asset := range accountData.Assets {
 			assetInfo := models.AssetInfo{
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
 				Decimals: &asset.Decimals,
 			}
-			walletAssets.ContractAssets[asset.ContractAddress] = assetInfo
+			accountAssets.ContractAssets[asset.ContractAddress] = assetInfo
 		}
 
-		s.Assets[walletName] = walletAssets
+		s.Assets[accountName] = accountAssets
 	}
 
 	return nil
@@ -108,14 +108,14 @@ func (s *AssetsStore) AssetExists(nickname, contractAddress string) bool {
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
-	// Check if the wallet exists in the WalletsStore
-	walletAssets, found := s.Assets[nickname]
+	// Check if the account exists in the accountsStore
+	accountAssets, found := s.Assets[nickname]
 	if !found {
 		return false
 	}
 
-	// Look up the asset information in the ContractAssets map of the specific wallet
-	_, assetFound := walletAssets.ContractAssets[contractAddress]
+	// Look up the asset information in the ContractAssets map of the specific account
+	_, assetFound := accountAssets.ContractAssets[contractAddress]
 	return assetFound
 }
 
@@ -125,16 +125,16 @@ func (s *AssetsStore) save() error {
 	accountsData := struct {
 		Accounts map[string]struct {
 			Assets []assetData `json:"assets"`
-		} `json:"wallets"`
+		} `json:"accounts"`
 	}{
 		Accounts: make(map[string]struct {
 			Assets []assetData `json:"assets"`
 		}),
 	}
 
-	for walletName, walletAssets := range s.Assets {
+	for accountName, accountAssets := range s.Assets {
 		var assetsData assetsData
-		for contractAddress, assetInfo := range walletAssets.ContractAssets {
+		for contractAddress, assetInfo := range accountAssets.ContractAssets {
 			asset := assetData{
 				ContractAddress: contractAddress,
 				Name:            assetInfo.Name,
@@ -143,7 +143,7 @@ func (s *AssetsStore) save() error {
 			}
 			assetsData.Assets = append(assetsData.Assets, asset)
 		}
-		accountsData.Accounts[walletName] = struct {
+		accountsData.Accounts[accountName] = struct {
 			Assets []assetData `json:"assets"`
 		}{Assets: assetsData.Assets}
 	}
@@ -185,18 +185,18 @@ func (s *AssetsStore) AddAssetToMemory(nickname, assetAddress string, assetInfo 
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
-	// Check if the walletAssets exists in the WalletsAssets map
-	walletAssets, found := s.Assets[nickname]
+	// Check if the accountAssets exists in the accountsAssets map
+	accountAssets, found := s.Assets[nickname]
 	if !found {
-		// If the walletAssets does not exist, initialize it with an empty map
-		walletAssets = Assets{
+		// If the accountAssets does not exist, initialize it with an empty map
+		accountAssets = Assets{
 			ContractAssets: make(map[string]models.AssetInfo),
 		}
 	}
 
 	// Update the ContractAssets map of the specific *assets.AssetsStore with the new asset information
-	walletAssets.ContractAssets[assetAddress] = assetInfo
-	s.Assets[nickname] = walletAssets
+	accountAssets.ContractAssets[assetAddress] = assetInfo
+	s.Assets[nickname] = accountAssets
 }
 
 // DeleteAssetFromMemory removes the asset information for a given account nickname and asset address from the AssetsStore.
@@ -204,18 +204,18 @@ func (s *AssetsStore) DeleteAssetFromMemory(nickname, assetAddress string) {
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
-	// Check if the walletAssets exists in the WalletsAssets map
-	walletAssets, found := s.Assets[nickname]
+	// Check if the accountAssets exists in the accountsAssets map
+	accountAssets, found := s.Assets[nickname]
 	if !found {
-		// If the walletAssets does not exist, there's nothing to delete, so return early.
+		// If the accountAssets does not exist, there's nothing to delete, so return early.
 		return
 	}
 
 	// Delete the asset from the ContractAssets map of the specific *assets.AssetsStore
-	delete(walletAssets.ContractAssets, assetAddress)
+	delete(accountAssets.ContractAssets, assetAddress)
 
 	// Update the asset information in the AssetsStore
-	s.Assets[nickname] = walletAssets
+	s.Assets[nickname] = accountAssets
 }
 
 // DeleteAsset deletes the asset information for a given account nickname in the JSON.

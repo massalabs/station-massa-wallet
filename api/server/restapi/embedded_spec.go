@@ -349,7 +349,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "description": "The nickname of the wallet to add the asset to.",
+            "description": "The nickname of the account to add the asset to.",
             "name": "nickname",
             "in": "path",
             "required": true
@@ -357,7 +357,7 @@ func init() {
           {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (token address) to add to the account. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true
@@ -391,7 +391,7 @@ func init() {
         }
       },
       "delete": {
-        "description": "Delete token information from a wallet.",
+        "description": "Delete token information from an account.",
         "produces": [
           "application/json"
         ],
@@ -1374,7 +1374,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "description": "The nickname of the wallet to add the asset to.",
+            "description": "The nickname of the account to add the asset to.",
             "name": "nickname",
             "in": "path",
             "required": true
@@ -1382,7 +1382,7 @@ func init() {
           {
             "pattern": "^AS[0-9a-zA-Z]+$",
             "type": "string",
-            "description": "The asset address (token address) to add to the wallet. It must start with \"AS\" and contain only alphanumeric characters.",
+            "description": "The asset address (token address) to add to the account. It must start with \"AS\" and contain only alphanumeric characters.",
             "name": "assetAddress",
             "in": "query",
             "required": true
@@ -1416,7 +1416,7 @@ func init() {
         }
       },
       "delete": {
-        "description": "Delete token information from a wallet.",
+        "description": "Delete token information from an account.",
         "produces": [
           "application/json"
         ],

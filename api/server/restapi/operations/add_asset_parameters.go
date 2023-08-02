@@ -32,13 +32,13 @@ type AddAssetParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*The asset address (token address) to add to the wallet. It must start with "AS" and contain only alphanumeric characters.
+	/*The asset address (token address) to add to the account. It must start with "AS" and contain only alphanumeric characters.
 	  Required: true
 	  Pattern: ^AS[0-9a-zA-Z]+$
 	  In: query
 	*/
 	AssetAddress string
-	/*The nickname of the wallet to add the asset to.
+	/*The nickname of the account to add the asset to.
 	  Required: true
 	  In: path
 	*/

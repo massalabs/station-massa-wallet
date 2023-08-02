@@ -391,13 +391,13 @@ paths:
           name: nickname
           type: string
           required: true
-          description: The nickname of the wallet to add the asset to.
+          description: The nickname of the account to add the asset to.
         - in: query
           name: assetAddress
           type: string
           pattern: ^AS[0-9a-zA-Z]+$
           required: true
-          description: The asset address (token address) to add to the wallet. It must start with "AS" and contain only alphanumeric characters.
+          description: The asset address (token address) to add to the account. It must start with "AS" and contain only alphanumeric characters.
       responses:
         201:
           description: Asset information retrieved successfully.
@@ -439,7 +439,7 @@ paths:
             $ref: "#/definitions/Error"
     delete:
       operationId: DeleteAsset
-      description: Delete token information from a wallet.
+      description: Delete token information from an account.
       produces:
         - application/json
       parameters:
