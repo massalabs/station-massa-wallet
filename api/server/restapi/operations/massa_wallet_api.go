@@ -71,6 +71,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		DeleteAccountHandler: DeleteAccountHandlerFunc(func(params DeleteAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation DeleteAccount has not yet been implemented")
 		}),
+		DeleteAssetHandler: DeleteAssetHandlerFunc(func(params DeleteAssetParams) middleware.Responder {
+			return middleware.NotImplemented("operation DeleteAsset has not yet been implemented")
+		}),
 		ExportAccountFileHandler: ExportAccountFileHandlerFunc(func(params ExportAccountFileParams) middleware.Responder {
 			return middleware.NotImplemented("operation ExportAccountFile has not yet been implemented")
 		}),
@@ -163,6 +166,8 @@ type MassaWalletAPI struct {
 	CreateAccountHandler CreateAccountHandler
 	// DeleteAccountHandler sets the operation handler for the delete account operation
 	DeleteAccountHandler DeleteAccountHandler
+	// DeleteAssetHandler sets the operation handler for the delete asset operation
+	DeleteAssetHandler DeleteAssetHandler
 	// ExportAccountFileHandler sets the operation handler for the export account file operation
 	ExportAccountFileHandler ExportAccountFileHandler
 	// GetAccountHandler sets the operation handler for the get account operation
@@ -289,6 +294,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.DeleteAccountHandler == nil {
 		unregistered = append(unregistered, "DeleteAccountHandler")
+	}
+	if o.DeleteAssetHandler == nil {
+		unregistered = append(unregistered, "DeleteAssetHandler")
 	}
 	if o.ExportAccountFileHandler == nil {
 		unregistered = append(unregistered, "ExportAccountFileHandler")
@@ -440,6 +448,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/api/accounts/{nickname}"] = NewDeleteAccount(o.context, o.DeleteAccountHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/api/accounts/{nickname}/assets"] = NewDeleteAsset(o.context, o.DeleteAssetHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

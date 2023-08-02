@@ -15,30 +15,30 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// NewAddAssetParams creates a new AddAssetParams object
+// NewDeleteAssetParams creates a new DeleteAssetParams object
 //
 // There are no default values defined in the spec.
-func NewAddAssetParams() AddAssetParams {
+func NewDeleteAssetParams() DeleteAssetParams {
 
-	return AddAssetParams{}
+	return DeleteAssetParams{}
 }
 
-// AddAssetParams contains all the bound params for the add asset operation
+// DeleteAssetParams contains all the bound params for the delete asset operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters AddAsset
-type AddAssetParams struct {
+// swagger:parameters DeleteAsset
+type DeleteAssetParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*The asset address (token address) to add to the account. It must start with "AS" and contain only alphanumeric characters.
+	/*The asset address (token address) to delete from the account. It must start with "AS" and contain only alphanumeric characters.
 	  Required: true
 	  Pattern: ^AS[0-9a-zA-Z]+$
 	  In: query
 	*/
 	AssetAddress string
-	/*The nickname of the account to add the asset to.
+	/*The nickname of the account from which to delete the asset.
 	  Required: true
 	  In: path
 	*/
@@ -48,8 +48,8 @@ type AddAssetParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewAddAssetParams() beforehand.
-func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewDeleteAssetParams() beforehand.
+func (o *DeleteAssetParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
@@ -72,7 +72,7 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 }
 
 // bindAssetAddress binds and validates parameter AssetAddress from query.
-func (o *AddAssetParams) bindAssetAddress(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *DeleteAssetParams) bindAssetAddress(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	if !hasKey {
 		return errors.Required("assetAddress", "query", rawData)
 	}
@@ -97,7 +97,7 @@ func (o *AddAssetParams) bindAssetAddress(rawData []string, hasKey bool, formats
 }
 
 // validateAssetAddress carries on validations for parameter AssetAddress
-func (o *AddAssetParams) validateAssetAddress(formats strfmt.Registry) error {
+func (o *DeleteAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 
 	if err := validate.Pattern("assetAddress", "query", o.AssetAddress, `^AS[0-9a-zA-Z]+$`); err != nil {
 		return err
@@ -107,7 +107,7 @@ func (o *AddAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 }
 
 // bindNickname binds and validates parameter Nickname from path.
-func (o *AddAssetParams) bindNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *DeleteAssetParams) bindNickname(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]

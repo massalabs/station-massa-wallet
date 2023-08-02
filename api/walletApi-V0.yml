@@ -383,7 +383,7 @@ paths:
   /api/accounts/{nickname}/assets:
     post:
       operationId: AddAsset
-      description: Add MRC-20 token information and persist it for future use.
+      description: Add token information and persist it for future use.
       produces:
         - application/json
       parameters:
@@ -391,13 +391,13 @@ paths:
           name: nickname
           type: string
           required: true
-          description: The nickname of the wallet to add the asset to.
+          description: The nickname of the account to add the asset to.
         - in: query
           name: assetAddress
           type: string
           pattern: ^AS[0-9a-zA-Z]+$
           required: true
-          description: The asset address (MRC-20 token address) to add to the wallet. It must start with "AS" and contain only alphanumeric characters.
+          description: The asset address (token address) to add to the account. It must start with "AS" and contain only alphanumeric characters.
       responses:
         201:
           description: Asset information retrieved successfully.
@@ -433,6 +433,38 @@ paths:
             type: array
             items:
               $ref: "#/definitions/AssetInfoWithBalance"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      operationId: DeleteAsset
+      description: Delete token information from an account.
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: nickname
+          type: string
+          required: true
+          description: The nickname of the account from which to delete the asset.
+        - in: query
+          name: assetAddress
+          type: string
+          pattern: ^AS[0-9a-zA-Z]+$
+          required: true
+          description: The asset address (token address) to delete from the account. It must start with "AS" and contain only alphanumeric characters.
+      responses:
+        201:
+          description: Asset information deleted successfully.
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Not found - At least one of the provided addresses is not valid.
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
