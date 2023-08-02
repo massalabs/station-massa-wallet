@@ -104,12 +104,12 @@ func (s *AssetsStore) loadWalletsStore() error {
 }
 
 // AssetExists checks if the asset information exists for a given contract address in the JSON.
-func (s *AssetsStore) AssetExists(walletNickname, contractAddress string) bool {
+func (s *AssetsStore) AssetExists(nickname, contractAddress string) bool {
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
 	// Check if the wallet exists in the WalletsStore
-	walletAssets, found := s.Assets[walletNickname]
+	walletAssets, found := s.Assets[nickname]
 	if !found {
 		return false
 	}
@@ -167,10 +167,10 @@ func (s *AssetsStore) save() error {
 	return nil
 }
 
-// AddAsset adds the asset information for a given wallet nickname in the JSON.
-func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo models.AssetInfo) error {
+// AddAsset adds the asset information for a given account nickname in the JSON.
+func (s *AssetsStore) AddAsset(nickname, assetAddress string, assetInfo models.AssetInfo) error {
 	// Update the ContractAssets map with the new asset information
-	s.AddAssetToMemory(walletNickname, assetAddress, assetInfo)
+	s.AddAssetToMemory(nickname, assetAddress, assetInfo)
 
 	// Synchronize the AssetsStore map to JSON and write to the file
 	if err := s.save(); err != nil {
@@ -180,13 +180,13 @@ func (s *AssetsStore) AddAsset(walletNickname, assetAddress string, assetInfo mo
 	return nil
 }
 
-// AddAssetToMemory adds the asset information for a given wallet nickname to the AssetsStore.
-func (s *AssetsStore) AddAssetToMemory(walletNickname, assetAddress string, assetInfo models.AssetInfo) {
+// AddAssetToMemory adds the asset information for a given account nickname to the AssetsStore.
+func (s *AssetsStore) AddAssetToMemory(nickname, assetAddress string, assetInfo models.AssetInfo) {
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
 	// Check if the walletAssets exists in the WalletsAssets map
-	walletAssets, found := s.Assets[walletNickname]
+	walletAssets, found := s.Assets[nickname]
 	if !found {
 		// If the walletAssets does not exist, initialize it with an empty map
 		walletAssets = Assets{
@@ -196,16 +196,16 @@ func (s *AssetsStore) AddAssetToMemory(walletNickname, assetAddress string, asse
 
 	// Update the ContractAssets map of the specific *assets.AssetsStore with the new asset information
 	walletAssets.ContractAssets[assetAddress] = assetInfo
-	s.Assets[walletNickname] = walletAssets
+	s.Assets[nickname] = walletAssets
 }
 
-// DeleteAssetFromMemory removes the asset information for a given wallet nickname and asset address from the AssetsStore.
-func (s *AssetsStore) DeleteAssetFromMemory(walletNickname, assetAddress string) {
+// DeleteAssetFromMemory removes the asset information for a given account nickname and asset address from the AssetsStore.
+func (s *AssetsStore) DeleteAssetFromMemory(nickname, assetAddress string) {
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
 	// Check if the walletAssets exists in the WalletsAssets map
-	walletAssets, found := s.Assets[walletNickname]
+	walletAssets, found := s.Assets[nickname]
 	if !found {
 		// If the walletAssets does not exist, there's nothing to delete, so return early.
 		return
@@ -215,12 +215,12 @@ func (s *AssetsStore) DeleteAssetFromMemory(walletNickname, assetAddress string)
 	delete(walletAssets.ContractAssets, assetAddress)
 
 	// Update the asset information in the AssetsStore
-	s.Assets[walletNickname] = walletAssets
+	s.Assets[nickname] = walletAssets
 }
 
-// DeleteAsset deletes the asset information for a given wallet nickname in the JSON.
-func (s *AssetsStore) DeleteAsset(walletNickname, assetAddress string) error {
-	s.DeleteAssetFromMemory(walletNickname, assetAddress)
+// DeleteAsset deletes the asset information for a given account nickname in the JSON.
+func (s *AssetsStore) DeleteAsset(nickname, assetAddress string) error {
+	s.DeleteAssetFromMemory(nickname, assetAddress)
 
 	// Synchronize the AssetsStore map to JSON and write to the file
 	if err := s.save(); err != nil {
