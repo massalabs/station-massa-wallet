@@ -11,7 +11,6 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
-// NewGetAllAssets creates a new handler for the GetAllAssets endpoint.
 func NewGetAllAssets(AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
 	return &getAllAssets{
 		AssetsStore: AssetsStore,
