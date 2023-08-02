@@ -26,7 +26,7 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.BackupAccountHandler = NewBackupAccount(prompterApp)
 	api.UpdateAccountHandler = NewUpdateAccount(prompterApp, massaClient)
 	api.AddAssetHandler = NewAddAsset(AssetsStore)
-	api.GetAllAssetsHandler = NewGetAllAssets(AssetsStore)
+	api.GetAllAssetsHandler = NewGetAllAssets(AssetsStore, massaClient)
 	api.DeleteAssetHandler = NewDeleteAsset(AssetsStore)
 }
 

@@ -246,3 +246,19 @@ func GetAssetsJSONPath() (string, error) {
 	}
 	return filepath.Join(walletDir, "assets.json"), nil
 }
+
+func XMAInfo() models.AssetInfo {
+	// The hardcoded data for XMA asset
+	name := "Massa"
+	symbol := "XMA"
+	decimals := int64(8)
+
+	// Create the AssetInfo struct with the predefined information
+	assetInfo := models.AssetInfo{
+		Name:     name,
+		Symbol:   symbol,
+		Decimals: &decimals,
+	}
+
+	return assetInfo
+}
