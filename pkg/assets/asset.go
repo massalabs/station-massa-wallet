@@ -251,7 +251,7 @@ func XMAInfo() models.AssetInfo {
 	// The hardcoded data for XMA asset
 	name := "Massa"
 	symbol := "XMA"
-	decimals := int64(8)
+	decimals := int64(9)
 
 	// Create the AssetInfo struct with the predefined information
 	assetInfo := models.AssetInfo{
