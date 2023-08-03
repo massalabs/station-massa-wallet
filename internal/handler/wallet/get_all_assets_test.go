@@ -82,9 +82,9 @@ func TestAddGetDeleteAsset(t *testing.T) {
 	assertAssetInfoWithBalanceEqual(t, assetsAfterAdd[0], assetsBeforeAdd[0])
 
 	// Assert the newly added asset
-	assert.Equal(t, "MassaToken", addedAsset.Name)
-	assert.Equal(t, "MST", addedAsset.Symbol)
-	assert.Equal(t, int64(18), *addedAsset.Decimals)
+	assert.Equal(t, "TestToken", addedAsset.Name)
+	assert.Equal(t, "TST", addedAsset.Symbol)
+	assert.Equal(t, int64(9), *addedAsset.Decimals)
 
 	// Assert the balance of the newly added asset
 	assert.Equal(t, "1000000", assetsAfterAdd[0].Balance)

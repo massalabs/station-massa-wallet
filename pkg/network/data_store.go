@@ -1,0 +1,56 @@
+package network
+
+import (
+	"fmt"
+
+	"github.com/massalabs/station/pkg/convert"
+	"github.com/massalabs/station/pkg/node"
+)
+
+const (
+	NAME_KEY           = "NAME"
+	SYMBOL_KEY         = "SYMBOL"
+	DECIMALS_KEY       = "DECIMALS"
+	BALANCE_KEY_PREFIX = "BALANCE"
+)
+
+// DatastoreAssetName retrieves the asset name for a given contract address from the Massa node.
+func (n *NodeFetcher) DatastoreAssetName(contractAddress string) (string, error) {
+	nameData, err := DatastoreEntry(contractAddress, convert.ToBytes(NAME_KEY))
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch asset name: %w", err)
+	}
+	return string(nameData), nil
+}
+
+// DatastoreAssetSymbol retrieves the asset symbol for a given contract address from the Massa node.
+func (n *NodeFetcher) DatastoreAssetSymbol(contractAddress string) (string, error) {
+	symbolData, err := DatastoreEntry(contractAddress, convert.ToBytes(SYMBOL_KEY))
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch asset symbol: %w", err)
+	}
+	return string(symbolData), nil
+}
+
+// DatastoreAssetDecimals retrieves the asset decimals for a given contract address from the Massa node.
+func (n *NodeFetcher) DatastoreAssetDecimals(contractAddress string) (uint8, error) {
+	decimalsData, err := DatastoreEntry(contractAddress, convert.ToBytes(DECIMALS_KEY))
+	if err != nil {
+		return 0, fmt.Errorf("failed to fetch asset decimals: %w", err)
+	}
+	return uint8(decimalsData[0]), nil
+}
+
+// DatastoreEntry is a helper function to fetch datastore entry from the Massa node.
+func DatastoreEntry(contractAddress string, key []byte) ([]byte, error) {
+	client, err := NewMassaClient()
+	if err != nil {
+		return nil, err
+	}
+
+	entry, err := node.DatastoreEntry(client, contractAddress, key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch datastore entry: %w", err)
+	}
+	return entry.CandidateValue, nil
+}

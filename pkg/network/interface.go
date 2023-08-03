@@ -15,6 +15,9 @@ type NodeFetcherInterface interface {
 	GetAccountsInfos(wlt []wallet.Wallet) ([]AccountInfos, error)
 	MakeOperation(fee uint64, operation sendOperation.Operation) ([]byte, error)
 	MakeRPCCall(msg []byte, signature []byte, publicKey string) ([]string, error)
+	DatastoreAssetName(contractAddress string) (string, error)
+	DatastoreAssetSymbol(contractAddress string) (string, error)
+	DatastoreAssetDecimals(contractAddress string) (uint8, error)
 }
 
 // Verifies at compilation time that NodeFetcher implements NodeFetcherInterface

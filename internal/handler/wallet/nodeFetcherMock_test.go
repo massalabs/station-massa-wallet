@@ -39,5 +39,23 @@ func (n *NodeFetcherMock) MakeRPCCall(msg []byte, signature []byte, publicKey st
 	return []string{"[O1Mw8wdurZphk6VbfB7i4irGwXmGkbpRmrLR84xfP5Ui4qEBy4z]"}, nil
 }
 
+// DatastoreAssetName retrieves the asset name for a given contract address from the Massa node.
+func (n *NodeFetcherMock) DatastoreAssetName(contractAddress string) (string, error) {
+	// Assuming "TestToken" as the mocked asset name
+	return "TestToken", nil
+}
+
+// DatastoreAssetSymbol retrieves the asset symbol for a given contract address from the Massa node.
+func (n *NodeFetcherMock) DatastoreAssetSymbol(contractAddress string) (string, error) {
+	// Assuming "TST" as the mocked asset symbol
+	return "TST", nil
+}
+
+// DatastoreAssetDecimals retrieves the asset decimals for a given contract address from the Massa node.
+func (n *NodeFetcherMock) DatastoreAssetDecimals(contractAddress string) (uint8, error) {
+	// Assuming 9 as the mocked asset decimals
+	return 9, nil
+}
+
 // Verifies at compilation time that NodeFetcherMock implements NodeFetcherInterface interface.
 var _ network.NodeFetcherInterface = &NodeFetcherMock{}
