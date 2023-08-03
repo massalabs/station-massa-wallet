@@ -8,6 +8,7 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	utils "github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,6 +18,11 @@ func TestAddAssetHandler_InvalidAddress(t *testing.T) {
 
 	nickname := "GoodNickname"
 	invalidAddress := "InvalidAddress"
+	password := "zePassword"
+
+
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	// Get the handler for the AddAsset endpoint
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/assets")
@@ -38,6 +44,9 @@ func TestAddAssetHandler_InvalidAddress(t *testing.T) {
 	// Remove the json file created
 	err = utils.RemoveJSONFile()
 	assert.NoError(t, err)
+
+	err = cleanupTestData([]string{nickname})
+	assert.NoError(t, err)
 }
 
 func TestAddAssetHandler_AssetAlreadyExists(t *testing.T) {
@@ -46,6 +55,12 @@ func TestAddAssetHandler_AssetAlreadyExists(t *testing.T) {
 
 	nickname := "GoodNickname"
 	existingAddress := "AS17gQyPvtwGQ2rfvE6L91J3N7ebvnvsSuh44vADVrPSFVW3vw96"
+
+	password := "zePassword"
+
+
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	// Get the handler for the AddAsset endpoint
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/assets")
@@ -71,5 +86,8 @@ func TestAddAssetHandler_AssetAlreadyExists(t *testing.T) {
 
 	// Remove the json file created
 	err = utils.RemoveJSONFile()
+	assert.NoError(t, err)
+
+	err = cleanupTestData([]string{nickname})
 	assert.NoError(t, err)
 }

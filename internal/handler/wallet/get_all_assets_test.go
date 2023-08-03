@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	utils "github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,17 +18,15 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
+	password := "zePassword"
 
-	// Create the test wallet first
-	// createTestWallet(t, api, "Create Wallet", nickname, http.StatusOK)
 
-	fmt.Println("wallet created ... ")
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	// Get the handler for the GetAllAssets endpoint
 	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}/assets")
 	assert.True(t, exist)
-
-	fmt.Println("Get Apid ... ")
 
 	// Send the GET request to retrieve all assets for the created wallet
 	resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/assets", nickname), "")
@@ -50,6 +49,9 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	// Remove the json file created
 	err = utils.RemoveJSONFile()
 	assert.NoError(t, err)
+
+	err = cleanupTestData([]string{nickname})
+	assert.NoError(t, err)
 }
 
 func TestAddGetDeleteAsset(t *testing.T) {
@@ -57,6 +59,11 @@ func TestAddGetDeleteAsset(t *testing.T) {
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
+	password := "zePassword"
+
+
+	_, errGenerate := wallet.Generate(nickname, password)
+	assert.Nil(t, errGenerate)
 
 	// Create the test wallet first
 
@@ -98,6 +105,9 @@ func TestAddGetDeleteAsset(t *testing.T) {
 
 	// Remove the json file created
 	err = utils.RemoveJSONFile()
+	assert.NoError(t, err)
+
+	err = cleanupTestData([]string{nickname})
 	assert.NoError(t, err)
 }
 
