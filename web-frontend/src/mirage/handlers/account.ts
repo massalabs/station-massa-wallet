@@ -1,5 +1,6 @@
-import { Server, Response } from 'miragejs';
 import { faker } from '@faker-js/faker';
+import { Server, Response } from 'miragejs';
+
 import { AppSchema } from '../types';
 
 function accountObject(nickname: string) {

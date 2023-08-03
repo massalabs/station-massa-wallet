@@ -1,7 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { parseForm, formatStandard } from '@/utils/';
-import { AccountObject } from '@/models/AccountModel';
-import Intl from '@/i18n/i18n';
+
 import {
   Button,
   Identicon,
@@ -14,6 +12,10 @@ import {
   Selector,
   Clipboard,
 } from '@massalabs/react-ui-kit';
+
+import Intl from '@/i18n/i18n';
+import { AccountObject } from '@/models/AccountModel';
+import { parseForm, formatStandard } from '@/utils/';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
 interface GenerateLinkProps {

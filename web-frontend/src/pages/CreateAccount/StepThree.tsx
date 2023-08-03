@@ -1,14 +1,15 @@
 import { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Intl from '@/i18n/i18n';
-import { routeFor } from '@/utils';
 
 import { Button, Stepper } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
-import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { AccountObject } from '@/models/AccountModel';
+
 import { usePost } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor } from '@/utils';
 
 export default function StepThree() {
   const navigate = useNavigate();

@@ -1,3 +1,5 @@
+import { useState, FormEvent } from 'react';
+
 import {
   Button,
   Currency,
@@ -6,8 +8,8 @@ import {
   PopupModalHeader,
   RadioButton,
 } from '@massalabs/react-ui-kit';
+
 import Intl from '@/i18n/i18n';
-import { useState, FormEvent } from 'react';
 import { parseForm } from '@/utils/parseForm';
 
 interface InputsErrors {

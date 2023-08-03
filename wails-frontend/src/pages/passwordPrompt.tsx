@@ -1,13 +1,20 @@
 import { useState, useRef, SyntheticEvent, ReactNode } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+
+import { toMAS } from '@massalabs/massa-web3';
+import { Password, Button, Balance } from '@massalabs/react-ui-kit';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime';
+import { FiLock, FiTrash2 } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import {
   events,
   promptAction,
   promptRequest,
   promptResult,
 } from '@/events/events';
+import Intl from '@/i18n/i18n';
+import { Layout } from '@/layouts/Layout/Layout';
 import {
   parseForm,
   ErrorCode,
@@ -17,12 +24,6 @@ import {
   handleApplyResult,
   handleCancel,
 } from '@/utils';
-
-import { FiLock, FiTrash2 } from 'react-icons/fi';
-import { Password, Button, Balance } from '@massalabs/react-ui-kit';
-import { Layout } from '@/layouts/Layout/Layout';
-import Intl from '@/i18n/i18n';
-import { toMAS } from '@massalabs/massa-web3';
 
 interface PromptRequestDeleteData {
   Nickname: string;

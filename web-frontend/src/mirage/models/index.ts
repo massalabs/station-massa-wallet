@@ -1,5 +1,6 @@
 import { Model } from 'miragejs';
 import { ModelDefinition } from 'miragejs/-types';
+
 import { AccountObject } from '../../models/AccountModel';
 import { TransferModel } from '../../models/TransferModel';
 

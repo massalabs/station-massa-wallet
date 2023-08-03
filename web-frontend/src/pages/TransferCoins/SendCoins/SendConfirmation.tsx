@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import Intl from '@/i18n/i18n';
+
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 
-import { maskAddress, formatStandard, toNanoMASS, toMASS } from '@/utils';
 import ToolTip from './ToolTip';
+import Intl from '@/i18n/i18n';
+import { maskAddress, formatStandard, toNanoMASS, toMASS } from '@/utils';
 
 export function SendConfirmation({ ...props }) {
   const { data, handleConfirm, isLoading } = props;

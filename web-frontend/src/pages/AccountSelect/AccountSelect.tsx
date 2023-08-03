@@ -1,20 +1,21 @@
 import { useEffect } from 'react';
-import { FiPlus } from 'react-icons/fi';
-import { Link, useNavigate } from 'react-router-dom';
-import { routeFor, formatStandard } from '@/utils';
-import { useResource } from '@/custom/api';
-import { AccountObject } from '@/models/AccountModel';
-import { toMAS } from '@massalabs/massa-web3';
-import { Loading } from './Loading';
-import Intl from '@/i18n/i18n';
 
-import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { toMAS } from '@massalabs/massa-web3';
 import {
   Button,
   Selector,
   MassaLogo,
   Identicon,
 } from '@massalabs/react-ui-kit';
+import { FiPlus } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { Loading } from './Loading';
+import { useResource } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor, formatStandard } from '@/utils';
 
 export default function AccountSelect() {
   const navigate = useNavigate();

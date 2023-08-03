@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { usePost } from '@/custom/api/usePost';
-import { AccountObject } from '@/models/AccountModel';
-import { routeFor } from '@/utils';
-import Intl from '@/i18n/i18n';
 
 import { Button, Stepper } from '@massalabs/react-ui-kit';
-import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { FiLock } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { usePost } from '@/custom/api/usePost';
+import Intl from '@/i18n/i18n';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor } from '@/utils';
 
 export default function StepTwo() {
   const navigate = useNavigate();

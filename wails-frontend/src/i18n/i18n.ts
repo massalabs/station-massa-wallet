@@ -6,8 +6,8 @@ import dot from 'dot-object';
 // LOCALS
 import enUs from './en_US.json';
 import frFR from './fr_FR.json';
-import { INTL } from '../const/intl/intl';
 import { LogPrint } from '../../wailsjs/runtime/runtime';
+import { INTL } from '../const/intl/intl';
 
 type Copy = Record<string, string | object>;
 

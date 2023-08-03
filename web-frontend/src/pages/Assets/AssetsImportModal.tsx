@@ -5,10 +5,9 @@ import {
   PopupModalContent,
   PopupModalHeader,
 } from '@massalabs/react-ui-kit';
+import { FiPlus } from 'react-icons/fi';
 
 import Intl from '@/i18n/i18n';
-
-import { FiPlus } from 'react-icons/fi';
 
 export function AssetsImportModal({ ...props }) {
   const { setModal } = props;
