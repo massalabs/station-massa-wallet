@@ -41,6 +41,26 @@ func (n *NodeFetcher) DatastoreAssetDecimals(contractAddress string) (uint8, err
 	return uint8(decimalsData[0]), nil
 }
 
+// DatastoreAssetBalance retrieves the balance of a user for a given asset contract address from the Massa node.
+func (n *NodeFetcher) DatastoreAssetBalance(assetContractAddress, userAddress string) (string, error) {
+	balanceData, err := DatastoreEntry(assetContractAddress, balanceKey(userAddress))
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch user balance: %w", err)
+	}
+
+	balanceValue, err := convert.BytesToU256(balanceData)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse user balance: %w", err)
+	}
+
+	return fmt.Sprint(balanceValue.String()), nil
+}
+
+// Function to convert an address to a storage key using the balance key prefix
+func balanceKey(address string) []byte {
+	return convert.ToBytes(BALANCE_KEY_PREFIX + address)
+}
+
 // DatastoreEntry is a helper function to fetch datastore entry from the Massa node.
 func DatastoreEntry(contractAddress string, key []byte) ([]byte, error) {
 	client, err := NewMassaClient()

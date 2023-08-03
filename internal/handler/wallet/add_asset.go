@@ -5,6 +5,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	address "github.com/massalabs/station/pkg/dnshelper"
 )
 
@@ -12,14 +13,16 @@ type AssetInfoListResponse struct {
 	Assets []models.AssetInfo `json:"assets"`
 }
 
-func NewAddAsset(AssetsStore *assets.AssetsStore) operations.AddAssetHandler {
+func NewAddAsset(AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.AddAssetHandler {
 	return &addAsset{
 		AssetsStore: AssetsStore,
+		massaClient: massaClient,
 	}
 }
 
 type addAsset struct {
 	AssetsStore *assets.AssetsStore
+	massaClient network.NodeFetcherInterface
 }
 
 func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
@@ -38,7 +41,7 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Fetch the asset information from the SC
-	assetInfoFromSC, err := assets.AssetInfo(params.AssetAddress)
+	assetInfoFromSC, err := assets.AssetInfo(params.AssetAddress, h.massaClient)
 	if err != nil {
 		// Return error occurred during SC fetch
 		errorMsg := "Failed to fetch asset information from the smart contract."

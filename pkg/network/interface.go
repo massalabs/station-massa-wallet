@@ -18,6 +18,7 @@ type NodeFetcherInterface interface {
 	DatastoreAssetName(contractAddress string) (string, error)
 	DatastoreAssetSymbol(contractAddress string) (string, error)
 	DatastoreAssetDecimals(contractAddress string) (uint8, error)
+	DatastoreAssetBalance(assetContractAddress, userAddress string) (string, error)
 }
 
 // Verifies at compilation time that NodeFetcher implements NodeFetcherInterface

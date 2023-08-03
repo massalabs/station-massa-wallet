@@ -54,7 +54,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	// Retrieve all assets from the selected WalletNickname
 	for assetAddress, assetInfo := range h.AssetsStore.Assets[params.Nickname].ContractAssets {
 		// Fetch the balance for the current asset
-		balance, err := assets.Balance(assetAddress, wlt.Address)
+		balance, err := h.massaClient.DatastoreAssetBalance(assetAddress, wlt.Address)
 		if err != nil {
 			// Handle the error and return an internal server error response
 			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
