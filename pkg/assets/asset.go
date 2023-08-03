@@ -262,3 +262,23 @@ func XMAInfo() models.AssetInfo {
 
 	return assetInfo
 }
+
+// RemoveJSONFile removes the assets.json file if it exists.
+func RemoveJSONFile() error {
+	assetsJSONPath, err := GetAssetsJSONPath()
+	if err != nil {
+		return err
+	}
+
+	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
+		// The file does not exist, so there's nothing to remove.
+		return nil
+	}
+
+	// The file exists, so let's attempt to remove it.
+	if err := os.Remove(assetsJSONPath); err != nil {
+		return errors.Wrap(err, "failed to remove assets JSON file")
+	}
+
+	return nil
+}
