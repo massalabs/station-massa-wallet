@@ -607,6 +607,7 @@ definitions:
       - keyPair
       - balance
       - candidateBalance
+      - status
     properties:
       nickname:
         $ref: "#/definitions/Nickname"
@@ -618,6 +619,12 @@ definitions:
         $ref: "#/definitions/Address"
       keyPair:
         $ref: "#/definitions/KeyPair"
+      status:
+        type: string
+        description: Indicates if there was an error while reading the account.
+        enum:
+          - ok
+          - corrupted
   Address:
     description: Account's address.
     type: string

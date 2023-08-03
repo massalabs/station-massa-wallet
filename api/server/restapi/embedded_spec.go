@@ -758,7 +758,8 @@ func init() {
         "address",
         "keyPair",
         "balance",
-        "candidateBalance"
+        "candidateBalance",
+        "status"
       ],
       "properties": {
         "address": {
@@ -775,6 +776,14 @@ func init() {
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
+        },
+        "status": {
+          "description": "Indicates if there was an error while reading the account.",
+          "type": "string",
+          "enum": [
+            "ok",
+            "corrupted"
+          ]
         }
       }
     },
@@ -1817,7 +1826,8 @@ func init() {
         "address",
         "keyPair",
         "balance",
-        "candidateBalance"
+        "candidateBalance",
+        "status"
       ],
       "properties": {
         "address": {
@@ -1834,6 +1844,14 @@ func init() {
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
+        },
+        "status": {
+          "description": "Indicates if there was an error while reading the account.",
+          "type": "string",
+          "enum": [
+            "ok",
+            "corrupted"
+          ]
         }
       }
     },

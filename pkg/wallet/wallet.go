@@ -65,6 +65,7 @@ type Wallet struct {
 	Nickname string
 	Address  string
 	KeyPair  KeyPair
+	Status   string
 }
 
 type AccountSerialized struct {
@@ -259,12 +260,12 @@ func LoadAll() ([]Wallet, error) {
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			wallet, loadErr := LoadFile(filePath)
+			wallets = append(wallets, wallet)
 			if loadErr != nil {
 				log.Errorf("while loading wallet '%s': %s", filePath, loadErr.Err)
 				continue
 			}
 
-			wallets = append(wallets, wallet)
 		}
 	}
 
@@ -307,16 +308,23 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	if err != nil {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
-
+	walletHasNickname := len(accountSerialized.Nickname) > 0
+	baseAccount := Wallet{
+		Nickname: "unknown wallet",
+	}
+	if walletHasNickname {
+		baseAccount.Nickname = accountSerialized.Nickname
+	}
 	errMissingFields := checkMandatoryFields(accountSerialized)
 	if errMissingFields != nil {
-		return Wallet{}, errMissingFields
+		return baseAccount, errMissingFields
 	}
 
 	account, err := accountSerialized.toAccount()
 	if err != nil {
-		return Wallet{}, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
+		return baseAccount, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
+	account.Status = "ok"
 
 	return account, nil
 }
