@@ -6,8 +6,10 @@ import { TransferModel } from '../../models/TransferModel';
 
 const accountModel: ModelDefinition<AccountObject> = Model.extend({});
 const transferModel: ModelDefinition<TransferModel> = Model.extend({});
+const assetModel: ModelDefinition<TransferModel> = Model.extend({});
 
 export const models = {
   account: accountModel,
   transfer: transferModel,
+  asset: assetModel,
 };

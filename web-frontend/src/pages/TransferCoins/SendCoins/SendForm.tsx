@@ -17,7 +17,7 @@ import {
   reverseFormatStandard,
 } from '@/utils';
 
-interface InputsErrors {
+export interface InputsErrors {
   amount?: string;
   recipient?: string;
 }

@@ -69,6 +69,43 @@ export function routesForAccounts(server: Server) {
     { timing: 500 },
   );
 
+  server.post(
+    'accounts/:nickname/assets',
+    (schema: AppSchema, request) => {
+      const { nickname } = request.params;
+      if (!nickname) {
+        return new Response(400, {
+          code: '0001',
+          message: 'missing nickname',
+        });
+      }
+
+      const account = schema.findBy('account', { nickname });
+
+      if (!account) {
+        return new Response(
+          404,
+          {},
+          { code: '404', error: 'Account not found' },
+        );
+      }
+
+      account.update({
+        assets: [
+          ...account.assets,
+          {
+            name: faker.word.sample(5) + 'Token',
+            symbol: faker.word.sample(5).slice(0, 3).toUpperCase(),
+            decimals: 9,
+            balance: faker.number.int().toString(),
+          },
+        ],
+      });
+      return new Response(201, {}, account.attrs.assets);
+    },
+    { timing: 500 },
+  );
+
   server.put('accounts', (schema: AppSchema) => {
     return schema.create(
       'account',
