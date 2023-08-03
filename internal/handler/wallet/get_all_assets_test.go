@@ -20,7 +20,6 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	nickname := "GoodNickname"
 	password := "zePassword"
 
-
 	_, errGenerate := wallet.Generate(nickname, password)
 	assert.Nil(t, errGenerate)
 
@@ -60,7 +59,6 @@ func TestAddGetDeleteAsset(t *testing.T) {
 
 	nickname := "GoodNickname"
 	password := "zePassword"
-
 
 	_, errGenerate := wallet.Generate(nickname, password)
 	assert.Nil(t, errGenerate)

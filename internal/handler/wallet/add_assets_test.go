@@ -20,7 +20,6 @@ func TestAddAssetHandler_InvalidAddress(t *testing.T) {
 	invalidAddress := "InvalidAddress"
 	password := "zePassword"
 
-
 	_, errGenerate := wallet.Generate(nickname, password)
 	assert.Nil(t, errGenerate)
 
@@ -57,7 +56,6 @@ func TestAddAssetHandler_AssetAlreadyExists(t *testing.T) {
 	existingAddress := "AS17gQyPvtwGQ2rfvE6L91J3N7ebvnvsSuh44vADVrPSFVW3vw96"
 
 	password := "zePassword"
-
 
 	_, errGenerate := wallet.Generate(nickname, password)
 	assert.Nil(t, errGenerate)
