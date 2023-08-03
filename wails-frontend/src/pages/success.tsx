@@ -1,6 +1,7 @@
-import { useLocation } from 'react-router';
-import { promptAction, promptRequest } from '@/events/events';
 import { FiCheck } from 'react-icons/fi';
+import { useLocation } from 'react-router';
+
+import { promptAction, promptRequest } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 

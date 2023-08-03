@@ -1,9 +1,4 @@
 import { ReactNode, useEffect } from 'react';
-import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
-import { useResource } from '../../custom/api';
-import { AccountObject } from '../../models/AccountModel';
-import { routeFor } from '../../utils';
-import Intl from '../../i18n/i18n';
 
 import {
   Dropdown,
@@ -20,6 +15,12 @@ import {
   FiSettings,
   FiPlus,
 } from 'react-icons/fi';
+import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
+
+import { useResource } from '../../custom/api';
+import Intl from '../../i18n/i18n';
+import { AccountObject } from '../../models/AccountModel';
+import { routeFor } from '../../utils';
 
 export enum MenuItem {
   Home = 'home',

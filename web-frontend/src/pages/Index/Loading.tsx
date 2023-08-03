@@ -1,5 +1,5 @@
-import LandingPage from '@/layouts/LandingPage/LandingPage';
 import Intl from '@/i18n/i18n';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
 
 export function Loading() {
   return (

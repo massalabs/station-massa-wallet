@@ -1,16 +1,18 @@
 import { useState } from 'react';
+
+import { Button } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import {
   SendPromptInput,
   SelectAccountFile,
 } from '@wailsjs/go/walletapp/WalletApp';
-import { events, promptRequest } from '@/events/events';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { handleApplyResult, handleCancel } from '@/utils';
-import { walletapp } from '@wailsjs/go/models';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
-import { Button } from '@massalabs/react-ui-kit';
-import { Layout } from '@/layouts/Layout/Layout';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { events, promptRequest } from '@/events/events';
 import Intl from '@/i18n/i18n';
+import { Layout } from '@/layouts/Layout/Layout';
+import { handleApplyResult, handleCancel } from '@/utils';
 
 const ImportFile = () => {
   const nav = useNavigate();

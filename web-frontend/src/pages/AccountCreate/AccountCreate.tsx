@@ -1,12 +1,12 @@
+import { Button } from '@massalabs/react-ui-kit';
+import { FiArrowRight } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
-import { routeFor } from '@/utils';
-import { AccountObject } from '@/models/AccountModel';
+
 import { usePut } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-
-import { Button } from '@massalabs/react-ui-kit';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
-import { FiArrowRight } from 'react-icons/fi';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor } from '@/utils';
 
 export default function AccountCreate() {
   const navigate = useNavigate();

@@ -1,7 +1,8 @@
-import { EventsOn } from '../wailsjs/runtime';
-import { events, promptAction, promptRequest } from './events/events';
 import { useNavigate } from 'react-router-dom';
+
+import { events, promptAction, promptRequest } from './events/events';
 import { useConfigStore } from './store/store';
+import { EventsOn } from '../wailsjs/runtime';
 
 export function App() {
   const navigate = useNavigate();

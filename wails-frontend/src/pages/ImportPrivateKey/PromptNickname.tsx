@@ -1,16 +1,16 @@
 import { SyntheticEvent, useRef, useState } from 'react';
-import { promptRequest } from '@/events/events';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { IErrorObject, parseForm, handleCancel } from '@/utils';
+
+import { Input, Button, Stepper } from '@massalabs/react-ui-kit';
 import {
   IsNicknameUnique,
   IsNicknameValid,
 } from '@wailsjs/go/walletapp/WalletApp';
-
-import { Input, Button, Stepper } from '@massalabs/react-ui-kit';
-import { Layout } from '@/layouts/Layout/Layout';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IMPORT_STEPS } from '@/const/stepper';
+import { promptRequest } from '@/events/events';
+import { Layout } from '@/layouts/Layout/Layout';
+import { IErrorObject, parseForm, handleCancel } from '@/utils';
 
 // TODO: create i18n and move this to translation file
 const t = (key: string): string => {

@@ -1,5 +1,6 @@
-import { ITokenData, XMA } from '@/const/assets/assets';
 import { MassaLogo, Mrc20, Token } from '@massalabs/react-ui-kit';
+
+import { ITokenData, XMA } from '@/const/assets/assets';
 
 export function AssetsList({ ...props }) {
   const { tokenArray } = props;

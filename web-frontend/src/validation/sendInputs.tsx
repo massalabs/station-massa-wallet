@@ -1,4 +1,5 @@
 import { fromMAS } from '@massalabs/massa-web3';
+
 import Intl from '@/i18n/i18n';
 import { checkAddressFormat, reverseFormatStandard } from '@/utils';
 

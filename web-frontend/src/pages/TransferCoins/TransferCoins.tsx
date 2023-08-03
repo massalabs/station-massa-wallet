@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
+
 import { Tabs } from '@massalabs/react-ui-kit';
-import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
-import Intl from '@/i18n/i18n';
-import SendCoins from './SendCoins/SendCoins';
-import ReceiveCoins from './ReceiveCoins/ReceiveCoins';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+
+import ReceiveCoins from './ReceiveCoins/ReceiveCoins';
+import SendCoins from './SendCoins/SendCoins';
+import { TAB_SEND, TAB_RECEIVE } from '@/const/tabs/tabs';
 import { useResource } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
 import { routeFor } from '@/utils';
-import { TAB_SEND, TAB_RECEIVE } from '@/const/tabs/tabs';
 
 function TransferCoins() {
   const navigate = useNavigate();

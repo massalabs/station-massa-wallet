@@ -1,15 +1,16 @@
 import { useState, useRef, SyntheticEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { ClipboardSetText, EventsOnce } from '@wailsjs/runtime';
-import { events, promptRequest, promptResult } from '@/events/events';
-import { parseForm } from '@/utils/parseForm';
-import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
-import { ErrorCode, IErrorObject, handleCancel } from '@/utils';
-import Intl from '@/i18n/i18n';
 
 import { Password, Button, Clipboard } from '@massalabs/react-ui-kit';
-import { Layout } from '@/layouts/Layout/Layout';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
+import { ClipboardSetText, EventsOnce } from '@wailsjs/runtime';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { events, promptRequest, promptResult } from '@/events/events';
+import Intl from '@/i18n/i18n';
+import { Layout } from '@/layouts/Layout/Layout';
+import { ErrorCode, IErrorObject, handleCancel } from '@/utils';
+import { parseForm } from '@/utils/parseForm';
 
 function EnterKey() {
   return (

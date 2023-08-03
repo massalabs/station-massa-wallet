@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { routeFor } from '@/utils';
-import { useResource, usePut } from '@/custom/api';
-import { AccountObject } from '@/models/AccountModel';
-import Intl from '@/i18n/i18n';
-import { Loading } from './Loading';
+
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
-import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { FiArrowRight } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { Loading } from './Loading';
+import { useResource, usePut } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor } from '@/utils';
 
 export default function Index() {
   const { error, data, isLoading } = useResource<AccountObject[]>('accounts');

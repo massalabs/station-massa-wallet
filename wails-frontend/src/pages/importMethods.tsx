@@ -1,7 +1,7 @@
-import { promptRequest } from '@/events/events';
+import { Button } from '@massalabs/react-ui-kit';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Button } from '@massalabs/react-ui-kit';
+import { promptRequest } from '@/events/events';
 import { Layout } from '@/layouts/Layout/Layout';
 
 const ImportMethods = () => {

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom/client';
 import {
   Route,
@@ -10,17 +11,17 @@ import './index.css';
 import '@massalabs/react-ui-kit/src/global.css';
 
 import App from '@/app';
+import BackupKeyPairs from '@/pages/backupKeyPairs';
+import BackupMethods from '@/pages/backupMethods';
+import ConfirmDelete from '@/pages/confirmDelete';
+import Failure from '@/pages/failure';
+import ImportFile from '@/pages/importFile';
+import ImportMethods from '@/pages/importMethods';
+import PromptNickname from '@/pages/ImportPrivateKey/PromptNickname';
+import PromptPrivateKey from '@/pages/ImportPrivateKey/PromptPrivateKey';
+import NewPassword from '@/pages/newPassword';
 import PasswordPrompt from '@/pages/passwordPrompt';
 import Success from '@/pages/success';
-import ImportMethods from '@/pages/importMethods';
-import ImportFile from '@/pages/importFile';
-import PromptPrivateKey from '@/pages/ImportPrivateKey/PromptPrivateKey';
-import PromptNickname from '@/pages/ImportPrivateKey/PromptNickname';
-import Failure from '@/pages/failure';
-import BackupMethods from '@/pages/backupMethods';
-import BackupKeyPairs from '@/pages/backupKeyPairs';
-import NewPassword from '@/pages/newPassword';
-import ConfirmDelete from '@/pages/confirmDelete';
 
 const router = createBrowserRouter(
   createRoutesFromElements(

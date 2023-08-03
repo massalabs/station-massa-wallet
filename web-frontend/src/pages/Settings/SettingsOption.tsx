@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-import { AccountObject } from '@/models/AccountModel';
-import { routeFor } from '@/utils';
-import { usePost, useDelete } from '@/custom/api';
-import Intl from '@/i18n/i18n';
-
 import { Button } from '@massalabs/react-ui-kit';
 import { FiTrash2 } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+
+import { usePost, useDelete } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import { AccountObject } from '@/models/AccountModel';
+import { routeFor } from '@/utils';
 
 interface SettingsOptionProps {
   nickname: string;

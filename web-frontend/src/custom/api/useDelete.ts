@@ -1,8 +1,8 @@
 // STYLES
 
 // EXTERNALS
-import axios from 'axios';
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 // LOCALS
 

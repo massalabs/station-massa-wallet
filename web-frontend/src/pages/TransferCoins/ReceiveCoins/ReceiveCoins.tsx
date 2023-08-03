@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { FiLink } from 'react-icons/fi';
+
+import { Button, Clipboard } from '@massalabs/react-ui-kit';
 import QRCodeReact from 'qrcode.react';
+import { FiLink } from 'react-icons/fi';
+
 import GenerateLink from './GenerateLink';
 import Intl from '@/i18n/i18n';
-import { Button, Clipboard } from '@massalabs/react-ui-kit';
 
 const VITE_BASE_APP = import.meta.env.VITE_BASE_APP;
 

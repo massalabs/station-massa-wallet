@@ -1,12 +1,11 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import { routeFor } from '@/utils';
-import Intl from '@/i18n/i18n';
-
-import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
-
 import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { FiEdit } from 'react-icons/fi';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import { SettingsOption } from './SettingsOption';
+import Intl from '@/i18n/i18n';
+import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
+import { routeFor } from '@/utils';
 
 export default function Settings() {
   const navigate = useNavigate();

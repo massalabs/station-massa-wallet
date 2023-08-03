@@ -1,7 +1,8 @@
 import { createServer } from 'miragejs';
+
+import { factories } from './factories';
 import { handlers } from './handlers';
 import { models } from './models';
-import { factories } from './factories';
 import { ENV } from '../const/env/env';
 
 export function mockServer(environment = ENV.DEV) {
