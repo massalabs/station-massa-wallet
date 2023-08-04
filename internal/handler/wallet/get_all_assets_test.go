@@ -22,20 +22,9 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	_, errGenerate := wallet.Generate(nickname, password)
 	assert.Nil(t, errGenerate)
 
-	// Get the handler for the GetAllAssets endpoint
-	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}/assets")
-	assert.True(t, exist)
+	// Get the assetsWithBalance
 
-	// Send the GET request to retrieve all assets for the created wallet
-	resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/assets", nickname), "")
-	assert.NoError(t, err)
-
-	assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
-
-	// Parse the response body to get the assetsWithBalance
-	var assetsWithBalance []*models.AssetInfoWithBalance
-	err = json.Unmarshal(resp.Body.Bytes(), &assetsWithBalance)
-	assert.NoError(t, err)
+	assetsWithBalance := getAssets(t, api, nickname)
 
 	// Assert that assetsWithBalance contains the expected data
 	assert.Len(t, assetsWithBalance, 1, "the assets list should have 1 item")
