@@ -14,6 +14,19 @@ const (
 	BALANCE_KEY_PREFIX = "BALANCE"
 )
 
+func (n *NodeFetcher) AssetExistInNetwork(contractAddress string) bool {
+	// Call DatastoreEntry to retrieve the asset name data for the given contractAddress
+	nameData, err := DatastoreEntry(contractAddress, convert.ToBytes(SYMBOL_KEY))
+	fmt.Println("🚀 ~ file: data_store.go:19 ~ func ~ nameData:", nameData)
+	if err != nil {
+		// If there is an error, we assume the asset does not exist in the network
+		return false
+	}
+
+	// Check if the length of nameData is greater than 0 to determine if the asset exists
+	return len(nameData) > 0
+}
+
 // DatastoreAssetName retrieves the asset name for a given contract address from the Massa node.
 func (n *NodeFetcher) DatastoreAssetName(contractAddress string) (string, error) {
 	nameData, err := DatastoreEntry(contractAddress, convert.ToBytes(NAME_KEY))

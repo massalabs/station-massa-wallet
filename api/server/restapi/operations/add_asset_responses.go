@@ -106,7 +106,7 @@ func (o *AddAssetBadRequest) WriteResponse(rw http.ResponseWriter, producer runt
 const AddAssetNotFoundCode int = 404
 
 /*
-AddAssetNotFound Not found - At least one of the provided addresses is not valid.
+AddAssetNotFound Not Found - The asset with the provided address was not found in the network.
 
 swagger:response addAssetNotFound
 */
