@@ -8,11 +8,8 @@ import {
   PopupModalHeader,
 } from '@massalabs/react-ui-kit';
 import { FiPlus } from 'react-icons/fi';
-import { useParams } from 'react-router-dom';
 
-import { usePost } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { ImportAssetsObject } from '@/models/assetModel';
 import { IForm, parseForm } from '@/utils';
 
 export interface InputsErrors {
@@ -20,13 +17,10 @@ export interface InputsErrors {
 }
 
 export function AssetsImportModal({ ...props }) {
-  const { setModal } = props;
+  const { setModal, mutate } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
   const [inputError, setInputError] = useState<InputsErrors | null>(null);
-  const { nickname } = useParams();
-
-  const { mutate } = usePost<ImportAssetsObject>(`accounts/${nickname}/assets`);
 
   function isValidAssetAddress(input: string): boolean {
     const regexPattern = /^AS[0-9a-zA-Z]+$/;
@@ -55,8 +49,6 @@ export function AssetsImportModal({ ...props }) {
     if (formObject.tokenAddress) {
       mutate({ params: { assetAddress: formObject.tokenAddress } });
     }
-
-    setModal(false);
   }
 
   return (

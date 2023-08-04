@@ -17,7 +17,9 @@
     "import": "Import token",
     "add": "Add token",
     "import-title": "Import A Fungible Token",
-    "import-subtitle": "Input the FT1 token’s address hash"
+    "import-subtitle": "Input the FT1 token’s address hash",
+    "success": "Token successfully added. Your assets will be updated soon",
+    "error": "Oops something went wrong"
   },
   "account": {
     "header": {

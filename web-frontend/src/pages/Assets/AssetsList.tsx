@@ -4,6 +4,7 @@ import { ITokenData, XMA } from '@/const/assets/assets';
 
 export function AssetsList({ ...props }) {
   const { tokenArray } = props;
+
   return (
     <>
       {tokenArray?.map((token: ITokenData, index: number) => (
