@@ -311,9 +311,7 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 	walletHasNickname := len(accountSerialized.Nickname) > 0
-	_, nicknameFromFileName := filepath.Split(filePath)
-	nicknameFromFileName = strings.TrimPrefix(nicknameFromFileName, "wallet_")
-	nicknameFromFileName = strings.TrimSuffix(nicknameFromFileName, ".yaml")
+	nicknameFromFileName := getNicknameFromFilePath(filePath)
 	baseAccount := Wallet{
 		Nickname: nicknameFromFileName,
 	}
@@ -329,7 +327,7 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	if err != nil {
 		return baseAccount, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
-	account.Status = "ok"
+	account.Status = StatusOK
 
 	return account, nil
 }
@@ -396,6 +394,12 @@ func DeleteAccount(nickname string) error {
 	}
 
 	return nil
+}
+
+func getNicknameFromFilePath(filePath string) string {
+	_, nicknameFromFileName := filepath.Split(filePath)
+	nicknameFromFileName = strings.TrimPrefix(nicknameFromFileName, "wallet_")
+	return strings.TrimSuffix(nicknameFromFileName, ".yaml")
 }
 
 // filename returns the wallet filename based on the given nickname.

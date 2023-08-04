@@ -45,13 +45,10 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 		modelWallet := createModelWallet(walletsWithoutError[i])
 		modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[i].CandidateBalance))
 		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))
-		modelWallet.Status = wallet.StatusOK
 		wlts = append(wlts, &modelWallet)
 	}
 	for u := 0; u < len(walletsWithError); u++ {
-		status := wallet.StatusCorrupted
 		modelWalletErr := createModelWallet(walletsWithError[u])
-		modelWalletErr.Status = status
 		wlts = append(wlts, &modelWalletErr)
 	}
 
