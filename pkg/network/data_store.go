@@ -17,12 +17,10 @@ const (
 func (n *NodeFetcher) AssetExistInNetwork(contractAddress string) bool {
 	// Call DatastoreEntry to retrieve the asset name data for the given contractAddress
 	nameData, err := DatastoreEntry(contractAddress, convert.ToBytes(SYMBOL_KEY))
-	fmt.Println("🚀 ~ file: data_store.go:19 ~ func ~ nameData:", nameData)
 	if err != nil {
 		// If there is an error, we assume the asset does not exist in the network
 		return false
 	}
-
 	// Check if the length of nameData is greater than 0 to determine if the asset exists
 	return len(nameData) > 0
 }
