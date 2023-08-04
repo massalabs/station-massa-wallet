@@ -3,7 +3,7 @@ import { MassaLogo, Mrc20, Token } from '@massalabs/react-ui-kit';
 import { ITokenData, XMA } from '@/const/assets/assets';
 
 export function AssetsList({ ...props }) {
-  const { tokenArray } = props;
+  const { tokenArray, mutableDelete } = props;
   return (
     <>
       {tokenArray?.map((token: ITokenData, index: number) => (
@@ -17,6 +17,9 @@ export function AssetsList({ ...props }) {
           balance={token.balance}
           key={index}
           disable={token?.symbol === XMA ? true : false}
+          onDelete={() => {
+            mutableDelete({});
+          }}
         />
       ))}
     </>
