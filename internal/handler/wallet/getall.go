@@ -64,9 +64,9 @@ func splitWalletsPerReadError(wallets []wallet.Wallet, err error) ([]wallet.Wall
 		walletsWithoutError []wallet.Wallet
 	)
 	for _, w := range wallets {
-		if w.Status==wallet.StatusOK {
+		if w.Status == wallet.StatusOK {
 			walletsWithoutError = append(walletsWithoutError, w)
-			} else {
+		} else {
 			walletsWithError = append(walletsWithError, w)
 		}
 	}
