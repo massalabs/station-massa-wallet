@@ -33,6 +33,13 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 		return operations.NewAddAssetUnprocessableEntity().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
 	}
 
+	// First, check if the asset exists in the network
+	if !h.massaClient.AssetExistInNetwork(params.AssetAddress) {
+		// If the asset does not exist in the network, return a 404 response
+		errorMsg := "Asset with the provided address not found in the network."
+		return operations.NewAddAssetNotFound().WithPayload(&models.Error{Code: errorAssetNotFound, Message: errorMsg})
+	}
+
 	// Check if the address exists in the loaded JSON
 	if h.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
 		// Return that the asset already exists

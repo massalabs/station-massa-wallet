@@ -377,7 +377,7 @@ func init() {
             }
           },
           "404": {
-            "description": "Not found - At least one of the provided addresses is not valid.",
+            "description": "Not Found - The asset with the provided address was not found in the network.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1408,7 +1408,7 @@ func init() {
             }
           },
           "404": {
-            "description": "Not found - At least one of the provided addresses is not valid.",
+            "description": "Not Found - The asset with the provided address was not found in the network.",
             "schema": {
               "$ref": "#/definitions/Error"
             }

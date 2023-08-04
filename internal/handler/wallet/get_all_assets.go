@@ -53,6 +53,11 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	// Retrieve all assets from the selected WalletNickname
 	for assetAddress, assetInfo := range h.AssetsStore.Assets[params.Nickname].ContractAssets {
+		// First, check if the asset exists in the network
+		if !h.massaClient.AssetExistInNetwork(assetAddress) {
+			// If the asset does not exist in the network, skip it and go to the next one
+			continue
+		}
 		// Fetch the balance for the current asset
 		balance, err := h.massaClient.DatastoreAssetBalance(assetAddress, wlt.Address)
 		if err != nil {
