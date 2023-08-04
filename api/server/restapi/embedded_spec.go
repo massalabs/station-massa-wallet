@@ -382,6 +382,12 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           },
+          "422": {
+            "description": "Unprocessable Entity - the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
             "schema": {
@@ -1403,6 +1409,12 @@ func init() {
           },
           "404": {
             "description": "Not found - At least one of the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - the provided addresses is not valid.",
             "schema": {
               "$ref": "#/definitions/Error"
             }

@@ -30,7 +30,7 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	if !address.IsValidAddress(params.AssetAddress) {
 		// Return an error indicating the address is not valid
 		errorMsg := "Invalid address format"
-		return operations.NewAddAssetBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
+		return operations.NewAddAssetUnprocessableEntity().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
 	}
 
 	// Check if the address exists in the loaded JSON
