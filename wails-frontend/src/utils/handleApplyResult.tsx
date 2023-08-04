@@ -29,7 +29,7 @@ export const handleApplyResult = (
     | null = null,
   quitOnError = false,
 ) => {
-  return (result: promptResult) => {
+  return (result: promptResult<null>) => {
     let timeoutId;
     if (result.Success) {
       navigate('/success', {

@@ -25,6 +25,11 @@ function EnterKey() {
   );
 }
 
+interface KeyPair {
+  privateKey: string;
+  publicKey: string;
+}
+
 interface CopyProps {
   privateKey: string;
 }
@@ -66,7 +71,7 @@ function BackupKeyPairs() {
     return true;
   }
 
-  async function handleResult(result: promptResult) {
+  async function handleResult(result: promptResult<KeyPair>) {
     let { Success, CodeMessage } = result;
 
     if (!Success) {
