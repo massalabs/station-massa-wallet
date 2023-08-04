@@ -414,7 +414,7 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
+          "204": {
             "description": "Asset information deleted successfully."
           },
           "400": {
@@ -1439,7 +1439,7 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
+          "204": {
             "description": "Asset information deleted successfully."
           },
           "400": {

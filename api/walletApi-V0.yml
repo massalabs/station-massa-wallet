@@ -455,7 +455,7 @@ paths:
           required: true
           description: The asset address (token address) to delete from the account. It must start with "AS" and contain only alphanumeric characters.
       responses:
-        201:
+        204:
           description: Asset information deleted successfully.
         400:
           description: Bad request.

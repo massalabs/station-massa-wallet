@@ -12,29 +12,29 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
-// DeleteAssetCreatedCode is the HTTP code returned for type DeleteAssetCreated
-const DeleteAssetCreatedCode int = 201
+// DeleteAssetNoContentCode is the HTTP code returned for type DeleteAssetNoContent
+const DeleteAssetNoContentCode int = 204
 
 /*
-DeleteAssetCreated Asset information deleted successfully.
+DeleteAssetNoContent Asset information deleted successfully.
 
-swagger:response deleteAssetCreated
+swagger:response deleteAssetNoContent
 */
-type DeleteAssetCreated struct {
+type DeleteAssetNoContent struct {
 }
 
-// NewDeleteAssetCreated creates DeleteAssetCreated with default headers values
-func NewDeleteAssetCreated() *DeleteAssetCreated {
+// NewDeleteAssetNoContent creates DeleteAssetNoContent with default headers values
+func NewDeleteAssetNoContent() *DeleteAssetNoContent {
 
-	return &DeleteAssetCreated{}
+	return &DeleteAssetNoContent{}
 }
 
 // WriteResponse to the client
-func (o *DeleteAssetCreated) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *DeleteAssetNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
 
-	rw.WriteHeader(201)
+	rw.WriteHeader(204)
 }
 
 // DeleteAssetBadRequestCode is the HTTP code returned for type DeleteAssetBadRequest

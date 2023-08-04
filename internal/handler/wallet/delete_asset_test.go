@@ -76,5 +76,5 @@ func deleteAssetTest(t *testing.T, api *operations.MassaWalletAPI, nickname, ass
 	resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/api/accounts/%s/assets?assetAddress=%s", nickname, assetAddress), "")
 	assert.NoError(t, err)
 
-	assert.Equal(t, http.StatusCreated, resp.Result().StatusCode)
+	assert.Equal(t, http.StatusNoContent, resp.Result().StatusCode)
 }
