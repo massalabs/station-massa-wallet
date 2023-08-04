@@ -1,9 +1,12 @@
 import { useState, FormEvent, useEffect } from 'react';
+
 import { Balance, Button, Currency, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
-import Intl from '@/i18n/i18n';
+
 import Advanced from './Advanced';
 import ContactList from './ContactList';
+import Intl from '@/i18n/i18n';
+import { AccountObject } from '@/models/AccountModel';
 import {
   IForm,
   parseForm,
@@ -13,7 +16,6 @@ import {
   reverseFormatStandard,
   fetchAccounts,
 } from '@/utils';
-import { AccountObject } from '@/models/AccountModel';
 
 interface InputsErrors {
   amount?: string;

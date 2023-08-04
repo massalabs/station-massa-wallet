@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { fetchAccounts, routeFor } from '@/utils';
-import { usePut } from '@/custom/api';
-import { AccountObject } from '@/models/AccountModel';
-import Intl from '@/i18n/i18n';
-import { Loading } from './Loading';
+
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
-import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { FiAlertTriangle, FiArrowRight } from 'react-icons/fi';
+import { Link, useNavigate } from 'react-router-dom';
+
+import { Loading } from './Loading';
+import { usePut } from '@/custom/api';
+import Intl from '@/i18n/i18n';
+import LandingPage from '@/layouts/LandingPage/LandingPage';
+import { AccountObject } from '@/models/AccountModel';
+import { fetchAccounts, routeFor } from '@/utils';
 
 export default function Index() {
   const { error, okAccounts, corruptedAccounts, isLoading } = fetchAccounts();
@@ -17,10 +19,8 @@ export default function Index() {
   const accountsStringified =
     corruptedAccountsNames
       ?.map(
-        (account: string, index: number) =>
-          `${account}${
-            index === corruptedAccountsNames.length - 1 ? '' : ', '
-          }`,
+        (name: string, index: number) =>
+          `${name}${index === corruptedAccountsNames.length - 1 ? '' : ', '}`,
       )
       .join('') || '';
   const corruptedAccountsCount = corruptedAccountsNames?.length;

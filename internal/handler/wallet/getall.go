@@ -42,17 +42,16 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	}
 
 	for i := 0; i < len(walletsWithoutError); i++ {
-		status := "ok"
 		modelWallet := createModelWallet(walletsWithoutError[i])
 		modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[i].CandidateBalance))
 		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))
-		modelWallet.Status = &status
+		modelWallet.Status = wallet.StatusOK
 		wlts = append(wlts, &modelWallet)
 	}
 	for u := 0; u < len(walletsWithError); u++ {
-		status := "corrupted"
+		status := wallet.StatusCorrupted
 		modelWalletErr := createModelWallet(walletsWithError[u])
-		modelWalletErr.Status = &status
+		modelWalletErr.Status = status
 		wlts = append(wlts, &modelWalletErr)
 	}
 
@@ -65,7 +64,7 @@ func splitWalletsPerReadError(wallets []wallet.Wallet, err error) ([]wallet.Wall
 		walletsWithoutError []wallet.Wallet
 	)
 	for _, w := range wallets {
-		if w.Status=="ok" {
+		if w.Status==wallet.StatusOK {
 			walletsWithoutError = append(walletsWithoutError, w)
 			} else {
 			walletsWithError = append(walletsWithError, w)

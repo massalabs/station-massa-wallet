@@ -67,7 +67,7 @@ paths:
       operationId: ImportAccount
       description: Import a new account
       produces:
-        - application/json  
+        - application/json
       responses:
         200:
           description: Account imported.
@@ -250,7 +250,7 @@ paths:
         - application/json
       responses:
         200:
-          description:  Returns the signature, public key, and correlationId (if provided).
+          description: Returns the signature, public key, and correlationId (if provided).
           schema:
             $ref: "#/definitions/SignResponse"
         400:
@@ -607,7 +607,6 @@ definitions:
       - keyPair
       - balance
       - candidateBalance
-      - status
     properties:
       nickname:
         $ref: "#/definitions/Nickname"
@@ -621,7 +620,6 @@ definitions:
         $ref: "#/definitions/KeyPair"
       status:
         type: string
-        description: Indicates if there was an error while reading the account.
         enum:
           - ok
           - corrupted

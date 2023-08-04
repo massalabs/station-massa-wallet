@@ -1,4 +1,5 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import { fetchAccounts, routeFor } from '@/utils';
 
 export default function Redirect() {

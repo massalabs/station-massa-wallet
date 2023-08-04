@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -39,11 +38,6 @@ type Account struct {
 	// nickname
 	// Required: true
 	Nickname Nickname `json:"nickname"`
-
-	// Indicates if there was an error while reading the account.
-	// Required: true
-	// Enum: [ok corrupted]
-	Status *string `json:"status"`
 }
 
 // Validate validates this account
@@ -67,10 +61,6 @@ func (m *Account) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateNickname(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateStatus(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -160,49 +150,6 @@ func (m *Account) validateNickname(formats strfmt.Registry) error {
 		} else if ce, ok := err.(*errors.CompositeError); ok {
 			return ce.ValidateName("nickname")
 		}
-		return err
-	}
-
-	return nil
-}
-
-var accountTypeStatusPropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["ok","corrupted"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		accountTypeStatusPropEnum = append(accountTypeStatusPropEnum, v)
-	}
-}
-
-const (
-
-	// AccountStatusOk captures enum value "ok"
-	AccountStatusOk string = "ok"
-
-	// AccountStatusCorrupted captures enum value "corrupted"
-	AccountStatusCorrupted string = "corrupted"
-)
-
-// prop value enum
-func (m *Account) validateStatusEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, accountTypeStatusPropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Account) validateStatus(formats strfmt.Registry) error {
-
-	if err := validate.Required("status", "body", m.Status); err != nil {
-		return err
-	}
-
-	// value enum
-	if err := m.validateStatusEnum("status", "body", *m.Status); err != nil {
 		return err
 	}
 

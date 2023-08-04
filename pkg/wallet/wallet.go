@@ -40,6 +40,8 @@ const (
 	PrivateKeyPrefix          = "S"
 	MaxNicknameLength         = 32
 	AccountVersion            = 1
+	StatusOK                  = "ok"
+	StatusCorrupted           = "corrupted"
 )
 
 func ErrorAccountNotFound(nickname string) error {
@@ -309,8 +311,11 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
 	walletHasNickname := len(accountSerialized.Nickname) > 0
+	_, nicknameFromFileName := filepath.Split(filePath)
+	nicknameFromFileName = strings.TrimPrefix(nicknameFromFileName, "wallet_")
+	nicknameFromFileName = strings.TrimSuffix(nicknameFromFileName, ".yaml")
 	baseAccount := Wallet{
-		Nickname: "unknown wallet",
+		Nickname: nicknameFromFileName,
 	}
 	if walletHasNickname {
 		baseAccount.Nickname = accountSerialized.Nickname

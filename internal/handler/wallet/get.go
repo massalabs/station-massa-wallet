@@ -80,5 +80,6 @@ func createModelWallet(wlt wallet.Wallet) models.Account {
 		Nickname: models.Nickname(wlt.Nickname),
 		Address:  models.Address(wlt.Address),
 		KeyPair:  models.KeyPair{},
+		Status:   wlt.Status,
 	}
 }
