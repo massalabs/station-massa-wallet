@@ -41,4 +41,7 @@ export const accountFactory = Factory.extend<AccountObject>({
     ];
     return initialTokens;
   },
+  status() {
+    return 'ok';
+  },
 });

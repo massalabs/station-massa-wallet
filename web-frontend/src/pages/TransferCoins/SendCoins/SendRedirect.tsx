@@ -1,16 +1,11 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-import { useResource } from '@/custom/api';
-import { AccountObject } from '@/models/AccountModel';
-import { routeFor } from '@/utils';
+import { fetchAccounts, routeFor } from '@/utils';
 
 export default function Redirect() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const provider = searchParams.get('provider');
-
-  const { data: accounts, isLoading } =
-    useResource<AccountObject[]>('accounts');
+  const { okAccounts: accounts, isLoading } = fetchAccounts();
 
   if (isLoading === false) {
     let nickname;

@@ -1,13 +1,9 @@
 import { useState, FormEvent, useEffect } from 'react';
-
 import { Balance, Button, Currency, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
-
+import Intl from '@/i18n/i18n';
 import Advanced from './Advanced';
 import ContactList from './ContactList';
-import { useResource } from '@/custom/api';
-import Intl from '@/i18n/i18n';
-import { AccountObject } from '@/models/AccountModel';
 import {
   IForm,
   parseForm,
@@ -15,7 +11,9 @@ import {
   toMASS,
   formatStandard,
   reverseFormatStandard,
+  fetchAccounts,
 } from '@/utils';
+import { AccountObject } from '@/models/AccountModel';
 
 interface InputsErrors {
   amount?: string;
@@ -42,7 +40,7 @@ export function SendForm({ ...props }) {
   );
   const [fees, setFees] = useState<string>(data?.fees ?? '1000');
   const [recipient, setRecipient] = useState<string>(data?.recipient ?? '');
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
+  const { okAccounts: accounts } = fetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );

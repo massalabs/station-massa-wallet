@@ -20,12 +20,7 @@ import { routeFor, formatStandard } from '@/utils';
 export default function AccountSelect() {
   const navigate = useNavigate();
 
-  const {
-    data: accounts,
-    isLoading,
-    error,
-  } = useResource<AccountObject[]>('accounts');
-
+  const { okAccounts: accounts, isLoading, error } = fetchAccounts();
   const hasAccounts = accounts?.length;
 
   useEffect(() => {

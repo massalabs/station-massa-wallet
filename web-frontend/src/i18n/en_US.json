@@ -48,7 +48,9 @@
     },
     "import": "Import an existing account",
     "add": "Add an account",
-    "select": "Select an account"
+    "select": "Select an account",
+    "corrupted-account": "Your wallet file: {account} is found, but its format is unknown. Import account to use it.",
+    "corrupted-accounts": "Your wallet files: {accounts} are found, but their format is unknown. Import accounts to use them."
   },
   "settings": {
     "title-profil": "Account profil",
