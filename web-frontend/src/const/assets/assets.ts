@@ -10,3 +10,11 @@ export interface ITokenData {
   disable?: boolean;
   onDelete?: () => void;
 }
+
+export const assetImportErrors = {
+  success: 201,
+  badRequest: 400,
+  invalidAddress: 422,
+  notFound: 404,
+  serverError: 500,
+};

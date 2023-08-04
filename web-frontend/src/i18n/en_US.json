@@ -19,7 +19,11 @@
     "import-title": "Import A Fungible Token",
     "import-subtitle": "Input the FT1 token’s address hash",
     "success": "Token successfully added. Your assets will be updated soon",
-    "error": "Oops something went wrong"
+    "wrong-format": "Invalid asset address format. It must start with 'AS' and contain only alphanumeric characters.",
+    "bad-request": "This asset has already been imported or is an invalid address please try again",
+    "invalid-address": "The provided addresses is not valid.",
+    "not-found": "The asset with the provided address was not found in the network.",
+    "internal-server-error": "An error occurred while trying to add the asset. Please try again later."
   },
   "account": {
     "header": {

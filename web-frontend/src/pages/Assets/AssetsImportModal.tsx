@@ -33,7 +33,7 @@ export function AssetsImportModal({ ...props }) {
     setInputError(null);
 
     if (isValidAssetAddress(tokenAddress) === false) {
-      setInputError({ address: 'Invalid Address' });
+      setInputError({ address: Intl.t('assets.wrong-format') });
       return false;
     }
 

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 
 import { Button, toast } from '@massalabs/react-ui-kit';
+import { AxiosError } from 'axios';
 import { FiPlus } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
 import { AssetsImportModal } from './AssetsImportModal';
 import { AssetsList } from './AssetsList';
 import { AssetsLoading } from './AssetsLoading';
+import { assetImportErrors } from '@/const/assets/assets';
 import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
@@ -21,18 +23,39 @@ function Assets() {
     IToken[]
   >(`accounts/${nickname}/assets`);
 
-  const { mutate, isSuccess, isError } = usePost<ImportAssetsObject>(
-    `accounts/${nickname}/assets`,
-  );
+  const {
+    mutate,
+    isSuccess: postSuccess,
+    isError: postError,
+    error,
+  } = usePost<ImportAssetsObject>(`accounts/${nickname}/assets`);
+
+  const axiosError = error as AxiosError;
+  const postErrorStatus = axiosError?.response?.status;
 
   useEffect(() => {
-    if (isSuccess) {
+    if (postSuccess) {
       toast.success(Intl.t('assets.success'));
       setModal(false);
-    } else if (isError) {
-      toast.error(Intl.t('assets.error'));
+    } else if (postError) {
+      switch (postErrorStatus) {
+        case assetImportErrors.badRequest:
+          toast.error(Intl.t('assets.bad-request'));
+          break;
+        case assetImportErrors.invalidAddress:
+          toast.error(Intl.t('assets.invalid-address'));
+          break;
+        case assetImportErrors.notFound:
+          toast.error(Intl.t('assets.not-found'));
+          break;
+        case assetImportErrors.serverError:
+          toast.error(Intl.t('assets.internal-server-error'));
+          break;
+        default:
+          console.log('Unknown Error:', postErrorStatus);
+      }
     }
-  }, [isSuccess, isError]);
+  }, [postSuccess, postError]);
 
   return (
     <WalletLayout menuItem={MenuItem.Assets}>
