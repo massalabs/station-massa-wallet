@@ -23,7 +23,6 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	assert.Nil(t, errGenerate)
 
 	// Get the assetsWithBalance
-
 	assetsWithBalance := getAssets(t, api, nickname)
 
 	// Assert that assetsWithBalance contains the expected data
