@@ -7,49 +7,10 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	network "github.com/massalabs/station-massa-wallet/pkg/network"
-	"github.com/massalabs/station/pkg/convert"
-	"github.com/massalabs/station/pkg/node"
 )
-
-const (
-	NAME_KEY           = "NAME"
-	SYMBOL_KEY         = "SYMBOL"
-	DECIMALS_KEY       = "DECIMALS"
-	BALANCE_KEY_PREFIX = "BALANCE"
-)
-
-// Function to convert an address to a storage key using the balance key prefix
-func balanceKey(address string) []byte {
-	return convert.ToBytes(BALANCE_KEY_PREFIX + address)
-}
-
-// Balance retrieves the balance of a user for a given asset contract address by making a smart contract call.
-func Balance(assetContractAddress, userAddress string) (string, error) {
-	client, err := network.NewMassaClient()
-	if err != nil {
-		return "", fmt.Errorf("failed to create Massa client: %w", err)
-	}
-
-	balanceData, err := node.DatastoreEntry(client, assetContractAddress, balanceKey(userAddress))
-	if err != nil {
-		return "", fmt.Errorf("failed to fetch user balance: %w", err)
-	}
-
-	balanceValue, err := convert.BytesToU256(balanceData.CandidateValue)
-	if err != nil {
-		return "", fmt.Errorf("failed to parse user balance: %w", err)
-	}
-
-	return fmt.Sprint(balanceValue.String()), nil
-}
 
 // AssetInfo retrieves the asset information for a given contract address by making a smart contract call.
-func AssetInfo(contractAddress string) (*models.AssetInfo, error) {
-	client, err := network.NewMassaClient()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create Massa client: %w", err)
-	}
-
+func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface) (*models.AssetInfo, error) {
 	// Create WaitGroup to wait for all Goroutines to finish
 	var wg sync.WaitGroup
 	wg.Add(3)
@@ -63,34 +24,34 @@ func AssetInfo(contractAddress string) (*models.AssetInfo, error) {
 	// Concurrently fetch asset name
 	go func() {
 		defer wg.Done()
-		nameData, err := node.DatastoreEntry(client, contractAddress, convert.ToBytes(NAME_KEY))
+		nameData, err := massaClient.DatastoreAssetName(contractAddress)
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset name: %w", err)
 			return
 		}
-		nameCh <- string(nameData.CandidateValue)
+		nameCh <- nameData
 	}()
 
 	// Concurrently fetch asset symbol
 	go func() {
 		defer wg.Done()
-		symbolData, err := node.DatastoreEntry(client, contractAddress, convert.ToBytes(SYMBOL_KEY))
+		symbolData, err := massaClient.DatastoreAssetSymbol(contractAddress)
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset symbol: %w", err)
 			return
 		}
-		symbolCh <- string(symbolData.CandidateValue)
+		symbolCh <- symbolData
 	}()
 
 	// Concurrently fetch asset decimals
 	go func() {
 		defer wg.Done()
-		decimals, err := node.DatastoreEntry(client, contractAddress, convert.ToBytes(DECIMALS_KEY))
+		decimals, err := massaClient.DatastoreAssetDecimals(contractAddress)
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset decimals: %w", err)
 			return
 		}
-		decimalsCh <- uint8((decimals.CandidateValue)[0])
+		decimalsCh <- decimals
 	}()
 
 	// Wait for all Goroutines to finish

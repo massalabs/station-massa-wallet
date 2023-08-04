@@ -39,5 +39,26 @@ func (n *NodeFetcherMock) MakeRPCCall(msg []byte, signature []byte, publicKey st
 	return []string{"[O1Mw8wdurZphk6VbfB7i4irGwXmGkbpRmrLR84xfP5Ui4qEBy4z]"}, nil
 }
 
+// DatastoreAssetName returns a dummy Asset Name.
+func (n *NodeFetcherMock) DatastoreAssetName(contractAddress string) (string, error) {
+	return "TestToken", nil
+}
+
+// DatastoreAssetSymbol  returns a dummy Asset Symbol.
+func (n *NodeFetcherMock) DatastoreAssetSymbol(contractAddress string) (string, error) {
+	return "TST", nil
+}
+
+// DatastoreAssetDecimals  returns a dummy Asset Decimals.
+func (n *NodeFetcherMock) DatastoreAssetDecimals(contractAddress string) (uint8, error) {
+	return 9, nil
+}
+
+// DatastoreAssetBalanceMock returns a dummy Asset Balance.
+func (n *NodeFetcherMock) DatastoreAssetBalance(assetContractAddress, userAddress string) (string, error) {
+	// Return a balance value of 10000 as a string
+	return "10000", nil
+}
+
 // Verifies at compilation time that NodeFetcherMock implements NodeFetcherInterface interface.
 var _ network.NodeFetcherInterface = &NodeFetcherMock{}

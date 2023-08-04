@@ -407,6 +407,10 @@ paths:
           description: Bad request.
           schema:
             $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - the provided addresses is not valid.
+          schema:
+            $ref: "#/definitions/Error"
         404:
           description: Not found - At least one of the provided addresses is not valid.
           schema:
@@ -455,7 +459,7 @@ paths:
           required: true
           description: The asset address (token address) to delete from the account. It must start with "AS" and contain only alphanumeric characters.
       responses:
-        201:
+        204:
           description: Asset information deleted successfully.
         400:
           description: Bad request.

@@ -382,6 +382,12 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           },
+          "422": {
+            "description": "Unprocessable Entity - the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
             "schema": {
@@ -414,7 +420,7 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
+          "204": {
             "description": "Asset information deleted successfully."
           },
           "400": {
@@ -1407,6 +1413,12 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           },
+          "422": {
+            "description": "Unprocessable Entity - the provided addresses is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
             "schema": {
@@ -1439,7 +1451,7 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
+          "204": {
             "description": "Asset information deleted successfully."
           },
           "400": {

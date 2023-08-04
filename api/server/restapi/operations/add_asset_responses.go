@@ -147,6 +147,51 @@ func (o *AddAssetNotFound) WriteResponse(rw http.ResponseWriter, producer runtim
 	}
 }
 
+// AddAssetUnprocessableEntityCode is the HTTP code returned for type AddAssetUnprocessableEntity
+const AddAssetUnprocessableEntityCode int = 422
+
+/*
+AddAssetUnprocessableEntity Unprocessable Entity - the provided addresses is not valid.
+
+swagger:response addAssetUnprocessableEntity
+*/
+type AddAssetUnprocessableEntity struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewAddAssetUnprocessableEntity creates AddAssetUnprocessableEntity with default headers values
+func NewAddAssetUnprocessableEntity() *AddAssetUnprocessableEntity {
+
+	return &AddAssetUnprocessableEntity{}
+}
+
+// WithPayload adds the payload to the add asset unprocessable entity response
+func (o *AddAssetUnprocessableEntity) WithPayload(payload *models.Error) *AddAssetUnprocessableEntity {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the add asset unprocessable entity response
+func (o *AddAssetUnprocessableEntity) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *AddAssetUnprocessableEntity) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(422)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // AddAssetInternalServerErrorCode is the HTTP code returned for type AddAssetInternalServerError
 const AddAssetInternalServerErrorCode int = 500
 

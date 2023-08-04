@@ -40,6 +40,6 @@ func (h *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Res
 		return operations.NewDeleteAssetInternalServerError().WithPayload(&models.Error{Code: errorDeleteAssetJSON, Message: errorMsg})
 	}
 
-	response := operations.NewDeleteAssetCreated()
+	response := operations.NewDeleteAssetNoContent()
 	return response
 }
