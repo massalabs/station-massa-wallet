@@ -56,10 +56,7 @@ export default function StepThree() {
             </Link>
           </div>
           <div className="pb-4 w-full">
-            <Button
-              variant="secondary"
-              onClick={() => mutate({} as AccountObject)}
-            >
+            <Button variant="secondary" onClick={() => mutate({})}>
               {Intl.t('account.create.buttons.backup')}
             </Button>
           </div>

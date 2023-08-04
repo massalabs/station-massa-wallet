@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import {
   Button,
@@ -6,7 +6,6 @@ import {
   PopupModal,
   PopupModalContent,
   PopupModalHeader,
-  toast,
 } from '@massalabs/react-ui-kit';
 import { FiPlus } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
@@ -24,14 +23,10 @@ export function AssetsImportModal({ ...props }) {
   const { setModal } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
-  const [error, setError] = useState<InputsErrors | null>(null);
+  const [inputError, setInputError] = useState<InputsErrors | null>(null);
   const { nickname } = useParams();
 
-  const {
-    mutate,
-    error: postError,
-    isSuccess: postSuccess,
-  } = usePost<ImportAssetsObject>(`accounts/${nickname}/assets`);
+  const { mutate } = usePost<ImportAssetsObject>(`accounts/${nickname}/assets`);
 
   function isValidAssetAddress(input: string): boolean {
     const regexPattern = /^AS[0-9a-zA-Z]+$/;
@@ -41,10 +36,10 @@ export function AssetsImportModal({ ...props }) {
   function validate(formObject: IForm) {
     const { tokenAddress } = formObject;
 
-    setError(null);
+    setInputError(null);
 
     if (isValidAssetAddress(tokenAddress) === false) {
-      setError({ address: 'Invalid Address' });
+      setInputError({ address: 'Invalid Address' });
       return false;
     }
 
@@ -58,19 +53,11 @@ export function AssetsImportModal({ ...props }) {
     if (!validate(formObject)) return;
 
     if (formObject.tokenAddress) {
-      mutate(formObject.tokenAddress);
+      mutate({ params: { assetAddress: formObject.tokenAddress } });
     }
 
     setModal(false);
   }
-
-  useEffect(() => {
-    if (postError) {
-      toast.error('error');
-    } else if (postSuccess) {
-      toast.success('success');
-    }
-  }, [postSuccess]);
 
   return (
     <PopupModal
@@ -90,7 +77,7 @@ export function AssetsImportModal({ ...props }) {
               value={tokenAddress}
               name="tokenAddress"
               onChange={(e) => setTokenAddress(e.target.value)}
-              error={error?.address}
+              error={inputError?.address}
             />
             <Button
               customClass="mt-2"
