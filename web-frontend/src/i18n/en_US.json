@@ -106,7 +106,7 @@
     "invalid-password": "Wrong password",
     "invalid-private-key": "Invalid private key",
     "no-file": "No file selected",
-    "invalid-file": "Filesystem error",
+    "invalid-file": "Unsupported file format. Please, try another file or import the account by providing private keys.",
     "invalid-file-format": "Invalid account file format",
     "unknown": "Unknown error, try again",
     "duplicate-key": "Private key already exists",
