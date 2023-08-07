@@ -812,6 +812,9 @@ func init() {
         {
           "type": "object",
           "properties": {
+            "assetAddress": {
+              "type": "string"
+            },
             "balance": {
               "type": "string"
             }
@@ -1869,6 +1872,9 @@ func init() {
         {
           "type": "object",
           "properties": {
+            "assetAddress": {
+              "type": "string"
+            },
             "balance": {
               "type": "string"
             }

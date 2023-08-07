@@ -44,7 +44,10 @@ func TestAddGetDeleteAsset(t *testing.T) {
 	assert.Equal(t, int64(9), *addedAsset.Decimals)
 
 	// Assert the balance of the newly added asset
-	assert.Equal(t, "1000000", assetsAfterAdd[0].Balance)
+	assert.Equal(t, "10000", assetsAfterAdd[1].Balance)
+
+	// Assert the address of the newly added asset
+	assert.Equal(t, validAddress, assetsAfterAdd[1].AssetAddress)
 
 	// Step 4: Delete the imported asset
 	deleteAssetTest(t, api, nickname, validAddress)

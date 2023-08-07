@@ -671,3 +671,5 @@ definitions:
         properties:
           balance:
             type: string
+          assetAddress:
+            type: string

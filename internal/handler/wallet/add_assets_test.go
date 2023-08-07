@@ -25,29 +25,50 @@ func TestAddAssetHandler(t *testing.T) {
 	_, errGenerate := wallet.Generate(nickname, password)
 	assert.Nil(t, errGenerate)
 
-	t.Run("InvalidAddress", func(t *testing.T) {
-		invalidAddress := "InvalidAddress"
-		// Get the handler for the AddAsset endpoint
-		handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/assets")
-		assert.True(t, exist)
+	type testCase struct {
+		Name            string
+		InvalidAddress  string
+		ExpectedCode    int
+		ExpectedMessage string
+	}
 
-		// Send the POST request with an invalid address
-		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/assets?assetAddress=%s", nickname, invalidAddress), "")
-		assert.NoError(t, err)
+	testCases := []testCase{
+		{
+			Name:            "InvalidAddress1",
+			InvalidAddress:  "InvalidAddress1",
+			ExpectedCode:    http.StatusUnprocessableEntity,
+			ExpectedMessage: "assetAddress in query should match '^AS[0-9a-zA-Z]+$'",
+		},
+		{
+			Name:            "InvalidAddress2",
+			InvalidAddress:  "AS12GwD3UEk2BP1zMx2zSdvKov97z8gs1MtsoN4u4C9emLBbhYa3U",
+			ExpectedCode:    http.StatusNotFound,
+			ExpectedMessage: "Asset with the provided address not found in the network.",
+		},
+		// Add more test cases here as needed
+	}
 
-		// Assert that the response status code is 422 Unprocessable Entity
-		assert.Equal(t, http.StatusUnprocessableEntity, resp.Result().StatusCode)
+	// Get the handler for the AddAsset endpoint
+	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/assets")
+	assert.True(t, exist)
 
-		// Parse the error response from the body
-		var errorResponse models.Error
-		_ = json.Unmarshal(resp.Body.Bytes(), &errorResponse)
-		// Assert that the error message matches the expected values
-		assert.Equal(t, "assetAddress in query should match '^AS[0-9a-zA-Z]+$'", errorResponse.Message)
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			// Send the POST request with the current invalid address
+			resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/assets?assetAddress=%s", nickname, tc.InvalidAddress), "")
+			assert.NoError(t, err)
 
-		// Remove the json file created
-		err = RemoveJSONFile()
-		assert.NoError(t, err)
-	})
+			// Assert that the response status code matches the expected code
+			assert.Equal(t, tc.ExpectedCode, resp.Result().StatusCode)
+
+			// Parse the error response from the body
+			var errorResponse models.Error
+			_ = json.Unmarshal(resp.Body.Bytes(), &errorResponse)
+
+			// Assert that the error message matches the expected message
+			assert.Equal(t, tc.ExpectedMessage, errorResponse.Message)
+		})
+	}
 
 	t.Run("AssetAlreadyExists", func(t *testing.T) {
 		existingAddress := "AS17gQyPvtwGQ2rfvE6L91J3N7ebvnvsSuh44vADVrPSFVW3vw96"
@@ -81,6 +102,10 @@ func TestAddAssetHandler(t *testing.T) {
 		err = cleanupTestData([]string{nickname})
 		assert.NoError(t, err)
 	})
+
+	// Remove the json file created
+	err = RemoveJSONFile()
+	assert.NoError(t, err)
 }
 
 func addAssetTest(t *testing.T, api *operations.MassaWalletAPI, nickname, assetAddress string) *models.AssetInfo {
