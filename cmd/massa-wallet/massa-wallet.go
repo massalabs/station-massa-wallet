@@ -56,7 +56,7 @@ func StartServer(app *walletApp.WalletApp) {
 		log.Fatalln(err)
 	}
 
-	plugin.RegisterPlugin(listener, plugin.Info{})
+	plugin.RegisterPlugin(listener)
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
