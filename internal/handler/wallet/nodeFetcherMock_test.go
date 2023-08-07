@@ -61,7 +61,7 @@ func (n *NodeFetcherMock) DatastoreAssetBalance(assetContractAddress, userAddres
 }
 
 func (n *NodeFetcherMock) AssetExistInNetwork(contractAddress string) bool {
-	return true
+	return contractAddress != "AS12GwD3UEk2BP1zMx2zSdvKov97z8gs1MtsoN4u4C9emLBbhYa3U"
 }
 
 // Verifies at compilation time that NodeFetcherMock implements NodeFetcherInterface interface.
