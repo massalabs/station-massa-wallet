@@ -11,21 +11,15 @@ import { FiPlus } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Loading } from './Loading';
-import { useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
-import { routeFor, formatStandard } from '@/utils';
+import { routeFor, formatStandard, fetchAccounts } from '@/utils';
 
 export default function AccountSelect() {
   const navigate = useNavigate();
 
-  const {
-    data: accounts,
-    isLoading,
-    error,
-  } = useResource<AccountObject[]>('accounts');
-
+  const { okAccounts: accounts, isLoading, error } = fetchAccounts();
   const hasAccounts = accounts?.length;
 
   useEffect(() => {

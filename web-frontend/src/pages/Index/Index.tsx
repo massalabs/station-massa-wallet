@@ -1,22 +1,37 @@
 import { useEffect } from 'react';
 
 import { Button } from '@massalabs/react-ui-kit/src/components/Button/Button';
-import { FiArrowRight } from 'react-icons/fi';
+import { FiAlertTriangle, FiArrowRight } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Loading } from './Loading';
-import { useResource, usePut } from '@/custom/api';
+import { usePut } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
-import { routeFor } from '@/utils';
+import { fetchAccounts, routeFor } from '@/utils';
 
 export default function Index() {
-  const { error, data, isLoading } = useResource<AccountObject[]>('accounts');
+  const { error, okAccounts, corruptedAccounts, isLoading } = fetchAccounts();
+  const corruptedAccountsNames = corruptedAccounts?.map(
+    (account: AccountObject) => account.nickname,
+  );
+  const accountsStringified =
+    corruptedAccountsNames
+      ?.map(
+        (name: string, index: number) =>
+          `${name}${index === corruptedAccountsNames.length - 1 ? '' : ', '}`,
+      )
+      .join('') || '';
+  const corruptedAccountsCount = corruptedAccountsNames?.length;
   const { mutate, isSuccess } = usePut<AccountObject>('accounts');
   const navigate = useNavigate();
-
-  const hasAccounts = data?.length;
+  const hasAccounts = okAccounts?.length;
+  const warningMessage = corruptedAccountsCount
+    ? corruptedAccountsCount === 1
+      ? Intl.t('account.corrupted-account', { account: accountsStringified })
+      : Intl.t('account.corrupted-accounts', { accounts: accountsStringified })
+    : undefined;
 
   useEffect(() => {
     if (error) {
@@ -24,7 +39,7 @@ export default function Index() {
     } else if (hasAccounts || isSuccess) {
       navigate(routeFor('account-select'));
     }
-  }, [data, navigate, hasAccounts, error, isSuccess]);
+  }, [okAccounts, navigate, hasAccounts, error, isSuccess]);
 
   return (
     <LandingPage>
@@ -58,6 +73,16 @@ export default function Index() {
               {Intl.t('account.import')}
             </Button>
           </div>
+          {corruptedAccountsCount && (
+            <div className="flex items-center text-f-primary w-[384px] h-fit py-6 gap-2 justify-center">
+              <div className="min-w-fit flex items-center justify-center h-full text-s-warning">
+                <FiAlertTriangle size={36} />
+              </div>
+              <p className="flex items-center justify-center h-full">
+                {warningMessage}
+              </p>
+            </div>
+          )}
         </div>
       ) : null}
     </LandingPage>

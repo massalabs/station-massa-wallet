@@ -775,6 +775,13 @@ func init() {
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "corrupted"
+          ]
         }
       }
     },
@@ -1834,6 +1841,13 @@ func init() {
         },
         "nickname": {
           "$ref": "#/definitions/Nickname"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "corrupted"
+          ]
         }
       }
     },

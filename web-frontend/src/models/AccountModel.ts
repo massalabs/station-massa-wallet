@@ -19,6 +19,7 @@ export type AccountObject = {
   keyPair: keyPairObject;
   nickname: string;
   assets: IToken[];
+  status: string;
 };
 
 export type SendTransactionObject = {

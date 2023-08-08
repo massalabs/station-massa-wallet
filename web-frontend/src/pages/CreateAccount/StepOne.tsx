@@ -4,11 +4,9 @@ import { Input, Stepper, Button } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
-import { useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
-import { AccountObject } from '@/models/AccountModel';
-import { routeFor, parseForm } from '@/utils';
+import { routeFor, parseForm, fetchAccounts } from '@/utils';
 import { isAlreadyExists, isNicknameValid } from '@/validation/nickname';
 
 interface IErrorObject {
@@ -18,7 +16,7 @@ interface IErrorObject {
 export default function StepOne() {
   const navigate = useNavigate();
 
-  const { data: accounts = [] } = useResource<AccountObject[]>('accounts');
+  const { okAccounts: accounts } = fetchAccounts();
 
   const form = useRef(null);
 

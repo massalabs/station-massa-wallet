@@ -27,10 +27,10 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 				Message: err.Error(),
 			})
 	}
-
+	walletsWithError, walletsWithoutError := splitWalletsPerReadError(wallets, err)
 	var wlts []*models.Account
 
-	infos, err := h.massaClient.GetAccountsInfos(wallets)
+	infos, err := h.massaClient.GetAccountsInfos(walletsWithoutError)
 	if err != nil {
 		errMsg := "Unable to retrieve accounts infos"
 		fmt.Printf("%s: %v", errMsg, err)
@@ -41,12 +41,31 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 			})
 	}
 
-	for i := 0; i < len(wallets); i++ {
-		modelWallet := createModelWallet(wallets[i])
+	for i := 0; i < len(walletsWithoutError); i++ {
+		modelWallet := createModelWallet(walletsWithoutError[i])
 		modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[i].CandidateBalance))
 		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))
 		wlts = append(wlts, &modelWallet)
 	}
+	for u := 0; u < len(walletsWithError); u++ {
+		modelWalletErr := createModelWallet(walletsWithError[u])
+		wlts = append(wlts, &modelWalletErr)
+	}
 
 	return operations.NewAccountListOK().WithPayload(wlts)
+}
+
+func splitWalletsPerReadError(wallets []wallet.Wallet, err error) ([]wallet.Wallet, []wallet.Wallet) {
+	var (
+		walletsWithError    []wallet.Wallet
+		walletsWithoutError []wallet.Wallet
+	)
+	for _, w := range wallets {
+		if w.Status == wallet.StatusOK {
+			walletsWithoutError = append(walletsWithoutError, w)
+		} else {
+			walletsWithError = append(walletsWithError, w)
+		}
+	}
+	return walletsWithError, walletsWithoutError
 }

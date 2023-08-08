@@ -40,6 +40,8 @@ const (
 	PrivateKeyPrefix          = "S"
 	MaxNicknameLength         = 32
 	AccountVersion            = 1
+	StatusOK                  = "ok"
+	StatusCorrupted           = "corrupted"
 )
 
 func ErrorAccountNotFound(nickname string) error {
@@ -65,6 +67,7 @@ type Wallet struct {
 	Nickname string
 	Address  string
 	KeyPair  KeyPair
+	Status   string
 }
 
 type AccountSerialized struct {
@@ -259,12 +262,12 @@ func LoadAll() ([]Wallet, error) {
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			wallet, loadErr := LoadFile(filePath)
+			wallets = append(wallets, wallet)
 			if loadErr != nil {
 				log.Errorf("while loading wallet '%s': %s", filePath, loadErr.Err)
 				continue
 			}
 
-			wallets = append(wallets, wallet)
 		}
 	}
 
@@ -307,16 +310,24 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	if err != nil {
 		return Wallet{}, &WalletError{fmt.Errorf("unmarshalling file '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
-
+	walletHasNickname := len(accountSerialized.Nickname) > 0
+	nicknameFromFileName := NicknameFromFilePath(filePath)
+	baseAccount := Wallet{
+		Nickname: nicknameFromFileName,
+	}
+	if walletHasNickname {
+		baseAccount.Nickname = accountSerialized.Nickname
+	}
 	errMissingFields := checkMandatoryFields(accountSerialized)
 	if errMissingFields != nil {
-		return Wallet{}, errMissingFields
+		return baseAccount, errMissingFields
 	}
 
 	account, err := accountSerialized.toAccount()
 	if err != nil {
-		return Wallet{}, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
+		return baseAccount, &WalletError{fmt.Errorf("deserializing account '%s': %w", filePath, err), utils.ErrAccountFile}
 	}
+	account.Status = StatusOK
 
 	return account, nil
 }
@@ -383,6 +394,12 @@ func DeleteAccount(nickname string) error {
 	}
 
 	return nil
+}
+
+func NicknameFromFilePath(filePath string) string {
+	_, nicknameFromFileName := filepath.Split(filePath)
+	nicknameFromFileName = strings.TrimPrefix(nicknameFromFileName, "wallet_")
+	return strings.TrimSuffix(nicknameFromFileName, ".yaml")
 }
 
 // filename returns the wallet filename based on the given nickname.
