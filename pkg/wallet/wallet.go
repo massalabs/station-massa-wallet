@@ -75,7 +75,7 @@ type AccountSerialized struct {
 	Version      *uint8       `yaml:"Version"`
 	Nickname     string       `yaml:"Nickname"`
 	Address      string       `yaml:"Address"`
-	Salt         string       `yaml:"Salt,flow"`	// Base64 encoded
+	Salt         string       `yaml:"Salt,flow"` // Base64 encoded
 	Nonce        [12]byte     `yaml:"Nonce,flow"`
 	CipheredData []byte       `yaml:"CipheredData,flow"`
 	PublicKey    VersionedKey `yaml:"PublicKey,flow"`
@@ -88,12 +88,12 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 		return Wallet{}, fmt.Errorf("while checking public key version: %w", err)
 	}
 
-	dec_salt, err := base64.StdEncoding.DecodeString(accountSerialized.Salt)
+	decSalt, err := base64.StdEncoding.DecodeString(accountSerialized.Salt)
 	if err != nil {
 		return Wallet{}, fmt.Errorf("while decoding base64 salt: %w", err)
 	}
 	salt := [16]byte{}
-	copy(salt[:], dec_salt[:])
+	copy(salt[:], decSalt[:])
 
 	wallet := Wallet{
 		Version:  *accountSerialized.Version,
