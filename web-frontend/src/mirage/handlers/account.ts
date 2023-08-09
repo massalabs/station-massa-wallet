@@ -69,6 +69,32 @@ export function routesForAccounts(server: Server) {
     { timing: 500 },
   );
 
+  server.delete(
+    'accounts/:nickname/assets',
+    (schema: AppSchema, request) => {
+      let assetAddress = request.queryParams.assetAddress;
+      const { nickname } = request.params;
+      const data = schema.findBy('account', { nickname });
+      if (!data)
+        return new Response(
+          400,
+          {},
+          { code: '400', error: 'Failed to find account' },
+        );
+
+      if (!assetAddress)
+        return new Response(
+          404,
+          {},
+          { code: '400', error: 'Address provided Invalid' },
+        );
+      const assets = data.attrs.assets;
+
+      return new Response(200, {}, assets);
+    },
+    { timing: 500 },
+  );
+
   server.put('accounts', (schema: AppSchema) => {
     return schema.create(
       'account',

@@ -2,46 +2,21 @@
 
 // EXTERNALS
 import { UseMutationResult, useMutation } from '@tanstack/react-query';
-import axios, { AxiosResponse } from 'axios';
-
-/**
- * @param resource - path of the resource
- * @typeParam TBody - type of the request
- * @typeParam TResponse - type of the response
- * @returns
- */
+import axios from 'axios';
 
 // LOCALS
-export function useDelete<TBody, TResponse = null>(
+
+export function useDelete<T>(
   resource: string,
-): UseMutationResult<
-  TResponse,
-  unknown,
-  { params?: Record<string, string>; payload?: TBody },
-  unknown
-> {
-  const baseURL = import.meta.env.VITE_BASE_API;
-  let url = `${baseURL}/${resource}`;
+): UseMutationResult<T, unknown, T, unknown> {
+  var url = `${import.meta.env.VITE_BASE_API}/${resource}`;
 
-  return useMutation<
-    TResponse,
-    unknown,
-    { params?: Record<string, string>; payload?: TBody },
-    unknown
-  >({
+  return useMutation<T, unknown, T, unknown>({
     mutationKey: [resource],
-    mutationFn: async ({ params, payload }) => {
-      const queryParams = new URLSearchParams(params).toString();
-      if (queryParams) {
-        url = url.concat(`?${queryParams}`);
-      }
-      const decodedURL = decodeURIComponent(url);
-      const { data: responseData } = await axios.delete<
-        TBody,
-        AxiosResponse<TResponse>
-      >(decodedURL, payload);
+    mutationFn: async () => {
+      const { data } = await axios.delete<T>(url);
 
-      return responseData;
+      return data;
     },
   });
 }
