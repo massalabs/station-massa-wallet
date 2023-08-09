@@ -33,7 +33,7 @@ export function SettingsOption(props: SettingsOptionProps) {
         {Intl.t('settings.title-security')}
       </p>
       <div className="flex gap-5">
-        <Button onClick={() => mutableBackup({})}>
+        <Button onClick={() => mutableBackup({} as AccountObject)}>
           {Intl.t('settings.buttons.backup')}
         </Button>
         <Button

@@ -18,3 +18,7 @@ export const assetImportErrors = {
   notFound: 404,
   serverError: 500,
 };
+
+export interface InputsErrors {
+  address?: string;
+}

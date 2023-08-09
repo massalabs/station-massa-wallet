@@ -59,7 +59,7 @@ function SendCoins({ ...props }) {
     if (!confirmed) {
       setSubmit(false);
     } else {
-      mutate({ params: payloadData as SendTransactionObject });
+      mutate(payloadData as SendTransactionObject);
     }
   }
 

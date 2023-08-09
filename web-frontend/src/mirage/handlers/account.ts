@@ -72,13 +72,30 @@ export function routesForAccounts(server: Server) {
   server.post(
     'accounts/:nickname/assets',
     (schema: AppSchema, request) => {
+      let assetAddress = request.queryParams.assetAddress;
       const { nickname } = request.params;
+      const data = schema.findBy('account', { nickname });
+
+      if (!data)
+        return new Response(
+          400,
+          {},
+          { code: '400', error: 'Failed to find account' },
+        );
+
       if (!nickname) {
-        return new Response(400, {
+        return new Response(401, {
           code: '0001',
           message: 'missing nickname',
         });
       }
+
+      if (!assetAddress)
+        return new Response(
+          402,
+          {},
+          { code: '402', error: 'Provide an asset address in query' },
+        );
 
       const account = schema.findBy('account', { nickname });
 
@@ -95,6 +112,7 @@ export function routesForAccounts(server: Server) {
           ...account.assets,
           {
             name: faker.word.sample(5) + 'Token',
+            assetAddress: faker.string.alpha({ length: 8 }),
             symbol: faker.word.sample(5).slice(0, 3).toUpperCase(),
             decimals: 9,
             balance: faker.number.int().toString(),

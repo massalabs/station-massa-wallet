@@ -28,12 +28,14 @@ export const accountFactory = Factory.extend<AccountObject>({
     const initialTokens: IToken[] = [
       {
         name: faker.word.sample(5) + 'Token',
+        assetAddress: faker.string.alpha({ length: 8 }),
         symbol: faker.word.sample(5).slice(0, 3).toUpperCase(),
         decimals: 9,
         balance: faker.number.int().toString(),
       },
       {
         name: faker.word.sample(5) + 'Token',
+        assetAddress: faker.string.alpha({ length: 8 }),
         symbol: faker.word.sample(5).slice(0, 3).toUpperCase(),
         decimals: 9,
         balance: faker.number.int().toString(),
