@@ -13,7 +13,7 @@ import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { IToken } from '@/models/AccountModel';
-import { ImportAssetsObject } from '@/models/assetModel';
+import { ImportAssetsObject } from '@/models/ImportAssetModel';
 
 function Assets() {
   const [modal, setModal] = useState(false);
@@ -38,24 +38,28 @@ function Assets() {
       toast.success(Intl.t('assets.success'));
       setModal(false);
     } else if (postError) {
-      switch (postErrorStatus) {
-        case assetImportErrors.badRequest:
-          toast.error(Intl.t('assets.bad-request'));
-          break;
-        case assetImportErrors.invalidAddress:
-          toast.error(Intl.t('assets.invalid-address'));
-          break;
-        case assetImportErrors.notFound:
-          toast.error(Intl.t('assets.not-found'));
-          break;
-        case assetImportErrors.serverError:
-          toast.error(Intl.t('assets.internal-server-error'));
-          break;
-        default:
-          console.log('Unknown Error:', postErrorStatus);
-      }
+      displayErrors(postErrorStatus);
     }
   }, [postSuccess, postError]);
+
+  function displayErrors(postStatus: number | undefined) {
+    switch (postStatus) {
+      case assetImportErrors.badRequest:
+        toast.error(Intl.t('assets.bad-request'));
+        break;
+      case assetImportErrors.invalidAddress:
+        toast.error(Intl.t('assets.invalid-address'));
+        break;
+      case assetImportErrors.notFound:
+        toast.error(Intl.t('assets.not-found'));
+        break;
+      case assetImportErrors.serverError:
+        toast.error(Intl.t('assets.internal-server-error'));
+        break;
+      default:
+        console.log('Unknown Error:', postErrorStatus);
+    }
+  }
 
   return (
     <WalletLayout menuItem={MenuItem.Assets}>

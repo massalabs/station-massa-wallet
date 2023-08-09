@@ -19,7 +19,7 @@ export interface InputsErrors {
 export function AssetsImportModal({ ...props }) {
   const { setModal, mutate } = props;
 
-  const [tokenAddress, setTokenAddress] = useState<string>('');
+  // const [tokenAddress, setTokenAddress] = useState<string>('');
   const [inputError, setInputError] = useState<InputsErrors | null>(null);
 
   function isValidAssetAddress(input: string): boolean {
@@ -32,7 +32,7 @@ export function AssetsImportModal({ ...props }) {
 
     setInputError(null);
 
-    if (isValidAssetAddress(tokenAddress) === false) {
+    if (!isValidAssetAddress(tokenAddress)) {
       setInputError({ address: Intl.t('assets.wrong-format') });
       return false;
     }
@@ -66,9 +66,8 @@ export function AssetsImportModal({ ...props }) {
           <form onSubmit={handleSubmit}>
             <Input
               placeholder={'Token Address'}
-              value={tokenAddress}
+              default-value=""
               name="tokenAddress"
-              onChange={(e) => setTokenAddress(e.target.value)}
               error={inputError?.address}
             />
             <Button
