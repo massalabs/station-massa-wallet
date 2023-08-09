@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"os"
 	"path"
@@ -74,7 +75,7 @@ type AccountSerialized struct {
 	Version      *uint8       `yaml:"Version"`
 	Nickname     string       `yaml:"Nickname"`
 	Address      string       `yaml:"Address"`
-	Salt         [16]byte     `yaml:"Salt,flow"`
+	Salt         string       `yaml:"Salt,flow"`	// Base64 encoded
 	Nonce        [12]byte     `yaml:"Nonce,flow"`
 	CipheredData []byte       `yaml:"CipheredData,flow"`
 	PublicKey    VersionedKey `yaml:"PublicKey,flow"`
@@ -87,6 +88,13 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 		return Wallet{}, fmt.Errorf("while checking public key version: %w", err)
 	}
 
+	dec_salt, err := base64.StdEncoding.DecodeString(accountSerialized.Salt)
+	if err != nil {
+		return Wallet{}, fmt.Errorf("while decoding base64 salt: %w", err)
+	}
+	salt := [16]byte{}
+	copy(salt[:], dec_salt[:])
+
 	wallet := Wallet{
 		Version:  *accountSerialized.Version,
 		Nickname: accountSerialized.Nickname,
@@ -94,7 +102,7 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 		KeyPair: KeyPair{
 			PrivateKey: accountSerialized.CipheredData,
 			PublicKey:  publicKey,
-			Salt:       accountSerialized.Salt,
+			Salt:       salt,
 			Nonce:      accountSerialized.Nonce,
 		},
 	}
@@ -104,11 +112,13 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 
 // toAccountSerialized returns an AccountSerialized from a Wallet.
 func (account *Wallet) toAccountSerialized() AccountSerialized {
+	salt := base64.StdEncoding.EncodeToString(account.KeyPair.Salt[:])
+
 	accountSerialized := AccountSerialized{
 		Version:      &account.Version,
 		Nickname:     account.Nickname,
 		Address:      account.Address,
-		Salt:         account.KeyPair.Salt,
+		Salt:         salt,
 		Nonce:        account.KeyPair.Nonce,
 		CipheredData: account.KeyPair.PrivateKey, // account is protected so PrivateKey is encrypted
 		PublicKey:    account.KeyPair.PublicKey,
