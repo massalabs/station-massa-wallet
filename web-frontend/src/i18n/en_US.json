@@ -26,7 +26,11 @@
       "delete": "Delete",
       "no-value": "You must enter 'DELETE' to confirm",
       "wrong-value": "The wrong value was entered, please try again",
-      "success": "Token successfully deleted"
+      "success": "Token successfully deleted",
+      "bad-request": "Oops, something went wrong while deleting the token",
+      "invalid-address": "Oops, something went wrong with the token address, please try again",
+      "internal-server-error": "The server has encountered a problem it does not know how to handle.",
+      "unknown-error": "Oops, something went wrong while deleting the token. Please try again"
     }
   },
   "account": {

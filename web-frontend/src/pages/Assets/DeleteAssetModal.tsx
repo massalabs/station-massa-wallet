@@ -8,16 +8,21 @@ import {
   PopupModalHeader,
   toast,
 } from '@massalabs/react-ui-kit';
+import { AxiosError } from 'axios';
 import { FiTrash2 } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
-import { DeleteAssetsErrors } from '@/const/assets/assets';
+import {
+  DeleteAssetsErrors,
+  assetDeleteErrors,
+  deleteConfirm,
+} from '@/const/assets/assets';
 import { useDelete } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { IToken } from '@/models/AccountModel';
 
 export function DeleteAssetModal({ ...props }) {
-  const { tokenAddress, setModalOpen } = props;
+  const { tokenAddress, setModalOpen, refetch } = props;
   const { nickname } = useParams();
 
   const [deletePhrase, setDeletePhrase] = useState<string>('');
@@ -32,14 +37,35 @@ export function DeleteAssetModal({ ...props }) {
     `accounts/${nickname}/assets?assetAddress=${tokenAddress}`,
   );
 
+  const axiosError = errorDelete as AxiosError;
+  const deleteErrorStatus = axiosError?.response?.status;
+
   useEffect(() => {
     if (isSuccessDelete) {
       toast.success(Intl.t('assets.delete.success'));
       setModalOpen(false);
+      refetch();
     } else if (isErrorDelete) {
-      console.log(errorDelete);
+      displayErrors(deleteErrorStatus);
     }
   }, [isSuccessDelete, isErrorDelete]);
+
+  function displayErrors(postStatus: number | undefined) {
+    switch (postStatus) {
+      case assetDeleteErrors.badRequest:
+        toast.error(Intl.t('assets.delete.bad-request'));
+        break;
+      case assetDeleteErrors.invalidAddress:
+        toast.error(Intl.t('assets.delete.invalid-address'));
+        break;
+      case assetDeleteErrors.serverError:
+        toast.error(Intl.t('assets.internal-server-error'));
+        break;
+      default:
+        toast.error(Intl.t('assets.unkown-error'));
+        console.log('Unknown Error:', deleteErrorStatus);
+    }
+  }
 
   function validate(phrase: string) {
     if (!phrase) {
@@ -47,11 +73,10 @@ export function DeleteAssetModal({ ...props }) {
       return false;
     }
 
-    if (phrase !== 'DELETE') {
+    if (phrase !== deleteConfirm) {
       setError({ phrase: Intl.t('assets.delete.wrong-value') });
       return false;
     }
-
     return true;
   }
 
@@ -62,7 +87,11 @@ export function DeleteAssetModal({ ...props }) {
   }
 
   return (
-    <PopupModal customClass="!w-[440px] h-1/2" fullMode={true}>
+    <PopupModal
+      customClass="!w-[440px] h-1/2"
+      fullMode={true}
+      onClose={() => setModalOpen(false)}
+    >
       <PopupModalHeader>
         <div className="flex flex-col mb-4">
           <div className="mas-title mb-4">{Intl.t('assets.delete.title')}</div>

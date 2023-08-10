@@ -15,3 +15,12 @@ export interface ITokenData {
 export interface DeleteAssetsErrors {
   phrase?: string;
 }
+
+export const assetDeleteErrors = {
+  success: 204,
+  badRequest: 400,
+  invalidAddress: 404,
+  serverError: 500,
+};
+
+export const deleteConfirm = 'DELETE';
