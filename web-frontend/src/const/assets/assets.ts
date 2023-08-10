@@ -12,7 +12,7 @@ export interface ITokenData {
   onDelete?: () => void;
 }
 
-export interface DeleteAssetsErrors {
+export interface IDeleteAssetsErrors {
   phrase?: string;
 }
 

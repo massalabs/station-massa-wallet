@@ -11,7 +11,7 @@ import { FiTrash2 } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
 import {
-  DeleteAssetsErrors,
+  IDeleteAssetsErrors,
   assetDeleteErrors,
   deleteConfirm,
 } from '@/const/assets/assets';
@@ -20,7 +20,7 @@ import Intl from '@/i18n/i18n';
 import { IToken } from '@/models/AccountModel';
 
 export function ConfirmDelete({ ...props }) {
-  const { setModalOpen, tokenAddress } = props;
+  const { tokenAddress, closeModal } = props;
   const { nickname } = useParams();
 
   const { refetch: refetchAssets } = useResource<IToken[]>(
@@ -28,16 +28,14 @@ export function ConfirmDelete({ ...props }) {
   );
 
   const [deletePhrase, setDeletePhrase] = useState<string>('');
-  const [error, setError] = useState<DeleteAssetsErrors | null>(null);
+  const [error, setError] = useState<IDeleteAssetsErrors | null>(null);
 
   const {
     mutate: mutateDelete,
     isSuccess: isSuccessDelete,
     isError: isErrorDelete,
     error: errorDelete,
-  } = useDelete<IToken[]>(
-    `accounts/${nickname}/assets?assetAddress=${tokenAddress}`,
-  );
+  } = useDelete(`accounts/${nickname}/assets?assetAddress=${tokenAddress}`);
 
   const axiosError = errorDelete as AxiosError;
   const deleteErrorStatus = axiosError?.response?.status;
@@ -45,7 +43,7 @@ export function ConfirmDelete({ ...props }) {
   useEffect(() => {
     if (isSuccessDelete) {
       toast.success(Intl.t('assets.delete.success'));
-      setModalOpen(false);
+      closeModal();
       refetchAssets();
     } else if (isErrorDelete) {
       displayErrors(deleteErrorStatus);
@@ -65,7 +63,6 @@ export function ConfirmDelete({ ...props }) {
         break;
       default:
         toast.error(Intl.t('assets.unkown-error'));
-        console.log('Unknown Error:', deleteErrorStatus);
     }
   }
 
@@ -85,7 +82,7 @@ export function ConfirmDelete({ ...props }) {
   function confirmDelete() {
     if (!validate(deletePhrase)) return;
 
-    mutateDelete({} as IToken[]);
+    mutateDelete(null);
   }
   return (
     <PopupModalContent>
@@ -99,7 +96,7 @@ export function ConfirmDelete({ ...props }) {
         />
       </div>
       <div className="flex gap-4 pb-12">
-        <Button onClick={() => setModalOpen(false)}>
+        <Button onClick={() => closeModal()}>
           {Intl.t('assets.delete.cancel')}
         </Button>
         <Button posIcon={<FiTrash2 />} onClick={() => confirmDelete()}>

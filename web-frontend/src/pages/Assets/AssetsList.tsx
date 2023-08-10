@@ -1,19 +1,19 @@
 import { useState } from 'react';
 
-import { MassaLogo, Mrc20, Token } from '@massalabs/react-ui-kit';
+import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
 
-import { DeleteAssetModal } from './DeleteAssets/DeleteAssetModal';
 import { ITokenData, XMA } from '@/const/assets/assets';
+import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
 
 export function AssetsList({ ...props }) {
   const { tokenArray } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
 
   function handleDelete(address: string) {
     setTokenAddress(address);
-    setModalOpen(true);
+    setModal(true);
   }
 
   return (
@@ -21,7 +21,7 @@ export function AssetsList({ ...props }) {
       {tokenArray?.map((token: ITokenData, index: number) => (
         <Token
           logo={
-            token.symbol === XMA ? <MassaLogo size={40} /> : <Mrc20 size={40} />
+            token.symbol === XMA ? <MassaLogo size={40} /> : <FT1 size={40} />
           }
           name={token.name}
           symbol={token.symbol}
@@ -34,10 +34,10 @@ export function AssetsList({ ...props }) {
           }}
         />
       ))}
-      {modalOpen && (
+      {modal && (
         <DeleteAssetModal
           tokenAddress={tokenAddress}
-          setModalOpen={setModalOpen}
+          closeModal={() => setModal(false)}
         />
       )}
     </>

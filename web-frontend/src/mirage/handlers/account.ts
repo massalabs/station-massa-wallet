@@ -76,19 +76,27 @@ export function routesForAccounts(server: Server) {
       const { nickname } = request.params;
       const data = schema.findBy('account', { nickname });
 
+      if (!nickname)
+        return new Response(
+          402,
+          {},
+          { code: '402', error: 'Provide nickname in query' },
+        );
+
       if (!data)
         return new Response(
-          400,
+          404,
           {},
-          { code: '400', error: 'Failed to find account' },
+          { code: '404', error: 'Failed to find account' },
         );
 
       if (!assetAddress)
         return new Response(
-          404,
+          422,
           {},
-          { code: '400', error: 'Address provided Invalid' },
+          { code: '422', error: 'Address provided Invalid' },
         );
+
       const assets = data.attrs.assets;
 
       function removeAsset(address: string) {
@@ -108,7 +116,7 @@ export function routesForAccounts(server: Server) {
       }
 
       removeAsset(assetAddress);
-      return new Response(200, {}, assets);
+      return new Response(204);
     },
     { timing: 500 },
   );

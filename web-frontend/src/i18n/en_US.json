@@ -29,7 +29,7 @@
       "success": "Token successfully deleted",
       "bad-request": "Oops, something went wrong while deleting the token",
       "invalid-address": "Oops, something went wrong with the token address, please try again",
-      "internal-server-error": "The server has encountered a problem it does not know how to handle.",
+      "internal-server-error": "Oops, something went wrong while deleting the token.",
       "unknown-error": "Oops, something went wrong while deleting the token. Please try again"
     }
   },

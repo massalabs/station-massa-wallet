@@ -4,13 +4,11 @@ import { Button } from '@massalabs/react-ui-kit';
 import { FiPlus } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
-import { AssetsImportModal } from './AssetsImportModal';
-import { AssetsList } from './AssetsList';
-import { AssetsLoading } from './AssetsLoading';
 import { useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { IToken } from '@/models/AccountModel';
+import { AssetsList, AssetsLoading, AssetsImportModal } from '@/pages/Assets';
 
 function Assets() {
   const [modal, setModal] = useState(false);
@@ -41,7 +39,7 @@ function Assets() {
             <AssetsList tokenArray={tokenArray} />
           )}
         </div>
-        {modal && <AssetsImportModal setModal={setModal} />}
+        {modal && <AssetsImportModal closeModal={() => setModal(false)} />}
       </div>
     </WalletLayout>
   );
