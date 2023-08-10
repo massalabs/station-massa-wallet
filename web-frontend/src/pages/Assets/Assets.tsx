@@ -15,11 +15,9 @@ import { IToken } from '@/models/AccountModel';
 function Assets() {
   const [modal, setModal] = useState(false);
   const { nickname } = useParams();
-  const {
-    data: tokenArray = [],
-    isLoading: isGetLoading,
-    refetch,
-  } = useResource<IToken[]>(`accounts/${nickname}/assets`);
+  const { data: tokenArray = [], isLoading: isGetLoading } = useResource<
+    IToken[]
+  >(`accounts/${nickname}/assets`);
 
   return (
     <WalletLayout menuItem={MenuItem.Assets}>
@@ -40,7 +38,7 @@ function Assets() {
           {isGetLoading ? (
             <AssetsLoading />
           ) : (
-            <AssetsList tokenArray={tokenArray} refetch={refetch} />
+            <AssetsList tokenArray={tokenArray} />
           )}
         </div>
         {modal && <AssetsImportModal setModal={setModal} />}

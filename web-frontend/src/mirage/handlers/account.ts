@@ -75,6 +75,7 @@ export function routesForAccounts(server: Server) {
       let assetAddress = request.queryParams.assetAddress;
       const { nickname } = request.params;
       const data = schema.findBy('account', { nickname });
+
       if (!data)
         return new Response(
           400,
@@ -90,6 +91,23 @@ export function routesForAccounts(server: Server) {
         );
       const assets = data.attrs.assets;
 
+      function removeAsset(address: string) {
+        const indexToDelete = assets.findIndex(
+          (asset) => asset.assetAddress === address,
+        );
+
+        if (indexToDelete !== -1) {
+          if (indexToDelete === assets.length - 1) {
+            // If the asset is the last element
+            assets.pop();
+          } else {
+            // If the asset is not the last element
+            assets.splice(indexToDelete, 1);
+          }
+        }
+      }
+
+      removeAsset(assetAddress);
       return new Response(200, {}, assets);
     },
     { timing: 500 },

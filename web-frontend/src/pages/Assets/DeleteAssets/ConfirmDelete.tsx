@@ -3,9 +3,7 @@ import { useEffect, useState } from 'react';
 import {
   Button,
   Input,
-  PopupModal,
   PopupModalContent,
-  PopupModalHeader,
   toast,
 } from '@massalabs/react-ui-kit';
 import { AxiosError } from 'axios';
@@ -17,13 +15,17 @@ import {
   assetDeleteErrors,
   deleteConfirm,
 } from '@/const/assets/assets';
-import { useDelete } from '@/custom/api';
+import { useDelete, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { IToken } from '@/models/AccountModel';
 
-export function DeleteAssetModal({ ...props }) {
-  const { tokenAddress, setModalOpen, refetch } = props;
+export function ConfirmDelete({ ...props }) {
+  const { setModalOpen, tokenAddress } = props;
   const { nickname } = useParams();
+
+  const { refetch: refetchAssets } = useResource<IToken[]>(
+    `accounts/${nickname}/assets`,
+  );
 
   const [deletePhrase, setDeletePhrase] = useState<string>('');
   const [error, setError] = useState<DeleteAssetsErrors | null>(null);
@@ -44,7 +46,7 @@ export function DeleteAssetModal({ ...props }) {
     if (isSuccessDelete) {
       toast.success(Intl.t('assets.delete.success'));
       setModalOpen(false);
-      refetch();
+      refetchAssets();
     } else if (isErrorDelete) {
       displayErrors(deleteErrorStatus);
     }
@@ -85,39 +87,25 @@ export function DeleteAssetModal({ ...props }) {
 
     mutateDelete({} as IToken[]);
   }
-
   return (
-    <PopupModal
-      customClass="!w-[440px] h-1/2"
-      fullMode={true}
-      onClose={() => setModalOpen(false)}
-    >
-      <PopupModalHeader>
-        <div className="flex flex-col mb-4">
-          <div className="mas-title mb-4">{Intl.t('assets.delete.title')}</div>
-
-          <div className="mas-body2">{Intl.t('assets.delete.subtitle')}</div>
-        </div>
-      </PopupModalHeader>
-      <PopupModalContent>
-        <div className="mb-4">
-          <Input
-            value={deletePhrase}
-            name="provider"
-            onChange={(e) => setDeletePhrase(e.target.value)}
-            error={error?.phrase}
-            placeholder={Intl.t('assets.delete.placeholder')}
-          />
-        </div>
-        <div className="flex gap-4 pb-12">
-          <Button onClick={() => setModalOpen(false)}>
-            {Intl.t('assets.delete.cancel')}
-          </Button>
-          <Button posIcon={<FiTrash2 />} onClick={() => confirmDelete()}>
-            {Intl.t('assets.delete.delete')}
-          </Button>
-        </div>
-      </PopupModalContent>
-    </PopupModal>
+    <PopupModalContent>
+      <div className="mb-4">
+        <Input
+          value={deletePhrase}
+          name="provider"
+          onChange={(e) => setDeletePhrase(e.target.value)}
+          error={error?.phrase}
+          placeholder={Intl.t('assets.delete.placeholder')}
+        />
+      </div>
+      <div className="flex gap-4 pb-12">
+        <Button onClick={() => setModalOpen(false)}>
+          {Intl.t('assets.delete.cancel')}
+        </Button>
+        <Button posIcon={<FiTrash2 />} onClick={() => confirmDelete()}>
+          {Intl.t('assets.delete.delete')}
+        </Button>
+      </div>
+    </PopupModalContent>
   );
 }

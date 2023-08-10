@@ -2,11 +2,11 @@ import { useState } from 'react';
 
 import { MassaLogo, Mrc20, Token } from '@massalabs/react-ui-kit';
 
-import { DeleteAssetModal } from './DeleteAssetModal';
+import { DeleteAssetModal } from './DeleteAssets/DeleteAssetModal';
 import { ITokenData, XMA } from '@/const/assets/assets';
 
 export function AssetsList({ ...props }) {
-  const { tokenArray, refetch } = props;
+  const { tokenArray } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -38,7 +38,6 @@ export function AssetsList({ ...props }) {
         <DeleteAssetModal
           tokenAddress={tokenAddress}
           setModalOpen={setModalOpen}
-          refetch={refetch}
         />
       )}
     </>
