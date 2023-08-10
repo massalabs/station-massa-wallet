@@ -11,3 +11,7 @@ export interface ITokenData {
   disable?: boolean;
   onDelete?: () => void;
 }
+
+export interface DeleteAssetsErrors {
+  phrase?: string;
+}

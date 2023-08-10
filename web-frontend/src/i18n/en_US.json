@@ -16,8 +16,18 @@
     "title": "Assets",
     "import": "Import token",
     "add": "Add token",
-    "import-title": "Import A Fungible Token",
-    "import-subtitle": "Input the FT1 token’s address hash"
+    "import-title": "Import a Fungible Token",
+    "import-subtitle": "Input the FT1 token’s address hash",
+    "delete": {
+      "title": "Remove a token",
+      "subtitle": "You are about to delete a token, please enter 'DELETE' in the field below to confirm",
+      "placeholder": "enter 'DELETE'",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "no-value": "You must enter 'DELETE' to confirm",
+      "wrong-value": "The wrong value was entered, please try again",
+      "success": "Token successfully deleted"
+    }
   },
   "account": {
     "header": {
