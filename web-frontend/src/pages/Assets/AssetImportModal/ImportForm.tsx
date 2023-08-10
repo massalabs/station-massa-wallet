@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button, Input, toast } from '@massalabs/react-ui-kit';
 import { AxiosError } from 'axios';
@@ -6,17 +6,20 @@ import { FiPlus } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
 import { InputsErrors, assetImportErrors } from '@/const/assets/assets';
-import { usePost } from '@/custom/api';
+import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
+import { IToken } from '@/models/AccountModel';
 import { ImportAssetsObject } from '@/models/ImportAssetModel';
-import { IForm, parseForm } from '@/utils';
 
 export function ImportForm({ ...props }) {
+  const { closeModal } = props;
+  const { nickname } = useParams();
+
+  const { refetch } = useResource<IToken[]>(`accounts/${nickname}/assets`);
+
   const [inputError, setInputError] = useState<InputsErrors | null>(null);
   const [tokenAddress, setTokenAddress] = useState<string>('');
 
-  const { setModal, refetch } = props;
-  const { nickname } = useParams();
   const {
     mutate,
     isSuccess: postSuccess,
@@ -28,9 +31,9 @@ export function ImportForm({ ...props }) {
 
   useEffect(() => {
     if (postSuccess) {
-      toast.success(Intl.t('assets.success'));
+      toast.success(Intl.t('assets.import.success'));
       refetch();
-      setModal(false);
+      closeModal();
     } else if (postError) {
       displayErrors(postErrorStatus);
     }
@@ -44,10 +47,13 @@ export function ImportForm({ ...props }) {
     return regexPattern.test(input);
   }
 
-  function validate(formObject: IForm) {
-    const { tokenAddress } = formObject;
-
+  function validate() {
     setInputError(null);
+
+    if (!tokenAddress) {
+      setInputError({ address: Intl.t('assets.import.no-input') });
+      return false;
+    }
 
     if (!isValidAssetAddress(tokenAddress)) {
       setInputError({ address: Intl.t('assets.import.wrong-format') });
@@ -56,16 +62,11 @@ export function ImportForm({ ...props }) {
     return true;
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formObject = parseForm(e);
+  function handleSubmit() {
+    if (!validate()) return;
 
-    if (!validate(formObject)) return;
-
-    if (formObject.tokenAddress) {
-      setTokenAddress(formObject.tokenAddress);
-      handleImport();
-    }
+    setTokenAddress(tokenAddress);
+    handleImport();
   }
 
   function handleImport() {
@@ -88,23 +89,25 @@ export function ImportForm({ ...props }) {
         break;
       default:
         toast.error(Intl.t('assets.import.unkown-error'));
-        console.log('Unknown Error:', postErrorStatus);
     }
   }
 
   return (
     <div className="mas-body2 pb-10">
-      <form onSubmit={handleSubmit}>
-        <Input
-          placeholder={'Token Address'}
-          default-value=""
-          name="tokenAddress"
-          error={inputError?.address}
-        />
-        <Button customClass="mt-2" preIcon={<FiPlus size={24} />} type="submit">
-          {Intl.t('assets.import.add')}
-        </Button>
-      </form>
+      <Input
+        value={tokenAddress}
+        onChange={(e) => setTokenAddress(e.target.value)}
+        name="tokenAddress"
+        error={inputError?.address}
+        placeholder={tokenAddress}
+      />
+      <Button
+        customClass="mt-2"
+        preIcon={<FiPlus size={24} />}
+        onClick={() => handleSubmit()}
+      >
+        {Intl.t('assets.import.add')}
+      </Button>
     </div>
   );
 }

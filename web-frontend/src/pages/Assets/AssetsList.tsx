@@ -1,4 +1,4 @@
-import { MassaLogo, Mrc20, Token } from '@massalabs/react-ui-kit';
+import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
 
 import { ITokenData, XMA } from '@/const/assets/assets';
 
@@ -10,7 +10,7 @@ export function AssetsList({ ...props }) {
       {tokenArray?.map((token: ITokenData, index: number) => (
         <Token
           logo={
-            token.symbol === XMA ? <MassaLogo size={40} /> : <Mrc20 size={40} />
+            token.symbol === XMA ? <MassaLogo size={40} /> : <FT1 size={40} />
           }
           name={token.name}
           symbol={token.symbol}

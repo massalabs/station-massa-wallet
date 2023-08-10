@@ -8,13 +8,13 @@ import { ImportForm } from './ImportForm';
 import Intl from '@/i18n/i18n';
 
 export function AssetsImportModal({ ...props }) {
-  const { setModal } = props;
+  const { closeModal } = props;
 
   return (
     <PopupModal
-      customClass="max-w-[500px] w-[500px]"
+      customClass="max-w-[580px] w-[580px]"
       fullMode={true}
-      onClose={() => setModal(false)}
+      onClose={() => closeModal()}
     >
       <PopupModalHeader>
         <div className="flex flex-col">
