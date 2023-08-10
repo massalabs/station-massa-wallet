@@ -35,7 +35,7 @@ func Test_walletImport_Handle(t *testing.T) {
 			`Version: 1
 Nickname: %s
 Address: AU12rjXkQ1hzo5hQ9Vvd4wdckdevZWAmT458WkbthGCgLoQ1C8BkB
-Salt: [137, 167, 117, 16, 181, 186, 226, 139, 151, 228, 119, 194, 80, 40, 37, 138]
+Salt: iad1ELW64ouX5HfCUCglig==
 Nonce: [141, 224, 29, 20, 143, 96, 92, 165, 6, 227, 180, 8]
 CipheredData: [9, 32, 11, 154, 176, 82, 30, 97, 4, 142, 233, 194, 12, 192, 138, 250,
   143, 241, 64, 45, 112, 130, 104, 211, 132, 86, 153, 68, 34, 243, 232, 24, 230, 136,
@@ -136,7 +136,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			`Version: 1
 Nickname: %s
 Address: AU12rjXkQ1hzo5hQ9Vvd4wdckdevZWAmT458WkbthGCgLoQ1C8BkB
-Salt: [137, 167, 117, 16, 181, 186, 226, 139, 151, 228, 119, 194, 80, 40, 37, 138]
+Salt: iad1ELW64ouX5HfCUCglig==
 Nonce: [141, 224, 29, 20, 143, 96, 92, 165, 6, 227, 180, 8]
 CipheredData: [9, 32, 11, 154, 176, 82, 30, 97, 4, 142, 233, 194, 12, 192, 138, 250,
   143, 241, 64, 45, 112, 130, 104, 211, 132, 86, 153, 68, 34, 243, 232, 24, 230, 136,
