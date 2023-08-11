@@ -29,7 +29,7 @@ function Assets() {
               setModal(true);
             }}
           >
-            {Intl.t('assets.import')}
+            {Intl.t('assets.import.import-button')}
           </Button>
         </div>
         <div className="flex flex-col w-full h-fit bg-primary rounded-lg gap-4 p-8">
