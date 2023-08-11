@@ -54,17 +54,16 @@ export function routesForAccounts(server: Server) {
     'accounts/:nickname/assets',
     (schema: AppSchema, request) => {
       const { nickname } = request.params;
-      const data = schema.findBy('account', { nickname });
+      const accounts: any = schema.findBy('account', { nickname });
 
-      if (!data)
+      if (!accounts)
         return new Response(
           404,
           {},
           { code: '404', error: 'Failed to retreive assets' },
         );
-      const assets = data.attrs.assets;
 
-      return new Response(200, {}, assets);
+      return accounts.assets.models;
     },
     { timing: 500 },
   );
@@ -74,7 +73,7 @@ export function routesForAccounts(server: Server) {
     (schema: AppSchema, request) => {
       let assetAddress = request.queryParams.assetAddress;
       const { nickname } = request.params;
-      const data = schema.findBy('account', { nickname });
+      const accounts: any = schema.findBy('account', { nickname });
 
       if (!nickname)
         return new Response(
@@ -83,7 +82,7 @@ export function routesForAccounts(server: Server) {
           { code: '402', error: 'Provide nickname in query' },
         );
 
-      if (!data)
+      if (!accounts)
         return new Response(
           404,
           {},
@@ -97,25 +96,8 @@ export function routesForAccounts(server: Server) {
           { code: '422', error: 'Address provided Invalid' },
         );
 
-      const assets = data.attrs.assets;
+      accounts.assets.models.at(0).destroy();
 
-      function removeAsset(address: string) {
-        const indexToDelete = assets.findIndex(
-          (asset) => asset.assetAddress === address,
-        );
-
-        if (indexToDelete !== -1) {
-          if (indexToDelete === assets.length - 1) {
-            // If the asset is the last element
-            assets.pop();
-          } else {
-            // If the asset is not the last element
-            assets.splice(indexToDelete, 1);
-          }
-        }
-      }
-
-      removeAsset(assetAddress);
       return new Response(204);
     },
     { timing: 500 },

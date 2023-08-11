@@ -17,7 +17,7 @@ import {
 } from '@/const/assets/assets';
 import { useDelete, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { IToken } from '@/models/AccountModel';
+import { IToken } from '@/models/AssetModel';
 
 export function ConfirmDelete({ ...props }) {
   const { tokenAddress, closeModal } = props;
@@ -42,9 +42,7 @@ export function ConfirmDelete({ ...props }) {
 
   useEffect(() => {
     if (isSuccessDelete) {
-      toast.success(Intl.t('assets.delete.success'));
-      closeModal();
-      refetchAssets();
+      handleDeleteSuccess();
     } else if (isErrorDelete) {
       displayErrors(deleteErrorStatus);
     }
@@ -59,11 +57,17 @@ export function ConfirmDelete({ ...props }) {
         toast.error(Intl.t('assets.delete.invalid-address'));
         break;
       case assetDeleteErrors.serverError:
-        toast.error(Intl.t('assets.internal-server-error'));
+        toast.error(Intl.t('assets.delete.internal-server-error'));
         break;
       default:
-        toast.error(Intl.t('assets.unkown-error'));
+        toast.error(Intl.t('assets.delete.unkown-error'));
     }
+  }
+
+  function handleDeleteSuccess() {
+    toast.success(Intl.t('assets.delete.success'));
+    closeModal();
+    refetchAssets();
   }
 
   function validate(phrase: string) {

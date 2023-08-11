@@ -6,7 +6,7 @@ import { ITokenData, XMA } from '@/const/assets/assets';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
 
 export function AssetsList({ ...props }) {
-  const { tokenArray } = props;
+  const { assets } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
   const [modal, setModal] = useState<boolean>(false);
@@ -18,7 +18,7 @@ export function AssetsList({ ...props }) {
 
   return (
     <>
-      {tokenArray?.map((token: ITokenData, index: number) => (
+      {assets?.map((token: ITokenData, index: number) => (
         <Token
           logo={
             token.symbol === XMA ? <MassaLogo size={40} /> : <FT1 size={40} />
