@@ -54,17 +54,51 @@ export function routesForAccounts(server: Server) {
     'accounts/:nickname/assets',
     (schema: AppSchema, request) => {
       const { nickname } = request.params;
-      const data = schema.findBy('account', { nickname });
+      const accounts: any = schema.findBy('account', { nickname });
 
-      if (!data)
+      if (!accounts)
         return new Response(
           404,
           {},
           { code: '404', error: 'Failed to retreive assets' },
         );
-      const assets = data.attrs.assets;
 
-      return new Response(200, {}, assets);
+      return accounts.assets.models;
+    },
+    { timing: 500 },
+  );
+
+  server.delete(
+    'accounts/:nickname/assets',
+    (schema: AppSchema, request) => {
+      let assetAddress = request.queryParams.assetAddress;
+      const { nickname } = request.params;
+      const accounts: any = schema.findBy('account', { nickname });
+
+      if (!nickname)
+        return new Response(
+          402,
+          {},
+          { code: '402', error: 'Provide nickname in query' },
+        );
+
+      if (!accounts)
+        return new Response(
+          404,
+          {},
+          { code: '404', error: 'Failed to find account' },
+        );
+
+      if (!assetAddress)
+        return new Response(
+          422,
+          {},
+          { code: '422', error: 'Address provided Invalid' },
+        );
+
+      accounts.assets.models.at(0).destroy();
+
+      return new Response(204);
     },
     { timing: 500 },
   );

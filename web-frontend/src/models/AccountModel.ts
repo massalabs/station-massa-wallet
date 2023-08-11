@@ -1,18 +1,13 @@
-type keyPairObject = {
+import { IToken } from './AssetModel';
+
+interface keyPairObject {
   nonce: string;
   privateKey: string;
   publicKey: string;
   salt: string;
-};
-
-export interface IToken {
-  name: string;
-  symbol: string;
-  decimals: number;
-  balance: string;
 }
 
-export type AccountObject = {
+export interface AccountObject {
   address: string;
   balance: string;
   candidateBalance: string;
@@ -20,7 +15,7 @@ export type AccountObject = {
   nickname: string;
   assets: IToken[];
   status: string;
-};
+}
 
 export type SendTransactionObject = {
   amount: string;

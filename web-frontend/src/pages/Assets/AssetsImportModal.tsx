@@ -10,12 +10,12 @@ import { FiPlus } from 'react-icons/fi';
 import Intl from '@/i18n/i18n';
 
 export function AssetsImportModal({ ...props }) {
-  const { setModal } = props;
+  const { closeModal } = props;
   return (
     <PopupModal
       customClass="max-w-[500px] w-[500px]"
       fullMode={true}
-      onClose={() => setModal(false)}
+      onClose={() => closeModal()}
     >
       <PopupModalHeader>
         <div className="mas-title mb-6">{Intl.t('assets.import-title')}</div>
