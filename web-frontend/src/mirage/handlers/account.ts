@@ -103,6 +103,41 @@ export function routesForAccounts(server: Server) {
     { timing: 500 },
   );
 
+  server.post(
+    'accounts/:nickname/assets',
+    (schema: AppSchema, request) => {
+      let assetAddress = request.queryParams.assetAddress;
+      const { nickname } = request.params;
+      const account: any = schema.findBy('account', { nickname });
+
+      if (!account)
+        return new Response(
+          400,
+          {},
+          { code: '400', error: 'Failed to find account' },
+        );
+
+      if (!nickname) {
+        return new Response(401, {
+          code: '0001',
+          message: 'missing nickname',
+        });
+      }
+
+      if (!assetAddress)
+        return new Response(
+          402,
+          {},
+          { code: '402', error: 'Provide an asset address in query' },
+        );
+
+      // const newAsset = schema.create('asset', { account });
+
+      return new Response(201);
+    },
+    { timing: 500 },
+  );
+
   server.put('accounts', (schema: AppSchema) => {
     return schema.create(
       'account',

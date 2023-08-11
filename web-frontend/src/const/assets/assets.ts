@@ -24,3 +24,15 @@ export const assetDeleteErrors = {
 };
 
 export const deleteConfirm = 'DELETE';
+
+export const assetImportErrors = {
+  success: 201,
+  badRequest: 400,
+  invalidAddress: 422,
+  notFound: 404,
+  serverError: 500,
+};
+
+export interface InputsErrors {
+  address?: string;
+}

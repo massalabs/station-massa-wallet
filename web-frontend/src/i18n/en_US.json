@@ -14,7 +14,6 @@
   },
   "assets": {
     "title": "Assets",
-    "import": "Import token",
     "add": "Add token",
     "import-title": "Import a Fungible Token",
     "import-subtitle": "Input the FT1 token’s address hash",
@@ -25,12 +24,27 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "no-value": "You must enter 'DELETE' to confirm",
-      "wrong-value": "The wrong value was entered, please try again",
+      "wrong-value": "You must fill with 'DELETE' to confirm",
       "success": "Token successfully deleted",
-      "bad-request": "Oops, something went wrong while deleting the token",
-      "invalid-address": "Oops, something went wrong with the token address, please try again",
-      "internal-server-error": "Oops, something went wrong while deleting the token.",
-      "unknown-error": "Oops, something went wrong while deleting the token. Please try again"
+      "bad-request": "Something went wrong while deleting the token",
+      "invalid-address": "Something went wrong with the token address, please try again",
+      "internal-server-error": "Something went wrong while deleting the token.",
+      "unknown-error": "Something went wrong while deleting the token. Please try again"
+    },
+    "import": {
+      "add": "Add token",
+      "placeholder": "Token Address",
+      "import-button": "Import token",
+      "import-title": "Import a Fungible Token",
+      "import-subtitle": "Input the FT1 token’s address hash",
+      "success": "Token successfully added",
+      "wrong-format": "Invalid asset address format. It must start with 'AS'.",
+      "no-input": "Please input an address",
+      "bad-request": "This asset has already been imported or is an invalid address please try again",
+      "invalid-address": "The provided address is not valid",
+      "not-found": "The asset with the provided address was not found in the network",
+      "internal-server-error": "An error occurred while trying to add the asset. Please try again later",
+      "unkown-error": "Oops an unknown error occurred. Please try again later"
     }
   },
   "account": {
