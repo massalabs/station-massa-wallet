@@ -25,7 +25,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "no-value": "You must enter 'DELETE' to confirm",
-      "wrong-value": "The wrong value was entered, please try again",
+      "wrong-value": "You must fill with 'DELETE' to confirm",
       "success": "Token successfully deleted",
       "bad-request": "Oops, something went wrong while deleting the token",
       "invalid-address": "Oops, something went wrong with the token address, please try again",

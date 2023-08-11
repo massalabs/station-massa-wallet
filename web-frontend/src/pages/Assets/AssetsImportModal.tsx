@@ -13,7 +13,7 @@ export function AssetsImportModal({ ...props }) {
   const { closeModal } = props;
   return (
     <PopupModal
-      customClass="max-w-[500px] w-[500px]"
+      customClass="w-[580px] h-[300px]"
       fullMode={true}
       onClose={() => closeModal()}
     >
@@ -23,7 +23,7 @@ export function AssetsImportModal({ ...props }) {
       <PopupModalContent>
         <div className="mas-body2 pb-10">
           <p className="mb-6">{Intl.t('assets.import-subtitle')}</p>
-          <Input customClass="mb-2" />
+          <Input customClass="mb-6" value="" placeholder="" />
           <Button
             type="submit"
             onClick={() => {
