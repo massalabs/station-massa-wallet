@@ -11,7 +11,7 @@ import Intl from '@/i18n/i18n';
 import { IToken } from '@/models/AssetModel';
 
 export function ImportForm({ ...props }) {
-  const { closeModal } = props;
+  const { setImportSuccess } = props;
   const { nickname } = useParams();
 
   const { refetch } = useResource<IToken[]>(`accounts/${nickname}/assets`);
@@ -32,7 +32,7 @@ export function ImportForm({ ...props }) {
     if (postSuccess) {
       toast.success(Intl.t('assets.import.success'));
       refetch();
-      closeModal();
+      setImportSuccess();
     } else if (postError) {
       displayErrors(postErrorStatus);
     }
@@ -63,7 +63,6 @@ export function ImportForm({ ...props }) {
 
   function handleSubmit() {
     if (!validate()) return;
-
     setTokenAddress(tokenAddress);
     handleImport();
   }
@@ -92,21 +91,23 @@ export function ImportForm({ ...props }) {
   }
 
   return (
-    <div className="mas-body2 pb-10">
-      <Input
-        value={tokenAddress}
-        onChange={(e) => setTokenAddress(e.target.value)}
-        name="tokenAddress"
-        error={inputError?.address}
-        placeholder={Intl.t('assets.import.placeholder')}
-      />
-      <Button
-        customClass="mt-2 mt-6"
-        preIcon={<FiPlus size={24} />}
-        onClick={() => handleSubmit()}
-      >
-        {Intl.t('assets.import.add')}
-      </Button>
-    </div>
+    <>
+      <div className="mas-body2 pb-10">
+        <Input
+          value={tokenAddress}
+          onChange={(e) => setTokenAddress(e.target.value)}
+          name="tokenAddress"
+          error={inputError?.address}
+          placeholder={Intl.t('assets.import.placeholder')}
+        />
+        <Button
+          customClass="mt-2 mt-6"
+          preIcon={<FiPlus size={24} />}
+          onClick={() => handleSubmit()}
+        >
+          {Intl.t('assets.import.add')}
+        </Button>
+      </div>
+    </>
   );
 }
