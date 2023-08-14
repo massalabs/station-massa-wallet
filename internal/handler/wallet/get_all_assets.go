@@ -71,9 +71,8 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 		// Create the asset info with balance and append it to the result slice
 		assetWithBalance := &models.AssetInfoWithBalance{
-			AssetInfo:    assetInfo,
-			Balance:      balance,
-			AssetAddress: assetAddress,
+			AssetInfo: assetInfo,
+			Balance:   balance,
 		}
 		AssetsWithBalance = append(AssetsWithBalance, assetWithBalance)
 	}

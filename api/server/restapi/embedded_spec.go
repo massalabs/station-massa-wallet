@@ -799,6 +799,9 @@ func init() {
       "description": "Token informations",
       "type": "object",
       "properties": {
+        "address": {
+          "type": "string"
+        },
         "decimals": {
           "type": "integer"
         },
@@ -819,9 +822,6 @@ func init() {
         {
           "type": "object",
           "properties": {
-            "assetAddress": {
-              "type": "string"
-            },
             "balance": {
               "type": "string"
             }
@@ -1865,6 +1865,9 @@ func init() {
       "description": "Token informations",
       "type": "object",
       "properties": {
+        "address": {
+          "type": "string"
+        },
         "decimals": {
           "type": "integer",
           "minimum": 0
@@ -1886,9 +1889,6 @@ func init() {
         {
           "type": "object",
           "properties": {
-            "assetAddress": {
-              "type": "string"
-            },
             "balance": {
               "type": "string"
             }

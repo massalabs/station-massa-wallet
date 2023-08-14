@@ -73,6 +73,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 
 	// Create the AssetInfo struct with the retrieved information
 	assetInfoFromSC := &models.AssetInfo{
+		Address:  contractAddress,
 		Name:     name,
 		Symbol:   symbol,
 		Decimals: swag.Int64(int64(decimals)),
