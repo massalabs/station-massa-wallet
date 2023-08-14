@@ -30,7 +30,7 @@ export function AssetsList({ ...props }) {
           key={index}
           disable={token?.symbol === XMA ? true : false}
           onDelete={() => {
-            handleDelete(token.assetAddress);
+            handleDelete(token.address);
           }}
         />
       ))}

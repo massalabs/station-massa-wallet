@@ -167,37 +167,3 @@ export function AssetsImportModal({ ...props }) {
     </>
   );
 }
-
-{
-  /* {importResult !== null ? (
-  <ImportResult
-    closeModal={() => closeModal()}
-    token={data}
-    importResult={importResult}
-    inputError={inputError}
-  />
-) : (
-  <>
-    <PopupModalContent>
-      <div className="mas-body2 pb-10">
-        <Input
-          value={tokenAddress}
-          onChange={(e) => setTokenAddress(e.target.value)}
-          name="tokenAddress"
-          error={inputError?.address}
-          placeholder={Intl.t('assets.import.placeholder')}
-        />
-        <div>
-          <Button
-            customClass="mt-2 mt-6"
-            preIcon={<FiPlus size={24} />}
-            onClick={() => handleSubmit()}
-          >
-            {Intl.t('assets.import.add')}
-          </Button>
-        </div>
-      </div>
-    </PopupModalContent>
-  </>
-)} */
-}

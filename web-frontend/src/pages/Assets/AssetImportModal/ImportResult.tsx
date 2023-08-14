@@ -1,6 +1,7 @@
 import { FiCheck, FiX } from 'react-icons/fi';
 
 import Intl from '@/i18n/i18n';
+import { maskAddress } from '@/utils';
 
 export function ImportResult({ ...props }) {
   const { closeModal, token, importResult, inputError } = props;
@@ -27,7 +28,7 @@ export function ImportResult({ ...props }) {
           })}
           <br />
           {Intl.t('assets.import.success-screen.success-address', {
-            name: token?.assetAddress,
+            address: maskAddress(token?.address),
           })}
         </div>
       ) : (
