@@ -1,2 +1,2 @@
 export * from './AssetsImportModal';
-export * from './ImportForm';
+export * from './ImportModalScreens';
