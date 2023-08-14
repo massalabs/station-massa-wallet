@@ -90,9 +90,10 @@ func (s *AssetsStore) loadaccountsStore() error {
 
 		for _, asset := range accountData.Assets {
 			assetInfo := models.AssetInfo{
-				Name:     asset.Name,
-				Symbol:   asset.Symbol,
-				Decimals: &asset.Decimals,
+				AssetAddress: asset.ContractAddress,
+				Name:         asset.Name,
+				Symbol:       asset.Symbol,
+				Decimals:     &asset.Decimals,
 			}
 			accountAssets.ContractAssets[asset.ContractAddress] = assetInfo
 		}
