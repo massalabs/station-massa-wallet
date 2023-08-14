@@ -6,8 +6,6 @@ export function ImportResult({ ...props }) {
   const { closeModal, token, importResult, inputError } = props;
   setTimeout(() => closeModal(), 2000);
 
-  console.log(inputError);
-
   return (
     <div className="w-full h-full flex flex-col justify-center items-center px-6">
       <div

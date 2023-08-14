@@ -87,12 +87,16 @@ export function AssetsImportModal({ ...props }) {
     setInputError(null);
 
     if (!tokenAddress) {
-      setInputError({ address: Intl.t('assets.import.no-input') });
+      setInputError({
+        address: Intl.t('assets.import.failure-screen.no-input'),
+      });
       return false;
     }
 
     if (!isValidAssetAddress(tokenAddress)) {
-      setInputError({ address: Intl.t('assets.import.wrong-format') });
+      setInputError({
+        address: Intl.t('assets.import.failure-screen.wrong-format'),
+      });
       return false;
     }
     return true;
@@ -110,42 +114,44 @@ export function AssetsImportModal({ ...props }) {
 
   return (
     <>
-      <PopupModal
-        customClass={
-          importResult !== null ? `w-[513px] h-[440px]` : `w-[580px] h-[300px]`
-        }
-        fullMode={true}
-        onClose={() => closeModal()}
-        customClassNested={importResult !== null ? `w-full h-full` : ``}
-      >
-        {importResult !== null ? (
+      {importResult !== null ? (
+        <PopupModal
+          customClass="w-[513px] h-[440px]"
+          fullMode={true}
+          onClose={() => closeModal()}
+          customClassNested="w-full h-full"
+        >
           <ImportResult
             closeModal={() => closeModal()}
             token={data}
             importResult={importResult}
             inputError={inputError}
           />
-        ) : (
-          <>
-            <PopupModalHeader>
-              <div className="flex flex-col">
-                <div className="mas-title mb-6">
-                  {Intl.t('assets.import.import-title')}
-                </div>
-                <p className="mb-6">
-                  {Intl.t('assets.import.import-subtitle')}
-                </p>
+        </PopupModal>
+      ) : (
+        <PopupModal
+          customClass="w-[580px] h-[300px]"
+          fullMode={true}
+          onClose={() => closeModal()}
+        >
+          <PopupModalHeader>
+            <div className="flex flex-col">
+              <div className="mas-title mb-6">
+                {Intl.t('assets.import.import-title')}
               </div>
-            </PopupModalHeader>
-            <PopupModalContent>
-              <div className="mas-body2 pb-10">
-                <Input
-                  value={tokenAddress}
-                  onChange={(e) => setTokenAddress(e.target.value)}
-                  name="tokenAddress"
-                  error={inputError?.address}
-                  placeholder={Intl.t('assets.import.placeholder')}
-                />
+              <p className="mb-6">{Intl.t('assets.import.import-subtitle')}</p>
+            </div>
+          </PopupModalHeader>
+          <PopupModalContent>
+            <div className="mas-body2 pb-10">
+              <Input
+                value={tokenAddress}
+                onChange={(e) => setTokenAddress(e.target.value)}
+                name="tokenAddress"
+                error={inputError?.address}
+                placeholder={Intl.t('assets.import.placeholder')}
+              />
+              <div>
                 <Button
                   customClass="mt-2 mt-6"
                   preIcon={<FiPlus size={24} />}
@@ -154,10 +160,44 @@ export function AssetsImportModal({ ...props }) {
                   {Intl.t('assets.import.add')}
                 </Button>
               </div>
-            </PopupModalContent>
-          </>
-        )}
-      </PopupModal>
+            </div>
+          </PopupModalContent>
+        </PopupModal>
+      )}
     </>
   );
+}
+
+{
+  /* {importResult !== null ? (
+  <ImportResult
+    closeModal={() => closeModal()}
+    token={data}
+    importResult={importResult}
+    inputError={inputError}
+  />
+) : (
+  <>
+    <PopupModalContent>
+      <div className="mas-body2 pb-10">
+        <Input
+          value={tokenAddress}
+          onChange={(e) => setTokenAddress(e.target.value)}
+          name="tokenAddress"
+          error={inputError?.address}
+          placeholder={Intl.t('assets.import.placeholder')}
+        />
+        <div>
+          <Button
+            customClass="mt-2 mt-6"
+            preIcon={<FiPlus size={24} />}
+            onClick={() => handleSubmit()}
+          >
+            {Intl.t('assets.import.add')}
+          </Button>
+        </div>
+      </div>
+    </PopupModalContent>
+  </>
+)} */
 }

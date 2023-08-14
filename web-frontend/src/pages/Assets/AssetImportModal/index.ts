@@ -1,2 +1,2 @@
 export * from './AssetsImportModal';
-export * from './ImportModalScreens';
+export * from './ImportResult';
