@@ -799,7 +799,7 @@ func init() {
       "description": "Token informations",
       "type": "object",
       "properties": {
-        "assetAddress": {
+        "address": {
           "type": "string"
         },
         "decimals": {
@@ -1865,7 +1865,7 @@ func init() {
       "description": "Token informations",
       "type": "object",
       "properties": {
-        "assetAddress": {
+        "address": {
           "type": "string"
         },
         "decimals": {

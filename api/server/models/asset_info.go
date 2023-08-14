@@ -19,8 +19,8 @@ import (
 // swagger:model AssetInfo
 type AssetInfo struct {
 
-	// asset address
-	AssetAddress string `json:"assetAddress,omitempty"`
+	// address
+	Address string `json:"address,omitempty"`
 
 	// decimals
 	// Minimum: 0
