@@ -18,6 +18,8 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station/pkg/node/sendoperation"
+	"github.com/massalabs/station/pkg/node/sendoperation/callsc"
 	"lukechampine.com/blake3"
 )
 
@@ -42,6 +44,36 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
+		
+	op, _ := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	//fmt.Println("🚀 ~ file: sign.go:76 ~ func ~ params.Body.Operation.String():", params.Body.Operation.String())
+
+/////////////////
+	// Just For test
+	// To Delete
+	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
+	if err != nil {
+		fmt.Println("Error decoding message:", err)
+	}
+
+	callSC, err := callsc.DecodeMessage(decodedMsg)
+	if err != nil {
+		fmt.Println("🚀 ~ file: sendoperation.go:93 ~ err:", err)
+	} else {
+		if callSC != nil {
+			// Print the fields of CallSCFromSign
+			fmt.Println("🚀 ~ file: sendoperation.go:90 ~ Print the fields of CallSCFromSign:")
+			fmt.Println("🚀 ~ file: sendoperation.go:92 ~ callSC.GasLimit:", callSC.GasLimit)
+			fmt.Println("🚀 ~ file: sendoperation.go:94 ~ callSC.Coins:", callSC.Coins)
+			fmt.Println("🚀 ~ file: sendoperation.go:96 ~ callSC.Address:", callSC.Address)
+			fmt.Println("🚀 ~ file: sendoperation.go:98 ~ callSC.Function:", callSC.Function)
+		} else {
+			fmt.Println("🚀 ~ file: sendoperation.go:98 ~ params is nil")
+		}
+	}
+	/////////////////
+	//////////////////////
+
 	var correlationId models.CorrelationID
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
@@ -50,6 +82,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		promptRequest := prompt.PromptRequest{
 			Action: walletapp.Sign,
 			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+			Data: callSC,
 		}
 
 		_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
@@ -72,7 +105,9 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+
+
+
 	if err != nil {
 		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{

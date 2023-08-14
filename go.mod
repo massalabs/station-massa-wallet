@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/labstack/gommon v0.3.1
-	github.com/massalabs/station v0.3.1-0.20230731130249-39be5001dbe2
+	github.com/massalabs/station v0.3.1-0.20230811102136-fed873bfb113
 	github.com/massalabs/station-massa-hello-world v0.0.10
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3
