@@ -13,9 +13,11 @@ import { AssetsLoading, AssetsImportModal, AssetsList } from '@/pages/Assets';
 function Assets() {
   const [modal, setModal] = useState(false);
   const { nickname } = useParams();
-  const { data: assets, isLoading: isGetLoading } = useResource<IToken[]>(
-    `accounts/${nickname}/assets`,
-  );
+  const {
+    data: assets,
+    isLoading: isGetLoading,
+    isRefetching,
+  } = useResource<IToken[]>(`accounts/${nickname}/assets`);
 
   return (
     <WalletLayout menuItem={MenuItem.Assets}>
@@ -33,7 +35,11 @@ function Assets() {
           </Button>
         </div>
         <div className="flex flex-col w-full h-fit bg-primary rounded-lg gap-4 p-8">
-          {isGetLoading ? <AssetsLoading /> : <AssetsList assets={assets} />}
+          {isGetLoading || isRefetching ? (
+            <AssetsLoading />
+          ) : (
+            <AssetsList assets={assets} />
+          )}
         </div>
         {modal && <AssetsImportModal closeModal={() => setModal(false)} />}
       </div>

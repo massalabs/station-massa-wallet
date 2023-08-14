@@ -11,12 +11,11 @@ import { AxiosError } from 'axios';
 import { FiPlus } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
-import { ImportResult } from './ImportModalScreens/ImportResult';
 import { InputsErrors, assetImportErrors } from '@/const/assets/assets';
 import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { IToken } from '@/models/AssetModel';
-
+import { ImportResult } from '@/pages/Assets';
 
 export function AssetsImportModal({ ...props }) {
   const { closeModal } = props;
@@ -139,14 +138,6 @@ export function AssetsImportModal({ ...props }) {
               </div>
             </PopupModalHeader>
             <PopupModalContent>
-              {/* <ImportForm
-                {...props}
-                setTokenAddress={setTokenAddress}
-                tokenAddress={tokenAddress}
-                mutate={mutate}
-                setInputError={setInputError}
-                inputError={inputError}
-              /> */}
               <div className="mas-body2 pb-10">
                 <Input
                   value={tokenAddress}

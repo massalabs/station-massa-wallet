@@ -35,5 +35,4 @@ export const assetImportErrors = {
 
 export interface InputsErrors {
   address?: string;
-  server?: string;
 }

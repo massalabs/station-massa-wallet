@@ -43,7 +43,6 @@
         "success-address": "Smart contract address: {address}"
       },
       "failure-screen": {
-        "message": " Failed to import the token. The feature is available for tokens following the FT1 standard implementation.",
         "wrong-format": "Invalid asset address format. It must start with 'AS'.",
         "no-input": "Please input an address",
         "bad-request": "This asset has already been imported.",
