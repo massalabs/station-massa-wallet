@@ -661,6 +661,8 @@ definitions:
     description: Token informations
     type: object
     properties:
+      assetAddress:
+        type: string
       name:
         type: string
       symbol:
@@ -675,6 +677,4 @@ definitions:
       - type: object
         properties:
           balance:
-            type: string
-          assetAddress:
             type: string

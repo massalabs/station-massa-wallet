@@ -19,9 +19,6 @@ import (
 type AssetInfoWithBalance struct {
 	AssetInfo
 
-	// asset address
-	AssetAddress string `json:"assetAddress,omitempty"`
-
 	// balance
 	Balance string `json:"balance,omitempty"`
 }
@@ -37,15 +34,11 @@ func (m *AssetInfoWithBalance) UnmarshalJSON(raw []byte) error {
 
 	// AO1
 	var dataAO1 struct {
-		AssetAddress string `json:"assetAddress,omitempty"`
-
 		Balance string `json:"balance,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
 	}
-
-	m.AssetAddress = dataAO1.AssetAddress
 
 	m.Balance = dataAO1.Balance
 
@@ -62,12 +55,8 @@ func (m AssetInfoWithBalance) MarshalJSON() ([]byte, error) {
 	}
 	_parts = append(_parts, aO0)
 	var dataAO1 struct {
-		AssetAddress string `json:"assetAddress,omitempty"`
-
 		Balance string `json:"balance,omitempty"`
 	}
-
-	dataAO1.AssetAddress = m.AssetAddress
 
 	dataAO1.Balance = m.Balance
 
