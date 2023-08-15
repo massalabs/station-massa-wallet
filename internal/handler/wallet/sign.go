@@ -25,6 +25,15 @@ import (
 
 const passwordExpirationTime = time.Second * 60 * 30
 
+type PromptRequestCallSCData struct {
+	OperationID uint64
+	GasLimit    uint64
+	Coins       uint64
+	Address     string
+	Function    string
+	Parameters  []byte
+}
+
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
 func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignHandler {
@@ -44,11 +53,10 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-		
 	op, _ := base64.StdEncoding.DecodeString(params.Body.Operation.String())
-	//fmt.Println("🚀 ~ file: sign.go:76 ~ func ~ params.Body.Operation.String():", params.Body.Operation.String())
+	// fmt.Println("🚀 ~ file: sign.go:76 ~ func ~ params.Body.Operation.String():", params.Body.Operation.String())
 
-/////////////////
+	/////////////////
 	// Just For test
 	// To Delete
 	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
@@ -82,7 +90,14 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		promptRequest := prompt.PromptRequest{
 			Action: walletapp.Sign,
 			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-			Data: callSC,
+			Data: PromptRequestCallSCData{
+				OperationID: callSC.OperationID,
+				GasLimit:    callSC.GasLimit,
+				Coins:       callSC.Coins,
+				Address:     callSC.Address,
+				Function:    callSC.Function,
+				Parameters:  callSC.Parameters,
+			},
 		}
 
 		_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
@@ -104,9 +119,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if resp != nil {
 		return resp
 	}
-
-
-
 
 	if err != nil {
 		return operations.NewSignInternalServerError().WithPayload(
