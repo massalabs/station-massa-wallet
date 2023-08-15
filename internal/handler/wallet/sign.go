@@ -31,7 +31,6 @@ type PromptRequestCallSCData struct {
 	Coins       uint64
 	Address     string
 	Function    string
-	Parameters  []byte
 }
 
 // NewSign instantiates a sign Handler
@@ -54,7 +53,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 
 	op, _ := base64.StdEncoding.DecodeString(params.Body.Operation.String())
-	// fmt.Println("🚀 ~ file: sign.go:76 ~ func ~ params.Body.Operation.String():", params.Body.Operation.String())
 
 	/////////////////
 	// Just For test
@@ -96,7 +94,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 				Coins:       callSC.Coins,
 				Address:     callSC.Address,
 				Function:    callSC.Function,
-				Parameters:  callSC.Parameters,
 			},
 		}
 

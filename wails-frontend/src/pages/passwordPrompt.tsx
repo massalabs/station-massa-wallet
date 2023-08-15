@@ -43,7 +43,6 @@ interface PromptRequestCallSCData {
   Coins: number;
   Address: string;
   Function: string;
-  Parameters: number[]; // maybe need to Change this type
 }
 
 function TransferLayout(props: PromptRequestTransferData) {
@@ -68,7 +67,7 @@ function TransferLayout(props: PromptRequestTransferData) {
 }
 
 function SignLayout(props: PromptRequestCallSCData) {
-  const { GasLimit, Coins, Address, Function, Parameters } = props;
+  const { GasLimit, Coins, Address, Function } = props;
 
   return (
     <div>
@@ -76,7 +75,6 @@ function SignLayout(props: PromptRequestCallSCData) {
       <div>Coins: {Coins}</div>
       <div>Address: {Address}</div>
       <div>Function: {Function}</div>
-      <div>Parameters: {Parameters.join(', ')}</div>
     </div>
   );
 }
