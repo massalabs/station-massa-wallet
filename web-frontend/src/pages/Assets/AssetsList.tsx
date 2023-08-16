@@ -2,10 +2,15 @@ import { useState } from 'react';
 
 import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
 
-import { ITokenData, XMA } from '@/const/assets/assets';
+import { XMA } from '@/const/assets/assets';
+import { IToken } from '@/models/AssetModel';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
 
-export function AssetsList({ ...props }) {
+interface AssetsListProps {
+  assets: IToken[] | undefined;
+}
+
+export function AssetsList(props: AssetsListProps) {
   const { assets } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
@@ -18,7 +23,7 @@ export function AssetsList({ ...props }) {
 
   return (
     <>
-      {assets?.map((token: ITokenData, index: number) => (
+      {assets?.map((token: IToken, index: number) => (
         <Token
           logo={
             token.symbol === XMA ? <MassaLogo size={40} /> : <FT1 size={40} />
@@ -30,7 +35,7 @@ export function AssetsList({ ...props }) {
           key={index}
           disable={token?.symbol === XMA ? true : false}
           onDelete={() => {
-            handleDelete(token.assetAddress);
+            handleDelete(token.address);
           }}
         />
       ))}
