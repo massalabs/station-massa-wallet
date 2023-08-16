@@ -53,7 +53,8 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	op, _ := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	fmt.Println("base64 decoding error: %w", err)
 
 	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
 	if err != nil {
@@ -64,9 +65,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	callSC, err := callsc.DecodeMessage(decodedMsg)
 	if err != nil {
-		// TODO : handle all cases , CallSC is well decoded , we need to do the same for ExecuteSC
-		// and handle the case where the sign is neither from CallSC or ExecuteSC
-		fmt.Println("Error decoding message, For now we decode only CallSC  ~ err:", err)
+		fmt.Println("fail decoding message, for now we decode only CallSC, ", err)
 	}
 	var correlationId models.CorrelationID
 	if params.Body.CorrelationID != nil {
