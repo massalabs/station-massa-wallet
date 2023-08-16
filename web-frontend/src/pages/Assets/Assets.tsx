@@ -7,13 +7,13 @@ import { useParams } from 'react-router-dom';
 import { useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
-import { IToken } from '@/models/AssetModel';
+import { Token } from '@/models/AssetModel';
 import { AssetsLoading, AssetsImportModal, AssetsList } from '@/pages/Assets';
 
 function Assets() {
   const [modal, setModal] = useState(false);
   const { nickname } = useParams();
-  const { data: assets, isLoading: isGetLoading } = useResource<IToken[]>(
+  const { data: assets, isLoading: isGetLoading } = useResource<Token[]>(
     `accounts/${nickname}/assets`,
   );
 

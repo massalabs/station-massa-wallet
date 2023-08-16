@@ -1,4 +1,4 @@
-import { IToken } from './AssetModel';
+import { Token } from './AssetModel';
 
 interface keyPairObject {
   nonce: string;
@@ -13,7 +13,7 @@ export interface AccountObject {
   candidateBalance: string;
   keyPair: keyPairObject;
   nickname: string;
-  assets: IToken[];
+  assets: Token[];
   status: string;
 }
 

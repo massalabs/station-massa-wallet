@@ -8,13 +8,13 @@ import { useParams } from 'react-router-dom';
 import { InputsErrors, assetImportErrors } from '@/const/assets/assets';
 import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { IToken } from '@/models/AssetModel';
+import { Token } from '@/models/AssetModel';
 
 export function ImportForm({ ...props }) {
   const { closeModal } = props;
   const { nickname } = useParams();
 
-  const { refetch } = useResource<IToken[]>(`accounts/${nickname}/assets`);
+  const { refetch } = useResource<Token[]>(`accounts/${nickname}/assets`);
 
   const [inputError, setInputError] = useState<InputsErrors | null>(null);
   const [tokenAddress, setTokenAddress] = useState<string>('');
@@ -24,7 +24,7 @@ export function ImportForm({ ...props }) {
     isSuccess: postSuccess,
     isError: postError,
     error,
-  } = usePost<IToken>(
+  } = usePost<Token>(
     `accounts/${nickname}/assets?assetAddress=${tokenAddress}`,
   );
 
@@ -68,7 +68,7 @@ export function ImportForm({ ...props }) {
   }
 
   function handleImport() {
-    mutate({} as IToken);
+    mutate({} as Token);
   }
 
   function displayErrors(postStatus: number | undefined) {

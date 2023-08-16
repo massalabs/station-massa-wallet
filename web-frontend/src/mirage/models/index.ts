@@ -3,13 +3,13 @@ import { ModelDefinition } from 'miragejs/-types';
 
 import { AccountObject } from '../../models/AccountModel';
 import { TransferModel } from '../../models/TransferModel';
-import { IToken } from '@/models/AssetModel';
+import { Token } from '@/models/AssetModel';
 
 const accountModel: ModelDefinition<AccountObject> = Model.extend({
   assets: hasMany(),
 });
 const transferModel: ModelDefinition<TransferModel> = Model.extend({});
-const assetModel: ModelDefinition<IToken> = Model.extend({
+const assetModel: ModelDefinition<Token> = Model.extend({
   account: belongsTo(),
 });
 
