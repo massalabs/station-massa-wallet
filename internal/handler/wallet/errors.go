@@ -13,6 +13,7 @@ const (
 	errorGetWallets
 	errorSignEmptyNickname
 	errorSignDecodeOperation
+	errorSignDecodeMessage
 	errorSignRead
 	errorSignLoadCache
 	errorSignGenerateCorrelationId

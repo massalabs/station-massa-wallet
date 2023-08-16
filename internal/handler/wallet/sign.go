@@ -64,9 +64,11 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
 	if err != nil {
-		// TODO: handle the case when we cannot decode the message64
-		// Should we return a fatal ? or proceed and sign without any data ??
-		fmt.Println("Error decoding message:", err)
+		return operations.NewSignInternalServerError().WithPayload(
+			&models.Error{
+				Code:    errorSignDecodeMessage,
+				Message: "Error: while decoding message.",
+			})
 	}
 
 	callSC, err := callsc.DecodeMessage(decodedMsg)
