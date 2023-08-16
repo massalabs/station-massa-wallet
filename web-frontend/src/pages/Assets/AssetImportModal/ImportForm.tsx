@@ -64,7 +64,6 @@ export function ImportForm({ ...props }) {
   function handleSubmit() {
     if (!validate()) return;
 
-    setTokenAddress(tokenAddress);
     handleImport();
   }
 
