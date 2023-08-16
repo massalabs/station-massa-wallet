@@ -134,7 +134,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	signature, err := wlt.Sign(op)
 	if err != nil {
-		return operations.NewSignBadRequest().WithPayload(
+		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignRead,
 				Message: "Error: while reading operation.",
