@@ -55,11 +55,10 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	op, _ := base64.StdEncoding.DecodeString(params.Body.Operation.String())
 
-	/////////////////
-	// Just For test
-	// To Delete
 	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
 	if err != nil {
+		// TODO: handle the case when we cannot decode the message64
+		// Should we return a fatal ? or proceed and sign without any data ??
 		fmt.Println("Error decoding message:", err)
 	}
 
