@@ -25,12 +25,13 @@ import (
 
 const passwordExpirationTime = time.Second * 60 * 30
 
-type PromptRequestCallSCData struct {
-	OperationID uint64
-	GasLimit    uint64
-	Coins       uint64
-	Address     string
-	Function    string
+type PromptRequestData struct {
+	OperationType string
+	OperationID   uint64
+	GasLimit      uint64
+	Coins         uint64
+	Address       string
+	Function      string
 }
 
 // NewSign instantiates a sign Handler
@@ -64,37 +65,37 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	callSC, err := callsc.DecodeMessage(decodedMsg)
 	if err != nil {
-		fmt.Println("🚀 ~ file: sendoperation.go:93 ~ err:", err)
-	} else {
-		if callSC != nil {
-			// Print the fields of CallSCFromSign
-			fmt.Println("🚀 ~ file: sendoperation.go:90 ~ Print the fields of CallSCFromSign:")
-			fmt.Println("🚀 ~ file: sendoperation.go:92 ~ callSC.GasLimit:", callSC.GasLimit)
-			fmt.Println("🚀 ~ file: sendoperation.go:94 ~ callSC.Coins:", callSC.Coins)
-			fmt.Println("🚀 ~ file: sendoperation.go:96 ~ callSC.Address:", callSC.Address)
-			fmt.Println("🚀 ~ file: sendoperation.go:98 ~ callSC.Function:", callSC.Function)
-		} else {
-			fmt.Println("🚀 ~ file: sendoperation.go:98 ~ params is nil")
-		}
+		// TODO : handle all cases , CallSC is well decoded , we need to do the same for ExecuteSC
+		// and handle the case where the sign is neither from CallSC or ExecuteSC
+		fmt.Println("Error decoding message, For now we decode only CallSC  ~ err:", err)
 	}
-	/////////////////
-	//////////////////////
-
 	var correlationId models.CorrelationID
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
 
-		promptRequest := prompt.PromptRequest{
-			Action: walletapp.Sign,
-			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-			Data: PromptRequestCallSCData{
-				OperationID: callSC.OperationID,
-				GasLimit:    callSC.GasLimit,
-				Coins:       callSC.Coins,
-				Address:     callSC.Address,
-				Function:    callSC.Function,
-			},
+		var promptRequest prompt.PromptRequest
+		if callSC != nil {
+			promptRequest = prompt.PromptRequest{
+				Action: walletapp.Sign,
+				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+				Data: PromptRequestData{
+					OperationType: "Call SC",
+					OperationID:   callSC.OperationID,
+					GasLimit:      callSC.GasLimit,
+					Coins:         callSC.Coins,
+					Address:       callSC.Address,
+					Function:      callSC.Function,
+				},
+			}
+		} else {
+			promptRequest = prompt.PromptRequest{
+				Action: walletapp.Sign,
+				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+				Data: PromptRequestData{
+					OperationType: "Unknown",
+				},
+			}
 		}
 
 		_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)

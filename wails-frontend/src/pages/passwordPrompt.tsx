@@ -43,6 +43,7 @@ interface PromptRequestCallSCData {
   Coins: number;
   Address: string;
   Function: string;
+  OperationType?: string; // Add the OperationType field here
 }
 
 function TransferLayout(props: PromptRequestTransferData) {
@@ -67,14 +68,21 @@ function TransferLayout(props: PromptRequestTransferData) {
 }
 
 function SignLayout(props: PromptRequestCallSCData) {
-  const { GasLimit, Coins, Address, Function } = props;
+  const { GasLimit, Coins, Address, Function, OperationType } = props;
 
   return (
     <div>
-      <div>Gas Limit: {GasLimit}</div>
-      <div>Coins: {Coins}</div>
-      <div>Address: {Address}</div>
-      <div>Function: {Function}</div>
+      <div>Operation Type: {OperationType}</div>
+      {OperationType === 'Call SC' ? (
+        <>
+          <div>Gas Limit: {GasLimit}</div>
+          <div>Coins: {Coins}</div>
+          <div>Address: {Address}</div>
+          <div>Function: {Function}</div>
+        </>
+      ) : (
+        <div>Other Sign Data Content</div>
+      )}
     </div>
   );
 }
@@ -119,7 +127,11 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.subtitle.delete');
       case signReq: {
         const signData = req.Data as PromptRequestCallSCData;
-        return <SignLayout {...signData} />;
+        if (signData.OperationType === 'Call SC') {
+          return <SignLayout {...signData} />;
+        } else {
+          return Intl.t('password-prompt.subtitle.sign');
+        }
       }
       case promptAction.transferReq: {
         const transferData = req.Data as PromptRequestTransferData;
