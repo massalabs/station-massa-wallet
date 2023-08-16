@@ -15,8 +15,6 @@
   "assets": {
     "title": "Assets",
     "add": "Add token",
-    "import-title": "Import a Fungible Token",
-    "import-subtitle": "Input the FT1 token’s address",
     "delete": {
       "title": "Remove a token",
       "subtitle": "You are about to delete a token, please enter 'DELETE' in the field below to confirm",
