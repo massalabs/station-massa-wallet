@@ -144,7 +144,7 @@ function PasswordPrompt() {
     SendPromptInput(password);
   }
 
-  async function handleResult(result: promptResult) {
+  function handleResult(result: promptResult) {
     let { Success, CodeMessage } = result;
 
     if (!Success) {

@@ -18,7 +18,7 @@ import {
 } from '@/const/assets/assets';
 import { useDelete, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { IToken } from '@/models/AssetModel';
+import { Asset } from '@/models/AssetModel';
 
 interface DeleteAssetModal {
   closeModal: () => void;
@@ -29,7 +29,7 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
   const { tokenAddress, closeModal } = props;
   const { nickname } = useParams();
 
-  const { refetch: refetchAssets } = useResource<IToken[]>(
+  const { refetch: refetchAssets } = useResource<Asset[]>(
     `accounts/${nickname}/assets`,
   );
 
@@ -63,10 +63,10 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
         toast.error(Intl.t('assets.delete.invalid-address'));
         break;
       case assetDeleteErrors.serverError:
-        toast.error(Intl.t('assets.internal-server-error'));
+        toast.error(Intl.t('assets.delete.internal-server-error'));
         break;
       default:
-        toast.error(Intl.t('assets.unkown-error'));
+        toast.error(Intl.t('assets.delete.unknown-error'));
     }
   }
 

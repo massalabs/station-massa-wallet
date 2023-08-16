@@ -1,6 +1,6 @@
-export interface IToken {
+export interface Asset {
   name: string;
-  assetAddress: string;
+  address: string;
   symbol: string;
   decimals: number;
   balance: string;
