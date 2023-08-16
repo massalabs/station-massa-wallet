@@ -55,7 +55,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
 	if err != nil {
-		return operations.NewSignInternalServerError().WithPayload(
+		return operations.NewSignBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorSignDecodeOperation,
 				Message: "Error: while decoding operation.",
@@ -64,7 +64,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
 	if err != nil {
-		return operations.NewSignInternalServerError().WithPayload(
+		return operations.NewSignBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorSignDecodeMessage,
 				Message: "Error: while decoding message.",
