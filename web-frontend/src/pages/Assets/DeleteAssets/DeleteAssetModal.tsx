@@ -63,10 +63,10 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
         toast.error(Intl.t('assets.delete.invalid-address'));
         break;
       case assetDeleteErrors.serverError:
-        toast.error(Intl.t('assets.internal-server-error'));
+        toast.error(Intl.t('assets.delete.internal-server-error'));
         break;
       default:
-        toast.error(Intl.t('assets.unkown-error'));
+        toast.error(Intl.t('assets.delete.unknown-error'));
     }
   }
 
