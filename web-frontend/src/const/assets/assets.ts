@@ -1,17 +1,5 @@
 export const XMA = 'XMA';
 
-export interface AssetData {
-  logo?: React.ReactNode;
-  name: string;
-  symbol: string;
-  address: string;
-  decimals: number;
-  balance: string;
-  customClass?: string;
-  disable?: boolean;
-  onDelete?: () => void;
-}
-
 export interface IDeleteAssetsErrors {
   phrase?: string;
 }

@@ -15,8 +15,6 @@
   "assets": {
     "title": "Assets",
     "add": "Add token",
-    "import-title": "Import a Fungible Token",
-    "import-subtitle": "Input the FT1 token’s address hash",
     "delete": {
       "title": "Remove a token",
       "subtitle": "You are about to delete a token, please enter 'DELETE' in the field below to confirm",
@@ -43,7 +41,7 @@
         "success-address": "Smart contract address: {address}"
       },
       "failure-screen": {
-        "wrong-format": "Invalid asset address format. It must start with 'AS'.",
+        "wrong-format": "Invalid asset address format. It must start with 'AS' followed by alphanumeric characters.",
         "no-input": "Please input an address",
         "bad-request": "This asset has already been imported.",
         "invalid-address": "The provided address is not valid.",

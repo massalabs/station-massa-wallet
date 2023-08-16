@@ -6,6 +6,7 @@ import {
   PopupModal,
   PopupModalContent,
   PopupModalHeader,
+  toast,
 } from '@massalabs/react-ui-kit';
 import { AxiosError } from 'axios';
 import { FiPlus } from 'react-icons/fi';
@@ -15,7 +16,6 @@ import { InputsErrors, assetImportErrors } from '@/const/assets/assets';
 import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
-import { ImportResult } from '@/pages/Assets';
 import { isValidAssetAddress } from '@/validation/asset';
 
 interface ImportModalProps {
@@ -25,7 +25,6 @@ interface ImportModalProps {
 export function AssetsImportModal(props: ImportModalProps) {
   const { closeModal } = props;
 
-  const [importResult, setImportResult] = useState<boolean | null>(null);
   const [inputError, setInputError] = useState<InputsErrors | null>(null);
   const [assetAddress, setAssetAddress] = useState<string>('');
 
@@ -47,10 +46,15 @@ export function AssetsImportModal(props: ImportModalProps) {
 
   useEffect(() => {
     if (postSuccess) {
+      toast.success(
+        Intl.t('assets.import.success-screen.success-message', {
+          name: data.name,
+          symbol: data.symbol,
+        }),
+      );
+      closeModal();
       refetch();
-      setImportResult(true);
     } else if (postError) {
-      setImportResult(false);
       displayErrors(postErrorStatus);
     }
   }, [postSuccess, postError]);
@@ -58,9 +62,7 @@ export function AssetsImportModal(props: ImportModalProps) {
   function displayErrors(postStatus: number | undefined) {
     switch (postStatus) {
       case assetImportErrors.badRequest:
-        setInputError({
-          address: Intl.t('assets.import.failure-screen.bad-request'),
-        });
+        toast.error(Intl.t('assets.import.failure-screen.bad-request'));
         break;
       case assetImportErrors.invalidAddress:
         setInputError({
@@ -68,19 +70,15 @@ export function AssetsImportModal(props: ImportModalProps) {
         });
         break;
       case assetImportErrors.notFound:
-        setInputError({
-          address: Intl.t('assets.import.failure-screen.not-found'),
-        });
+        toast.error(Intl.t('assets.import.failure-screen.not-found'));
         break;
       case assetImportErrors.serverError:
-        setInputError({
-          address: Intl.t('assets.import.failure-screen.internal-server-error'),
-        });
+        toast.error(
+          Intl.t('assets.import.failure-screen.internal-server-error'),
+        );
         break;
       default:
-        setInputError({
-          address: Intl.t('assets.import.failure-screen.unkown-error'),
-        });
+        toast.error(Intl.t('assets.import.failure-screen.unkown-error'));
     }
   }
 
@@ -113,58 +111,38 @@ export function AssetsImportModal(props: ImportModalProps) {
   }
 
   return (
-    <>
-      {importResult !== null ? (
-        <PopupModal
-          customClass="w-[513px] h-[440px]"
-          fullMode={true}
-          onClose={() => closeModal()}
-          customClassNested="w-full h-full"
-        >
-          <ImportResult
-            closeModal={() => closeModal()}
-            data={data as Asset}
-            importResult={importResult}
-            inputError={inputError}
+    <PopupModal
+      customClass="w-[580px] h-[300px]"
+      fullMode={true}
+      onClose={() => closeModal()}
+    >
+      <PopupModalHeader>
+        <div className="mb-6">
+          <p className="mas-title mb-6">
+            {Intl.t('assets.import.import-title')}
+          </p>
+          <p className="mas-body2">{Intl.t('assets.import.import-subtitle')}</p>
+        </div>
+      </PopupModalHeader>
+      <PopupModalContent>
+        <div className="mas-body2 pb-10">
+          <Input
+            value={assetAddress}
+            onChange={(e) => setAssetAddress(e.target.value)}
+            name="tokenAddress"
+            error={inputError?.address}
+            placeholder={Intl.t('assets.import.placeholder')}
           />
-        </PopupModal>
-      ) : (
-        <PopupModal
-          customClass="w-[580px] h-[300px]"
-          fullMode={true}
-          onClose={() => closeModal()}
-        >
-          <PopupModalHeader>
-            <div className="mb-6">
-              <p className="mas-title mb-6">
-                {Intl.t('assets.import.import-title')}
-              </p>
-              <p className="mas-body2">
-                {Intl.t('assets.import.import-subtitle')}
-              </p>
-            </div>
-          </PopupModalHeader>
-          <PopupModalContent>
-            <div className="mas-body2 pb-10">
-              <Input
-                value={assetAddress}
-                onChange={(e) => setAssetAddress(e.target.value)}
-                name="tokenAddress"
-                error={inputError?.address}
-                placeholder={Intl.t('assets.import.placeholder')}
-              />
 
-              <Button
-                customClass="mt-6"
-                preIcon={<FiPlus size={24} />}
-                onClick={() => handleSubmit()}
-              >
-                {Intl.t('assets.import.add')}
-              </Button>
-            </div>
-          </PopupModalContent>
-        </PopupModal>
-      )}
-    </>
+          <Button
+            customClass="mt-6"
+            preIcon={<FiPlus size={24} />}
+            onClick={() => handleSubmit()}
+          >
+            {Intl.t('assets.import.add')}
+          </Button>
+        </div>
+      </PopupModalContent>
+    </PopupModal>
   );
 }
