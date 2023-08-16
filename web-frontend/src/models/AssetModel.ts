@@ -1,4 +1,4 @@
-export interface Token {
+export interface Asset {
   name: string;
   address: string;
   symbol: string;

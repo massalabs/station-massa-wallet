@@ -18,7 +18,7 @@ import {
 } from '@/const/assets/assets';
 import { useDelete, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { Token } from '@/models/AssetModel';
+import { Asset } from '@/models/AssetModel';
 
 interface DeleteAssetModal {
   closeModal: () => void;
@@ -29,7 +29,7 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
   const { tokenAddress, closeModal } = props;
   const { nickname } = useParams();
 
-  const { refetch: refetchAssets } = useResource<Token[]>(
+  const { refetch: refetchAssets } = useResource<Asset[]>(
     `accounts/${nickname}/assets`,
   );
 
