@@ -6,7 +6,11 @@ import { XMA } from '@/const/assets/assets';
 import { Asset } from '@/models/AssetModel';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
 
-export function AssetsList({ ...props }) {
+interface AssetsListProps {
+  assets: Asset[] | undefined;
+}
+
+export function AssetsList(props: AssetsListProps) {
   const { assets } = props;
 
   const [tokenAddress, setTokenAddress] = useState<string>('');
