@@ -1,6 +1,6 @@
 export const XMA = 'XMA';
 
-export interface ITokenData {
+export interface AssetData {
   logo?: React.ReactNode;
   name: string;
   symbol: string;

@@ -1,4 +1,4 @@
-export interface IToken {
+export interface Asset {
   name: string;
   address: string;
   symbol: string;

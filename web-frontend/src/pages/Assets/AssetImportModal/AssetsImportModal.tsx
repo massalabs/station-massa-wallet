@@ -14,19 +14,24 @@ import { useParams } from 'react-router-dom';
 import { InputsErrors, assetImportErrors } from '@/const/assets/assets';
 import { usePost, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { IToken } from '@/models/AssetModel';
+import { Asset } from '@/models/AssetModel';
 import { ImportResult } from '@/pages/Assets';
+import { isValidAssetAddress } from '@/validation/asset';
 
-export function AssetsImportModal({ ...props }) {
+interface ImportModalProps {
+  closeModal: () => void;
+}
+
+export function AssetsImportModal(props: ImportModalProps) {
   const { closeModal } = props;
 
   const [importResult, setImportResult] = useState<boolean | null>(null);
   const [inputError, setInputError] = useState<InputsErrors | null>(null);
-  const [tokenAddress, setTokenAddress] = useState<string>('');
+  const [assetAddress, setAssetAddress] = useState<string>('');
 
   const { nickname } = useParams();
 
-  const { refetch } = useResource<IToken[]>(`accounts/${nickname}/assets`);
+  const { refetch } = useResource<Asset[]>(`accounts/${nickname}/assets`);
 
   const {
     mutate,
@@ -34,8 +39,8 @@ export function AssetsImportModal({ ...props }) {
     isSuccess: postSuccess,
     isError: postError,
     error,
-  } = usePost<IToken>(
-    `accounts/${nickname}/assets?assetAddress=${tokenAddress}`,
+  } = usePost<Asset>(
+    `accounts/${nickname}/assets?assetAddress=${assetAddress}`,
   );
   const axiosError = error as AxiosError;
   const postErrorStatus = axiosError?.response?.status;
@@ -78,22 +83,18 @@ export function AssetsImportModal({ ...props }) {
         });
     }
   }
-  function isValidAssetAddress(input: string): boolean {
-    const regexPattern = /^AS[0-9a-zA-Z]+$/;
-    return regexPattern.test(input);
-  }
 
   function validate() {
     setInputError(null);
 
-    if (!tokenAddress) {
+    if (!assetAddress) {
       setInputError({
         address: Intl.t('assets.import.failure-screen.no-input'),
       });
       return false;
     }
 
-    if (!isValidAssetAddress(tokenAddress)) {
+    if (!isValidAssetAddress(assetAddress)) {
       setInputError({
         address: Intl.t('assets.import.failure-screen.wrong-format'),
       });
@@ -104,12 +105,11 @@ export function AssetsImportModal({ ...props }) {
 
   function handleSubmit() {
     if (!validate()) return;
-    setTokenAddress(tokenAddress);
     handleImport();
   }
 
   function handleImport() {
-    mutate({} as IToken);
+    mutate({} as Asset);
   }
 
   return (
@@ -123,7 +123,7 @@ export function AssetsImportModal({ ...props }) {
         >
           <ImportResult
             closeModal={() => closeModal()}
-            token={data}
+            data={data as Asset}
             importResult={importResult}
             inputError={inputError}
           />
@@ -135,31 +135,32 @@ export function AssetsImportModal({ ...props }) {
           onClose={() => closeModal()}
         >
           <PopupModalHeader>
-            <div className="flex flex-col">
-              <div className="mas-title mb-6">
+            <div className="mb-6">
+              <p className="mas-title mb-6">
                 {Intl.t('assets.import.import-title')}
-              </div>
-              <p className="mb-6">{Intl.t('assets.import.import-subtitle')}</p>
+              </p>
+              <p className="mas-body2">
+                {Intl.t('assets.import.import-subtitle')}
+              </p>
             </div>
           </PopupModalHeader>
           <PopupModalContent>
             <div className="mas-body2 pb-10">
               <Input
-                value={tokenAddress}
-                onChange={(e) => setTokenAddress(e.target.value)}
+                value={assetAddress}
+                onChange={(e) => setAssetAddress(e.target.value)}
                 name="tokenAddress"
                 error={inputError?.address}
                 placeholder={Intl.t('assets.import.placeholder')}
               />
-              <div>
-                <Button
-                  customClass="mt-2 mt-6"
-                  preIcon={<FiPlus size={24} />}
-                  onClick={() => handleSubmit()}
-                >
-                  {Intl.t('assets.import.add')}
-                </Button>
-              </div>
+
+              <Button
+                customClass="mt-6"
+                preIcon={<FiPlus size={24} />}
+                onClick={() => handleSubmit()}
+              >
+                {Intl.t('assets.import.add')}
+              </Button>
             </div>
           </PopupModalContent>
         </PopupModal>

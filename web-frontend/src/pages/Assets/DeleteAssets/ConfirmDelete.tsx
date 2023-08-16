@@ -17,13 +17,13 @@ import {
 } from '@/const/assets/assets';
 import { useDelete, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { IToken } from '@/models/AssetModel';
+import { Asset } from '@/models/AssetModel';
 
 export function ConfirmDelete({ ...props }) {
   const { tokenAddress, closeModal } = props;
   const { nickname } = useParams();
 
-  const { refetch: refetchAssets } = useResource<IToken[]>(
+  const { refetch: refetchAssets } = useResource<Asset[]>(
     `accounts/${nickname}/assets`,
   );
 

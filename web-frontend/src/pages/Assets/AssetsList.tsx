@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
 
-import { ITokenData, XMA } from '@/const/assets/assets';
+import { AssetData, XMA } from '@/const/assets/assets';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
 
 export function AssetsList({ ...props }) {
@@ -18,7 +18,7 @@ export function AssetsList({ ...props }) {
 
   return (
     <>
-      {assets?.map((token: ITokenData, index: number) => (
+      {assets?.map((token: AssetData, index: number) => (
         <Token
           logo={
             token.symbol === XMA ? <MassaLogo size={40} /> : <FT1 size={40} />
