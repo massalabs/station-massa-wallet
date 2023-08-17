@@ -37,6 +37,15 @@ interface PromptRequestTransferData {
   RecipientAddress: string;
 }
 
+interface PromptRequestCallSCData {
+  OperationID: number;
+  GasLimit: number;
+  Coins: number;
+  Address: string;
+  CalledFunction: string;
+  OperationType?: string; // Add the OperationType field here
+}
+
 function TransferLayout(props: PromptRequestTransferData) {
   let { Amount, NicknameFrom, RecipientAddress, Fee } = props;
 
@@ -54,6 +63,26 @@ function TransferLayout(props: PromptRequestTransferData) {
         {Intl.t('password-prompt.transfer.to')}
         <p>{maskAddress(RecipientAddress)}</p>
       </div>
+    </div>
+  );
+}
+
+function SignLayout(props: PromptRequestCallSCData) {
+  const { GasLimit, Coins, Address, CalledFunction, OperationType } = props;
+
+  return (
+    <div>
+      <div>Operation Type: {OperationType}</div>
+      {OperationType === 'Call SC' ? (
+        <>
+          <div>Gas Limit: {GasLimit}</div>
+          <div>Coins: {Coins}</div>
+          <div>Address: {Address}</div>
+          <div>Function: {CalledFunction}</div>
+        </>
+      ) : (
+        <div>Other Sign Data Content</div>
+      )}
     </div>
   );
 }
@@ -96,8 +125,14 @@ function PasswordPrompt() {
     switch (req.Action) {
       case deleteReq:
         return Intl.t('password-prompt.subtitle.delete');
-      case signReq:
-        return Intl.t('password-prompt.subtitle.sign');
+      case signReq: {
+        const signData = req.Data as PromptRequestCallSCData;
+        if (signData.OperationType === 'Call SC') {
+          return <SignLayout {...signData} />;
+        } else {
+          return Intl.t('password-prompt.subtitle.sign');
+        }
+      }
       case promptAction.transferReq: {
         const transferData = req.Data as PromptRequestTransferData;
         return <TransferLayout {...transferData} />;
