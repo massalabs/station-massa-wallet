@@ -60,6 +60,27 @@ func Test_walletSign_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
 	})
 
+	t.Run("sign a plain text message", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PromptInput <- password
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		message := "a message"
+		transactionData := fmt.Sprintf(`{"operation":"%s"}`, base64.StdEncoding.EncodeToString([]byte(message)))
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+	})
+
 	// The handler will not return until a the good password is sent or the action is canceled
 	t.Run("invalid password try, then valid password", func(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
