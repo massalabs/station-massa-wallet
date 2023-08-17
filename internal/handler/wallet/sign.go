@@ -58,7 +58,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return operations.NewSignBadRequest().WithPayload(
 			&models.Error{
 				Code:    errorSignDecodeOperation,
-				Message: "Error: while decoding operation.",
+				Message: "Error: while base64 decoding operation.",
 			})
 	}
 
@@ -75,7 +75,9 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if err != nil {
 		fmt.Println("fail decoding message, for now we decode only CallSC, ", err)
 	}
+
 	var correlationId models.CorrelationID
+
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
@@ -122,14 +124,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 	if resp != nil {
 		return resp
-	}
-
-	if err != nil {
-		return operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignDecodeOperation,
-				Message: "Error: while decoding operation.",
-			})
 	}
 
 	signature, err := wlt.Sign(op)
