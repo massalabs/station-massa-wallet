@@ -4,6 +4,7 @@ import { factories } from './factories';
 import { handlers } from './handlers';
 import { models } from './models';
 import { ENV } from '../const/env/env';
+import { AccountObject } from '@/models/AccountModel';
 
 export function mockServer(environment = ENV.DEV) {
   const server = createServer({
@@ -11,7 +12,10 @@ export function mockServer(environment = ENV.DEV) {
     models,
     factories,
     seeds(server) {
-      server.createList('account', 5);
+      const accounts = server.createList('account', 5);
+      accounts.forEach((account: AccountObject) => {
+        server.createList('asset', 3, { account });
+      });
     },
   });
 

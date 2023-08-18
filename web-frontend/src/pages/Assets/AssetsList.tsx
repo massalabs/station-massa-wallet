@@ -1,15 +1,32 @@
-import { MassaLogo, Mrc20, Token } from '@massalabs/react-ui-kit';
+import { useState } from 'react';
 
-import { ITokenData, XMA } from '@/const/assets/assets';
+import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
 
-export function AssetsList({ ...props }) {
-  const { tokenArray } = props;
+import { XMA } from '@/const/assets/assets';
+import { Asset } from '@/models/AssetModel';
+import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
+
+interface AssetsListProps {
+  assets: Asset[] | undefined;
+}
+
+export function AssetsList(props: AssetsListProps) {
+  const { assets } = props;
+
+  const [tokenAddress, setTokenAddress] = useState<string>('');
+  const [modal, setModal] = useState<boolean>(false);
+
+  function handleDelete(address: string) {
+    setTokenAddress(address);
+    setModal(true);
+  }
+
   return (
     <>
-      {tokenArray?.map((token: ITokenData, index: number) => (
+      {assets?.map((token: Asset, index: number) => (
         <Token
           logo={
-            token.symbol === XMA ? <MassaLogo size={40} /> : <Mrc20 size={40} />
+            token.symbol === XMA ? <MassaLogo size={40} /> : <FT1 size={40} />
           }
           name={token.name}
           symbol={token.symbol}
@@ -17,8 +34,17 @@ export function AssetsList({ ...props }) {
           balance={token.balance}
           key={index}
           disable={token?.symbol === XMA ? true : false}
+          onDelete={() => {
+            handleDelete(token.address);
+          }}
         />
       ))}
+      {modal && (
+        <DeleteAssetModal
+          tokenAddress={tokenAddress}
+          closeModal={() => setModal(false)}
+        />
+      )}
     </>
   );
 }

@@ -16,6 +16,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const callSCString = "AKT4CASAzuTNAqCNBgEAXBwUw39NBQYix8Ovph0TUiJuDDEnlFYUPgsbeMbrA4cLZm9yd2FyZEJ1cm7FAQDgfY7fLW7qpwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAAAAweGZDRERBRTI1MTAwNjIxYTViQzg4MTlkQzlEMzg0MjUzNEQ3QmY0NzYAAAAANQAAAEFTMTJUUm9TY01kd0xLOFlwdDZOQkFwcHl6Q0Z3N1FlRzVlM3hGdnhwQ0FuQW5ZTGZ1TVVUKgAAADB4NTM4NDRGOTU3N0MyMzM0ZTU0MUFlYzdEZjcxNzRFQ2U1ZEYxZkNmMKc2qgAAAAAA"
+
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
 	assert.True(t, exist)
@@ -29,7 +31,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
-	transactionData := `{"operation":"MjIzM3QyNHQ="}`
+	transactionData := fmt.Sprintf(`{"operation":"%s"}`, callSCString)
 	nickname := "walletToDelete"
 	password := "zePassword"
 	_, errGenerate := wallet.Generate(nickname, password)
@@ -49,6 +51,27 @@ func Test_walletSign_Handle(t *testing.T) {
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+	})
+
+	t.Run("sign a plain text message", func(t *testing.T) {
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PromptInput <- password
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		message := "a message"
+		transactionData := fmt.Sprintf(`{"operation":"%s"}`, base64.StdEncoding.EncodeToString([]byte(message)))
 
 		resp := signTransaction(t, api, nickname, transactionData)
 		verifyStatusCode(t, resp, http.StatusOK)
@@ -105,7 +128,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("sign transaction batch OK", func(t *testing.T) {
-		transactionDataBatch := `{"operation":"MjIzM3QyNHQ=","batch":true}`
+		transactionDataBatch := fmt.Sprintf(`{"operation":"%s","batch":true}`, callSCString)
 		testResult := make(chan walletapp.EventData)
 
 		// Send password to prompter app and wait for result
@@ -128,7 +151,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
 
-		transactionDataBatch = fmt.Sprintf(`{"operation":"MjIzM3QyNHQ=","correlationId":"%s"}`, correlationId)
+		transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
 		// Send new transaction without password prompt
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
 		verifyStatusCode(t, resp, http.StatusOK)

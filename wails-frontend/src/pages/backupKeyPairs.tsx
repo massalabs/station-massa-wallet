@@ -71,7 +71,7 @@ function BackupKeyPairs() {
     return true;
   }
 
-  async function handleResult(result: promptResult<KeyPair>) {
+  function handleResult(result: promptResult<KeyPair>) {
     let { Success, CodeMessage } = result;
 
     if (!Success) {

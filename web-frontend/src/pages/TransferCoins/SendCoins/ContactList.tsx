@@ -30,7 +30,7 @@ function AccountSelect(props: ContactListProps) {
     <PopupModal
       fullMode={true}
       onClose={() => onClose?.()}
-      customClass="!w-1/2 h-1/2 "
+      customClass="!w-1/2 h-1/2"
     >
       <PopupModalHeader>
         <label className="mas-title mb-6">My accounts</label>

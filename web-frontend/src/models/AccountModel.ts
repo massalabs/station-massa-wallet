@@ -1,26 +1,21 @@
-type keyPairObject = {
+import { Asset } from './AssetModel';
+
+interface keyPairObject {
   nonce: string;
   privateKey: string;
   publicKey: string;
   salt: string;
-};
-
-export interface IToken {
-  name: string;
-  symbol: string;
-  decimals: number;
-  balance: string;
 }
 
-export type AccountObject = {
+export interface AccountObject {
   address: string;
   balance: string;
   candidateBalance: string;
   keyPair: keyPairObject;
   nickname: string;
-  assets: IToken[];
+  assets: Asset[];
   status: string;
-};
+}
 
 export type SendTransactionObject = {
   amount: string;
