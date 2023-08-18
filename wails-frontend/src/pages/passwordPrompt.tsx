@@ -4,7 +4,7 @@ import { toMAS } from '@massalabs/massa-web3';
 import { Password, Button, Balance } from '@massalabs/react-ui-kit';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime';
-import { FiLock, FiTrash2 } from 'react-icons/fi';
+import { FiArrowRightCircle, FiLock, FiTrash2 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -71,13 +71,26 @@ function SignLayout(props: PromptRequestCallSCData) {
   const { GasLimit, Coins, Address, CalledFunction, OperationType } = props;
 
   return (
-    <div>
-      <div>Operation Type: {OperationType}</div>
+    <div className="bg-blue-500">
       {OperationType === 'Call SC' ? (
         <>
+          <div className="flex w-full h-11 items-center justify-between bg-red-500">
+            <div className="flex flex-col">
+              <p>From: </p>
+              <p>{maskAddress(Address)}</p>
+            </div>
+            <FiArrowRightCircle />
+            <div className="flex flex-col">
+              <p>To: </p>
+              <p>{maskAddress(Address)}</p>
+            </div>
+          </div>
           <div>Gas Limit: {GasLimit}</div>
           <div>Coins: {Coins}</div>
-          <div>Address: {Address}</div>
+          <div>
+            Operation Type:
+            {OperationType}
+          </div>
           <div>Function: {CalledFunction}</div>
         </>
       ) : (
@@ -127,6 +140,7 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.subtitle.delete');
       case signReq: {
         const signData = req.Data as PromptRequestCallSCData;
+        console.log(signData);
         if (signData.OperationType === 'Call SC') {
           return <SignLayout {...signData} />;
         } else {
