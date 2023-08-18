@@ -42,7 +42,7 @@ interface PromptRequestCallSCData {
   GasLimit: number;
   Coins: number;
   Address: string;
-  CalledFunction: string;
+  Function: string;
   FromAddress: string;
   OperationType?: string; // Add the OperationType field here
 }
@@ -69,14 +69,8 @@ function TransferLayout(props: PromptRequestTransferData) {
 }
 
 function SignLayout(props: PromptRequestCallSCData) {
-  const {
-    GasLimit,
-    Coins,
-    Address,
-    CalledFunction,
-    FromAddress,
-    OperationType,
-  } = props;
+  const { GasLimit, Coins, Address, Function, FromAddress, OperationType } =
+    props;
 
   return (
     <div>
@@ -85,9 +79,9 @@ function SignLayout(props: PromptRequestCallSCData) {
         <>
           <div>Gas Limit: {GasLimit}</div>
           <div>Coins: {Coins}</div>
-          <div>Address: {Address}</div>
-          <div>Function: {CalledFunction}</div>
-          <div>FromAddress: {FromAddress}</div>
+          <div>To: {maskAddress(Address)}</div>
+          <div>From: {maskAddress(FromAddress)}</div>
+          <div>Function: {Function}</div>
         </>
       ) : (
         <div>Other Sign Data Content</div>
