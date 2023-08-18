@@ -20,6 +20,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/callsc"
+	"github.com/massalabs/station/pkg/node/sendoperation/executesc"
 	"lukechampine.com/blake3"
 )
 
@@ -32,6 +33,8 @@ type PromptRequestData struct {
 	Coins         uint64
 	Address       string
 	Function      string
+	maxCoins      uint64
+	maxGas        uint64
 }
 
 // NewSign instantiates a sign Handler
@@ -71,11 +74,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			})
 	}
 
-	callSC, err := callsc.DecodeMessage(decodedMsg)
-	if err != nil {
-		fmt.Println("fail decoding message, for now we decode only CallSC, ", err)
-	}
-
 	var correlationId models.CorrelationID
 
 	if params.Body.CorrelationID != nil {
@@ -83,7 +81,11 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	} else {
 
 		var promptRequest prompt.PromptRequest
-		if callSC != nil {
+		// Check if the decoded message is a CallSC
+		if callSC, err := callsc.DecodeMessage(decodedMsg); err == nil && callSC != nil {
+			// Handle the case of a CallSC message
+			fmt.Println("Decoded CallSC message successfully")
+			// Prepare prompt data for CallSC
 			promptRequest = prompt.PromptRequest{
 				Action: walletapp.Sign,
 				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
@@ -96,7 +98,23 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 					Function:      callSC.Function,
 				},
 			}
+		} else if executeSC, err := executesc.DecodeMessage(decodedMsg); err == nil && executeSC != nil {
+			// Handle the case of an ExecuteSC message
+			fmt.Println("Decoded ExecuteSC message successfully")
+			// Prepare prompt data for ExecuteSC
+			promptRequest = prompt.PromptRequest{
+				Action: walletapp.Sign,
+				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+				Data: PromptRequestData{
+					OperationType: "Execute SC",
+					maxCoins:      executeSC.MaxCoins,
+					maxGas:        executeSC.MaxGas,
+				},
+			}
 		} else {
+			// Handle the case of an unknown operation type
+			fmt.Println("Decoded unknown message type")
+			// Prepare prompt data for unknown operation type
 			promptRequest = prompt.PromptRequest{
 				Action: walletapp.Sign,
 				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
