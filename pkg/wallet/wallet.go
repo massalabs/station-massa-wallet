@@ -88,8 +88,9 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 		return Wallet{}, fmt.Errorf("while checking public key version: %w", err)
 	}
 
+	// As the salt is unpadded in the serialized account standard, add some padding here
+	// to allow compatibility with the base64 decode library of Go
 	padlen := 4 - (len(accountSerialized.Salt) % 4)
-
 	decSalt, err := base64.StdEncoding.DecodeString(accountSerialized.Salt + strings.Repeat("=", padlen))
 	if err != nil {
 		return Wallet{}, fmt.Errorf("while decoding base64 salt: %w", err)
@@ -114,6 +115,8 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 
 // toAccountSerialized returns an AccountSerialized from a Wallet.
 func (account *Wallet) toAccountSerialized() AccountSerialized {
+	// Remove the padding off the tail of the base64 encoded salt
+	// as the massa-standard expects it unpadded
 	salt := strings.TrimRight(
 		base64.StdEncoding.EncodeToString(account.KeyPair.Salt[:]),
 		"=",
