@@ -48,9 +48,7 @@ type walletSign struct {
 	gc          gcache.Cache
 }
 
-// Handle handles a sign request.
 func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
-	// params.Nickname length is already checked by go swagger
 	wlt, resp := loadWallet(params.Nickname)
 	if resp != nil {
 		return resp
@@ -58,20 +56,12 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
 	if err != nil {
-		return operations.NewSignBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorSignDecodeOperation,
-				Message: "Error: while base64 decoding operation.",
-			})
+		return s.handleBadRequest(errorSignDecodeOperation)
 	}
 
 	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
 	if err != nil {
-		return operations.NewSignBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorSignDecodeMessage,
-				Message: "Error: while decoding message.",
-			})
+		return s.handleBadRequest(errorSignDecodeMessage)
 	}
 
 	var correlationId models.CorrelationID
@@ -79,52 +69,16 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-
-		var promptRequest prompt.PromptRequest
-		// Check if the decoded message is a CallSC
-		if callSC, err := callsc.DecodeMessage(decodedMsg); err == nil && callSC != nil {
-			// Handle the case of a CallSC message
-			fmt.Println("Decoded CallSC message successfully")
-			// Prepare prompt data for CallSC
-			promptRequest = prompt.PromptRequest{
-				Action: walletapp.Sign,
-				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-				Data: PromptRequestData{
-					OperationType: "Call SC",
-					OperationID:   callSC.OperationID,
-					GasLimit:      callSC.GasLimit,
-					Coins:         callSC.Coins,
-					Address:       callSC.Address,
-					Function:      callSC.Function,
-				},
-			}
-		} else if executeSC, err := executesc.DecodeMessage(decodedMsg); err == nil && executeSC != nil {
-			// Handle the case of an ExecuteSC message
-			fmt.Println("Decoded ExecuteSC message successfully")
-			// Prepare prompt data for ExecuteSC
-			promptRequest = prompt.PromptRequest{
-				Action: walletapp.Sign,
-				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-				Data: PromptRequestData{
-					OperationType: "Execute SC",
-					maxCoins:      executeSC.MaxCoins,
-					maxGas:        executeSC.MaxGas,
-				},
-			}
-		} else {
-			// Handle the case of an unknown operation type
-			fmt.Println("Decoded unknown message type")
-			// Prepare prompt data for unknown operation type
-			promptRequest = prompt.PromptRequest{
-				Action: walletapp.Sign,
-				Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-				Data: PromptRequestData{
-					OperationType: "Unknown",
-				},
-			}
+		promptRequest, err := s.getPromptRequest(decodedMsg, wlt)
+		if err != nil {
+			return operations.NewSignUnauthorized().WithPayload(
+				&models.Error{
+					Code:    errorCanceledAction,
+					Message: "Unable to unprotect wallet",
+				})
 		}
 
-		_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
+		_, err = prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
 		if err != nil {
 			return operations.NewSignUnauthorized().WithPayload(
 				&models.Error{
@@ -159,6 +113,67 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			Signature:     signature,
 			CorrelationID: correlationId,
 		})
+}
+
+func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
+	return operations.NewSignBadRequest().WithPayload(
+		&models.Error{
+			Code:    errorCode,
+			Message: fmt.Sprintf("Error: %s", errorCode),
+		})
+}
+
+func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet) (prompt.PromptRequest, error) {
+	var promptRequest prompt.PromptRequest
+	callSC, err := callsc.DecodeMessage(decodedMsg)
+	if err == nil && callSC != nil {
+		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt)
+	} else {
+		executeSC, err := executesc.DecodeMessage(decodedMsg)
+		if err == nil && executeSC != nil {
+			promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt)
+		} else {
+			promptRequest = s.prepareUnknownPromptRequest(wlt)
+		}
+	}
+	return promptRequest, nil
+}
+
+func (s *walletSign) prepareCallSCPromptRequest(callSC *callsc.MessageContent, wlt *wallet.Wallet) prompt.PromptRequest {
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestData{
+			OperationType: "Call SC",
+			OperationID:   callSC.OperationID,
+			GasLimit:      callSC.GasLimit,
+			Coins:         callSC.Coins,
+			Address:       callSC.Address,
+			Function:      callSC.Function,
+		},
+	}
+}
+
+func (s *walletSign) prepareExecuteSCPromptRequest(executeSC *executesc.MessageContent, wlt *wallet.Wallet) prompt.PromptRequest {
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestData{
+			OperationType: "Execute SC",
+			maxCoins:      executeSC.MaxCoins,
+			maxGas:        executeSC.MaxGas,
+		},
+	}
+}
+
+func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet) prompt.PromptRequest {
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestData{
+			OperationType: "Unknown",
+		},
+	}
 }
 
 func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
