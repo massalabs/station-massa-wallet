@@ -79,20 +79,26 @@ function SignLayout(props: PromptRequestCallSCData) {
   } = props;
 
   return (
-    <div className="bg-blue-500">
+    <div className="flex flex-col gap-5">
       {OperationType === 'Call SC' ? (
         <>
           <div className="flex w-full h-11 items-center justify-between bg-red-500">
             <div className="flex flex-col">
               <p>From: </p>
-              <p>{maskAddress(Address)}</p>
+              <p>{maskAddress(FromAddress)}</p>
             </div>
-            <FiArrowRightCircle />
+            <FiArrowRightCircle size={32} />
             <div className="flex flex-col">
               <p>To: </p>
               <p>{maskAddress(Address)}</p>
             </div>
           </div>
+
+          <hr
+            className="h-0.5 border-t-0 bg-transparent bg-gradient-to-r 
+        from-transparent via-tertiary to-transparent opacity-100"
+          />
+
           <div>Gas Limit: {GasLimit}</div>
           <div>Coins: {Coins}</div>
           <div>
