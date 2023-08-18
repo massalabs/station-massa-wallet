@@ -88,7 +88,9 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 		return Wallet{}, fmt.Errorf("while checking public key version: %w", err)
 	}
 
-	decSalt, err := base64.StdEncoding.DecodeString(accountSerialized.Salt)
+	padlen := 4 - (len(accountSerialized.Salt) % 4)
+
+	decSalt, err := base64.StdEncoding.DecodeString(accountSerialized.Salt + strings.Repeat("=", padlen))
 	if err != nil {
 		return Wallet{}, fmt.Errorf("while decoding base64 salt: %w", err)
 	}
@@ -112,7 +114,11 @@ func (accountSerialized *AccountSerialized) toAccount() (Wallet, error) {
 
 // toAccountSerialized returns an AccountSerialized from a Wallet.
 func (account *Wallet) toAccountSerialized() AccountSerialized {
-	salt := base64.StdEncoding.EncodeToString(account.KeyPair.Salt[:])
+	salt := strings.TrimRight(
+		base64.StdEncoding.EncodeToString(account.KeyPair.Salt[:]),
+		"=",
+	)
+	fmt.Printf("Salt: %s\n", salt)
 
 	accountSerialized := AccountSerialized{
 		Version:      &account.Version,
