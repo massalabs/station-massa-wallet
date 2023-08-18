@@ -15,6 +15,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
@@ -32,17 +33,19 @@ type PromptRequestData struct {
 	Coins         uint64
 	Address       string
 	Function      string
+	FromAddress   string
 }
 
 // NewSign instantiates a sign Handler
 // The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
-func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignHandler {
-	return &walletSign{gc: gc, prompterApp: prompterApp}
+func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache, massaClient network.NodeFetcherInterface) operations.SignHandler {
+	return &walletSign{gc: gc, prompterApp: prompterApp, massaClient: massaClient}
 }
 
 type walletSign struct {
 	prompterApp prompt.WalletPrompterInterface
 	gc          gcache.Cache
+	massaClient network.NodeFetcherInterface
 }
 
 // Handle handles a sign request.
@@ -52,6 +55,20 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if resp != nil {
 		return resp
 	}
+
+	// Fetch the account information for the wallet using the massaClient
+	infos, err := s.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	if err != nil {
+		// Handle the error and return an internal server error response
+		errorMsg := fmt.Sprintf("Failed to fetch wallett infos: %s", err.Error())
+		return operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
+			Code:    errorGetWalletInfos,
+			Message: errorMsg,
+		})
+	}
+
+	// Retrieve the caller Address
+	fromAddress := fmt.Sprint(infos[0].Address)
 
 	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
 	if err != nil {
@@ -83,6 +100,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	} else {
 
 		var promptRequest prompt.PromptRequest
+
 		if callSC != nil {
 			promptRequest = prompt.PromptRequest{
 				Action: walletapp.Sign,
@@ -94,6 +112,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 					Coins:         callSC.Coins,
 					Address:       callSC.Address,
 					Function:      callSC.Function,
+					FromAddress:   fromAddress,
 				},
 			}
 		} else {
