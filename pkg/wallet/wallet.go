@@ -118,7 +118,6 @@ func (account *Wallet) toAccountSerialized() AccountSerialized {
 		base64.StdEncoding.EncodeToString(account.KeyPair.Salt[:]),
 		"=",
 	)
-	fmt.Printf("Salt: %s\n", salt)
 
 	accountSerialized := AccountSerialized{
 		Version:      &account.Version,
