@@ -14,6 +14,7 @@ const (
 	errorSignEmptyNickname
 	errorSignDecodeOperation
 	errorSignDecodeMessage
+	errorGetWalletInfos
 	errorSignRead
 	errorSignLoadCache
 	errorSignGenerateCorrelationId
