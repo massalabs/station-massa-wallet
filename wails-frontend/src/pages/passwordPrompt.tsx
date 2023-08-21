@@ -42,9 +42,10 @@ interface PromptRequestCallSCData {
   GasLimit: number;
   Coins: number;
   Address: string;
-  CalledFunction: string;
   maxCoins: number;
   maxGas: number;
+  Function: string;
+  WalletAddress: string;
   OperationType?: string; // Add the OperationType field here
 }
 
@@ -74,10 +75,11 @@ function SignLayout(props: PromptRequestCallSCData) {
     GasLimit,
     Coins,
     Address,
-    CalledFunction,
     OperationType,
     maxCoins,
     maxGas,
+    Function: CalledFunction,
+    WalletAddress,
   } = props;
 
   return (
@@ -87,7 +89,8 @@ function SignLayout(props: PromptRequestCallSCData) {
         <>
           <div>Gas Limit: {GasLimit}</div>
           <div>Coins: {Coins}</div>
-          <div>Address: {Address}</div>
+          <div>To: {maskAddress(Address)}</div>
+          <div>From: {maskAddress(WalletAddress)}</div>
           <div>Function: {CalledFunction}</div>
         </>
       ) : OperationType === 'Execute SC' ? ( // Handle the Execute SC case

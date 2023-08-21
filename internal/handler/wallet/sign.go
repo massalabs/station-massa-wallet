@@ -35,6 +35,7 @@ type PromptRequestData struct {
 	Function      string
 	maxCoins      uint64
 	maxGas        uint64
+	WalletAddress string
 }
 
 // NewSign instantiates a sign Handler
