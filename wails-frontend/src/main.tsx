@@ -20,7 +20,7 @@ import ImportMethods from '@/pages/importMethods';
 import PromptNickname from '@/pages/ImportPrivateKey/PromptNickname';
 import PromptPrivateKey from '@/pages/ImportPrivateKey/PromptPrivateKey';
 import NewPassword from '@/pages/newPassword';
-import PasswordPrompt from '@/pages/passwordPrompt';
+import PasswordPrompt from '@/pages/PasswordPrompt/passwordPrompt';
 import Success from '@/pages/success';
 
 const router = createBrowserRouter(

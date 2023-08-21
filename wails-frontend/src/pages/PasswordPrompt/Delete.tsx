@@ -1,0 +1,103 @@
+import { Layout } from '@/layouts/Layout/Layout';
+import { Button, Password } from '@massalabs/react-ui-kit';
+import Intl from '@/i18n/i18n';
+import { FiTrash2 } from 'react-icons/fi';
+import {
+  ErrorCode,
+  IErrorObject,
+  handleApplyResult,
+  handleCancel,
+  parseForm,
+} from '@/utils';
+import { SyntheticEvent, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { events, promptRequest, promptResult } from '@/events/events';
+import { PromptRequestDeleteData } from './passwordPrompt';
+import { EventsOnce } from '@wailsjs/runtime/runtime';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
+
+export function Delete() {
+  const [error, setError] = useState<IErrorObject | null>(null);
+
+  const navigate = useNavigate();
+  const form = useRef(null);
+  const { state } = useLocation();
+  const req: promptRequest = state.req;
+  const data: PromptRequestDeleteData = req.Data;
+
+  function validate(e: SyntheticEvent) {
+    const formObject = parseForm(e);
+    const { password } = formObject;
+
+    if (!password || !password.length) {
+      setError({ password: Intl.t('errors.PasswordRequired') });
+      return false;
+    }
+
+    return true;
+  }
+
+  function save(e: SyntheticEvent) {
+    const form = parseForm(e);
+    const { password } = form;
+
+    EventsOnce(events.promptResult, handleResult);
+
+    SendPromptInput(password);
+  }
+
+  function handleResult(result: promptResult) {
+    let { Success, CodeMessage } = result;
+
+    if (!Success) {
+      if (CodeMessage === ErrorCode.WrongPassword) {
+        setError({ password: Intl.t(`errors.${CodeMessage}`) });
+        return;
+      }
+      handleApplyResult(navigate, req, setError, false)(result);
+    } else {
+      handleApplyResult(navigate, req, setError, false)(result);
+    }
+  }
+
+  async function handleSubmit(e: SyntheticEvent) {
+    e.preventDefault();
+    if (!validate(e)) return;
+
+    const form = parseForm(e);
+    const { password } = form;
+
+    if (data.Balance !== '0') {
+      navigate('/confirm-delete', { state: { req, password } });
+    } else {
+      save(e);
+    }
+  }
+
+  return (
+    <Layout>
+      <form ref={form} onSubmit={handleSubmit}>
+        <h1 className="mas-title">{Intl.t('password-prompt.title.delete')}</h1>
+        <div className="mas-body pt-4 break-words">
+          {Intl.t('password-prompt.subtitle.delete')}
+        </div>
+        <div className="pt-4">
+          <Password
+            defaultValue=""
+            name="password"
+            placeholder="Password"
+            error={error?.password}
+          />
+        </div>
+        <div className="pt-4 flex gap-4">
+          <Button variant={'secondary'} onClick={handleCancel}>
+            {Intl.t('password-prompt.buttons.cancel')}
+          </Button>
+          <Button preIcon={<FiTrash2 />} type="submit">
+            {Intl.t('password-prompt.buttons.delete')}
+          </Button>
+        </div>
+      </form>
+    </Layout>
+  );
+}
