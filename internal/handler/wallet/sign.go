@@ -95,6 +95,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			correlationId, resp = handleBatch(wlt, params, s, s.gc)
 		}
 	}
+
 	if resp != nil {
 		return resp
 	}
@@ -126,11 +127,13 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 
 func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet) (prompt.PromptRequest, error) {
 	var promptRequest prompt.PromptRequest
+
 	callSC, err := callsc.DecodeMessage(decodedMsg)
 	if err == nil && callSC != nil {
 		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt)
 		return promptRequest, nil
 	}
+
 	executeSC, err := executesc.DecodeMessage(decodedMsg)
 	if err == nil && executeSC != nil {
 		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt)
@@ -142,29 +145,34 @@ func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet) (pr
 	return promptRequest, nil
 }
 
-func (s *walletSign) prepareCallSCPromptRequest(callSC *callsc.MessageContent, wlt *wallet.Wallet) prompt.PromptRequest {
+func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
+	wlt *wallet.Wallet,
+) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
 			OperationType: "Call SC",
-			OperationID:   callSC.OperationID,
-			GasLimit:      callSC.GasLimit,
-			Coins:         callSC.Coins,
-			Address:       callSC.Address,
-			Function:      callSC.Function,
+			OperationID:   msg.OperationID,
+			GasLimit:      msg.GasLimit,
+			Coins:         msg.Coins,
+			Address:       msg.Address,
+			Function:      msg.Function,
 		},
 	}
 }
 
-func (s *walletSign) prepareExecuteSCPromptRequest(executeSC *executesc.MessageContent, wlt *wallet.Wallet) prompt.PromptRequest {
+func (s *walletSign) prepareExecuteSCPromptRequest(
+	msg *executesc.MessageContent,
+	wlt *wallet.Wallet,
+) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
 			OperationType: "Execute SC",
-			MaxCoins:      executeSC.MaxCoins,
-			MaxGas:        executeSC.MaxGas,
+			MaxCoins:      msg.MaxCoins,
+			MaxGas:        msg.MaxGas,
 		},
 	}
 }
@@ -179,7 +187,11 @@ func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet) prompt.Prom
 	}
 }
 
-func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
+func handleWithCorrelationId(
+	wlt *wallet.Wallet,
+	params operations.SignParams,
+	gc gcache.Cache,
+) (models.CorrelationID, middleware.Responder) {
 	key := CacheKey(params.Body.CorrelationID)
 
 	value, err := gc.Get(key)
@@ -193,6 +205,7 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, g
 
 	// convert interface{} into byte[]
 	buf := new(bytes.Buffer)
+
 	err = binary.Write(buf, binary.LittleEndian, value)
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
@@ -201,10 +214,10 @@ func handleWithCorrelationId(wlt *wallet.Wallet, params operations.SignParams, g
 				Message: fmt.Sprintf("Error cannot convert cache value: %v", err.Error()),
 			})
 	}
+
 	bytes := buf.Bytes()
 
 	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
-
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
@@ -220,7 +233,12 @@ func CacheKey(correlationId models.CorrelationID) [32]byte {
 	return blake3.Sum256(correlationId)
 }
 
-func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign, gc gcache.Cache) (models.CorrelationID, middleware.Responder) {
+func handleBatch(
+	wlt *wallet.Wallet,
+	params operations.SignParams,
+	s *walletSign,
+	gc gcache.Cache,
+) (models.CorrelationID, middleware.Responder) {
 	correlationId, err := generateCorrelationId()
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
@@ -231,6 +249,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 	}
 
 	key := CacheKey(correlationId)
+
 	cacheValue, err := wallet.Xor(wlt.KeyPair.PrivateKey, correlationId)
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
@@ -239,6 +258,7 @@ func handleBatch(wlt *wallet.Wallet, params operations.SignParams, s *walletSign
 				Message: fmt.Sprintf("Error cannot XOR correlation id: %v", err.Error()),
 			})
 	}
+
 	err = gc.SetWithExpire(key, cacheValue, passwordExpirationTime)
 	if err != nil {
 		return nil, operations.NewSignInternalServerError().WithPayload(
