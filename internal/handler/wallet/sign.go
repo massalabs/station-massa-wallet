@@ -32,6 +32,7 @@ type PromptRequestData struct {
 	Coins         uint64
 	Address       string
 	Function      string
+	WalletAddress string
 }
 
 // NewSign instantiates a sign Handler
@@ -83,6 +84,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	} else {
 
 		var promptRequest prompt.PromptRequest
+
 		if callSC != nil {
 			promptRequest = prompt.PromptRequest{
 				Action: walletapp.Sign,
@@ -94,6 +96,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 					Coins:         callSC.Coins,
 					Address:       callSC.Address,
 					Function:      callSC.Function,
+					WalletAddress: wlt.Address,
 				},
 			}
 		} else {
