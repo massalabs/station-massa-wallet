@@ -1,7 +1,6 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
-import { toMAS } from '@massalabs/massa-web3';
-import { Balance, Button, Password } from '@massalabs/react-ui-kit';
+import { Button, Password } from '@massalabs/react-ui-kit';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
@@ -13,27 +12,18 @@ import { Layout } from '@/layouts/Layout/Layout';
 import {
   ErrorCode,
   IErrorObject,
-  formatStandard,
   handleApplyResult,
   handleCancel,
-  maskAddress,
   parseForm,
 } from '@/utils';
 
-export interface PromptRequestTransferData {
-  NicknameFrom: string;
-  Amount: string;
-  Fee: string;
-  RecipientAddress: string;
-}
-
-export function Transfer() {
+export function Default() {
   const [error, setError] = useState<IErrorObject | null>(null);
+
   const navigate = useNavigate();
   const form = useRef(null);
   const { state } = useLocation();
   const req: promptRequest = state.req;
-  const data: PromptRequestTransferData = req.Data;
 
   function validate(e: SyntheticEvent) {
     const formObject = parseForm(e);
@@ -84,20 +74,8 @@ export function Transfer() {
           {Intl.t(`password-prompt.title.${req.CodeMessage}`)}
         </h1>
         <div className="mas-body pt-4 break-words">
-          <div className="p-4 mb-2 bg-secondary rounded-lg w-full">
-            <Balance amount={formatStandard(Number(toMAS(data.Amount)))} />
-            <div className="mb-4 mt-2 mas-caption">
-              {Intl.t('password-prompt.transfer.fee', { fee: data.Fee })}
-            </div>
-            <div className="flex items-center gap-2">
-              {Intl.t('password-prompt.transfer.from')}
-              <b>{data.NicknameFrom}</b>
-            </div>
-            <div className="flex items-center gap-2">
-              {Intl.t('password-prompt.transfer.to')}
-              <p>{maskAddress(data.RecipientAddress)}</p>
-            </div>
-          </div>
+          heyy this is default
+          {Intl.t('password-prompt.subtitle.default')}
         </div>
         <div className="pt-4">
           <Password
@@ -112,7 +90,7 @@ export function Transfer() {
             {Intl.t('password-prompt.buttons.cancel')}
           </Button>
           <Button preIcon={<FiLock />} type="submit">
-            {Intl.t('password-prompt.buttons.transfer')}
+            {Intl.t('password-prompt.buttons.default')}
           </Button>
         </div>
       </form>

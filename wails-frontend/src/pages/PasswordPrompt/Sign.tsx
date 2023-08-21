@@ -1,5 +1,13 @@
-// import { maskAddress } from '@/utils';
-// import { Button, Password } from '@massalabs/react-ui-kit';
+import { SyntheticEvent, useRef, useState } from 'react';
+
+import { Button, Password } from '@massalabs/react-ui-kit';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
+import { EventsOnce } from '@wailsjs/runtime/runtime';
+import { FiLock } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { events, promptRequest, promptResult } from '@/events/events';
+import Intl from '@/i18n/i18n';
 import {
   ErrorCode,
   IErrorObject,
@@ -8,15 +16,6 @@ import {
   maskAddress,
   parseForm,
 } from '@/utils';
-import { Button, Password } from '@massalabs/react-ui-kit';
-import { SyntheticEvent, useRef, useState } from 'react';
-import { FiAlertCircle } from 'react-icons/fi';
-
-import Intl from '@/i18n/i18n';
-import { EventsOnce } from '@wailsjs/runtime/runtime';
-import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { events, promptRequest, promptResult } from '@/events/events';
 
 export interface PromptRequestCallSCData {
   OperationID: number;
@@ -42,7 +41,7 @@ export function Sign() {
     const formObject = parseForm(e);
     const { password } = formObject;
 
-    if (!password || !password.length) {
+    if (!password.length) {
       setError({ password: Intl.t('errors.PasswordRequired') });
       return false;
     }
@@ -80,6 +79,8 @@ export function Sign() {
     save(e);
   }
 
+  // This does not have a loyout because
+  // Further customization for this component will come in next PR
   return (
     <div className="bg-primary min-h-screen">
       <div
@@ -90,23 +91,33 @@ export function Sign() {
           <h1 className="mas-title">{Intl.t('password-prompt.title.sign')}</h1>
           <h3>{Intl.t('password-prompt.subtitle.sign')}</h3>
           <div className="mas-body pt-4 break-words">
+            {/* components will be returned 
+            right now this is a minimalist refactor
+            */}
             <div>Operation Type: {signData.OperationType}</div>
-            {signData.OperationType === 'Call SC' ? (
-              <>
-                <div>Gas Limit: {signData.GasLimit}</div>
-                <div>Coins: {signData.Coins}</div>
-                <div>To: {maskAddress(signData.Address)}</div>
-                <div>From: {maskAddress(signData.WalletAddress)}</div>
-                <div>Function: {signData.Function}</div>
-              </>
-            ) : signData.OperationType === 'Execute SC' ? ( // Handle the Execute SC case
-              <>
-                <div>Max Coins: {signData.MaxCoins}</div>
-                <div>Max Gas: {signData.MaxGas}</div>
-              </>
-            ) : (
-              <div>Other Sign Data Content</div>
-            )}
+            {(() => {
+              switch (signData.OperationType) {
+                case 'Call SC':
+                  return (
+                    <>
+                      <div>Gas Limit: {signData.GasLimit}</div>
+                      <div>Coins: {signData.Coins}</div>
+                      <div>To: {maskAddress(signData.Address)}</div>
+                      <div>From: {maskAddress(signData.WalletAddress)}</div>
+                      <div>Function: {signData.Function}</div>
+                    </>
+                  );
+                case 'Execute SC':
+                  return (
+                    <>
+                      <div>Max Coins: {signData.MaxCoins}</div>
+                      <div>Max Gas: {signData.MaxGas}</div>
+                    </>
+                  );
+                default:
+                  return <div>Other Sign Data Content</div>;
+              }
+            })()}
           </div>
           <div className="pt-4">
             <Password
@@ -120,7 +131,7 @@ export function Sign() {
             <Button variant={'secondary'} onClick={handleCancel}>
               {Intl.t('password-prompt.buttons.cancel')}
             </Button>
-            <Button preIcon={<FiAlertCircle />} type="submit">
+            <Button preIcon={<FiLock />} type="submit">
               {Intl.t('password-prompt.buttons.sign')}
             </Button>
           </div>

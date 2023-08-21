@@ -1,7 +1,15 @@
-import { Layout } from '@/layouts/Layout/Layout';
+import { SyntheticEvent, useRef, useState } from 'react';
+
 import { Button, Password } from '@massalabs/react-ui-kit';
-import Intl from '@/i18n/i18n';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
+import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { FiTrash2 } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { PromptRequestDeleteData } from './passwordPrompt';
+import { events, promptRequest, promptResult } from '@/events/events';
+import Intl from '@/i18n/i18n';
+import { Layout } from '@/layouts/Layout/Layout';
 import {
   ErrorCode,
   IErrorObject,
@@ -9,12 +17,6 @@ import {
   handleCancel,
   parseForm,
 } from '@/utils';
-import { SyntheticEvent, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { events, promptRequest, promptResult } from '@/events/events';
-import { PromptRequestDeleteData } from './passwordPrompt';
-import { EventsOnce } from '@wailsjs/runtime/runtime';
-import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 
 export function Delete() {
   const [error, setError] = useState<IErrorObject | null>(null);
@@ -29,7 +31,7 @@ export function Delete() {
     const formObject = parseForm(e);
     const { password } = formObject;
 
-    if (!password || !password.length) {
+    if (!password.length) {
       setError({ password: Intl.t('errors.PasswordRequired') });
       return false;
     }
