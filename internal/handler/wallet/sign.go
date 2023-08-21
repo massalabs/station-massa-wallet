@@ -33,8 +33,8 @@ type PromptRequestData struct {
 	Coins         uint64
 	Address       string
 	Function      string
-	maxCoins      uint64
-	maxGas        uint64
+	MaxCoins      uint64
+	MaxGas        uint64
 	WalletAddress string
 }
 
@@ -163,8 +163,8 @@ func (s *walletSign) prepareExecuteSCPromptRequest(executeSC *executesc.MessageC
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
 			OperationType: "Execute SC",
-			maxCoins:      executeSC.MaxCoins,
-			maxGas:        executeSC.MaxGas,
+			MaxCoins:      executeSC.MaxCoins,
+			MaxGas:        executeSC.MaxGas,
 		},
 	}
 }
