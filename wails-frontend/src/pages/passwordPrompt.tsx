@@ -145,7 +145,10 @@ function PasswordPrompt() {
         return Intl.t('password-prompt.subtitle.delete');
       case signReq: {
         const signData = req.Data as PromptRequestCallSCData;
-        if (signData.OperationType === 'Call SC' || signData.OperationType === 'Execute SC') {
+        if (
+          signData.OperationType === 'Call SC' ||
+          signData.OperationType === 'Execute SC'
+        ) {
           return <SignLayout {...signData} />;
         } else {
           return Intl.t('password-prompt.subtitle.sign');
