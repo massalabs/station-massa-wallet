@@ -248,7 +248,7 @@ func GetAssetsJSONPath() (string, error) {
 	return filepath.Join(walletDir, "assets.json"), nil
 }
 
-func XMAInfo() models.AssetInfo {
+func MASInfo() models.AssetInfo {
 	// The hardcoded data for MAS asset
 	name := "Massa"
 	symbol := "MAS"
