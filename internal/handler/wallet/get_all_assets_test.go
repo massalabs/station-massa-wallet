@@ -30,7 +30,7 @@ func TestGetAllAssetsHandler(t *testing.T) {
 
 	assert.Equal(t, "1000000", assetsWithBalance[0].Balance)
 	assert.Equal(t, "Massa", assetsWithBalance[0].AssetInfo.Name)
-	assert.Equal(t, "XMA", assetsWithBalance[0].AssetInfo.Symbol)
+	assert.Equal(t, "MAS", assetsWithBalance[0].AssetInfo.Symbol)
 
 	// Remove the json file created
 	err = RemoveJSONFile()

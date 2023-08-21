@@ -46,7 +46,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	// Create the asset info for the Massa token and append it to the result slice
 	MassaAsset := &models.AssetInfoWithBalance{
-		AssetInfo: assets.XMAInfo(),
+		AssetInfo: assets.MASInfo(),
 		Balance:   fmt.Sprint(infos[0].CandidateBalance),
 	}
 	AssetsWithBalance = append(AssetsWithBalance, MassaAsset)
