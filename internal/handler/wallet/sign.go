@@ -128,14 +128,16 @@ func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet) (pr
 	callSC, err := callsc.DecodeMessage(decodedMsg)
 	if err == nil && callSC != nil {
 		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt)
-	} else {
-		executeSC, err := executesc.DecodeMessage(decodedMsg)
-		if err == nil && executeSC != nil {
-			promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt)
-		} else {
-			promptRequest = s.prepareUnknownPromptRequest(wlt)
-		}
+		return promptRequest, nil
 	}
+	executeSC, err := executesc.DecodeMessage(decodedMsg)
+	if err == nil && executeSC != nil {
+		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt)
+		return promptRequest, nil
+	}
+
+	promptRequest = s.prepareUnknownPromptRequest(wlt)
+
 	return promptRequest, nil
 }
 
