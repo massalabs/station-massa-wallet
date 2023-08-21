@@ -249,9 +249,9 @@ func GetAssetsJSONPath() (string, error) {
 }
 
 func XMAInfo() models.AssetInfo {
-	// The hardcoded data for XMA asset
+	// The hardcoded data for MAS asset
 	name := "Massa"
-	symbol := "XMA"
+	symbol := "MAS"
 	decimals := int64(9)
 
 	// Create the AssetInfo struct with the predefined information

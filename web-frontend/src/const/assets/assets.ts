@@ -1,4 +1,4 @@
-export const XMA = 'XMA';
+export const MAS = 'MAS';
 
 export interface IDeleteAssetsErrors {
   phrase?: string;
