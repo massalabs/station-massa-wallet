@@ -11,7 +11,7 @@ export interface PromptRequestDeleteData {
   Balance: string;
 }
 
-function PasswordPrompt() {
+function PasswordPromptHandler() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
   const { deleteReq, signReq, transferReq } = promptAction;
@@ -33,4 +33,4 @@ function PasswordPrompt() {
     </>
   );
 }
-export default PasswordPrompt;
+export default PasswordPromptHandler;

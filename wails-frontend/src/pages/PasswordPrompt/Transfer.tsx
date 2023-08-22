@@ -53,10 +53,8 @@ export function Transfer() {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
         return;
       }
-      handleApplyResult(navigate, req, setError, false)(result);
-    } else {
-      handleApplyResult(navigate, req, setError, false)(result);
     }
+    handleApplyResult(navigate, req, setError, false)(result);
   }
 
   async function handleSubmit(e: SyntheticEvent) {

@@ -57,10 +57,8 @@ export function Default() {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
         return;
       }
-      handleApplyResult(navigate, req, setError, false)(result);
-    } else {
-      handleApplyResult(navigate, req, setError, false)(result);
     }
+    handleApplyResult(navigate, req, setError, false)(result);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
@@ -77,7 +75,6 @@ export function Default() {
           {Intl.t(`password-prompt.title.${req.CodeMessage}`)}
         </h1>
         <div className="mas-body pt-4 break-words">
-          heyy this is default
           {Intl.t('password-prompt.subtitle.default')}
         </div>
         <div className="pt-4">

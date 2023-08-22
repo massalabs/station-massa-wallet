@@ -7,7 +7,7 @@ import { FiTrash2 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { validate } from './Default';
-import { PromptRequestDeleteData } from './passwordPrompt';
+import { PromptRequestDeleteData } from './passwordPromptHandler';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
@@ -45,10 +45,8 @@ export function Delete() {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
         return;
       }
-      handleApplyResult(navigate, req, setError, false)(result);
-    } else {
-      handleApplyResult(navigate, req, setError, false)(result);
     }
+    handleApplyResult(navigate, req, setError, false)(result);
   }
 
   async function handleSubmit(e: SyntheticEvent) {

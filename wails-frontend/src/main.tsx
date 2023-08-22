@@ -20,7 +20,7 @@ import ImportMethods from '@/pages/importMethods';
 import PromptNickname from '@/pages/ImportPrivateKey/PromptNickname';
 import PromptPrivateKey from '@/pages/ImportPrivateKey/PromptPrivateKey';
 import NewPassword from '@/pages/newPassword';
-import PasswordPrompt from '@/pages/PasswordPrompt/passwordPrompt';
+import PasswordPromptHandler from '@/pages/PasswordPrompt/passwordPromptHandler';
 import Success from '@/pages/success';
 
 const router = createBrowserRouter(
@@ -29,7 +29,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<App />} />
       <Route path="/backup-methods" element={<BackupMethods />} />
       <Route path="/backup-pkey" element={<BackupKeyPairs />} />
-      <Route path="/password" element={<PasswordPrompt />} />
+      <Route path="/password" element={<PasswordPromptHandler />} />
       <Route path="/new-password" element={<NewPassword />} />
       <Route path="/success" element={<Success />} />
       <Route path="/failure" element={<Failure />} />

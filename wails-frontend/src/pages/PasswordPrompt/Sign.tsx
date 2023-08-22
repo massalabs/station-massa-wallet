@@ -55,10 +55,8 @@ export function Sign() {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
         return;
       }
-      handleApplyResult(navigate, req, setError, false)(result);
-    } else {
-      handleApplyResult(navigate, req, setError, false)(result);
     }
+    handleApplyResult(navigate, req, setError, false)(result);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
@@ -68,8 +66,6 @@ export function Sign() {
     save(e);
   }
 
-  // This does not have a loyout because
-  // Further customization for this component will come in next PR
   return (
     <div className="bg-primary min-h-screen">
       <div
@@ -80,7 +76,7 @@ export function Sign() {
           <h1 className="mas-title">{Intl.t('password-prompt.title.sign')}</h1>
           <h3>{Intl.t('password-prompt.subtitle.sign')}</h3>
           <div className="mas-body pt-4 break-words">
-            {/* components will be returned 
+            {/* components will be returned in switch statement
             right now this is a minimalist refactor
             */}
             <div>Operation Type: {signData.OperationType}</div>
