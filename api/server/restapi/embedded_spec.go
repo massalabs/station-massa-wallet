@@ -941,6 +941,11 @@ func init() {
         "correlationId": {
           "$ref": "#/definitions/CorrelationId"
         },
+        "description": {
+          "description": "Description text of what is being signed (optional)",
+          "type": "string",
+          "maxLength": 280
+        },
         "operation": {
           "description": "Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.",
           "type": "string",
@@ -2007,6 +2012,11 @@ func init() {
         },
         "correlationId": {
           "$ref": "#/definitions/CorrelationId"
+        },
+        "description": {
+          "description": "Description text of what is being signed (optional)",
+          "type": "string",
+          "maxLength": 280
         },
         "operation": {
           "description": "Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.",

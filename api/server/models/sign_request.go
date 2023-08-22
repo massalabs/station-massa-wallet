@@ -26,6 +26,10 @@ type SignRequest struct {
 	// Format: byte
 	CorrelationID CorrelationID `json:"correlationId,omitempty"`
 
+	// Description text of what is being signed (optional)
+	// Max Length: 280
+	Description string `json:"description,omitempty"`
+
 	// Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
 	// Required: true
 	// Format: byte
@@ -37,6 +41,10 @@ func (m *SignRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCorrelationID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateDescription(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -61,6 +69,18 @@ func (m *SignRequest) validateCorrelationID(formats strfmt.Registry) error {
 		} else if ce, ok := err.(*errors.CompositeError); ok {
 			return ce.ValidateName("correlationId")
 		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *SignRequest) validateDescription(formats strfmt.Registry) error {
+	if swag.IsZero(m.Description) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("description", "body", m.Description, 280); err != nil {
 		return err
 	}
 

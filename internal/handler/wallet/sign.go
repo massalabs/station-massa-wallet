@@ -27,6 +27,7 @@ import (
 const passwordExpirationTime = time.Second * 60 * 30
 
 type PromptRequestData struct {
+	Description   string
 	OperationType string
 	OperationID   uint64
 	GasLimit      uint64
@@ -70,7 +71,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if params.Body.CorrelationID != nil {
 		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
 	} else {
-		promptRequest, err := s.getPromptRequest(decodedMsg, wlt)
+		promptRequest, err := s.getPromptRequest(decodedMsg, wlt, params.Body.Description)
 		if err != nil {
 			return operations.NewSignUnauthorized().WithPayload(
 				&models.Error{
@@ -125,33 +126,35 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 		})
 }
 
-func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet) (prompt.PromptRequest, error) {
+func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet, description string) (prompt.PromptRequest, error) {
 	var promptRequest prompt.PromptRequest
 
 	callSC, err := callsc.DecodeMessage(decodedMsg)
 	if err == nil && callSC != nil {
-		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt)
+		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
 		return promptRequest, nil
 	}
 
 	executeSC, err := executesc.DecodeMessage(decodedMsg)
 	if err == nil && executeSC != nil {
-		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt)
+		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
 		return promptRequest, nil
 	}
 
-	promptRequest = s.prepareUnknownPromptRequest(wlt)
+	promptRequest = s.prepareUnknownPromptRequest(wlt, description)
 
 	return promptRequest, nil
 }
 
 func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 	wlt *wallet.Wallet,
+	description string,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
+			Description:   description,
 			OperationType: "Call SC",
 			OperationID:   msg.OperationID,
 			GasLimit:      msg.GasLimit,
@@ -165,11 +168,13 @@ func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 func (s *walletSign) prepareExecuteSCPromptRequest(
 	msg *executesc.MessageContent,
 	wlt *wallet.Wallet,
+	description string,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
+			Description:   description,
 			OperationType: "Execute SC",
 			MaxCoins:      msg.MaxCoins,
 			MaxGas:        msg.MaxGas,
@@ -177,11 +182,12 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 	}
 }
 
-func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet) prompt.PromptRequest {
+func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet, description string) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
+			Description:   description,
 			OperationType: "Unknown",
 		},
 	}
