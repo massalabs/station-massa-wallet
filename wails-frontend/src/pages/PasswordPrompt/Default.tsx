@@ -17,6 +17,21 @@ import {
   parseForm,
 } from '@/utils';
 
+export function validate(
+  e: SyntheticEvent,
+  setError: (error: IErrorObject) => void,
+) {
+  const formObject = parseForm(e);
+  const { password } = formObject;
+
+  if (!password.length) {
+    setError({ password: Intl.t('errors.PasswordRequired') });
+    return false;
+  }
+
+  return true;
+}
+
 export function Default() {
   const [error, setError] = useState<IErrorObject | null>(null);
 
@@ -24,18 +39,6 @@ export function Default() {
   const form = useRef(null);
   const { state } = useLocation();
   const req: promptRequest = state.req;
-
-  function validate(e: SyntheticEvent) {
-    const formObject = parseForm(e);
-    const { password } = formObject;
-
-    if (!password.length) {
-      setError({ password: Intl.t('errors.PasswordRequired') });
-      return false;
-    }
-
-    return true;
-  }
 
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
@@ -62,7 +65,7 @@ export function Default() {
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
-    if (!validate(e)) return;
+    if (!validate(e, setError)) return;
 
     save(e);
   }

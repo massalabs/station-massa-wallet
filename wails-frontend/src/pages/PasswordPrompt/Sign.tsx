@@ -6,6 +6,7 @@ import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { validate } from './Default';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import {
@@ -37,18 +38,6 @@ export function Sign() {
   const [error, setError] = useState<IErrorObject | null>(null);
   const signData = req.Data as PromptRequestCallSCData;
 
-  function validate(e: SyntheticEvent) {
-    const formObject = parseForm(e);
-    const { password } = formObject;
-
-    if (!password.length) {
-      setError({ password: Intl.t('errors.PasswordRequired') });
-      return false;
-    }
-
-    return true;
-  }
-
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
     const { password } = form;
@@ -74,7 +63,7 @@ export function Sign() {
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
-    if (!validate(e)) return;
+    if (!validate(e, setError)) return;
 
     save(e);
   }
