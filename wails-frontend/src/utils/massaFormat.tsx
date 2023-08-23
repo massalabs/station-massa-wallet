@@ -8,6 +8,8 @@ export enum Unit {
   NanoMAS = 'NanoMAS',
 }
 
+export const masToken = 'MAS';
+
 export const presetFees: { [key: string]: string } = {
   low: '1',
   standard: '1000',

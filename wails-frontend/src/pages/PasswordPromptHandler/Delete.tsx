@@ -7,7 +7,7 @@ import { FiTrash2 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { validate } from './Default';
-import { PromptRequestDeleteData } from './passwordPromptHandler';
+import { PromptRequestDeleteData } from './PasswordPromptHandler';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
