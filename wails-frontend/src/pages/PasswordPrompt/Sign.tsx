@@ -104,7 +104,8 @@ export function Sign() {
                       <div>From: {maskAddress(signData.WalletAddress)}</div>
                     </>
                   );
-                case 'Buy Roll' || 'Sell Roll':
+                case 'Buy Roll':
+                case 'Sell Roll':
                   return (
                     <>
                       <div>Description: {signData.Description}</div>
