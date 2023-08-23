@@ -29,6 +29,7 @@ export interface PromptRequestData {
   OperationType?: string;
   MaxCoins: number;
   MaxGas: number;
+  RollCount: number;
 }
 
 export function Sign() {
@@ -103,6 +104,15 @@ export function Sign() {
                       <div>From: {maskAddress(signData.WalletAddress)}</div>
                     </>
                   );
+                case 'Buy Roll' || 'Sell Roll':
+                  return (
+                    <>
+                      <div>Description: {signData.Description}</div>
+                      <div>Rolls Count: {signData.RollCount}</div>
+                      <div>From: {maskAddress(signData.WalletAddress)}</div>
+                    </>
+                  );
+
                 default:
                   return (
                     <>

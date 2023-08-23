@@ -144,7 +144,7 @@ func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet, des
 
 	roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 	if err == nil && roll != nil {
-		promptRequest = s.prepareRollPromptRequest(roll, wlt)
+		promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
 		return promptRequest, nil
 	}
 	promptRequest = s.prepareUnknownPromptRequest(wlt, description)
@@ -193,6 +193,7 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 func (s *walletSign) prepareRollPromptRequest(
 	msg *sendoperation.RollMessageContent,
 	wlt *wallet.Wallet,
+	description string,
 ) prompt.PromptRequest {
 	operationType := ""
 	switch msg.OperationID {
@@ -208,6 +209,7 @@ func (s *walletSign) prepareRollPromptRequest(
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestData{
+			Description:   description,
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
 		},
