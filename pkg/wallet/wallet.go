@@ -593,13 +593,19 @@ func addressFromPublicKey(pubKeyBytes VersionedKey) string {
 	return UserAddressPrefix + base58.CheckEncode(addr[:], AddressVersion)
 }
 
-// Sign signs the given operation with the wallet.
-// The operation is a base64 encoded string.
+// Sign signs the given data with the wallet.
+// To sign an operation, set operation to true. The operation is a base64 encoded string.
+// To sign a message, set operation to false. The message is a byte array.
 // This function requires that the private key is not protected.
-func (wallet *Wallet) Sign(operation []byte) ([]byte, error) {
+func (wallet *Wallet) Sign(operation bool, data []byte) ([]byte, error) {
 	privKey := wallet.KeyPair.PrivateKey
 
-	digest := blake3.Sum256(append(wallet.KeyPair.PublicKey, operation...))
+	var digest [32]byte
+	if operation {
+		digest = blake3.Sum256(append(wallet.KeyPair.PublicKey, data...))
+	} else {
+		digest = blake3.Sum256(data)
+	}
 
 	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey.RemoveVersion(), digest[:])...)
 
