@@ -100,10 +100,16 @@ export function Sign() {
                       <div>Description: {signData.Description}</div>
                       <div>Max Coins: {signData.MaxCoins}</div>
                       <div>Max Gas: {signData.MaxGas}</div>
+                      <div>From: {maskAddress(signData.WalletAddress)}</div>
                     </>
                   );
                 default:
-                  return <div>Other Sign Data Content</div>;
+                  return (
+                    <>
+                      <div>Description: {signData.Description}</div>
+                      <div>From: {maskAddress(signData.WalletAddress)}</div>
+                    </>
+                  );
               }
             })()}
           </div>

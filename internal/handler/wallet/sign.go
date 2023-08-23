@@ -161,6 +161,7 @@ func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 			Coins:         msg.Coins,
 			Address:       msg.Address,
 			Function:      msg.Function,
+			WalletAddress: wlt.Address,
 		},
 	}
 }
@@ -178,6 +179,7 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 			OperationType: "Execute SC",
 			MaxCoins:      msg.MaxCoins,
 			MaxGas:        msg.MaxGas,
+			WalletAddress: wlt.Address,
 		},
 	}
 }
@@ -189,6 +191,7 @@ func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet, description
 		Data: PromptRequestData{
 			Description:   description,
 			OperationType: "Unknown",
+			WalletAddress: wlt.Address,
 		},
 	}
 }
