@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/labstack/gommon v0.3.1
-	github.com/massalabs/station v0.3.1-0.20230818073038-ee2a05c9838b
+	github.com/massalabs/station v0.3.2-0.20230823081341-fe72a6e9258f
 	github.com/massalabs/station-massa-hello-world v0.0.10
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3
@@ -44,6 +44,7 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	howett.net/plist v1.0.0 // indirect
 )
 
 require (
