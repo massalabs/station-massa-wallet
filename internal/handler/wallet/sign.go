@@ -212,6 +212,7 @@ func (s *walletSign) prepareRollPromptRequest(
 			Description:   description,
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
+			WalletAddress: wlt.Address,
 		},
 	}
 }
