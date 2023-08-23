@@ -36,6 +36,7 @@ type PromptRequestData struct {
 	MaxCoins      uint64
 	MaxGas        uint64
 	WalletAddress string
+	RollCount     uint64
 }
 
 // NewSign instantiates a sign Handler
@@ -140,6 +141,12 @@ func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet) (pr
 		return promptRequest, nil
 	}
 
+	roll, err := sendoperation.RollDecodeMessage(decodedMsg)
+	if err == nil && roll != nil {
+		promptRequest = s.prepareRollPromptRequest(roll, wlt)
+		return promptRequest, nil
+	}
+
 	promptRequest = s.prepareUnknownPromptRequest(wlt)
 
 	return promptRequest, nil
@@ -173,6 +180,30 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 			OperationType: "Execute SC",
 			MaxCoins:      msg.MaxCoins,
 			MaxGas:        msg.MaxGas,
+		},
+	}
+}
+
+func (s *walletSign) prepareRollPromptRequest(
+	msg *sendoperation.RollMessageContent,
+	wlt *wallet.Wallet,
+) prompt.PromptRequest {
+	operationType := ""
+	switch msg.OperationID {
+	case 1:
+		operationType = "Buy Roll"
+	case 2:
+		operationType = "Sell Roll"
+	default:
+		operationType = "Unknown"
+	}
+
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestData{
+			OperationType: operationType,
+			RollCount:     msg.RollCount,
 		},
 	}
 }

@@ -46,6 +46,7 @@ interface PromptRequestCallSCData {
   MaxGas: number;
   Function: string;
   WalletAddress: string;
+  RollCount: number;
   OperationType?: string; // Add the OperationType field here
 }
 
@@ -79,6 +80,7 @@ function SignLayout(props: PromptRequestCallSCData) {
     MaxCoins,
     MaxGas,
     Function: CalledFunction,
+    RollCount,
     WalletAddress,
   } = props;
 
@@ -98,6 +100,8 @@ function SignLayout(props: PromptRequestCallSCData) {
           <div>Max Coins: {MaxCoins}</div>
           <div>Max Gas: {MaxGas}</div>
         </>
+      ) : OperationType === 'Buy Roll' || OperationType === 'Sell Roll' ? (
+        <div>Roll Count: {RollCount}</div>
       ) : (
         <div>Other Sign Data Content</div>
       )}
