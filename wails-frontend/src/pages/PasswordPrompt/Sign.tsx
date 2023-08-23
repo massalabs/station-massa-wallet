@@ -18,7 +18,8 @@ import {
   parseForm,
 } from '@/utils';
 
-export interface PromptRequestCallSCData {
+export interface PromptRequestData {
+  Description: string;
   OperationID: number;
   GasLimit: number;
   Coins: number;
@@ -36,7 +37,7 @@ export function Sign() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
   const [error, setError] = useState<IErrorObject | null>(null);
-  const signData = req.Data as PromptRequestCallSCData;
+  const signData = req.Data as PromptRequestData;
 
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
@@ -85,6 +86,7 @@ export function Sign() {
                 case 'Call SC':
                   return (
                     <>
+                      <div>Description: {signData.Description}</div>
                       <div>Gas Limit: {signData.GasLimit}</div>
                       <div>Coins: {signData.Coins}</div>
                       <div>To: {maskAddress(signData.Address)}</div>
@@ -95,12 +97,19 @@ export function Sign() {
                 case 'Execute SC':
                   return (
                     <>
+                      <div>Description: {signData.Description}</div>
                       <div>Max Coins: {signData.MaxCoins}</div>
                       <div>Max Gas: {signData.MaxGas}</div>
+                      <div>From: {maskAddress(signData.WalletAddress)}</div>
                     </>
                   );
                 default:
-                  return <div>Other Sign Data Content</div>;
+                  return (
+                    <>
+                      <div>Description: {signData.Description}</div>
+                      <div>From: {maskAddress(signData.WalletAddress)}</div>
+                    </>
+                  );
               }
             })()}
           </div>

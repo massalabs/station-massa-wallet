@@ -511,6 +511,10 @@ definitions:
     required:
       - operation
     properties:
+      description:
+        type: string
+        maxLength: 280
+        description: Description text of what is being signed (optional)
       operation:
         description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
         type: string
