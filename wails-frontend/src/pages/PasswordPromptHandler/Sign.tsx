@@ -7,6 +7,7 @@ import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { validate } from './Default';
+import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { CallSc } from './SignSC/CallSc';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
@@ -75,9 +76,6 @@ export function Sign() {
       <form ref={form} onSubmit={handleSubmit}>
         <h1 className="mas-title">{Intl.t('password-prompt.title.sign')}</h1>
         <div className="mas-body pt-4 break-words">
-          {/* components will be returned in switch statement
-            right now this is a minimalist refactor
-            */}
           {(() => {
             switch (signData.OperationType) {
               case 'Call SC':
@@ -89,10 +87,7 @@ export function Sign() {
               case 'Execute SC':
                 return (
                   <>
-                    <div>Description: {signData.Description}</div>
-                    <div>Max Coins: {signData.MaxCoins}</div>
-                    <div>Max Gas: {signData.MaxGas}</div>
-                    <div>From: {maskAddress(signData.WalletAddress)}</div>
+                    <ExecuteSC {...signData} />
                   </>
                 );
               case 'Buy Roll':
