@@ -11,6 +11,7 @@ export function CallSc(props: PromptRequestData) {
     Address,
     WalletAddress,
     Function: CalledFunction,
+    Description,
     OperationType,
   } = props;
 
@@ -46,6 +47,15 @@ export function CallSc(props: PromptRequestData) {
           <p className="mas-caption">{CalledFunction}</p>
         </div>
       </div>
+
+      {Description && (
+        <>
+          <hr className="h-0.25 bg-neutral opacity-40 w-full" />
+          <div className="flex justify-between w-full">
+            <p>{Description}</p>
+          </div>
+        </>
+      )}
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
