@@ -23,7 +23,7 @@
     },
     "title": {
       "transfer-request": "Sign a transaction",
-      "sign": "Sign a transaction",
+      "sign": "Sign an operation",
       "delete": "Delete an account"
     },
     "subtitle": {
@@ -37,6 +37,14 @@
       "sign": "Sign",
       "transfer": "Sign",
       "cancel": "Cancel"
+    },
+    "sign": {
+      "from": "From: ",
+      "to": "To: ",
+      "operation-type": "Operation Type",
+      "function-called": "Function called",
+      "fees": "Fees: ",
+      "coins": "Coins: "
     }
   },
   "backup": {

@@ -10,6 +10,7 @@ import {
 import './index.css';
 import '@massalabs/react-ui-kit/src/global.css';
 
+import PasswordPromptHandler from './pages/PasswordPromptHandler/PasswordPromptHandler';
 import App from '@/app';
 import BackupKeyPairs from '@/pages/backupKeyPairs';
 import BackupMethods from '@/pages/backupMethods';
@@ -20,7 +21,6 @@ import ImportMethods from '@/pages/importMethods';
 import PromptNickname from '@/pages/ImportPrivateKey/PromptNickname';
 import PromptPrivateKey from '@/pages/ImportPrivateKey/PromptPrivateKey';
 import NewPassword from '@/pages/newPassword';
-import PasswordPromptHandler from '@/pages/PasswordPrompt/passwordPromptHandler';
 import Success from '@/pages/success';
 
 const router = createBrowserRouter(

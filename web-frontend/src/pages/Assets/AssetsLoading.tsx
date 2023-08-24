@@ -10,9 +10,6 @@ export function AssetsLoading() {
         symbol={'IPS'}
         decimals={7}
         balance={'000000000'}
-        onDelete={() => {
-          console.log('Deleted');
-        }}
       />
     </>
   );
