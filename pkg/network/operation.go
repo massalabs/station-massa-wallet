@@ -24,19 +24,19 @@ func (n *NodeFetcher) MakeOperation(fee uint64, operation sendOperation.Operatio
 }
 
 func SendOperation(wlt *wallet.Wallet, massaClient NodeFetcherInterface, operation sendOperation.Operation, fee uint64) (*sendOperation.OperationResponse, *wallet.WalletError) {
-	msg, err := massaClient.MakeOperation(fee, operation)
+	operationData, err := massaClient.MakeOperation(fee, operation)
 	if err != nil {
 		return nil, &wallet.WalletError{Err: fmt.Errorf("Error while making operation: %w", err), CodeErr: utils.ErrNetwork}
 	}
 
 	// TODO: we do not implement the handling of the correlation id for now
-	signature, err := wlt.Sign(msg)
+	signature, err := wlt.Sign(true, operationData)
 	if err != nil {
 		return nil, &wallet.WalletError{Err: fmt.Errorf("Error sign: %w", err), CodeErr: utils.ErrUnknown}
 	}
 
-	// send the msg to the network
-	resp, err := massaClient.MakeRPCCall(msg, signature, wlt.GetPupKey())
+	// send the operationData to the network
+	resp, err := massaClient.MakeRPCCall(operationData, signature, wlt.GetPupKey())
 	if err != nil {
 		// unknown error because it could be the signature, the network, the node...
 		return nil, &wallet.WalletError{Err: fmt.Errorf("Error during RPC call: %w", err), CodeErr: utils.ErrUnknown}

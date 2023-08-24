@@ -24,9 +24,14 @@ import (
 	"lukechampine.com/blake3"
 )
 
-const passwordExpirationTime = time.Second * 60 * 30
+const (
+	passwordExpirationTime = time.Second * 60 * 30
+	BuyRoll                = "Buy Roll"
+	SellRoll               = "Sell Roll"
+	Message                = "Message"
+)
 
-type PromptRequestData struct {
+type PromptRequestSignData struct {
 	Description   string
 	OperationType string
 	OperationID   uint64
@@ -68,18 +73,12 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 
 	var correlationId models.CorrelationID
+	promptRequest := s.getPromptRequest(decodedMsg, wlt, params.Body.Description)
 
 	if params.Body.CorrelationID != nil {
-		correlationId, resp = handleWithCorrelationId(wlt, params, s.gc)
+		resp = handleWithCorrelationId(wlt, params, s.gc)
+		correlationId = params.Body.CorrelationID
 	} else {
-		promptRequest, err := s.getPromptRequest(decodedMsg, wlt, params.Body.Description)
-		if err != nil {
-			return operations.NewSignUnauthorized().WithPayload(
-				&models.Error{
-					Code:    errorCanceledAction,
-					Message: "Unable to unprotect wallet",
-				})
-		}
 
 		_, err = prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
 		if err != nil {
@@ -102,7 +101,13 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	signature, err := wlt.Sign(op)
+	signingOperation := true
+
+	if promptRequest.Data.(PromptRequestSignData).OperationType == Message {
+		signingOperation = false
+	}
+
+	signature, err := wlt.Sign(signingOperation, op)
 	if err != nil {
 		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
@@ -127,29 +132,29 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 		})
 }
 
-func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet, description string) (prompt.PromptRequest, error) {
+func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet, description string) prompt.PromptRequest {
 	var promptRequest prompt.PromptRequest
 
 	callSC, err := callsc.DecodeMessage(decodedMsg)
 	if err == nil && callSC != nil {
 		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
-		return promptRequest, nil
+		return promptRequest
 	}
 
 	executeSC, err := executesc.DecodeMessage(decodedMsg)
 	if err == nil && executeSC != nil {
 		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
-		return promptRequest, nil
+		return promptRequest
 	}
 
 	roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 	if err == nil && roll != nil {
 		promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
-		return promptRequest, nil
+		return promptRequest
 	}
 	promptRequest = s.prepareUnknownPromptRequest(wlt, description)
 
-	return promptRequest, nil
+	return promptRequest
 }
 
 func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
@@ -159,7 +164,7 @@ func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestData{
+		Data: PromptRequestSignData{
 			Description:   description,
 			OperationType: "Call SC",
 			OperationID:   msg.OperationID,
@@ -180,7 +185,7 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestData{
+		Data: PromptRequestSignData{
 			Description:   description,
 			OperationType: "Execute SC",
 			MaxCoins:      msg.MaxCoins,
@@ -198,17 +203,17 @@ func (s *walletSign) prepareRollPromptRequest(
 	operationType := ""
 	switch msg.OperationID {
 	case 1:
-		operationType = "Buy Roll"
+		operationType = BuyRoll
 	case 2:
-		operationType = "Sell Roll"
+		operationType = SellRoll
 	default:
-		operationType = "Unknown"
+		operationType = Message
 	}
 
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestData{
+		Data: PromptRequestSignData{
 			Description:   description,
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
@@ -221,9 +226,9 @@ func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet, description
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestData{
+		Data: PromptRequestSignData{
 			Description:   description,
-			OperationType: "Unknown",
+			OperationType: Message,
 			WalletAddress: wlt.Address,
 		},
 	}
@@ -233,12 +238,12 @@ func handleWithCorrelationId(
 	wlt *wallet.Wallet,
 	params operations.SignParams,
 	gc gcache.Cache,
-) (models.CorrelationID, middleware.Responder) {
+) middleware.Responder {
 	key := CacheKey(params.Body.CorrelationID)
 
 	value, err := gc.Get(key)
 	if err != nil {
-		return nil, operations.NewSignInternalServerError().WithPayload(
+		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,
 				Message: fmt.Sprintf("Error cannot get data from cache: %v", err.Error()),
@@ -250,7 +255,7 @@ func handleWithCorrelationId(
 
 	err = binary.Write(buf, binary.LittleEndian, value)
 	if err != nil {
-		return nil, operations.NewSignInternalServerError().WithPayload(
+		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,
 				Message: fmt.Sprintf("Error cannot convert cache value: %v", err.Error()),
@@ -261,14 +266,14 @@ func handleWithCorrelationId(
 
 	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
 	if err != nil {
-		return nil, operations.NewSignInternalServerError().WithPayload(
+		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,
 				Message: fmt.Sprintf("Error cannot unprotect from cache: %v", err.Error()),
 			})
 	}
 
-	return params.Body.CorrelationID, nil
+	return nil
 }
 
 func CacheKey(correlationId models.CorrelationID) [32]byte {
