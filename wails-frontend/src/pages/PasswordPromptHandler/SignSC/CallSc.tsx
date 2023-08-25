@@ -24,7 +24,7 @@ export function CallSc(props: PromptRequestData) {
   WindowSetSize(540, Description ? 680 : 580);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 mas-menu-default">
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
           <p className="mas-menu-active">
