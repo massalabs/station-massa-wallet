@@ -6,6 +6,7 @@ import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { CallSc } from './SignSC/CallSc';
@@ -94,9 +95,7 @@ export function Sign() {
               case 'Sell Roll':
                 return (
                   <>
-                    <div>Description: {signData.Description}</div>
-                    <div>Rolls Count: {signData.RollCount}</div>
-                    <div>From: {maskAddress(signData.WalletAddress)}</div>
+                    <BuySellRoll {...signData} />
                   </>
                 );
 

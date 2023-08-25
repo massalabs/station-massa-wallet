@@ -10,7 +10,7 @@ export function ExecuteSC(props: PromptRequestData) {
   WindowSetSize(470, 470);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 mas-menu-default">
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.from')}</p>
         <p className="mas-caption">{maskAddress(WalletAddress)}</p>

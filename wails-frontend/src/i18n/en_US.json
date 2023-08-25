@@ -44,9 +44,10 @@
       "description": "Description",
       "operation-type": "Operation Type",
       "function-called": "Function called",
-      "fees": "Fees: ",
-      "coins": "Coins: ",
-      "max-coins": "Max coins:"
+      "fees": "Fees ",
+      "coins": "Coins ",
+      "max-coins": "Max coins",
+      "roll-amount": "Roll amount"
     }
   },
   "backup": {
