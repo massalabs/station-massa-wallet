@@ -39,8 +39,9 @@
       "cancel": "Cancel"
     },
     "sign": {
-      "from": "From: ",
-      "to": "To: ",
+      "from": "From ",
+      "contract": "Contract ",
+      "description": "Description",
       "operation-type": "Operation Type",
       "function-called": "Function called",
       "fees": "Fees: ",
