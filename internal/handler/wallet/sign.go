@@ -82,7 +82,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		resp = handleWithCorrelationId(wlt, params, s.gc)
 		correlationId = params.Body.CorrelationID
 	} else {
-
 		_, err = prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
 		if err != nil {
 			return operations.NewSignUnauthorized().WithPayload(
@@ -116,6 +115,8 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 	signature, err := wlt.Sign(signingOperation, op)
 	if err != nil {
+		s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
 		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignRead,
@@ -132,6 +133,8 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 }
 
 func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
+	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
 	return operations.NewSignBadRequest().WithPayload(
 		&models.Error{
 			Code:    errorCode,

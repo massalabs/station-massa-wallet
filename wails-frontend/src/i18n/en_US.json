@@ -91,6 +91,10 @@
     "WrongPassword-0001": "Wrong password",
     "InvalidPromptInput-0001": "Invalid user input",
     "ActionCanceled-0001": "Action canceled",
-    "PasswordRequired": "Password is required"
+    "PasswordRequired": "Password is required",
+    "transaction": "Failed to process transaction",
+    "delete": "Failed to process delete operation",
+    "default": "Failed to process operation",
+    "sign": "Failed to sign this operation"
   }
 }

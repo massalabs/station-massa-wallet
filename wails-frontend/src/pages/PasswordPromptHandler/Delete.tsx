@@ -21,6 +21,7 @@ import {
 
 export function Delete() {
   const [error, setError] = useState<IErrorObject | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const navigate = useNavigate();
   const form = useRef(null);
@@ -43,8 +44,10 @@ export function Delete() {
     if (!Success) {
       if (CodeMessage === ErrorCode.WrongPassword) {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
-        return;
+      } else {
+        setErrorMessage(Intl.t(`errors.delete`));
       }
+      return;
     }
     handleApplyResult(navigate, req, setError, false)(result);
   }
@@ -77,6 +80,9 @@ export function Delete() {
             placeholder="Password"
             error={error?.password}
           />
+          {errorMessage && (
+            <p className="mt-2 text-s-error mas-body">{errorMessage}</p>
+          )}
         </div>
         <div className="pt-4 flex gap-4">
           <Button variant={'secondary'} onClick={handleCancel}>
