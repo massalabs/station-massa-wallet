@@ -21,6 +21,8 @@ import (
 	"github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/callsc"
 	"github.com/massalabs/station/pkg/node/sendoperation/executesc"
+	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
+	"github.com/pkg/errors"
 	"lukechampine.com/blake3"
 )
 
@@ -29,20 +31,27 @@ const (
 	BuyRoll                = "Buy Roll"
 	SellRoll               = "Sell Roll"
 	Message                = "Message"
+	TransactionOpID        = uint64(0)
+	BuyRollOpID            = uint64(1)
+	SellRollOpID           = uint64(2)
+	ExecuteSCOpID          = uint64(3)
+	CallSCOpID             = uint64(4)
 )
 
 type PromptRequestSignData struct {
-	Description   string
-	OperationType string
-	OperationID   uint64
-	GasLimit      uint64
-	Coins         uint64
-	Address       string
-	Function      string
-	MaxCoins      uint64
-	MaxGas        uint64
-	WalletAddress string
-	RollCount     uint64
+	Description      string
+	OperationType    string
+	OperationID      uint64
+	GasLimit         uint64
+	Coins            uint64
+	Address          string
+	Function         string
+	MaxCoins         uint64
+	MaxGas           uint64
+	WalletAddress    string
+	RollCount        uint64
+	RecipientAddress string
+	Amount           uint64
 }
 
 // NewSign instantiates a sign Handler
@@ -67,7 +76,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return s.handleBadRequest(errorSignDecodeOperation)
 	}
 
-	decodedMsg, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
+	decodedMsg, _, _, err := sendoperation.DecodeMessage64(params.Body.Operation.String())
 	if err != nil {
 		return s.handleBadRequest(errorSignDecodeMessage)
 	}
@@ -134,25 +143,52 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 
 func (s *walletSign) getPromptRequest(decodedMsg []byte, wlt *wallet.Wallet, description string) prompt.PromptRequest {
 	var promptRequest prompt.PromptRequest
+	var opId uint64
+	var err error
 
-	callSC, err := callsc.DecodeMessage(decodedMsg)
-	if err == nil && callSC != nil {
-		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
-		return promptRequest
-	}
+	if opId, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
+		wrappedErr := errors.Wrap(err, "failed to decode operation ID")
+		fmt.Println(wrappedErr)
 
-	executeSC, err := executesc.DecodeMessage(decodedMsg)
-	if err == nil && executeSC != nil {
-		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
-		return promptRequest
-	}
+		promptRequest = s.prepareUnknownPromptRequest(wlt, description)
+	} else {
+		switch opId {
+		case TransactionOpID:
+			msg, err := transaction.DecodeMessage(decodedMsg)
+			if err != nil {
+				wrappedErr := errors.Wrap(err, "failed to decode transaction message")
+				fmt.Println(wrappedErr)
+			}
+			promptRequest = s.prepareTransferPromptRequest(msg, wlt, description)
 
-	roll, err := sendoperation.RollDecodeMessage(decodedMsg)
-	if err == nil && roll != nil {
-		promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
-		return promptRequest
+		case BuyRollOpID, SellRollOpID:
+			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
+			if err != nil {
+				wrappedErr := errors.Wrap(err, "failed to decode roll message")
+				fmt.Println(wrappedErr)
+			}
+			promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
+
+		case ExecuteSCOpID:
+			executeSC, err := executesc.DecodeMessage(decodedMsg)
+			if err != nil {
+				wrappedErr := errors.Wrap(err, "failed to decode executeSC message")
+				fmt.Println(wrappedErr)
+			}
+			promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
+
+		case CallSCOpID:
+			callSC, err := callsc.DecodeMessage(decodedMsg)
+			if err != nil {
+				wrappedErr := errors.Wrap(err, "failed to decode callSC message")
+				fmt.Println(wrappedErr)
+			}
+			promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
+
+		default:
+			promptRequest = s.prepareUnknownPromptRequest(wlt, description)
+		}
 	}
-	promptRequest = s.prepareUnknownPromptRequest(wlt, description)
 
 	return promptRequest
 }
@@ -218,6 +254,24 @@ func (s *walletSign) prepareRollPromptRequest(
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
 			WalletAddress: wlt.Address,
+		},
+	}
+}
+
+func (s *walletSign) prepareTransferPromptRequest(
+	msg *transaction.MessageContent,
+	wlt *wallet.Wallet,
+	description string,
+) prompt.PromptRequest {
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestSignData{
+			Description:      description,
+			OperationType:    "Transfer",
+			RecipientAddress: msg.RecipientAddress,
+			Amount:           msg.Amount,
+			WalletAddress:    wlt.Address,
 		},
 	}
 }
