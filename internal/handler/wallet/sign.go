@@ -141,7 +141,7 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 
 func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, description string) (prompt.PromptRequest, error) {
 	var promptRequest prompt.PromptRequest
-	var opId uint64
+	var opType uint64
 	var err error
 
 	decodedMsg, _, _, err := sendoperation.DecodeMessage64(msgToSign)
@@ -149,12 +149,12 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 		return s.prepareUnknownPromptRequest(wlt, description), errors.Wrap(err, "failed to decode transaction message")
 	}
 
-	if opId, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
+	if opType, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
 		wrappedErr := errors.Wrap(err, "failed to decode operation ID")
 
 		return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
 	} else {
-		switch opId {
+		switch opType {
 		case TransactionOpType:
 			msg, err := transaction.DecodeMessage(decodedMsg)
 			if err != nil {
