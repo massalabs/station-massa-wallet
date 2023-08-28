@@ -18,7 +18,7 @@ export function PlainText(props: PromptRequestData) {
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
       <div className="flex justify-between w-full">
-      <p>{Intl.t('Message :')}</p>
+        <p>{Intl.t('Message :')}</p>
         <p className="mas-menu-default">{PlainText}</p>
       </div>
 

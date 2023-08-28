@@ -302,7 +302,7 @@ func (s *walletSign) prepareplainTextPromptRequest(
 			Description:   description,
 			OperationType: Message,
 			PlainText:     plainText,
-			WalletAddress:    wlt.Address,
+			WalletAddress: wlt.Address,
 		},
 	}
 }
