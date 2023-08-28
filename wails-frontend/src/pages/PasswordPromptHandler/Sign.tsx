@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
+import { PlainText } from './PlainText/PlainText';
 import { CallSc } from './SignSC/CallSc';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
@@ -34,6 +35,9 @@ export interface PromptRequestData {
   MaxCoins: number;
   MaxGas: number;
   RollCount: number;
+  RecipientAddress: string;
+  Amount: string;
+  PlainText: string;
 }
 
 export function Sign() {
@@ -96,6 +100,12 @@ export function Sign() {
                 return (
                   <>
                     <BuySellRoll {...signData} />
+                  </>
+                );
+              case 'Plain Text':
+                return (
+                  <>
+                    <PlainText {...signData} />
                   </>
                 );
 

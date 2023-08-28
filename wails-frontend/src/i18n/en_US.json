@@ -43,6 +43,7 @@
       "contract": "Contract ",
       "description": "Description",
       "operation-type": "Operation Type",
+      "message-format": "Message format: ",
       "function-called": "Function called",
       "fees": "Fees ",
       "coins": "Coins ",
