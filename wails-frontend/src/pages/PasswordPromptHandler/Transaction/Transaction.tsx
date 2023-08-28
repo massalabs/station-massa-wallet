@@ -1,13 +1,15 @@
-import { masToken, maskAddress } from '@/utils';
+import { WindowSetSize } from '@wailsjs/runtime/runtime';
+import { FiArrowRight } from 'react-icons/fi';
+
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { FiArrowRight } from 'react-icons/fi';
-import { WindowSetSize } from '@wailsjs/runtime/runtime';
+import { masToken, maskAddress } from '@/utils';
 
 export function Transaction(props: PromptRequestData) {
   const { WalletAddress, RecipientAddress, OperationType, Amount } = props;
 
   WindowSetSize(460, 500);
+
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default">
       <div className="flex w-full items-center justify-between">

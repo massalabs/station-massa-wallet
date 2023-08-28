@@ -48,7 +48,7 @@
       "function-called": "Function called",
       "fees": "Fees ",
       "coins": "Coins ",
-      "sending-amount": "Sending amount: ",
+      "sending-amount": "Sending amount ",
       "max-coins": "Max coins",
       "roll-amount": "Roll amount"
     }
