@@ -30,10 +30,7 @@ func SendOperation(wlt *wallet.Wallet, massaClient NodeFetcherInterface, operati
 	}
 
 	// TODO: we do not implement the handling of the correlation id for now
-	signature, err := wlt.Sign(true, operationData)
-	if err != nil {
-		return nil, &wallet.WalletError{Err: fmt.Errorf("Error sign: %w", err), CodeErr: utils.ErrUnknown}
-	}
+	signature := wlt.Sign(true, operationData)
 
 	// send the operationData to the network
 	resp, err := massaClient.MakeRPCCall(operationData, signature, wlt.GetPupKey())

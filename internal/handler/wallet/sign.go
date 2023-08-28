@@ -113,16 +113,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if err != nil {
 		return s.handleBadRequest(errorSignDecodeOperation)
 	}
-	signature, err := wlt.Sign(signingOperation, op)
-	if err != nil {
-		s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
-		return operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignRead,
-				Message: "Error: while reading operation.",
-			})
-	}
+	signature := wlt.Sign(signingOperation, op)
 
 	return operations.NewSignOK().WithPayload(
 		&models.SignResponse{
@@ -134,7 +125,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: utils.ErrNetwork})
+		walletapp.EventData{Success: false, CodeMessage: errorCode})
 	return operations.NewSignBadRequest().WithPayload(
 		&models.Error{
 			Code:    errorCode,

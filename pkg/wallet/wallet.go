@@ -597,7 +597,7 @@ func addressFromPublicKey(pubKeyBytes VersionedKey) string {
 // To sign an operation, set operation to true. The operation is a base64 encoded string.
 // To sign a message, set operation to false. The message is a byte array.
 // This function requires that the private key is not protected.
-func (wallet *Wallet) Sign(operation bool, data []byte) ([]byte, error) {
+func (wallet *Wallet) Sign(operation bool, data []byte) []byte {
 	privKey := wallet.KeyPair.PrivateKey
 
 	var digest [32]byte
@@ -609,5 +609,5 @@ func (wallet *Wallet) Sign(operation bool, data []byte) ([]byte, error) {
 
 	signature := append([]byte{SignatureVersion}, ed25519.Sign(privKey.RemoveVersion(), digest[:])...)
 
-	return signature, nil
+	return signature
 }

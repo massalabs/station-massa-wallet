@@ -66,7 +66,7 @@ export function Sign() {
       if (CodeMessage === ErrorCode.WrongPassword) {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
       } else {
-        setErrorMessage(Intl.t(`errors.sign`));
+        setErrorMessage(Intl.t(`errors.${CodeMessage}`));
       }
       return;
     }
