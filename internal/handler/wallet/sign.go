@@ -30,7 +30,7 @@ const (
 	passwordExpirationTime = time.Second * 60 * 30
 	BuyRoll                = "Buy Roll"
 	SellRoll               = "Sell Roll"
-	Message                = "Message"
+	Message                = "Plain Text"
 	TransactionOpID        = uint64(0)
 	BuyRollOpID            = uint64(1)
 	SellRollOpID           = uint64(2)
@@ -173,6 +173,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 			promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
 
 		case ExecuteSCOpID:
+			fmt.Println("🚀 ~ file: sign.go:176 ~ ifopId,err=sendoperation.DecodeOperationID ~ ExecuteSCOpID:", ExecuteSCOpID)
 			executeSC, err := executesc.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode executeSC message")
@@ -299,8 +300,9 @@ func (s *walletSign) prepareplainTextPromptRequest(
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestSignData{
 			Description:   description,
-			OperationType: "Message",
+			OperationType: Message,
 			PlainText:     plainText,
+			WalletAddress:    wlt.Address,
 		},
 	}
 }
