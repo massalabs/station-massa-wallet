@@ -3,7 +3,7 @@ import { WindowSetSize } from '@wailsjs/runtime/runtime';
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
 
-export function PlainText(props: PromptRequestData) {
+export function PlainByteText(props: PromptRequestData) {
   const { PlainText, OperationType } = props;
 
   WindowSetSize(460, 460);
@@ -17,9 +17,12 @@ export function PlainText(props: PromptRequestData) {
         </p>
       </div>
 
-      <div className="flex w-full items-center justify-between">
-        <p className="mas-caption">{PlainText}</p>
-      </div>
+      {/* If plain text is not null or undefiened show it, otherwise (byte text case) don't shwo anything */}
+      {PlainText && (
+        <div className="flex w-full items-center justify-between">
+          <p className="mas-caption">{PlainText}</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
-import { PlainText } from './PlainText/PlainText';
+import { PlainByteText } from './PlainByteText/PlainByteText';
 import { CallSc } from './SignSC/CallSc';
 import { Transaction } from './Transaction/Transaction';
 import { events, promptRequest, promptResult } from '@/events/events';
@@ -112,9 +112,10 @@ export function Sign() {
               case 'Transaction':
                 return <Transaction {...signData} />;
               case 'Plain Text':
+              case 'Byte Text':
                 return (
                   <>
-                    <PlainText {...signData} />
+                    <PlainByteText {...signData} />
                   </>
                 );
               default:
