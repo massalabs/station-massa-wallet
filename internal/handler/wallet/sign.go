@@ -31,11 +31,11 @@ const (
 	BuyRoll                = "Buy Roll"
 	SellRoll               = "Sell Roll"
 	Message                = "Plain Text"
-	TransactionOpID        = uint64(0)
-	BuyRollOpID            = uint64(1)
-	SellRollOpID           = uint64(2)
-	ExecuteSCOpID          = uint64(3)
-	CallSCOpID             = uint64(4)
+	TransactionOpType      = uint64(0)
+	BuyRollOpType          = uint64(1)
+	SellRollOpType         = uint64(2)
+	ExecuteSCOpType        = uint64(3)
+	CallSCOpType           = uint64(4)
 )
 
 type PromptRequestSignData struct {
@@ -155,7 +155,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 		return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
 	} else {
 		switch opId {
-		case TransactionOpID:
+		case TransactionOpType:
 			msg, err := transaction.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode transaction message")
@@ -163,7 +163,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 			}
 			promptRequest = s.prepareTransferPromptRequest(msg, wlt, description)
 
-		case BuyRollOpID, SellRollOpID:
+		case BuyRollOpType, SellRollOpType:
 			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode roll message")
@@ -171,7 +171,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 			}
 			promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
 
-		case ExecuteSCOpID:
+		case ExecuteSCOpType:
 			executeSC, err := executesc.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode executeSC message")
@@ -179,7 +179,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 			}
 			promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
 
-		case CallSCOpID:
+		case CallSCOpType:
 			callSC, err := callsc.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode callSC message")
