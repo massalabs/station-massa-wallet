@@ -31,11 +31,11 @@ const (
 	BuyRoll                = "Buy Roll"
 	SellRoll               = "Sell Roll"
 	Message                = "Plain Text"
-	TransactionOpType      = uint64(0)
-	BuyRollOpType          = uint64(1)
-	SellRollOpType         = uint64(2)
-	ExecuteSCOpType        = uint64(3)
-	CallSCOpType           = uint64(4)
+	TransactionOpType uint64 = iota
+	BuyRollOpType
+	SellRollOpType
+	ExecuteSCOpType
+	CallSCOpType
 )
 
 type PromptRequestSignData struct {
