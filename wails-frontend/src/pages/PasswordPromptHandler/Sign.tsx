@@ -22,6 +22,7 @@ import {
   maskAddress,
   parseForm,
 } from '@/utils';
+import { Transaction } from './Transaction/Transaction';
 
 export interface PromptRequestData {
   Description: string;
@@ -100,6 +101,12 @@ export function Sign() {
                 return (
                   <>
                     <BuySellRoll {...signData} />
+                  </>
+                );
+              case 'Transfer':
+                return (
+                  <>
+                    <Transaction {...signData} />
                   </>
                 );
               case 'Plain Text':
