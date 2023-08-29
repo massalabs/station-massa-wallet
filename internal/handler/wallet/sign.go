@@ -193,12 +193,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 				wrappedErr := errors.Wrap(err, "failed to decode plainText message from b64")
 				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
 			}
-			plainText, err := decodeString(decodedMsg)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode plainText message from bytes")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareplainTextPromptRequest(plainText, wlt, description)
+			promptRequest = s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description)
 		}
 	}
 
@@ -409,23 +404,4 @@ func generateCorrelationId() (models.CorrelationID, error) {
 	}
 
 	return correlationId, nil
-}
-
-func decodeString(data []byte) (string, error) {
-	buf := bytes.NewReader(data)
-
-	// Read target string length
-	stringLength, err := binary.ReadUvarint(buf)
-	if err != nil {
-		return "", fmt.Errorf("failed to read string length: %w", err)
-	}
-
-	stringBytes := make([]byte, stringLength)
-
-	_, err = buf.Read(stringBytes)
-	if err != nil {
-		return "", fmt.Errorf("failed to read string: %w", err)
-	}
-
-	return string(stringBytes), nil
 }
