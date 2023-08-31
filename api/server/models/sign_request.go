@@ -30,6 +30,9 @@ type SignRequest struct {
 	// Max Length: 280
 	Description string `json:"description,omitempty"`
 
+	// Indicates if the data sent to be signed is human readable or not.
+	IsHumanReadable *bool `json:"isHumanReadable,omitempty"`
+
 	// Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
 	// Required: true
 	// Format: byte
@@ -111,6 +114,10 @@ func (m *SignRequest) ContextValidate(ctx context.Context, formats strfmt.Regist
 }
 
 func (m *SignRequest) contextValidateCorrelationID(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.CorrelationID) { // not required
+		return nil
+	}
 
 	if err := m.CorrelationID.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {

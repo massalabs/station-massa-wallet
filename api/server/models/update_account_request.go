@@ -184,6 +184,10 @@ func (m *UpdateAccountRequest) ContextValidate(ctx context.Context, formats strf
 
 func (m *UpdateAccountRequest) contextValidateAddress(ctx context.Context, formats strfmt.Registry) error {
 
+	if swag.IsZero(m.Address) { // not required
+		return nil
+	}
+
 	if err := m.Address.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
 			return ve.ValidateName("address")
@@ -197,6 +201,10 @@ func (m *UpdateAccountRequest) contextValidateAddress(ctx context.Context, forma
 }
 
 func (m *UpdateAccountRequest) contextValidateBalance(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Balance) { // not required
+		return nil
+	}
 
 	if err := m.Balance.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
@@ -212,6 +220,10 @@ func (m *UpdateAccountRequest) contextValidateBalance(ctx context.Context, forma
 
 func (m *UpdateAccountRequest) contextValidateCandidateBalance(ctx context.Context, formats strfmt.Registry) error {
 
+	if swag.IsZero(m.CandidateBalance) { // not required
+		return nil
+	}
+
 	if err := m.CandidateBalance.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
 			return ve.ValidateName("candidateBalance")
@@ -225,6 +237,10 @@ func (m *UpdateAccountRequest) contextValidateCandidateBalance(ctx context.Conte
 }
 
 func (m *UpdateAccountRequest) contextValidateKeyPair(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.KeyPair) { // not required
+		return nil
+	}
 
 	if err := m.KeyPair.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {

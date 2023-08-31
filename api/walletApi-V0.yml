@@ -524,6 +524,10 @@ definitions:
         type: boolean
       correlationId:
         $ref: "#/definitions/CorrelationId"
+      isHumanReadable:
+        type: boolean
+        description: Indicates if the data sent to be signed is human readable or not.
+        default: false
   TransferRequest:
     type: object
     properties:

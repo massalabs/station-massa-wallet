@@ -73,7 +73,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 
 	var correlationId models.CorrelationID
-	promptRequest, err := s.getPromptRequest(params.Body.Operation.String(), wlt, params.Body.Description)
+	promptRequest, err := s.getPromptRequest(params.Body.Operation.String(), wlt, params.Body.Description, *params.Body.IsHumanReadable)
 	if err != nil {
 		return s.handleBadRequest(errorSignDecodeMessage)
 	}
@@ -139,7 +139,7 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 		})
 }
 
-func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, description string) (prompt.PromptRequest, error) {
+func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, description string, isHumanReadable bool) (prompt.PromptRequest, error) {
 	var promptRequest prompt.PromptRequest
 	var opType uint64
 	var err error
@@ -147,6 +147,15 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 	decodedMsg, _, _, err := sendoperation.DecodeMessage64(msgToSign)
 	if err != nil {
 		return s.prepareUnknownPromptRequest(wlt, description), errors.Wrap(err, "failed to decode transaction message")
+	}
+
+	if isHumanReadable {
+		decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
+		if err != nil {
+			wrappedErr := errors.Wrap(err, "failed to decode plainText message from b64")
+			return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
+		}
+		return s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description), nil
 	}
 
 	if opType, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
@@ -188,12 +197,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 			promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
 
 		default:
-			decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode plainText message from b64")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description)
+			promptRequest = s.prepareBinaryPromptRequest(wlt, description)
 		}
 	}
 
@@ -293,6 +297,21 @@ func (s *walletSign) prepareplainTextPromptRequest(
 			Description:   description,
 			OperationType: Message,
 			PlainText:     plainText,
+			WalletAddress: wlt.Address,
+		},
+	}
+}
+
+func (s *walletSign) prepareBinaryPromptRequest(
+	wlt *wallet.Wallet,
+	description string,
+) prompt.PromptRequest {
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestSignData{
+			Description:   description,
+			OperationType: "Byte Text",
 			WalletAddress: wlt.Address,
 		},
 	}

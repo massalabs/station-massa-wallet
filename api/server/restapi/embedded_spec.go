@@ -946,6 +946,11 @@ func init() {
           "type": "string",
           "maxLength": 280
         },
+        "isHumanReadable": {
+          "description": "Indicates if the data sent to be signed is human readable or not.",
+          "type": "boolean",
+          "default": false
+        },
         "operation": {
           "description": "Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.",
           "type": "string",
@@ -2017,6 +2022,11 @@ func init() {
           "description": "Description text of what is being signed (optional)",
           "type": "string",
           "maxLength": 280
+        },
+        "isHumanReadable": {
+          "description": "Indicates if the data sent to be signed is human readable or not.",
+          "type": "boolean",
+          "default": false
         },
         "operation": {
           "description": "Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.",
