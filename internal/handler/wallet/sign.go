@@ -26,16 +26,20 @@ import (
 	"lukechampine.com/blake3"
 )
 
+type OperationType int
+
 const (
-	passwordExpirationTime = time.Second * 60 * 30
-	BuyRoll                = "Buy Roll"
-	SellRoll               = "Sell Roll"
-	Message                = "Plain Text"
-	TransactionOpType      = uint64(0)
-	BuyRollOpType          = uint64(1)
-	SellRollOpType         = uint64(2)
-	ExecuteSCOpType        = uint64(3)
-	CallSCOpType           = uint64(4)
+	passwordExpirationTime               = time.Second * 60 * 30
+	BuyRoll                              = "Buy Roll"
+	SellRoll                             = "Sell Roll"
+	Message                              = "Plain Text"
+	TransactionOpType      OperationType = iota
+	BuyRollOpType
+	SellRollOpType
+	ExecuteSCOpType
+	CallSCOpType
+	SignByteMessage
+	SignPlainTextMessage
 )
 
 type PromptRequestSignData struct {
@@ -141,62 +145,61 @@ func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 
 func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, description string) (prompt.PromptRequest, error) {
 	var promptRequest prompt.PromptRequest
-	var opType uint64
-	var err error
 
 	decodedMsg, _, _, err := sendoperation.DecodeMessage64(msgToSign)
 	if err != nil {
-		return s.prepareUnknownPromptRequest(wlt, description), errors.Wrap(err, "failed to decode transaction message")
+		return promptRequest, errors.Wrap(err, "failed to decode transaction message")
 	}
 
-	if opType, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
-		wrappedErr := errors.Wrap(err, "failed to decode operation ID")
+	opType, err := sendoperation.DecodeOperationID(decodedMsg)
+	if err != nil {
+		return promptRequest, errors.Wrap(err, "failed to decode operation Type")
+	}
 
-		return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-	} else {
-		switch opType {
-		case TransactionOpType:
-			msg, err := transaction.DecodeMessage(decodedMsg)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode transaction message")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareTransferPromptRequest(msg, wlt, description)
-
-		case BuyRollOpType, SellRollOpType:
-			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode roll message")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
-
-		case ExecuteSCOpType:
-			executeSC, err := executesc.DecodeMessage(decodedMsg)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode executeSC message")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
-
-		case CallSCOpType:
-			callSC, err := callsc.DecodeMessage(decodedMsg)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode callSC message")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
-
-		default:
-			decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
-			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode plainText message from b64")
-				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
-			}
-			promptRequest = s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description)
+	switch OperationType(opType) {
+	case TransactionOpType:
+		msg, err := transaction.DecodeMessage(decodedMsg)
+		if err != nil {
+			return promptRequest, errors.Wrap(err, "failed to decode transaction message")
 		}
+		promptRequest = s.prepareTransferPromptRequest(msg, wlt, description)
+
+	case BuyRollOpType, SellRollOpType:
+		roll, err := sendoperation.RollDecodeMessage(decodedMsg)
+		if err != nil {
+			return promptRequest, errors.Wrap(err, "failed to decode roll message")
+		}
+		promptRequest = s.prepareRollPromptRequest(roll, wlt, description)
+
+	case ExecuteSCOpType:
+		executeSC, err := executesc.DecodeMessage(decodedMsg)
+		if err != nil {
+			return promptRequest, errors.Wrap(err, "failed to decode executeSC message")
+		}
+		promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description)
+
+	case CallSCOpType:
+		callSC, err := callsc.DecodeMessage(decodedMsg)
+		if err != nil {
+			return promptRequest, errors.Wrap(err, "failed to decode callSC message")
+		}
+		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
+
+	case SignPlainTextMessage:
+		decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
+		if err != nil {
+			return promptRequest, errors.Wrap(err, "failed to decode plainText message from b64")
+		}
+		promptRequest = s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description)
+
+	case SignByteMessage:
+		promptRequest = s.prepareBinaryPromptRequest(wlt, description)
+
+	default:
+		return promptRequest, errors.New("failed to recognize the target operation type")
 	}
 
+	// You should have a return statement here to handle the case when no errors occur
 	return promptRequest, nil
 }
 
@@ -298,13 +301,16 @@ func (s *walletSign) prepareplainTextPromptRequest(
 	}
 }
 
-func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet, description string) prompt.PromptRequest {
+func (s *walletSign) prepareBinaryPromptRequest(
+	wlt *wallet.Wallet,
+	description string,
+) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestSignData{
 			Description:   description,
-			OperationType: Message,
+			OperationType: "Byte Text",
 			WalletAddress: wlt.Address,
 		},
 	}
