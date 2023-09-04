@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -71,7 +72,21 @@ func Test_walletSign_Handle(t *testing.T) {
 		}(testResult)
 
 		message := "a message"
-		transactionData := fmt.Sprintf(`{"operation":"%s"}`, base64.StdEncoding.EncodeToString([]byte(message)))
+
+		// Encode the operation type as binary Uvarint
+		opIDBuf := make([]byte, binary.MaxVarintLen64)
+		nbBytes := binary.PutUvarint(opIDBuf, uint64(SignPlainTextMessage))
+
+		// Encode the operation ID in base64
+		encodedOpID := base64.StdEncoding.EncodeToString(opIDBuf[:nbBytes])
+
+		// Encode the message in base64
+		encodedMessage := base64.StdEncoding.EncodeToString([]byte(message))
+
+		// Combine the encoded operation ID and the encoded message
+		finalMessage := fmt.Sprintf(`{"operation":"%s %s"}`, encodedOpID, encodedMessage)
+
+		transactionData := finalMessage
 
 		resp := signTransaction(t, api, nickname, transactionData)
 		verifyStatusCode(t, resp, http.StatusOK)
