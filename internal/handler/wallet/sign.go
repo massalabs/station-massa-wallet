@@ -26,20 +26,18 @@ import (
 	"lukechampine.com/blake3"
 )
 
-type OperationType int
-
 const (
-	passwordExpirationTime               = time.Second * 60 * 30
-	BuyRoll                              = "Buy Roll"
-	SellRoll                             = "Sell Roll"
-	Message                              = "Plain Text"
-	TransactionOpType      OperationType = iota
-	BuyRollOpType
-	SellRollOpType
-	ExecuteSCOpType
-	CallSCOpType
-	SignByteMessage
-	SignPlainTextMessage
+	passwordExpirationTime = time.Second * 60 * 30
+	BuyRoll                = "Buy Roll"
+	SellRoll               = "Sell Roll"
+	Message                = "Plain Text"
+	TransactionOpType      = uint64(0)
+	BuyRollOpType          = uint64(1)
+	SellRollOpType         = uint64(2)
+	ExecuteSCOpType        = uint64(3)
+	CallSCOpType           = uint64(4)
+	SignPlainTextMessage   = uint64(5)
+	SignByteMessage        = uint64(6)
 )
 
 type PromptRequestSignData struct {
@@ -156,7 +154,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 		return promptRequest, errors.Wrap(err, "failed to decode operation Type")
 	}
 
-	switch OperationType(opType) {
+	switch opType {
 	case TransactionOpType:
 		msg, err := transaction.DecodeMessage(decodedMsg)
 		if err != nil {
