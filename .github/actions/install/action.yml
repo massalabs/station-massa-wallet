@@ -34,16 +34,8 @@ runs:
         sudo apt update
         sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev
 
-    - name: Install Task
-      uses: arduino/setup-task@v1
-      with:
-        version: 3.x
-        repo-token: ${{ inputs.repo-token }}
-
-    - name: install go deps
+    - name: build frontends
       shell: bash
-      run: task install
-
-    - name: Build react frontend and swagger api
-      shell: bash
-      run: task generate
+      run: |
+        go generate ./wails-frontend
+        go generate ./web-frontend
