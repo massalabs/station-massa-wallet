@@ -48,6 +48,8 @@ export function Transfer() {
 
   function handleResult(result: promptResult) {
     let { Success, CodeMessage } = result;
+    setError(null);
+    setErrorMessage('');
 
     if (!Success) {
       if (CodeMessage === ErrorCode.WrongPassword) {
