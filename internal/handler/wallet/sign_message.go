@@ -15,6 +15,7 @@ import (
 
 type PromptRequestSignMessageData struct {
 	Description   string
+	OperationType string
 	WalletAddress string
 	PlainText     string
 	DisplayData   bool
@@ -80,6 +81,7 @@ func (s *walletSignMessage) prepareSignMessagePromptRequest(wlt *wallet.Wallet, 
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestSignMessageData{
 			Description:   body.Description,
+			OperationType: Message,
 			DisplayData:   DisplayData,
 			PlainText:     body.Message,
 			WalletAddress: wlt.Address,
