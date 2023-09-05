@@ -40,6 +40,7 @@
     },
     "sign": {
       "from": "From ",
+      "to": "To: ",
       "contract": "Contract ",
       "description": "Description",
       "operation-type": "Operation Type",
@@ -47,6 +48,7 @@
       "function-called": "Function called",
       "fees": "Fees ",
       "coins": "Coins ",
+      "sending-amount": "Sending amount ",
       "max-coins": "Max coins",
       "roll-amount": "Roll amount"
     }

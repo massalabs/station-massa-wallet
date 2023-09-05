@@ -53,13 +53,19 @@ jobs:
     env:
       TARGET_NAME: wallet-plugin_${{ matrix.target }}-${{ matrix.arch }}
     steps:
-      # The first step checks out the repository.
       - uses: actions/checkout@v3
-      # The second step install the tools.
+      - name: Check the manifest version
+        if: ${{ inputs.tag_name != '' }}
+        run: |
+          sudo apt-get install -y jq
+          version=$(jq -r '.version' manifest.json)
+          if [[ $version != ${{ inputs.tag_name }} ]]; then
+            echo "The manifest version is not equal to the tag version"
+            exit 1
+          fi
       - uses: ./.github/actions/install
         with:
           os: ${{ matrix.os }}
-      # The third step builds the binary and prepares an archive for publishing.
       - name: Build binary and prepare archive for publish
         shell: bash
         run: |

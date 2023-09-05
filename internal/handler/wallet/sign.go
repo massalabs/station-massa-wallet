@@ -151,7 +151,6 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 	if err != nil {
 		return promptRequest, errors.Wrap(err, "failed to decode operation Type")
 	}
-
 	switch opType {
 	case TransactionOpType:
 		msg, err := transaction.DecodeMessage(decodedMsg)
@@ -184,8 +183,6 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 	default:
 		return promptRequest, errors.New("failed to recognize the target operation type")
 	}
-
-	// You should have a return statement here to handle the case when no errors occur
 	return promptRequest, nil
 }
 
@@ -252,7 +249,7 @@ func (s *walletSign) prepareRollPromptRequest(
 	}
 }
 
-func (s *walletSign) prepareTransferPromptRequest(
+func (s *walletSign) prepareTransactionPromptRequest(
 	msg *transaction.MessageContent,
 	wlt *wallet.Wallet,
 	description string,
@@ -262,7 +259,7 @@ func (s *walletSign) prepareTransferPromptRequest(
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestSignData{
 			Description:      description,
-			OperationType:    "Transfer",
+			OperationType:    "Transaction",
 			RecipientAddress: msg.RecipientAddress,
 			Amount:           msg.Amount,
 			WalletAddress:    wlt.Address,
