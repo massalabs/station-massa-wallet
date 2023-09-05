@@ -11,6 +11,7 @@ import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { CallSc } from './SignSC/CallSc';
+import { Transaction } from './Transaction/Transaction';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { SignLayout } from '@/layouts/Layout/SignLayout';
@@ -102,13 +103,14 @@ export function Sign() {
                     <BuySellRoll {...signData} />
                   </>
                 );
+              case 'Transaction':
+                return <Transaction {...signData} />;
               case 'Plain Text':
                 return (
                   <>
                     <PlainText {...signData} />
                   </>
                 );
-
               default:
                 return (
                   <>

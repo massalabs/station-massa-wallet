@@ -161,7 +161,7 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 				wrappedErr := errors.Wrap(err, "failed to decode transaction message")
 				return s.prepareUnknownPromptRequest(wlt, description), wrappedErr
 			}
-			promptRequest = s.prepareTransferPromptRequest(msg, wlt, description)
+			promptRequest = s.prepareTransactionPromptRequest(msg, wlt, description)
 
 		case BuyRollOpType, SellRollOpType:
 			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
@@ -263,7 +263,7 @@ func (s *walletSign) prepareRollPromptRequest(
 	}
 }
 
-func (s *walletSign) prepareTransferPromptRequest(
+func (s *walletSign) prepareTransactionPromptRequest(
 	msg *transaction.MessageContent,
 	wlt *wallet.Wallet,
 	description string,
@@ -273,7 +273,7 @@ func (s *walletSign) prepareTransferPromptRequest(
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
 		Data: PromptRequestSignData{
 			Description:      description,
-			OperationType:    "Transfer",
+			OperationType:    "Transaction",
 			RecipientAddress: msg.RecipientAddress,
 			Amount:           msg.Amount,
 			WalletAddress:    wlt.Address,
