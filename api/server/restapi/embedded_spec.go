@@ -652,6 +652,67 @@ func init() {
         }
       }
     },
+    "/api/accounts/{nickname}/signMessage": {
+      "post": {
+        "description": "Sign a message using the account associated with the provided nickname in the path.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "SignMessage",
+        "parameters": [
+          {
+            "$ref": "#/parameters/nickname"
+          },
+          {
+            "x-nullable": false,
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignMessageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the signature, public key.",
+            "schema": {
+              "$ref": "#/definitions/SignResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{nickname}/transfer": {
       "post": {
         "description": "Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.",
@@ -925,6 +986,20 @@ func init() {
             "buy",
             "sell"
           ]
+        }
+      }
+    },
+    "SignMessageRequest": {
+      "type": "object",
+      "properties": {
+        "DisplayData": {
+          "description": "A boolean indicating whether to display data.",
+          "type": "boolean",
+          "default": true
+        },
+        "message": {
+          "description": "The message to sign.",
+          "type": "string"
         }
       }
     },
@@ -1718,6 +1793,72 @@ func init() {
         }
       }
     },
+    "/api/accounts/{nickname}/signMessage": {
+      "post": {
+        "description": "Sign a message using the account associated with the provided nickname in the path.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "SignMessage",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Account's short name.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "x-nullable": false,
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignMessageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the signature, public key.",
+            "schema": {
+              "$ref": "#/definitions/SignResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{nickname}/transfer": {
       "post": {
         "description": "Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.",
@@ -1997,6 +2138,20 @@ func init() {
             "buy",
             "sell"
           ]
+        }
+      }
+    },
+    "SignMessageRequest": {
+      "type": "object",
+      "properties": {
+        "DisplayData": {
+          "description": "A boolean indicating whether to display data.",
+          "type": "boolean",
+          "default": true
+        },
+        "message": {
+          "description": "The message to sign.",
+          "type": "string"
         }
       }
     },
