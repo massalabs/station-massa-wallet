@@ -27,6 +27,16 @@ func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname stri
 	return resp
 }
 
+func signMessage(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
+	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/signMessage")
+	assert.True(t, exist)
+
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/signMessage", nickname), body)
+	assert.NoError(t, err)
+
+	return resp
+}
+
 func Test_walletSign_Handle(t *testing.T) {
 	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
@@ -71,9 +81,9 @@ func Test_walletSign_Handle(t *testing.T) {
 		}(testResult)
 
 		message := "a message"
-		transactionData := fmt.Sprintf(`{"operation":"%s"}`, base64.StdEncoding.EncodeToString([]byte(message)))
+		requestBody := fmt.Sprintf(`{"message":"%s"}`, message)
 
-		resp := signTransaction(t, api, nickname, transactionData)
+		resp := signMessage(t, api, nickname, requestBody)
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		result := <-testResult
