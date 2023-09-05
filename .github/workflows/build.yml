@@ -88,7 +88,7 @@ jobs:
         with:
           name: ${{ env.TARGET_NAME }}
           path: |
-            ${{ env.TARGET_NAME }}${{ matrix.ext }}
+            wallet-plugin*
             wallet.svg
             manifest.json
       - name: Zip binary
