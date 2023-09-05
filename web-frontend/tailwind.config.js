@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'landing-page': "url('bg-image-landing-page.svg')",
+        // 'landing-page': "url('bg-image-landing-page.svg')",
       },
     },
   },
