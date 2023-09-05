@@ -89,6 +89,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		SignHandler: SignHandlerFunc(func(params SignParams) middleware.Responder {
 			return middleware.NotImplemented("operation Sign has not yet been implemented")
 		}),
+		SignMessageHandler: SignMessageHandlerFunc(func(params SignMessageParams) middleware.Responder {
+			return middleware.NotImplemented("operation SignMessage has not yet been implemented")
+		}),
 		TradeRollsHandler: TradeRollsHandlerFunc(func(params TradeRollsParams) middleware.Responder {
 			return middleware.NotImplemented("operation TradeRolls has not yet been implemented")
 		}),
@@ -178,6 +181,8 @@ type MassaWalletAPI struct {
 	ImportAccountHandler ImportAccountHandler
 	// SignHandler sets the operation handler for the sign operation
 	SignHandler SignHandler
+	// SignMessageHandler sets the operation handler for the sign message operation
+	SignMessageHandler SignMessageHandler
 	// TradeRollsHandler sets the operation handler for the trade rolls operation
 	TradeRollsHandler TradeRollsHandler
 	// TransferCoinHandler sets the operation handler for the transfer coin operation
@@ -312,6 +317,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.SignHandler == nil {
 		unregistered = append(unregistered, "SignHandler")
+	}
+	if o.SignMessageHandler == nil {
+		unregistered = append(unregistered, "SignMessageHandler")
 	}
 	if o.TradeRollsHandler == nil {
 		unregistered = append(unregistered, "TradeRollsHandler")
@@ -475,6 +483,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
+	o.handlers["POST"]["/api/accounts/{nickname}/signMessage"] = NewSignMessage(o.context, o.SignMessageHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
 	o.handlers["POST"]["/api/accounts/{nickname}/rolls"] = NewTradeRolls(o.context, o.TradeRollsHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -533,6 +545,6 @@ func (o *MassaWalletAPI) AddMiddlewareFor(method, path string, builder middlewar
 	}
 	o.Init()
 	if h, ok := o.handlers[um][path]; ok {
-		o.handlers[method][path] = builder(h)
+		o.handlers[um][path] = builder(h)
 	}
 }

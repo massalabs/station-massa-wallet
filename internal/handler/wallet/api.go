@@ -19,6 +19,7 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.ImportAccountHandler = NewImport(prompterApp, massaClient)
 	api.AccountListHandler = NewGetAll(massaClient)
 	api.SignHandler = NewSign(prompterApp, gc)
+	api.SignMessageHandler = NewSignMessage(prompterApp, gc)
 	api.GetAccountHandler = NewGet(prompterApp, massaClient)
 	api.ExportAccountFileHandler = operations.ExportAccountFileHandlerFunc(HandleExportFile)
 	api.TransferCoinHandler = NewTransferCoin(prompterApp, massaClient)
