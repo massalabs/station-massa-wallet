@@ -80,8 +80,8 @@ jobs:
         if: matrix.target == 'darwin'
         uses: dAppServer/wails-build-action@v2.2
         with:
-          build-name: $TARGET_NAME${{ matrix.ext }}
-          build-platform: darwin/universal
+          build-name: $TARGET_NAME
+          build-platform: darwin/${{ matrix.arch }}
           package: false
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

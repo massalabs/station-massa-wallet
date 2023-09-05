@@ -90,11 +90,12 @@ tasks:
 
   install-plugin:
     cmds:
-      - task: build
       - cmd: mkdir -p /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
       - cmd: cp build/wallet-plugin/wallet-plugin /usr/local/share/massastation/plugins/wallet-plugin
-        platforms: [linux, darwin]
+        platforms: [linux]
+      - cmd: cp build/bin/wallet-plugin.app/Contents/MacOS/wallet-plugin /usr/local/share/massastation/plugins/wallet-plugin
+        platforms: [darwin]
       - cmd: cp wallet.svg /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
       - cmd: cp manifest.json /usr/local/share/massastation/plugins/wallet-plugin
@@ -111,11 +112,15 @@ tasks:
     env:
       STANDALONE: 1
 
-  build-run:
+  build-standalone:
     cmds:
       - task: build-webapp
       - task: build-wails
       - task: build
+
+  build-run:
+    cmds:
+      - task: build-standalone
       - task: run
 
   all:
