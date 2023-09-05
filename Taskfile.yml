@@ -9,7 +9,10 @@ tasks:
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
       - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.5.1
 
-  generate: go generate ./...
+  generate: 
+    cmds:
+      - cmd: go generate ./...
+      - cmd: gci write .
 
   clean:
     cmds:
