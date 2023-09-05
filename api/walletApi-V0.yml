@@ -568,6 +568,10 @@ definitions:
   SignMessageRequest:
     type: object
     properties:
+      description:
+        type: string
+        maxLength: 280
+        description: Description text of what is being signed (optional)
       message:
         type: string
         description: The message to sign.

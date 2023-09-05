@@ -997,6 +997,11 @@ func init() {
           "type": "boolean",
           "default": true
         },
+        "description": {
+          "description": "Description text of what is being signed (optional)",
+          "type": "string",
+          "maxLength": 280
+        },
         "message": {
           "description": "The message to sign.",
           "type": "string"
@@ -2148,6 +2153,11 @@ func init() {
           "description": "A boolean indicating whether to display data.",
           "type": "boolean",
           "default": true
+        },
+        "description": {
+          "description": "Description text of what is being signed (optional)",
+          "type": "string",
+          "maxLength": 280
         },
         "message": {
           "description": "The message to sign.",

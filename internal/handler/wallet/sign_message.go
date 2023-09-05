@@ -1,0 +1,76 @@
+package wallet
+
+import (
+	"fmt"
+
+	"github.com/bluele/gcache"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+)
+
+func NewSignMessage(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignMessageHandler {
+	return &walletSignMessage{gc: gc, prompterApp: prompterApp}
+}
+
+type walletSignMessage struct {
+	prompterApp prompt.WalletPrompterInterface
+	gc          gcache.Cache
+}
+
+func (s *walletSignMessage) Handle(params operations.SignMessageParams) middleware.Responder {
+	wlt, resp := loadWallet(params.Nickname)
+	if resp != nil {
+		return resp
+	}
+
+	// Create a promptRequest for signing the message
+	promptRequest := s.prepareSignMessagePromptRequest(wlt, params.Body.Message, params.Body.Description)
+
+	// Use the prompt-based logic to sign the message
+	_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
+	if err != nil {
+		return operations.NewSignUnauthorized().WithPayload(
+			&models.Error{
+				Code:    errorCanceledAction,
+				Message: "Unable to unprotect wallet",
+			})
+	}
+
+	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+
+	// Sign the message using the wallet
+	signature, err := wlt.Sign(false, []byte(params.Body.Message))
+	if err != nil {
+		return operations.NewSignMessageInternalServerError().WithPayload(
+			&models.Error{
+				Code:    "errorSignMessage",
+				Message: "Error signing the message.",
+			})
+	}
+
+	// Return the signature and public key as the response
+	return operations.NewSignMessageOK().WithPayload(
+		&models.SignResponse{
+			PublicKey: wlt.GetPupKey(),
+			Signature: signature,
+		})
+}
+
+func (s *walletSignMessage) prepareSignMessagePromptRequest(wlt *wallet.Wallet, message, description string) prompt.PromptRequest {
+	return prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Data: PromptRequestSignData{
+			Description:   description,
+			OperationType: Message,
+			PlainText:     message,
+			WalletAddress: wlt.Address,
+		},
+	}
+}

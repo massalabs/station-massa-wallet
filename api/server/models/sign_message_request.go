@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // SignMessageRequest sign message request
@@ -20,12 +22,37 @@ type SignMessageRequest struct {
 	// A boolean indicating whether to display data.
 	DisplayData *bool `json:"DisplayData,omitempty"`
 
+	// Description text of what is being signed (optional)
+	// Max Length: 280
+	Description string `json:"description,omitempty"`
+
 	// The message to sign.
 	Message string `json:"message,omitempty"`
 }
 
 // Validate validates this sign message request
 func (m *SignMessageRequest) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *SignMessageRequest) validateDescription(formats strfmt.Registry) error {
+	if swag.IsZero(m.Description) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("description", "body", m.Description, 280); err != nil {
+		return err
+	}
+
 	return nil
 }
 
