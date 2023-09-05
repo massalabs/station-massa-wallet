@@ -36,8 +36,6 @@ const (
 	SellRollOpType         = uint64(2)
 	ExecuteSCOpType        = uint64(3)
 	CallSCOpType           = uint64(4)
-	SignPlainTextMessage   = uint64(5)
-	SignByteMessage        = uint64(6)
 )
 
 type PromptRequestSignData struct {
@@ -183,16 +181,6 @@ func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, desc
 		}
 		promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description)
 
-	case SignPlainTextMessage:
-		decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
-		if err != nil {
-			return promptRequest, errors.Wrap(err, "failed to decode plainText message from b64")
-		}
-		promptRequest = s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description)
-
-	case SignByteMessage:
-		promptRequest = s.prepareBinaryPromptRequest(wlt, description)
-
 	default:
 		return promptRequest, errors.New("failed to recognize the target operation type")
 	}
@@ -278,38 +266,6 @@ func (s *walletSign) prepareTransferPromptRequest(
 			RecipientAddress: msg.RecipientAddress,
 			Amount:           msg.Amount,
 			WalletAddress:    wlt.Address,
-		},
-	}
-}
-
-func (s *walletSign) prepareplainTextPromptRequest(
-	plainText string,
-	wlt *wallet.Wallet,
-	description string,
-) prompt.PromptRequest {
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			OperationType: Message,
-			PlainText:     plainText,
-			WalletAddress: wlt.Address,
-		},
-	}
-}
-
-func (s *walletSign) prepareBinaryPromptRequest(
-	wlt *wallet.Wallet,
-	description string,
-) prompt.PromptRequest {
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			OperationType: "Byte Text",
-			WalletAddress: wlt.Address,
 		},
 	}
 }
