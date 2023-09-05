@@ -15,7 +15,12 @@ import {
   FiSettings,
   FiPlus,
 } from 'react-icons/fi';
-import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
+import {
+  useNavigate,
+  useParams,
+  useOutletContext,
+  createSearchParams,
+} from 'react-router-dom';
 
 import { useResource } from '../../custom/api';
 import Intl from '../../i18n/i18n';
@@ -141,7 +146,15 @@ export function WalletLayout(props: IWalletLayoutProps) {
   accountsItems.push({
     icon: <FiPlus size={32} />,
     item: Intl.t('account.add'),
-    onClick: () => navigate(routeFor('account-create')),
+    onClick: () =>
+      navigate(
+        nickname
+          ? {
+              pathname: routeFor('account-create'),
+              search: createSearchParams({ from: nickname }).toString(),
+            }
+          : routeFor('account-create'),
+      ),
   });
 
   const selectedAccountKey: number = parseInt(
