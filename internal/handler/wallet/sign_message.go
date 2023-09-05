@@ -13,6 +13,13 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
+type PromptRequestSignMessageData struct {
+	Description   string
+	WalletAddress string
+	PlainText     string
+	DisplayData   bool
+}
+
 func NewSignMessage(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignMessageHandler {
 	return &walletSignMessage{gc: gc, prompterApp: prompterApp}
 }
@@ -29,7 +36,7 @@ func (s *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	}
 
 	// Create a promptRequest for signing the message
-	promptRequest := s.prepareSignMessagePromptRequest(wlt, params.Body.Message, params.Body.Description)
+	promptRequest := s.prepareSignMessagePromptRequest(wlt, params.Body)
 
 	// Use the prompt-based logic to sign the message
 	_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
@@ -62,14 +69,19 @@ func (s *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		})
 }
 
-func (s *walletSignMessage) prepareSignMessagePromptRequest(wlt *wallet.Wallet, message, description string) prompt.PromptRequest {
+func (s *walletSignMessage) prepareSignMessagePromptRequest(wlt *wallet.Wallet, body *models.SignMessageRequest) prompt.PromptRequest {
+	DisplayData := true
+	// Check if DisplayData is provided in the request, if not, use the default (true)
+	if body.DisplayData != nil {
+		DisplayData = *body.DisplayData
+	}
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			OperationType: Message,
-			PlainText:     message,
+		Data: PromptRequestSignMessageData{
+			Description:   body.Description,
+			DisplayData:   DisplayData,
+			PlainText:     body.Message,
 			WalletAddress: wlt.Address,
 		},
 	}
