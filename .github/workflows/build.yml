@@ -71,7 +71,6 @@ jobs:
       - uses: ./.github/actions/install
         with:
           os: ${{ matrix.os }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build binary for ${{ matrix.target }} ${{ matrix.arch }}
         if: matrix.target != 'darwin'
         shell: bash

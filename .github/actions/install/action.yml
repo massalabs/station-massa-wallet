@@ -5,9 +5,6 @@ inputs:
   os:
     required: true
     default: 'ubuntu-latest'
-  repo-token:
-    description: The token to use to authenticate with the GitHub API
-    required: true
 
 runs:
   using: "composite"
@@ -37,15 +34,14 @@ runs:
         sudo apt update
         sudo apt install libgtk-3-dev libwebkit2gtk-4.0-dev
 
-    - name: Install Task
-      uses: arduino/setup-task@v1
-      with:
-        version: 3.x
-        repo-token: ${{ inputs.repo-token }}
-
-    - name: install go deps
+    - name: Install Wails
+      if: inputs.build == 'true'
+      run: go install github.com/wailsapp/wails/v2/cmd/wails@${{inputs.wails-version}}
       shell: bash
-      run: task install
+    - name: Install macOS Wails deps
+      if: runner.os == 'macOS'
+      run: brew install mitchellh/gon/gon
+      shell: bash
 
     - name: build frontends
       shell: bash
