@@ -60,6 +60,7 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 
 	// Send a cancel message to the prompt and do NOT shutdown
 	if a.IsListening {
+		fmt.Println("canceling prompt before closing")
 		a.CtrlChan <- Cancel
 	}
 	runtime.WindowReloadApp(a.Ctx)
@@ -75,8 +76,10 @@ func (a *WalletApp) SendPromptInput(input string) {
 // AbortAction is bound to the frontend
 // It sends a cancel message to the prompt
 func (a *WalletApp) AbortAction() {
-	fmt.Println("Abort action")
-	a.CtrlChan <- Cancel
+	if a.IsListening {
+		fmt.Println("Abort action")
+		a.CtrlChan <- Cancel
+	}
 }
 
 func (a *WalletApp) Show() {
