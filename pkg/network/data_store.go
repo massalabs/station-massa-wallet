@@ -79,7 +79,7 @@ func DatastoreEntry(contractAddress string, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	entry, err := node.DatastoreEntry(client, contractAddress, key)
+	entry, err := node.FetchDatastoreEntry(client, contractAddress, key)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch datastore entry: %w", err)
 	}
