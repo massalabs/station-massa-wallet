@@ -22,6 +22,7 @@ export default function Redirect() {
     }
 
     if (nickname) {
+      localStorage.setItem('questAddress', searchParams.get('to') || '');
       navigate(`${routeFor(`${nickname}/transfer-coins`)}?${searchParams}`);
     } else {
       navigate(routeFor('index'));
