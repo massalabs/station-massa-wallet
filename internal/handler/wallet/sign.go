@@ -82,7 +82,6 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		resp = handleWithCorrelationId(wlt, params, s.gc)
 		correlationId = params.Body.CorrelationID
 	} else {
-
 		_, err = prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
 		if err != nil {
 			return operations.NewSignUnauthorized().WithPayload(
@@ -114,14 +113,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if err != nil {
 		return s.handleBadRequest(errorSignDecodeOperation)
 	}
-	signature, err := wlt.Sign(signingOperation, op)
-	if err != nil {
-		return operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignRead,
-				Message: "Error: while reading operation.",
-			})
-	}
+	signature := wlt.Sign(signingOperation, op)
 
 	return operations.NewSignOK().WithPayload(
 		&models.SignResponse{
@@ -132,6 +124,8 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 }
 
 func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
+	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: false, CodeMessage: errorCode})
 	return operations.NewSignBadRequest().WithPayload(
 		&models.Error{
 			Code:    errorCode,

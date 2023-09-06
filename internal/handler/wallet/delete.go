@@ -62,7 +62,8 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 			})
 	}
 
-	if wlt.DeleteFile() != nil {
+	err = wlt.DeleteFile()
+	if err != nil {
 		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
 		fmt.Println(errStr)
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,

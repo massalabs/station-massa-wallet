@@ -30,6 +30,7 @@ export interface PromptRequestTransferData {
 
 export function Transfer() {
   const [error, setError] = useState<IErrorObject | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const form = useRef(null);
   const { state } = useLocation();
@@ -47,12 +48,16 @@ export function Transfer() {
 
   function handleResult(result: promptResult) {
     let { Success, CodeMessage } = result;
+    setError(null);
+    setErrorMessage('');
 
     if (!Success) {
       if (CodeMessage === ErrorCode.WrongPassword) {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
-        return;
+      } else {
+        setErrorMessage(Intl.t(`errors.transaction`));
       }
+      return;
     }
     handleApplyResult(navigate, req, setError, false)(result);
   }
@@ -93,6 +98,9 @@ export function Transfer() {
             placeholder="Password"
             error={error?.password}
           />
+          {errorMessage && (
+            <p className="mt-2 text-s-error mas-body">{errorMessage}</p>
+          )}
         </div>
         <div className="pt-4 flex gap-4">
           <Button variant={'secondary'} onClick={handleCancel}>

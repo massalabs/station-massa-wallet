@@ -48,6 +48,7 @@ export function Sign() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
   const [error, setError] = useState<IErrorObject | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const signData = req.Data as PromptRequestData;
 
   function save(e: SyntheticEvent) {
@@ -65,8 +66,10 @@ export function Sign() {
     if (!Success) {
       if (CodeMessage === ErrorCode.WrongPassword) {
         setError({ password: Intl.t(`errors.${CodeMessage}`) });
-        return;
+      } else {
+        setErrorMessage(Intl.t(`errors.${CodeMessage}`));
       }
+      return;
     }
     handleApplyResult(navigate, req, setError, false)(result);
   }
@@ -129,6 +132,9 @@ export function Sign() {
             placeholder="Password"
             error={error?.password}
           />
+          {errorMessage && (
+            <p className="mt-2 text-s-error mas-body">{errorMessage}</p>
+          )}
         </div>
         <div className="pt-4 flex gap-4">
           <Button variant={'secondary'} onClick={handleCancel}>
