@@ -7,7 +7,7 @@ import (
 
 // ICOQUEST: The all package must be removed when ICO is over
 const (
-	url         = "http://54.36.174.177:3000/register_quest/"
+	url         = "https://dashboard.massa.net/quest_validation/register_quest/"
 	projectName = "massastation"
 )
 
