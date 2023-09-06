@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -224,6 +225,10 @@ func GetWorkDir() (string, error) {
 	ex, err := os.Executable()
 	if err != nil {
 		return "", fmt.Errorf("getting executable path: %w", err)
+	}
+
+	if runtime.GOOS == "darwin" {
+		return filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(ex)))), nil
 	}
 
 	dir := filepath.Dir(ex)
