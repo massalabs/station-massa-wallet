@@ -55,21 +55,20 @@ tasks:
   build-linux:
     platforms: [linux]
     cmds:
-      - cmd: mkdir -p build/wallet-plugin
+      - cmd: mkdir build/wallet-plugin
       - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production -ldflags "-w -s" main.go
 
   build-macos:
     platforms: [darwin]
     cmds:
-      - cmd: mkdir -p build/wallet-plugin
-      - cmd: wails build -s
+      - cmd: wails build -s -skipbindings
     env:
       CGO_LDFLAGS: -framework UniformTypeIdentifiers
 
   build-windows:
     platforms: [windows]
     cmds:
-      - cmd: mkdir -p build/wallet-plugin
+      - cmd: mkdir build/wallet-plugin
       - cmd: go build -tags desktop,production -ldflags "-w -s -H windowsgui" -o build/wallet-plugin/wallet-plugin.exe main.go
 
   build-webapp:
@@ -94,7 +93,7 @@ tasks:
         platforms: [linux, darwin]
       - cmd: cp build/wallet-plugin/wallet-plugin /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux]
-      - cmd: cp build/bin/wallet-plugin.app/Contents/MacOS/wallet-plugin /usr/local/share/massastation/plugins/wallet-plugin
+      - cmd: cp -r build/bin/wallet-plugin.app /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [darwin]
       - cmd: cp wallet.svg /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
@@ -103,7 +102,7 @@ tasks:
 
   run:
     cmds:
-      - cmd: open -n ./build/bin/wallet-plugin.app/
+      - cmd: build/bin/wallet-plugin.app/Contents/MacOS/wallet-plugin
         platforms: [darwin]
       - cmd: ./build/wallet-plugin/wallet-plugin
         platforms: [linux]
