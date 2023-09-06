@@ -8,6 +8,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/ico"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -94,6 +95,10 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, CodeMessage: utils.MsgTransferSuccess})
+
+	//ICOQUEST: To be removed when ICO is over
+	//nolint:errcheck
+	ico.ValidateQuest("PAY_INVOICE", *params.Body.RecipientAddress)
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,
