@@ -71,18 +71,20 @@ jobs:
       - uses: ./.github/actions/install
         with:
           os: ${{ matrix.os }}
+
       - name: Build binary for ${{ matrix.target }} ${{ matrix.arch }}
         if: matrix.target != 'darwin'
         shell: bash
         run: |
           go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
+
       - name: Build binary for MacOS ${{ matrix.arch }}
         if: matrix.target == 'darwin'
-        uses: dAppServer/wails-build-action@v2.2
-        with:
-          build-name: wallet-plugin
-          build-platform: darwin/universal
-          package: false
+        shell: bash
+        run: |
+          wails build -s -skipbindings
+          chmod +x build/bin/*/Contents/MacOS/*
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
