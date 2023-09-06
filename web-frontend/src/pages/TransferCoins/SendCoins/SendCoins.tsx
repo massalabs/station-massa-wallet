@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { toast } from '@massalabs/react-ui-kit';
+import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { SendConfirmation } from './SendConfirmation';
@@ -27,6 +28,24 @@ function SendCoins({ ...props }) {
   const { mutate, isSuccess, isLoading, error } =
     usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
 
+  // TODO: This must be removed when the quest is finished
+  const checkQuest = async () => {
+    const questAddress = localStorage.getItem('questAddress');
+    if (questAddress && questAddress !== '') {
+      // eslint-disable-next-line max-len
+      const url = `https://dashboard.massa.net/quest_validation/register_quest/massastation/PAY_INVOICE/${questAddress}`;
+
+      await axios
+        .post(url)
+        .then((_) => {
+          localStorage.removeItem('questAddress');
+        })
+        .catch((err) => {
+          console.log('Error registering quest: ', err);
+        });
+    }
+  };
+
   useEffect(() => {
     if (error) {
       toast.error(Intl.t(`errors.send-coins.sent`));
@@ -39,6 +58,7 @@ function SendCoins({ ...props }) {
         }),
       );
 
+      checkQuest();
       navigate(routeFor(`${nickname}/home`));
     }
   }, [isSuccess]);
