@@ -4,8 +4,10 @@ tasks:
   install:
     cmds:
       - echo "Installing dependencies"
-      - cmd: sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+      - cmd: sudo apt install -y libgtk-3-0 libwebkit2gtk-4.0-dev gcc-aarch64-linux-gnu
         platforms: [linux]
+      - cmd: brew install mitchellh/gon/gon
+        platforms: [darwin]
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
       - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.5.1
 
