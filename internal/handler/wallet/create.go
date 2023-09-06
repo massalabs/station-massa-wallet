@@ -8,6 +8,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/ico"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -75,6 +76,9 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			})
 	}
 
+	//ICOQUEST: To be removed when ICO is over
+	//nolint:errcheck
+	ico.ValidateQuest("CREATE_WALLET", wlt.Address)
 	return operations.NewCreateAccountOK().WithPayload(
 		&models.Account{
 			Nickname:         models.Nickname(wlt.Nickname),
