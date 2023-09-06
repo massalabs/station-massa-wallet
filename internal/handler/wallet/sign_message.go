@@ -53,14 +53,7 @@ func (s *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
 
 	// Sign the message using the wallet
-	signature, err := wlt.Sign(false, []byte(params.Body.Message))
-	if err != nil {
-		return operations.NewSignMessageInternalServerError().WithPayload(
-			&models.Error{
-				Code:    "errorSignMessage",
-				Message: "Error signing the message.",
-			})
-	}
+	signature := wlt.Sign(false, []byte(params.Body.Message))
 
 	// Return the signature and public key as the response
 	return operations.NewSignMessageOK().WithPayload(
