@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    # branches: [main]
 
   workflow_call:
     inputs:
@@ -52,6 +52,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       TARGET_NAME: wallet-plugin_${{ matrix.target }}-${{ matrix.arch }}
+      GOOS: ${{ matrix.target }}
+      GOARCH: ${{ matrix.arch }}
+      CGO_ENABLED: 1
+      CC: ${{ matrix.cc }}
+      CGO_LDFLAGS: ${{ matrix.cgo_ldflags }}
     steps:
       - uses: actions/checkout@v3
       - name: Check the manifest version
@@ -66,21 +71,31 @@ jobs:
       - uses: ./.github/actions/install
         with:
           os: ${{ matrix.os }}
-      - name: Build binary and prepare archive for publish
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build binary for ${{ matrix.target }} ${{ matrix.arch }}
+        if: matrix.target != 'darwin'
         shell: bash
         run: |
-          export GOOS=${{ matrix.target }}
-          export GOARCH=${{ matrix.arch }}
-          export CGO_ENABLED=1
-          export CC=${{ matrix.cc }}
-          export CGO_LDFLAGS="${{ matrix.cgo_ldflags }}"
           go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
+
+      - name: Build binary for MacOS ${{ matrix.arch }}
+        if: matrix.target == 'darwin'
+        shell: bash
+        run: |
+          export GOPATH=~/go
+          go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
+          export PATH=$PATH:$(go env GOPATH)/bin
+          task build
+          chmod +x build/bin/*/Contents/MacOS/*
+          ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.TARGET_NAME }}
           path: |
-            ${{ env.TARGET_NAME }}${{ matrix.ext }}
+            wallet-plugin*
             wallet.svg
             manifest.json
       - name: Zip binary

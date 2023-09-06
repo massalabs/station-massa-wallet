@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -226,6 +227,10 @@ func GetWorkDir() (string, error) {
 		return "", fmt.Errorf("getting executable path: %w", err)
 	}
 
+	if runtime.GOOS == "darwin" {
+		return filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(ex)))), nil
+	}
+
 	dir := filepath.Dir(ex)
 
 	// Helpful when developing:
@@ -233,6 +238,7 @@ func GetWorkDir() (string, error) {
 	if strings.Contains(dir, "go-build") {
 		return ".", nil
 	}
+
 	return filepath.Dir(ex), nil
 }
 

@@ -236,6 +236,7 @@ func createJSONFile(path string) error {
 	if err := os.WriteFile(path, []byte("{}"), 0o644); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -245,6 +246,7 @@ func GetAssetsJSONPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return filepath.Join(walletDir, "assets.json"), nil
 }
 
