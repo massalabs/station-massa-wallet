@@ -83,6 +83,8 @@ jobs:
         if: matrix.target == 'darwin'
         shell: bash
         run: |
+          go env GOPATH 
+          ls -ls $(go env GOPATH)/bin
           export PATH=$PATH:$(go env GOPATH)/bin
           wails build -s -skipbindings
           chmod +x build/bin/*/Contents/MacOS/*
