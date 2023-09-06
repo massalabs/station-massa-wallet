@@ -83,8 +83,10 @@ jobs:
         if: matrix.target == 'darwin'
         shell: bash
         run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
           wails build -s -skipbindings
           chmod +x build/bin/*/Contents/MacOS/*
+          ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

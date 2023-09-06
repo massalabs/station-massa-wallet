@@ -32,10 +32,6 @@ runs:
       run: task install
       shell: bash
 
-    - name: Add go/bin into PATH
-      shell: bash
-      run: export PATH=$PATH:$(go env GOPATH)/bin
-
     - name: build frontends
       shell: bash
       run: |
