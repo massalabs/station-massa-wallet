@@ -233,6 +233,7 @@ func GetWorkDir() (string, error) {
 	if strings.Contains(dir, "go-build") {
 		return ".", nil
 	}
+
 	return filepath.Dir(ex), nil
 }
 
