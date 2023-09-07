@@ -242,7 +242,7 @@ func createJSONFile(path string) error {
 
 // GetAssetsJSONPath returns the path to the assets JSON file.
 func GetAssetsJSONPath() (string, error) {
-	walletDir, err := wallet.GetWalletDir()
+	walletDir, err := wallet.AccountPath()
 	if err != nil {
 		return "", err
 	}
