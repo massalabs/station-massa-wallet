@@ -23,7 +23,9 @@ export default function Index() {
           `${name}${index === corruptedAccountsNames.length - 1 ? '' : ', '}`,
       )
       .join('') || '';
-  const corruptedAccountsCount = corruptedAccountsNames?.length;
+  const corruptedAccountsCount = corruptedAccountsNames
+    ? corruptedAccountsNames.length
+    : 0;
   const { mutate, isSuccess } = usePut<AccountObject>('accounts');
   const navigate = useNavigate();
   const hasAccounts = okAccounts?.length;
@@ -73,7 +75,7 @@ export default function Index() {
               {Intl.t('account.import')}
             </Button>
           </div>
-          {corruptedAccountsCount && (
+          {corruptedAccountsCount > 0 ? (
             <div className="flex items-center text-f-primary w-[384px] h-fit py-6 gap-2 justify-center">
               <div className="min-w-fit flex items-center justify-center h-full text-s-warning">
                 <FiAlertTriangle size={36} />
@@ -82,7 +84,7 @@ export default function Index() {
                 {warningMessage}
               </p>
             </div>
-          )}
+          ) : null}
         </div>
       ) : null}
     </LandingPage>
