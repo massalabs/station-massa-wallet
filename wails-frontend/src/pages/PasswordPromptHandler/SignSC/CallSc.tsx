@@ -14,6 +14,7 @@ import { masToken, maskAddress } from '@/utils';
 export function CallSc(props: PromptRequestData) {
   const {
     Coins,
+    Fees,
     Address,
     WalletAddress,
     Function: CalledFunction,
@@ -92,6 +93,12 @@ export function CallSc(props: PromptRequestData) {
           <p>{Intl.t('password-prompt.sign.coins')}</p>
           <p>
             {Coins} {masToken}
+          </p>
+        </div>
+        <div className="flex w-full items-center justify-between">
+          <p>Fees </p>
+          <p>
+            {Fees} {masToken}
           </p>
         </div>
       </div>
