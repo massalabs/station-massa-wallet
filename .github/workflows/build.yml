@@ -83,9 +83,8 @@ jobs:
         if: matrix.target == 'darwin'
         shell: bash
         run: |
-          export GOPATH=~/go
+          # install wails with amd64 arch, even for arm64, to be able to use it for the build
           GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
-          export PATH=$PATH:$(go env GOPATH)/bin
           task build
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
