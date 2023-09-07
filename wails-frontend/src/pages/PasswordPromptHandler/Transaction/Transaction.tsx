@@ -6,7 +6,8 @@ import Intl from '@/i18n/i18n';
 import { masToken, maskAddress } from '@/utils';
 
 export function Transaction(props: PromptRequestData) {
-  const { WalletAddress, RecipientAddress, OperationType, Amount } = props;
+  const { WalletAddress, RecipientAddress, OperationType, Amount, Fees } =
+    props;
 
   WindowSetSize(460, 500);
 
@@ -48,6 +49,13 @@ export function Transaction(props: PromptRequestData) {
             {Amount} {masToken}
           </p>
         </div>
+      </div>
+
+      <div className="flex w-full items-center justify-between">
+        <p>{Intl.t('password-prompt.sign.fees')}</p>
+        <p>
+          {Fees} {masToken}
+        </p>
       </div>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
