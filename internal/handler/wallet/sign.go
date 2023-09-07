@@ -50,6 +50,7 @@ type PromptRequestSignData struct {
 	MaxCoins         uint64
 	MaxGas           uint64
 	WalletAddress    string
+	Nickname         string
 	RollCount        uint64
 	RecipientAddress string
 	Amount           uint64
@@ -213,6 +214,7 @@ func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 			Address:       msg.Address,
 			Function:      msg.Function,
 			WalletAddress: wlt.Address,
+			Nickname:      wlt.Nickname,
 		},
 	}
 }
@@ -233,6 +235,7 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 			MaxCoins:      msg.MaxCoins,
 			MaxGas:        msg.MaxGas,
 			WalletAddress: wlt.Address,
+			Nickname:      wlt.Nickname,
 		},
 	}
 }
@@ -260,6 +263,7 @@ func (s *walletSign) prepareRollPromptRequest(
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
 			WalletAddress: wlt.Address,
+			Nickname:      wlt.Nickname,
 		},
 	}
 }
@@ -280,6 +284,7 @@ func (s *walletSign) prepareTransactionPromptRequest(
 			RecipientAddress: msg.RecipientAddress,
 			Amount:           msg.Amount,
 			WalletAddress:    wlt.Address,
+			Nickname:         wlt.Nickname,
 		},
 	}
 }
@@ -297,6 +302,7 @@ func (s *walletSign) prepareplainTextPromptRequest(
 			OperationType: Message,
 			PlainText:     plainText,
 			WalletAddress: wlt.Address,
+			Nickname:      wlt.Nickname,
 		},
 	}
 }
@@ -309,6 +315,7 @@ func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet, description
 			Description:   description,
 			OperationType: Message,
 			WalletAddress: wlt.Address,
+			Nickname:      wlt.Nickname,
 		},
 	}
 }
