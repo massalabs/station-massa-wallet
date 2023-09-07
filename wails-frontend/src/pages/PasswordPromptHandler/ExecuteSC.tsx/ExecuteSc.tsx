@@ -5,7 +5,7 @@ import Intl from '@/i18n/i18n';
 import { masToken, maskAddress } from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
-  const { MaxCoins, WalletAddress, OperationType } = props;
+  const { MaxCoins, WalletAddress, OperationType, Fees } = props;
 
   WindowSetSize(470, 470);
 
@@ -26,6 +26,12 @@ export function ExecuteSC(props: PromptRequestData) {
         <p>{Intl.t('password-prompt.sign.max-coins')} </p>
         <p>
           {MaxCoins} {masToken}
+        </p>
+      </div>
+      <div className="flex w-full items-center justify-between">
+        <p>{Intl.t('password-prompt.sign.fees')}</p>
+        <p>
+          {Fees} {masToken}
         </p>
       </div>
     </div>

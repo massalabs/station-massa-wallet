@@ -96,7 +96,7 @@ export function CallSc(props: PromptRequestData) {
           </p>
         </div>
         <div className="flex w-full items-center justify-between">
-          <p>Fees </p>
+          <p>{Intl.t('password-prompt.sign.fees')}</p>
           <p>
             {Fees} {masToken}
           </p>
