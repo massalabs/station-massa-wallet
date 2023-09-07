@@ -41,6 +41,7 @@ export interface PromptRequestData {
   Amount: string;
   PlainText: string;
   DisplayData: boolean;
+  Nickname: string;
 }
 
 export function Sign() {
