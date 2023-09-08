@@ -24,6 +24,7 @@
     "title": {
       "transfer-request": "Sign a transaction",
       "sign": "Sign an operation",
+      "sign-message": "Sign a message",
       "delete": "Delete an account"
     },
     "subtitle": {

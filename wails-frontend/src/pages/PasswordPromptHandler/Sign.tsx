@@ -12,6 +12,14 @@ import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { CallSc } from './SignSC/CallSc';
 import { Transaction } from './Transaction/Transaction';
+import {
+  OPER_BUY_ROLL,
+  OPER_CALL_SC,
+  OPER_EXECUTE_SC,
+  OPER_PLAIN_TEXT,
+  OPER_SELL_ROLL,
+  OPER_TRANSACTION,
+} from '@/const/operations';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { SignLayout } from '@/layouts/Layout/SignLayout';
@@ -83,35 +91,46 @@ export function Sign() {
     save(e);
   }
 
+  function _getTitle(operation: string | undefined) {
+    if (operation === OPER_PLAIN_TEXT)
+      return Intl.t('password-prompt.title.sign-message');
+
+    return Intl.t('password-prompt.title.sign');
+  }
+
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">{Intl.t('password-prompt.title.sign')}</h1>
+        <h1 className="mas-title">{_getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {
             switch (signData.OperationType) {
-              case 'Call SC':
+              case OPER_CALL_SC:
                 return (
                   <>
                     <CallSc {...signData} />
                   </>
                 );
-              case 'Execute SC':
+              case OPER_EXECUTE_SC:
                 return (
                   <>
                     <ExecuteSC {...signData} />
                   </>
                 );
-              case 'Buy Roll':
-              case 'Sell Roll':
+              case OPER_BUY_ROLL:
+              case OPER_SELL_ROLL:
                 return (
                   <>
                     <BuySellRoll {...signData} />
                   </>
                 );
-              case 'Transaction':
-                return <Transaction {...signData} />;
-              case 'Plain Text':
+              case OPER_TRANSACTION:
+                return (
+                  <>
+                    <Transaction {...signData} />;
+                  </>
+                );
+              case OPER_PLAIN_TEXT:
                 return (
                   <>
                     <PlainText {...signData} />

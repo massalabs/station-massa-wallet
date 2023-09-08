@@ -16,7 +16,7 @@ interface LandingPageProps {
 function CloseElement() {
   const { pathname } = useLocation();
   const query = useQuery();
-  const isRoot = pathname === '/account-select';
+  const isRoot = pathname.split('/').pop() === 'account-select';
   const rootValue = query.get('from') ? `${query.get('from')}/home` : undefined;
 
   return !isRoot ? (
