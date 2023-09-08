@@ -8,12 +8,10 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"os"
-	"os/user"
 	"path"
 	"path/filepath"
 	"reflect"
 	"regexp"
-	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -225,27 +223,12 @@ func (w *Wallet) Persist() error {
 // AccountPath returns the path where the account yaml file are stored.
 // Note: the wallet directory is the folder where the wallet plugin binary resides.
 func AccountPath() (string, error) {
-	var accountPath string
-
-	switch {
-	case runtime.GOOS == "windows":
-		appDataPath := os.Getenv("APPDATA")
-		if appDataPath == "" {
-			return "", fmt.Errorf("getting APPDATA environment variable")
-		}
-
-		accountPath = filepath.Join(appDataPath, "massa-station-wallet")
-	case runtime.GOOS == "linux", runtime.GOOS == "darwin":
-		currentUser, err := user.Current()
-		if err != nil {
-			return "", fmt.Errorf("getting current user: %w", err)
-		}
-
-		homeDir := currentUser.HomeDir
-		accountPath = filepath.Join(homeDir, ".massa-station-wallet")
-	default:
-		return "", fmt.Errorf("accounts path detection is not supported on %s", runtime.GOOS)
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", fmt.Errorf("getting user config directory: %w", err)
 	}
+
+	accountPath := filepath.Join(configDir, "massa-station-wallet")
 
 	// create the directory if it doesn't exist
 	if _, err := os.Stat(accountPath); os.IsNotExist(err) {
