@@ -40,7 +40,7 @@ export default function LandingPage(props: LandingPageProps) {
   return (
     <div
       className={`bg-primary bg-landing-page bg-no-repeat bg-cover
-     bg-center min-h-screen`}
+      bg-center min-h-screen`}
     >
       <CloseElement />
       {props.children}

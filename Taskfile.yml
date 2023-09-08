@@ -4,12 +4,19 @@ tasks:
   install:
     cmds:
       - echo "Installing dependencies"
-      - cmd: sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev
+      - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.0-dev
         platforms: [linux]
+        ignore_error: true
+      - cmd: brew install mitchellh/gon/gon
+        platforms: [darwin]
+        ignore_error: true
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.5.1
+      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
 
-  generate: go generate ./...
+  generate: 
+    cmds:
+      - cmd: go generate ./...
+      - cmd: gci write .
 
   clean:
     cmds:
@@ -52,21 +59,20 @@ tasks:
   build-linux:
     platforms: [linux]
     cmds:
-      - cmd: mkdir -p build/wallet-plugin
-      - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production  -ldflags "-w -s" main.go
+      - cmd: mkdir build/wallet-plugin
+      - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production -ldflags "-w -s" main.go
 
   build-macos:
     platforms: [darwin]
     cmds:
-      - cmd: mkdir -p build/wallet-plugin
-      - cmd: go build -tags desktop,production -ldflags "-w -s" -o build/wallet-plugin/wallet-plugin main.go
+      - cmd: wails build -s -skipbindings
     env:
       CGO_LDFLAGS: -framework UniformTypeIdentifiers
 
   build-windows:
     platforms: [windows]
     cmds:
-      - cmd: mkdir -p build/wallet-plugin
+      - cmd: mkdir build/wallet-plugin
       - cmd: go build -tags desktop,production -ldflags "-w -s -H windowsgui" -o build/wallet-plugin/wallet-plugin.exe main.go
 
   build-webapp:
@@ -87,11 +93,12 @@ tasks:
 
   install-plugin:
     cmds:
-      - task: build
       - cmd: mkdir -p /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
       - cmd: cp build/wallet-plugin/wallet-plugin /usr/local/share/massastation/plugins/wallet-plugin
-        platforms: [linux, darwin]
+        platforms: [linux]
+      - cmd: cp -r build/bin/wallet-plugin.app /usr/local/share/massastation/plugins/wallet-plugin
+        platforms: [darwin]
       - cmd: cp wallet.svg /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
       - cmd: cp manifest.json /usr/local/share/massastation/plugins/wallet-plugin
@@ -99,18 +106,24 @@ tasks:
 
   run:
     cmds:
+      - cmd: ./build/bin/wallet-plugin.app/Contents/MacOS/wallet-plugin
+        platforms: [darwin]
       - cmd: ./build/wallet-plugin/wallet-plugin
-        platforms: [linux, darwin]
+        platforms: [linux]
       - cmd: ./build/wallet-plugin/wallet-plugin.exe
         platforms: [windows]
     env:
       STANDALONE: 1
 
-  build-run:
+  build-standalone:
     cmds:
       - task: build-webapp
       - task: build-wails
       - task: build
+
+  build-run:
+    cmds:
+      - task: build-standalone
       - task: run
 
   all:
