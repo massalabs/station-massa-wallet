@@ -45,6 +45,7 @@ function PromptPrivateKey() {
   }
 
   async function handleSubmit(e: SyntheticEvent) {
+    e.preventDefault();
     const formObject = parseForm(e);
     const { privateKey } = formObject;
 
