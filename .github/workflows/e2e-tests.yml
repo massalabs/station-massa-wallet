@@ -15,6 +15,8 @@ jobs:
         run: go build -tags desktop,production -ldflags "-w -s" -o tests/test_wallet main.go
       - name: Run app
         run: WALLET_PASSWORD=bonjour STANDALONE=1 xvfb-run ./tests/test_wallet &
+      - name: Move account file
+        run: cp tests/wallet_bonjour.yaml ~/.massa-station-wallet/wallet_bonjour.yaml
       - name: test wallet loaded
         run: |
           sleep 5
