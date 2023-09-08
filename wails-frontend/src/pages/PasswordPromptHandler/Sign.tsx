@@ -83,10 +83,17 @@ export function Sign() {
     save(e);
   }
 
+  function _getTitle(operation: string | undefined) {
+    if (operation === 'Plain Text')
+      return Intl.t('password-prompt.title.sign-message');
+
+    return Intl.t('password-prompt.title.sign');
+  }
+
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">{Intl.t('password-prompt.title.sign')}</h1>
+        <h1 className="mas-title">{_getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {
             switch (signData.OperationType) {
