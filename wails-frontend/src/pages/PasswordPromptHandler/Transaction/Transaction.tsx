@@ -3,7 +3,7 @@ import { FiArrowRight } from 'react-icons/fi';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { masToken, maskAddress } from '@/utils';
+import { formatStandard, masToken, maskAddress } from '@/utils';
 
 export function Transaction(props: PromptRequestData) {
   const { WalletAddress, RecipientAddress, OperationType, Amount, Fees } =
@@ -46,7 +46,7 @@ export function Transaction(props: PromptRequestData) {
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.sending-amount')}</p>
           <p>
-            {Amount} {masToken}
+            {formatStandard(Number(Amount))} {masToken}
           </p>
         </div>
       </div>
@@ -54,7 +54,7 @@ export function Transaction(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>
         <p>
-          {Fees} {masToken}
+          {formatStandard(Number(Fees))} {masToken}
         </p>
       </div>
 

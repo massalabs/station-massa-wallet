@@ -2,12 +2,12 @@ import { WindowSetSize } from '@wailsjs/runtime/runtime';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { masToken, maskAddress } from '@/utils';
+import { formatStandard, masToken, maskAddress } from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
   const { MaxCoins, WalletAddress, OperationType, Fees } = props;
 
-  WindowSetSize(470, 470);
+  WindowSetSize(460, 460);
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default">
@@ -25,13 +25,13 @@ export function ExecuteSC(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-coins')} </p>
         <p>
-          {MaxCoins} {masToken}
+          {formatStandard(Number(MaxCoins))} {masToken}
         </p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>
         <p>
-          {Fees} {masToken}
+          {formatStandard(Number(Fees))} {masToken}
         </p>
       </div>
     </div>

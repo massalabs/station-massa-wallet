@@ -9,7 +9,7 @@ import {
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { masToken, maskAddress } from '@/utils';
+import { formatStandard, masToken, maskAddress } from '@/utils';
 
 export function CallSc(props: PromptRequestData) {
   const {
@@ -22,10 +22,15 @@ export function CallSc(props: PromptRequestData) {
     Description,
   } = props;
 
-  WindowSetSize(540, Description ? 680 : 580);
+  const toAddInHeigthDescription = Description ? 200 : 0;
+
+  const winWidth = 460;
+  const winHeight = 460 + toAddInHeigthDescription;
+
+  WindowSetSize(winWidth, winHeight);
 
   return (
-    <div className="flex flex-col items-center gap-4 mas-menu-default">
+    <div className="flex flex-col items-center gap-4 mas-menu-default w-[326px]">
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
           <p className="mas-menu-active">
@@ -77,9 +82,7 @@ export function CallSc(props: PromptRequestData) {
           >
             <AccordionContent customClass={'px-0 pt-4 pb-0'}>
               <div className="max-w-full overflow-hidden">
-                <div className="w-[326px]">
-                  <p>{Description}</p>
-                </div>
+                <p>{Description}</p>
               </div>
             </AccordionContent>
           </AccordionCategory>
@@ -92,13 +95,13 @@ export function CallSc(props: PromptRequestData) {
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.coins')}</p>
           <p>
-            {Coins} {masToken}
+            {formatStandard(Number(Coins))} {masToken}
           </p>
         </div>
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.fees')}</p>
           <p>
-            {Fees} {masToken}
+            {formatStandard(Number(Fees))} {masToken}
           </p>
         </div>
       </div>
