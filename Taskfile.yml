@@ -4,7 +4,7 @@ tasks:
   install:
     cmds:
       - echo "Installing dependencies"
-      - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.0-dev gcc-aarch64-linux-gnu
+      - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.0-dev
         platforms: [linux]
         ignore_error: true
       - cmd: brew install mitchellh/gon/gon
