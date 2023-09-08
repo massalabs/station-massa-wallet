@@ -228,6 +228,9 @@ func GetWorkDir() (string, error) {
 	}
 
 	if runtime.GOOS == "darwin" {
+		// On macOS, the executable is in a subdirectory of the working directory.
+		// We need to go up 4 levels to get the working directory.
+		// wallet-plugin.app/Contents/MacOS/wallet-plugin
 		return filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(ex)))), nil
 	}
 
