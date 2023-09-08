@@ -62,13 +62,11 @@ const ImportFile = () => {
       <p className={account ? accountStyleSuccess : accountStyleNormal}>
         {baselineStr()}
       </p>
-      <div className="flex flex-row gap-4 pb-4">
+      <div className="flex flex-row gap-4 pb-4 w-full">
         <Button variant={'secondary'} onClick={handleCancel}>
           Cancel
         </Button>
-        <div className="min-w-fit">
-          <Button onClick={handleApply}>{getImportLabel()}</Button>
-        </div>
+        <Button onClick={handleApply}>{getImportLabel()}</Button>
       </div>
       {errorMsg && <p className="mas-body text-s-error">{errorMsg}</p>}
     </Layout>
