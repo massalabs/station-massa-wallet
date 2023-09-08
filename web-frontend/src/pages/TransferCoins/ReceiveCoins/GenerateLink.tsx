@@ -3,7 +3,6 @@ import { useState, FormEvent } from 'react';
 import {
   Button,
   Identicon,
-  Input,
   Currency,
   MassaLogo,
   PopupModal,
@@ -34,7 +33,6 @@ function GenerateLink(props: GenerateLinkProps) {
   const formattedBalance = formatStandard(recipientBalance);
 
   const [amount, setAmount] = useState<number | string | undefined>('');
-  const [provider, setProvider] = useState('');
   const [link, setLink] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
 
@@ -58,9 +56,8 @@ function GenerateLink(props: GenerateLinkProps) {
     if (!validate(formObject)) return;
 
     const amountArg = amount ? `&amount=${amount}` : '';
-    const providerArg = provider ? `&provider=${provider}` : '';
 
-    const newURL = presetURL + amountArg + providerArg;
+    const newURL = presetURL + amountArg;
 
     setURL(newURL);
     setLink(newURL);
@@ -100,16 +97,6 @@ function GenerateLink(props: GenerateLinkProps) {
                 amount={formattedBalance}
                 posIcon={<MassaLogo size={24} />}
                 variant="secondary"
-              />
-            </div>
-            <div className="flex flex-col gap-3 mb-6">
-              <p className="mas-body2">{Intl.t('receive-coins.provider')}</p>
-              <Input
-                placeholder={Intl.t('receive-coins.provider-description')}
-                value={provider}
-                name="provider"
-                onChange={(e) => setProvider(e.target.value)}
-                error={error?.address}
               />
             </div>
             <div className="flex flex-col gap-3 mb-3">
