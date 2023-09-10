@@ -16,7 +16,9 @@ jobs:
       - name: Run app
         run: WALLET_PASSWORD=bonjour STANDALONE=1 xvfb-run ./tests/test_wallet &
       - name: Move account file
-        run: cp tests/wallet_bonjour.yaml ~/.massa-station-wallet/wallet_bonjour.yaml
+        run: |
+          mkdir -p ~/.config/massa-station-wallet
+          cp tests/wallet_bonjour.yaml ~/.config/massa-station-wallet/wallet_bonjour.yaml
       - name: test wallet loaded
         run: |
           sleep 5
