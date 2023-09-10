@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
@@ -218,6 +219,74 @@ func (w *Wallet) Persist() error {
 	}
 
 	return nil
+}
+
+// MigrateWallet moves the wallet from the old location (GetWorkDir) to the new one (AccountPath).
+func MigrateWallet() error {
+	oldPath, err := GetWorkDir()
+	if err != nil {
+		return fmt.Errorf("reading config directory '%s': %w", oldPath, err)
+	}
+
+	files, err := os.ReadDir(oldPath)
+	if err != nil {
+		return fmt.Errorf("reading working directory '%s': %w", oldPath, err)
+	}
+
+	newPath, err := AccountPath()
+	if err != nil {
+		return fmt.Errorf("getting account directory '%s': %w", newPath, err)
+	}
+
+	for _, f := range files {
+		fileName := f.Name()
+		oldFilePath := path.Join(oldPath, fileName)
+
+		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
+			if err != nil {
+				return fmt.Errorf("getting file path for '%s': %w", fileName, err)
+			}
+
+			newFilePath := path.Join(newPath, fileName)
+
+			// Skip if new file path exists
+			if _, err := os.Stat(newFilePath); err == nil {
+				continue
+			}
+
+			fmt.Println("Migrating wallet from", oldFilePath, "to", newFilePath) // Log
+			err = os.Rename(oldFilePath, newFilePath)
+			if err != nil {
+				return fmt.Errorf("moving account file from '%s' to '%s': %w", oldFilePath, newFilePath, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func GetWorkDir() (string, error) {
+	ex, err := os.Executable()
+	if err != nil {
+		return "", fmt.Errorf("getting executable path: %w", err)
+	}
+
+	if runtime.GOOS == "darwin" {
+		// On macOS, the executable is in a subdirectory of the working directory.
+		// We need to go up 4 levels to get the working directory.
+		// wallet-plugin.app/Contents/MacOS/wallet-plugin
+		return filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(ex)))), nil
+	}
+
+	dir := filepath.Dir(ex)
+
+	// Helpful when developing:
+	// when running `go run`, the executable is in a temporary directory.
+	if strings.Contains(dir, "go-build") {
+		return ".", nil
+	}
+
+	return filepath.Dir(ex), nil
 }
 
 // AccountPath returns the path where the account yaml file are stored.
