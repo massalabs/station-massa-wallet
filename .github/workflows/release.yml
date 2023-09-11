@@ -27,6 +27,7 @@ jobs:
     name: Check the Manifest
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Check the manifest version
         if: ${{ inputs.tag_name != '' }}
         run: |
