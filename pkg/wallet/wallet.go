@@ -243,10 +243,6 @@ func MigrateWallet() error {
 		oldFilePath := path.Join(oldPath, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
-			if err != nil {
-				return fmt.Errorf("getting file path for '%s': %w", fileName, err)
-			}
-
 			newFilePath := path.Join(newPath, fileName)
 
 			// Skip if new file path exists
