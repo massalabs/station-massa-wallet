@@ -89,10 +89,10 @@ jobs:
             manifest.json
 
       - name: Zip binary
-        if: matrix.target != 'darwin' && ${{ inputs.tag_name != '' }}
+        if: ${{ (matrix.target != 'darwin') && (inputs.tag_name != '') }}
         run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }} wallet.svg manifest.json
-      - name: Zip binary
-        if: matrix.target == 'darwin' && ${{ inputs.tag_name != '' }}
+      - name: Zip binary for dwarwin
+        if: ${{ (matrix.target == 'darwin') && (inputs.tag_name != '') }}
         run: zip $TARGET_NAME.zip wallet-plugin.app.zip wallet.svg manifest.json
 
       - name: Create release and upload binaries
@@ -104,4 +104,4 @@ jobs:
           draft: ${{ inputs.draft }}
           prerelease: ${{ inputs.prerelease }}
           generate_release_notes: ${{ inputs.generate_release_notes }}
-          files: $TARGET_NAME.zip
+          files: ${{ env.TARGET_NAME }}.zip
