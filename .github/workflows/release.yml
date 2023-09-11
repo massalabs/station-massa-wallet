@@ -23,7 +23,22 @@ on:
         default: true
 
 jobs:
+  check-manifest:
+    name: Check the Manifest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the manifest version
+        if: ${{ inputs.tag_name != '' }}
+        run: |
+          sudo apt-get install -y jq
+          version=$(jq -r '.version' manifest.json)
+          if [[ $version != ${{ inputs.tag_name }} ]]; then
+            echo "The manifest version is not equal to the tag version"
+            exit 1
+          fi
+
   build-release:
+    needs: check-manifest
     uses: ./.github/workflows/build.yml
     with:
       tag_name: ${{ github.event.inputs.tag_name }}

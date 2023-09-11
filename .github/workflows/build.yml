@@ -58,15 +58,6 @@ jobs:
       CGO_LDFLAGS: ${{ matrix.cgo_ldflags }}
     steps:
       - uses: actions/checkout@v3
-      - name: Check the manifest version
-        if: ${{ inputs.tag_name != '' }}
-        run: |
-          sudo apt-get install -y jq
-          version=$(jq -r '.version' manifest.json)
-          if [[ $version != ${{ inputs.tag_name }} ]]; then
-            echo "The manifest version is not equal to the tag version"
-            exit 1
-          fi
       - uses: ./.github/actions/install
         with:
           os: ${{ matrix.os }}
