@@ -18,6 +18,7 @@ import {
 import {
   useNavigate,
   useParams,
+  useLocation,
   useOutletContext,
   createSearchParams,
 } from 'react-router-dom';
@@ -52,6 +53,7 @@ interface IOutletContextType {
 export function WalletLayout(props: IWalletLayoutProps) {
   const { menuItem } = props;
   const navigate = useNavigate();
+  const location = useLocation();
   const { nickname } = useParams();
 
   const { themeIcon, themeLabel, theme, handleSetTheme } =
@@ -140,7 +142,11 @@ export function WalletLayout(props: IWalletLayoutProps) {
   const accountsItems = accounts.map((account) => ({
     icon: <Identicon username={account.nickname} size={32} />,
     item: account.nickname,
-    onClick: () => navigate(routeFor(`${account.nickname}/${MenuItem.Home}`)),
+    onClick: () => {
+      const replacedNicknameURL = location.pathname.split('/').slice(2);
+
+      return navigate(routeFor(`${account.nickname}/${replacedNicknameURL}`));
+    },
   }));
 
   accountsItems.push({
