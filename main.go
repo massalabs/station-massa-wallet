@@ -27,7 +27,7 @@ func main() {
 
 		err := wallet.MigrateWallet()
 		if err != nil {
-			panic(err)
+			fmt.Println("can't migrate accounts: %w", err)
 		}
 
 		err = wailApp.Run()
