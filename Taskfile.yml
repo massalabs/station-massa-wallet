@@ -59,7 +59,7 @@ tasks:
   build-linux:
     platforms: [linux]
     cmds:
-      - cmd: mkdir build/wallet-plugin
+      - cmd: mkdir -p build/wallet-plugin
       - cmd: go build -o build/wallet-plugin/wallet-plugin -tags desktop,production -ldflags "-w -s" main.go
 
   build-macos:
