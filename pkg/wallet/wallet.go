@@ -221,6 +221,46 @@ func (w *Wallet) Persist() error {
 	return nil
 }
 
+// MigrateWallet moves the wallet from the old location (GetWorkDir) to the new one (AccountPath).
+func MigrateWallet() error {
+	oldPath, err := GetWorkDir()
+	if err != nil {
+		return fmt.Errorf("reading config directory '%s': %w", oldPath, err)
+	}
+
+	files, err := os.ReadDir(oldPath)
+	if err != nil {
+		return fmt.Errorf("reading working directory '%s': %w", oldPath, err)
+	}
+
+	newPath, err := AccountPath()
+	if err != nil {
+		return fmt.Errorf("getting account directory '%s': %w", newPath, err)
+	}
+
+	for _, f := range files {
+		fileName := f.Name()
+		oldFilePath := path.Join(oldPath, fileName)
+
+		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
+			newFilePath := path.Join(newPath, fileName)
+
+			// Skip if new file path exists
+			if _, err := os.Stat(newFilePath); err == nil {
+				continue
+			}
+
+			fmt.Println("Migrating wallet from", oldFilePath, "to", newFilePath) // Log
+			err = os.Rename(oldFilePath, newFilePath)
+			if err != nil {
+				return fmt.Errorf("moving account file from '%s' to '%s': %w", oldFilePath, newFilePath, err)
+			}
+		}
+	}
+
+	return nil
+}
+
 func GetWorkDir() (string, error) {
 	ex, err := os.Executable()
 	if err != nil {
@@ -245,16 +285,31 @@ func GetWorkDir() (string, error) {
 	return filepath.Dir(ex), nil
 }
 
-// GetWalletDir returns the path where the account yaml file are stored.
+// AccountPath returns the path where the account yaml file are stored.
 // Note: the wallet directory is the folder where the wallet plugin binary resides.
-func GetWalletDir() (string, error) {
-	return GetWorkDir()
+func AccountPath() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", fmt.Errorf("getting user config directory: %w", err)
+	}
+
+	accountPath := filepath.Join(configDir, "massa-station-wallet")
+
+	// create the directory if it doesn't exist
+	if _, err := os.Stat(accountPath); os.IsNotExist(err) {
+		err = os.Mkdir(accountPath, os.ModePerm)
+		if err != nil {
+			return "", fmt.Errorf("creating account directory '%s': %w", accountPath, err)
+		}
+	}
+
+	return accountPath, nil
 }
 
 // LoadAll loads all the wallets in the working directory.
 // Note: a wallet must have: `wallet_` prefix and a `.yaml` extension.
 func LoadAll() ([]Wallet, error) {
-	walletDir, err := GetWalletDir()
+	walletDir, err := AccountPath()
 	if err != nil {
 		return nil, fmt.Errorf("reading config directory '%s': %w", walletDir, err)
 	}
@@ -419,7 +474,7 @@ func Filename(nickname string) string {
 // FilePath returns the wallet file path base on the given nickname.
 // Files are stored in
 func FilePath(nickname string) (string, error) {
-	walletDir, err := GetWalletDir()
+	walletDir, err := AccountPath()
 	if err != nil {
 		return "", fmt.Errorf("getting wallet directory: %w", err)
 	}

@@ -7,6 +7,7 @@ import (
 	walletServer "github.com/massalabs/station-massa-wallet/cmd/massa-wallet"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/wails"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
 //nolint:typecheck,nolintlint
@@ -24,7 +25,12 @@ func main() {
 
 		go walletServer.StartServer(app)
 
-		err := wailApp.Run()
+		err := wallet.MigrateWallet()
+		if err != nil {
+			fmt.Println("can't migrate accounts: %w", err)
+		}
+
+		err = wailApp.Run()
 		if err != nil {
 			panic(err)
 		}
