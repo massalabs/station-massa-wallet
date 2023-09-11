@@ -143,7 +143,10 @@ export function WalletLayout(props: IWalletLayoutProps) {
     icon: <Identicon username={account.nickname} size={32} />,
     item: account.nickname,
     onClick: () => {
-      const replacedNicknameURL = location.pathname.split('/').slice(2);
+      const hasBase = import.meta.env.VITE_BASE_APP;
+      const replacedNicknameURL = location.pathname
+        .split('/')
+        .slice(hasBase ? 3 : 2);
 
       return navigate(routeFor(`${account.nickname}/${replacedNicknameURL}`));
     },
