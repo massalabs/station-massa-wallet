@@ -9,8 +9,8 @@ import { maskAddress } from '@/utils';
 export function PlainText(props: PromptRequestData) {
   const { PlainText, DisplayData, WalletAddress, Description } = props;
 
-  const toAddInHeigthDescription = Description ? 10 : 0;
-  const toAddInHeigthDisplayData = DisplayData ? 0 : -50;
+  const toAddInHeigthDescription = Description ? 50 : 0;
+  const toAddInHeigthDisplayData = DisplayData ? 50 : -50;
 
   const winWidth = 460;
   const winHeight = 460 + toAddInHeigthDescription + toAddInHeigthDisplayData;
@@ -52,8 +52,25 @@ export function PlainText(props: PromptRequestData) {
         <>
           <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
-          <div className="w-full items-center justify-between">
-            <p className="mas-caption">{PlainText}</p>
+          <div className="flex flex-col w-full h-fit">
+            <AccordionCategory
+              isChild={false}
+              iconOpen={<FiChevronDown />}
+              iconClose={<FiChevronUp />}
+              customClass={'!p-0'}
+              categoryTitle={
+                <div className="flex items-center w-full gap-4">
+                  <FiInfo size={18} />
+                  <p>{Intl.t('password-prompt.sign.message')}</p>
+                </div>
+              }
+            >
+              <AccordionContent customClass={'px-0 pt-4 pb-0'}>
+                <div className="max-w-full overflow-hidden">
+                  <p>{PlainText}</p>
+                </div>
+              </AccordionContent>
+            </AccordionCategory>
           </div>
         </>
       )}

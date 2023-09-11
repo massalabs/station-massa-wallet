@@ -44,6 +44,7 @@
       "to": "To: ",
       "contract": "Contract ",
       "description": "Description",
+      "message": "Message",
       "operation-type": "Operation Type",
       "message-format": "Message format: ",
       "function-called": "Function called",
