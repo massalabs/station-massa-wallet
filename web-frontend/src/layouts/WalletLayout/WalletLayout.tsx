@@ -23,10 +23,8 @@ import {
   createSearchParams,
 } from 'react-router-dom';
 
-import { useResource } from '../../custom/api';
 import Intl from '../../i18n/i18n';
-import { AccountObject } from '../../models/AccountModel';
-import { routeFor } from '../../utils';
+import { fetchAccounts, routeFor } from '../../utils';
 
 export enum MenuItem {
   Home = 'home',
@@ -59,11 +57,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
   const { themeIcon, themeLabel, theme, handleSetTheme } =
     useOutletContext<IOutletContextType>();
 
-  const {
-    data: accounts = [],
-    error,
-    isLoading,
-  } = useResource<AccountObject[]>('accounts');
+  const { okAccounts: accounts = [], isLoading, error } = fetchAccounts();
 
   const hasAccounts = !isLoading && accounts;
 
