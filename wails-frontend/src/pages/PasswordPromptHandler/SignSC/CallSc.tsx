@@ -13,7 +13,7 @@ import { formatStandard, masToken, maskAddress } from '@/utils';
 
 export function CallSc(props: PromptRequestData) {
   const {
-    Coins,
+    Coins: coinsInNanoMass,
     Fees,
     Address,
     WalletAddress,
@@ -22,10 +22,13 @@ export function CallSc(props: PromptRequestData) {
     Description,
   } = props;
 
-  const toAddInHeigthDescription = Description ? 200 : 0;
+  // Convert nano mass to mass
+  const coinsInMass = coinsInNanoMass / 1000000000;
+
+  const toAddInHeightDescription = Description ? 200 : 0;
 
   const winWidth = 460;
-  const winHeight = 460 + toAddInHeigthDescription;
+  const winHeight = 460 + toAddInHeightDescription;
 
   WindowSetSize(winWidth, winHeight);
 
@@ -95,7 +98,7 @@ export function CallSc(props: PromptRequestData) {
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.coins')}</p>
           <p>
-            {formatStandard(Number(Coins))} {masToken}
+            {formatStandard(coinsInMass)} {masToken}
           </p>
         </div>
         <div className="flex w-full items-center justify-between">
