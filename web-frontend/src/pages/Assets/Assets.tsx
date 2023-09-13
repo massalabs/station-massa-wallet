@@ -19,7 +19,7 @@ function Assets() {
 
   return (
     <WalletLayout menuItem={MenuItem.Assets}>
-      <div className="bg-secondary p-10 h-fit w-2/3 rounded-lg z-0">
+      <div className="bg-secondary p-10 h-fit w-2/3 rounded-lg">
         <div className="flex items-center justify-between w-full mb-6">
           <div> {Intl.t('assets.title')}</div>
           <Button

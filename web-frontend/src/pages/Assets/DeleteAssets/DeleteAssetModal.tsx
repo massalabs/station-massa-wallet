@@ -96,11 +96,11 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
   }
   return (
     <PopupModal
-      customClass="w-[520px] h-[440px] "
+      customClass="w-[520px] h-[440px]"
       customClassNested="px-10 py-20"
       fullMode={true}
     >
-      <PopupModalContent customClassContent="py-10 ">
+      <PopupModalContent customClassContent="py-10">
         <div className="mb-4">
           <h1 className="mas-title mb-4">{Intl.t('assets.delete.title')}</h1>
 
