@@ -23,7 +23,7 @@ export function toMASS(num: string | number): number {
 }
 
 export function toMASString(num: string): string {
-  return toMAS(num).toFixed(MASSA_SCALING_FACTOR).toString();
+  return toMAS(num).toFixed(MASSA_SCALING_FACTOR).toString().replace(/\.?0+$/, '');
 }
 
 export function toNanoMASS(str: string): number {
