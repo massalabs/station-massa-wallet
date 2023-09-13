@@ -35,11 +35,11 @@ export function toNanoMASS(str: string): number {
  */
 
 export function formatStandard(
-  num: string | number,
+  num: number,
   unit = Unit.MAS,
   maximumFractionDigits = 2,
 ): string {
-  const numInMas = unit === Unit.MAS ? num : Number(toMAS(BigInt(num)));
+  const numInMas = unit === Unit.MAS ? num : Number(toMAS(num));
   const locale = localStorage.getItem('locale') || 'en-US';
   return numInMas.toLocaleString(locale, {
     minimumFractionDigits: 2,

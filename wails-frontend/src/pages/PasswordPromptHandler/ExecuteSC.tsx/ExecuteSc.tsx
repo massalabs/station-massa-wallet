@@ -2,7 +2,7 @@ import { WindowSetSize } from '@wailsjs/runtime/runtime';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, maskAddress } from '@/utils';
+import { formatStandard, masToken, maskAddress, toMASString } from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
   const { MaxCoins, WalletAddress, OperationType, Fees, MaxGas, Expiry } =
@@ -26,23 +26,23 @@ export function ExecuteSC(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-coins')} </p>
         <p>
-          {formatStandard(Number(MaxCoins))} {masToken}
+          {formatStandard(toMASString(MaxCoins))} {masToken}
         </p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-gas')} </p>
         <p>
-          {formatStandard(Number(MaxGas))} {masToken}
+          {formatStandard(toMASString(MaxGas))} {masToken}
         </p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.expiry')} </p>
-        <p>{formatStandard(Expiry)}</p>
+        <p>{Expiry}</p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>
         <p>
-          {formatStandard(Number(Fees))} {masToken}
+          {formatStandard(toMASString(Fees))} {masToken}
         </p>
       </div>
     </div>

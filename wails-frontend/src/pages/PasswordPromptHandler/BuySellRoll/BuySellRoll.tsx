@@ -2,7 +2,7 @@ import { WindowSetSize } from '@wailsjs/runtime/runtime';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken } from '@/utils';
+import { formatStandard, masToken, toMASString } from '@/utils';
 
 export function BuySellRoll(props: PromptRequestData) {
   const { RollCount, OperationType, Coins, Fees } = props;
@@ -28,13 +28,13 @@ export function BuySellRoll(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.coins')}</p>
         <p>
-          {formatStandard(Number(Coins))} {masToken}
+          {formatStandard(toMASString(Coins))} {masToken}
         </p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>
         <p>
-          {formatStandard(Number(Fees))} {masToken}
+          {formatStandard(toMASString(Fees))} {masToken}
         </p>
       </div>
     </div>

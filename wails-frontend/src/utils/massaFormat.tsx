@@ -1,5 +1,7 @@
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
 
+const MASSA_SCALING_FACTOR = 9;
+
 /**
  * Enumeration for unit options.
  */
@@ -20,6 +22,10 @@ export function toMASS(num: string | number): number {
   return Number(toMAS(num));
 }
 
+export function toMASString(num: string): string {
+  return toMAS(num).toFixed(MASSA_SCALING_FACTOR).toString();
+}
+
 export function toNanoMASS(str: string): number {
   const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
 
@@ -37,16 +43,22 @@ export function toNanoMASS(str: string): number {
  */
 
 export function formatStandard(
-  num: number,
+  num: string | number ,
   unit = Unit.MAS,
   maximumFractionDigits = 2,
 ): string {
-  const numInMas = unit === Unit.MAS ? num : Number(toMAS(num));
+  const numInMas = unit === Unit.MAS ? num : toMAS(num);
+  // Create an options object for toLocaleString
   const locale = localStorage.getItem('locale') || 'en-US';
-  return numInMas.toLocaleString(locale, {
+  const options = {
     minimumFractionDigits: 2,
     maximumFractionDigits,
-  });
+  };
+
+  // Format the number as a string with separators
+  const formattedNum = numInMas.toLocaleString(locale, options);
+
+  return formattedNum;
 }
 
 /**
