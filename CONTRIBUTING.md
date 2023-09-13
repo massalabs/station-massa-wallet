@@ -94,6 +94,8 @@ This software implements this standard: <https://github.com/massalabs/massa-stan
 
 For account file extension, we recommend `.yaml`. However, `.yml` is also supported in the import feature.
 
+Starting from version v0.2.1, we will implement retro-compatibility for all breaking changes in the account standard above.
+
 ## Frontend
 
 ### Web app
