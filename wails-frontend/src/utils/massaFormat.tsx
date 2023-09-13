@@ -43,7 +43,7 @@ export function toNanoMASS(str: string): number {
  */
 
 export function formatStandard(
-  num: string | number ,
+  num: string | number,
   unit = Unit.MAS,
   maximumFractionDigits = 2,
 ): string {
