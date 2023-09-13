@@ -11,7 +11,6 @@ export default function Redirect() {
     const nickname = accounts?.shift()?.nickname;
 
     if (nickname) {
-      localStorage.setItem('questAddress', searchParams.get('to') || '');
       navigate(`${routeFor(`${nickname}/transfer-coins`)}?${searchParams}`);
     } else {
       navigate(routeFor('index'));

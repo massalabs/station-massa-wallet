@@ -11,6 +11,7 @@ import {
   Selector,
   Clipboard,
 } from '@massalabs/react-ui-kit';
+import axios from 'axios';
 
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
@@ -49,7 +50,7 @@ function GenerateLink(props: GenerateLinkProps) {
     return true;
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formObject = parseForm(e);
 
@@ -61,6 +62,14 @@ function GenerateLink(props: GenerateLinkProps) {
 
     setURL(newURL);
     setLink(newURL);
+
+    // TODO: This must be removed when the quest is finished
+    // eslint-disable-next-line max-len
+    const url = `https://dashboard.massa.net/quest_validation/register_quest/massastation/GENERATE_LINK/${account.address}`;
+
+    await axios.post(url).catch((err) => {
+      console.log('Error registering quest: ', err);
+    });
   }
 
   return (
