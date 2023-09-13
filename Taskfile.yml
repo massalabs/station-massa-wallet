@@ -131,3 +131,10 @@ tasks:
       - task: install
       - task: generate
       - task: build
+
+  clear-accounts:
+    cmds:
+      - cmd: rm ~/Library/Application\ Support/massa-station-wallet/wallet*.yaml
+        platforms: [darwin]
+      - cmd: rm ~/.config/massa-station-wallet/wallet_*.yaml
+        platforms: [linux]
