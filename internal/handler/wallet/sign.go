@@ -329,6 +329,13 @@ func handleWithCorrelationId(
 
 	value, err := gc.Get(key)
 	if err != nil {
+		if err == gcache.KeyNotFoundError {
+			return operations.NewSignNotFound().WithPayload(
+				&models.Error{
+					Code:    errorSignCorrelationIdNotFound,
+					Message: fmt.Sprintf("Error given correlation id not in cache: %v", err.Error()),
+				})
+		}
 		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,

@@ -137,7 +137,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
-	t.Run("sign transaction batch OK", func(t *testing.T) {
+	t.Run("sign transaction batch", func(t *testing.T) {
 		transactionDataBatch := fmt.Sprintf(`{"operation":"%s","batch":true}`, callSCString)
 		testResult := make(chan walletapp.EventData)
 
@@ -165,6 +165,15 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Send new transaction without password prompt
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
 		verifyStatusCode(t, resp, http.StatusOK)
+
+		// Send new transaction with incorrect correlation id
+		correlationId = base64.StdEncoding.EncodeToString([]byte("wrong correlation id"))
+		transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
+		resp = signTransaction(t, api, nickname, transactionDataBatch)
+		var bodyError operations.SignInternalServerError
+		err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
+		assert.NoError(t, err)
+		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 
 	err = cleanupTestData([]string{nickname})
