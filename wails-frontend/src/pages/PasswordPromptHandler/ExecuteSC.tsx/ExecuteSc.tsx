@@ -5,7 +5,8 @@ import Intl from '@/i18n/i18n';
 import { formatStandard, masToken, maskAddress } from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
-  const { MaxCoins, WalletAddress, OperationType, Fees } = props;
+  const { MaxCoins, WalletAddress, OperationType, Fees, MaxGas, Expiry } =
+    props;
 
   WindowSetSize(460, 460);
 
@@ -27,6 +28,16 @@ export function ExecuteSC(props: PromptRequestData) {
         <p>
           {formatStandard(Number(MaxCoins))} {masToken}
         </p>
+      </div>
+      <div className="flex w-full items-center justify-between">
+        <p>{Intl.t('password-prompt.sign.max-gas')} </p>
+        <p>
+          {formatStandard(Number(MaxGas))} {masToken}
+        </p>
+      </div>
+      <div className="flex w-full items-center justify-between">
+        <p>{Intl.t('password-prompt.sign.expiry')} </p>
+        <p>{formatStandard(Expiry)}</p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>
