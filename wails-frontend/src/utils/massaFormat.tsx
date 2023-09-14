@@ -31,7 +31,7 @@ export function toNanoMASS(str: string): number {
 
 // removeTrailingZerost and not rely on backtracking
 export function removeTrailingZeros(numStr: string): string {
-  const regex = /^(\d+)(\.\d*?)?0*$/;
+  const regex = /^(\d+)(\.\d*[1-9])?$/;
   const match = regex.exec(numStr);
 
   if (!match) {
