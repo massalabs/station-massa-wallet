@@ -29,6 +29,10 @@ export function toNanoMASS(str: string): number {
   return Number(fromMAS(formattedString));
 }
 
+export function removeTrailingZeros(numStr: string): string {
+  return numStr.replace(/\.?0+$/, '');
+}
+
 /**
  * Formats a number according to the specified unit and formatting options.
  * @param num - The number to format.
@@ -50,9 +54,9 @@ export function formatStandard(
     value: numInMas,
     groupSeparator: ',',
     decimalSeparator: '.',
-    decimalScale: 2,
+    decimalScale: 9,
   });
-  return formattedNum;
+  return removeTrailingZeros(formattedNum);
 }
 
 /**

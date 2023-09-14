@@ -1,6 +1,5 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
-import { toMAS } from '@massalabs/massa-web3';
 import { Balance, Button, Password } from '@massalabs/react-ui-kit';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
@@ -19,6 +18,7 @@ import {
   handleCancel,
   maskAddress,
   parseForm,
+  Unit,
 } from '@/utils';
 
 export interface PromptRequestTransferData {
@@ -77,7 +77,7 @@ export function Transfer() {
         </h1>
         <div className="mas-body pt-4 break-words">
           <div className="p-4 mb-2 bg-secondary rounded-lg w-full">
-            <Balance amount={formatStandard(Number(toMAS(data.Amount)))} />
+            <Balance amount={formatStandard(data.Amount, Unit.NanoMAS)} />
             <div className="mb-4 mt-2 mas-caption">
               {Intl.t('password-prompt.transfer.fee', { fee: data.Fee })}
             </div>
