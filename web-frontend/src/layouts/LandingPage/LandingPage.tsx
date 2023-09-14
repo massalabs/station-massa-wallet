@@ -16,10 +16,13 @@ interface LandingPageProps {
 function CloseElement() {
   const { pathname } = useLocation();
   const query = useQuery();
-  const isRoot = pathname.split('/').pop() === 'account-select';
+  const currentUrl = pathname.split('/').pop();
+  const isHiddenLink = ['account-select', 'index'].includes(
+    currentUrl as string,
+  );
   const rootValue = query.get('from') ? `${query.get('from')}/home` : undefined;
 
-  return !isRoot ? (
+  return isHiddenLink ? null : (
     <Link
       className="fixed flex w-full justify-end text-f-primary pt-8 pr-8"
       to={routeFor(rootValue ?? 'index')}
@@ -33,7 +36,7 @@ function CloseElement() {
         <FiX className="w-7 h-7" />
       </button>
     </Link>
-  ) : null;
+  );
 }
 
 export default function LandingPage(props: LandingPageProps) {
