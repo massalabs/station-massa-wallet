@@ -12,6 +12,7 @@ tasks:
         ignore_error: true
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
       - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
+      - cmd: go install github.com/daixiang0/gci@latest
 
   generate: 
     cmds:
