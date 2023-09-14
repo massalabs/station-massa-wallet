@@ -31,18 +31,20 @@ export function toNanoMASS(str: string): number {
 
 // removeTrailingZerost and not rely on backtracking
 export function removeTrailingZeros(numStr: string): string {
-  const match = numStr.match(/^(\d+)(\.\d*[1-9])?$/);
+  const regex = /^(\d+)(\.\d*?)?0*$/;
+  const match = regex.exec(numStr);
 
   if (!match) {
     // No trailing zeros found
     return numStr;
   }
 
-  const integerPart = match[1];
-  const decimalPart = match[2] || '';
+  const [_, integerPart, decimalPart] = match;
+  const cleanedNumStr = integerPart + (decimalPart || '');
 
-  return integerPart + decimalPart;
+  return cleanedNumStr;
 }
+
 
 /**
  * Formats a number according to the specified unit and formatting options.
