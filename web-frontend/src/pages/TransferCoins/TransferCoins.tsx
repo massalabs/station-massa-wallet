@@ -52,7 +52,7 @@ function TransferCoins() {
 
   return (
     <WalletLayout menuItem={MenuItem.TransferCoins}>
-      <div className="w-1/2 h-1/2">
+      <div className="w-1/2 h-fit">
         <Tabs tabsConfig={tabsConfig} defaultIndex={tabIndex} />
       </div>
     </WalletLayout>
