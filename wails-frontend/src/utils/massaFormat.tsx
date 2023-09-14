@@ -1,7 +1,4 @@
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
-
-const MASSA_SCALING_FACTOR = 9;
-
 /**
  * Enumeration for unit options.
  */
@@ -20,13 +17,6 @@ export const presetFees: { [key: string]: string } = {
 
 export function toMASS(num: string | number): number {
   return Number(toMAS(num));
-}
-
-export function toMASString(num: string): string {
-  return toMAS(num)
-    .toFixed(MASSA_SCALING_FACTOR)
-    .toString()
-    .replace(/\.?0+$/, '');
 }
 
 export function toNanoMASS(str: string): number {

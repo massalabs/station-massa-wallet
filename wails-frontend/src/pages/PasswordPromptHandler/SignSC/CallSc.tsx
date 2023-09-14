@@ -9,7 +9,7 @@ import {
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, maskAddress, toMASString } from '@/utils';
+import { formatStandard, masToken, maskAddress, Unit } from '@/utils';
 
 export function CallSc(props: PromptRequestData) {
   const {
@@ -95,13 +95,13 @@ export function CallSc(props: PromptRequestData) {
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.coins')}</p>
           <p>
-            {formatStandard(toMASString(Coins))} {masToken}
+            {formatStandard(Coins, Unit.NanoMAS)} {masToken}
           </p>
         </div>
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.fees')}</p>
           <p>
-            {formatStandard(toMASString(Fees))} {masToken}
+            {formatStandard(Fees, Unit.NanoMAS)} {masToken}
           </p>
         </div>
       </div>
