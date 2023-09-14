@@ -29,8 +29,19 @@ export function toNanoMASS(str: string): number {
   return Number(fromMAS(formattedString));
 }
 
+// removeTrailingZerost and not rely on backtracking
 export function removeTrailingZeros(numStr: string): string {
-  return numStr.replace(/\.?0+$/, '');
+  const match = numStr.match(/^(\d+)(\.\d*?)?0*$/);
+
+  if (!match) {
+    // No trailing zeros found
+    return numStr;
+  }
+
+  const integerPart = match[1];
+  const decimalPart = match[2] || ''; // Ensure decimalPart is not undefined
+
+  return integerPart + decimalPart;
 }
 
 /**
