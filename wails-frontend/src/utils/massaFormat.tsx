@@ -45,7 +45,6 @@ export function removeTrailingZeros(numStr: string): string {
   return cleanedNumStr;
 }
 
-
 /**
  * Formats a number according to the specified unit and formatting options.
  * @param num - The number to format.
