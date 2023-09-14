@@ -20,6 +20,7 @@ export function CallSc(props: PromptRequestData) {
     Function: CalledFunction,
     OperationType,
     Description,
+    Expiry,
   } = props;
 
   const toAddInHeigthDescription = Description ? 200 : 0;
@@ -103,6 +104,10 @@ export function CallSc(props: PromptRequestData) {
           <p>
             {formatStandard(Fees, Unit.NanoMAS)} {masToken}
           </p>
+        </div>
+        <div className="flex w-full items-center justify-between">
+          <p>{Intl.t('password-prompt.sign.expiry')} </p>
+          <p>{Expiry}</p>
         </div>
       </div>
 
