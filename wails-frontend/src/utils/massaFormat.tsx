@@ -1,4 +1,6 @@
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
+import { formatValue } from 'react-currency-input-field';
+
 /**
  * Enumeration for unit options.
  */
@@ -35,16 +37,22 @@ export function toNanoMASS(str: string): number {
  * @returns The formatted number as a string.
  */
 export function formatStandard(
-  num: string | number,
+  value: string | bigint,
   unit = Unit.MAS,
-  maximumFractionDigits = 2,
 ): string {
-  const numInMas = unit === Unit.MAS ? num : toMAS(num);
-  const locale = localStorage.getItem('locale') || 'en-US';
-  return numInMas.toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits,
+  if (typeof value === 'bigint') {
+    value = value.toString();
+  }
+  const numInMas = unit === Unit.MAS ? value : toMAS(value).toString();
+
+  // Format the number as a string with separators
+  const formattedNum = formatValue({
+    value: numInMas,
+    groupSeparator: ',',
+    decimalSeparator: '.',
+    decimalScale: 2,
   });
+  return formattedNum;
 }
 
 /**
