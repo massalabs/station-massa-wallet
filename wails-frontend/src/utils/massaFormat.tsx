@@ -44,24 +44,17 @@ export function toNanoMASS(str: string): number {
  * @param maximumFractionDigits - The maximum number of fraction digits to display. Defaults to `2`.
  * @returns The formatted number as a string.
  */
-
 export function formatStandard(
   num: string | number,
   unit = Unit.MAS,
   maximumFractionDigits = 2,
 ): string {
   const numInMas = unit === Unit.MAS ? num : toMAS(num);
-  // Create an options object for toLocaleString
   const locale = localStorage.getItem('locale') || 'en-US';
-  const options = {
+  return numInMas.toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits,
-  };
-
-  // Format the number as a string with separators
-  const formattedNum = numInMas.toLocaleString(locale, options);
-
-  return formattedNum;
+  });
 }
 
 /**
