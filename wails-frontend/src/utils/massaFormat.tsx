@@ -35,8 +35,8 @@ export function removeTrailingZeros(numStr: string): string {
   const match = regex.exec(numStr);
 
   if (!match) {
-    // No trailing zeros found
-    return numStr;
+    // No match with bigInt regex
+    return numStr.replace(/\.?0+$/, '');
   }
 
   const [_, integerPart, decimalPart] = match;

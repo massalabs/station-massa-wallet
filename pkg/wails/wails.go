@@ -16,7 +16,6 @@ func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application 
 		Width:       513,
 		Height:      440,
 		StartHidden: true,
-		AlwaysOnTop: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
