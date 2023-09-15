@@ -32,7 +32,7 @@ export function ExecuteSC(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-gas')} </p>
         <p>
-          {formatStandard(MaxGas, Unit.NanoMAS)} {masToken}
+          {formatStandard(MaxGas)}
         </p>
       </div>
       <div className="flex w-full items-center justify-between">
