@@ -57,7 +57,7 @@ export function SendConfirmation({ ...props }) {
       <p className="mb-6">{Intl.t('send-coins.send-message')}</p>
       <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
         <div className="flex flex-row items-center pb-3 ">
-          <div className="pr-2 text-s-info">
+          <div className="pr-2 text-info">
             {Intl.t('send-coins.send-confirmation', { amount, fees })}
           </div>
           <div
@@ -72,7 +72,7 @@ export function SendConfirmation({ ...props }) {
           customClass="p-0 bg-transparent mb-3"
           amount={formattedTotal}
         />
-        <div className="text-s-info flex items-center gap-2">
+        <div className="text-info flex items-center gap-2">
           {Intl.t('send-coins.recipient')}
           <p>{formattedRecipientAddress}</p>
         </div>
