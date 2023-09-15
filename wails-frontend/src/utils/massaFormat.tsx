@@ -35,9 +35,9 @@ export function removeTrailingZeros(numStr: string): string {
 
 /**
  * Formats a number according to the specified unit and formatting options.
- * @param num - The number to format.
+ * @param value - The number to format, which can be either a string or a bigint.
  * @param unit - The unit to use for formatting. Defaults to `Unit.MAS`.
- * @param maximumFractionDigits - The maximum number of fraction digits to display. Defaults to `2`.
+ * @param maximumFractionDigits - The maximum number of fraction digits to display. Defaults to `9`.
  * @returns The formatted number as a string.
  */
 export function formatStandard(
