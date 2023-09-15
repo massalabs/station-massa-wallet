@@ -29,7 +29,6 @@ export function toNanoMASS(str: string): number {
   return Number(fromMAS(formattedString));
 }
 
-// removeTrailingZerost and not rely on backtracking
 export function removeTrailingZeros(numStr: string): string {
   return numStr.replace(/\.?0+$/, '');
 }
