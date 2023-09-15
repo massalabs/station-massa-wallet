@@ -31,9 +31,7 @@ export function ExecuteSC(props: PromptRequestData) {
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-gas')} </p>
-        <p>
-          {formatStandard(MaxGas)}
-        </p>
+        <p>{formatStandard(MaxGas)}</p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.expiry')} </p>
