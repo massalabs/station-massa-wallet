@@ -1,4 +1,5 @@
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
+import { formatValue } from 'react-currency-input-field';
 
 /**
  * Enumeration for unit options.
@@ -28,6 +29,22 @@ export function toNanoMASS(str: string): number {
   return Number(fromMAS(formattedString));
 }
 
+// removeTrailingZerost and not rely on backtracking
+export function removeTrailingZeros(numStr: string): string {
+  const regex = /^(\d+)(\.\d*[1-9])?$/;
+  const match = regex.exec(numStr);
+
+  if (!match) {
+    // No trailing zeros found
+    return numStr;
+  }
+
+  const [_, integerPart, decimalPart] = match;
+  const cleanedNumStr = integerPart + (decimalPart || '');
+
+  return cleanedNumStr;
+}
+
 /**
  * Formats a number according to the specified unit and formatting options.
  * @param num - The number to format.
@@ -35,18 +52,23 @@ export function toNanoMASS(str: string): number {
  * @param maximumFractionDigits - The maximum number of fraction digits to display. Defaults to `2`.
  * @returns The formatted number as a string.
  */
-
 export function formatStandard(
-  num: number,
+  value: string | bigint,
   unit = Unit.MAS,
-  maximumFractionDigits = 2,
 ): string {
-  const numInMas = unit === Unit.MAS ? num : Number(toMAS(num));
-  const locale = localStorage.getItem('locale') || 'en-US';
-  return numInMas.toLocaleString(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits,
+  if (typeof value === 'bigint') {
+    value = value.toString();
+  }
+  const numInMas = unit === Unit.MAS ? value : toMAS(value).toString();
+
+  // Format the number as a string with separators
+  const formattedNum = formatValue({
+    value: numInMas,
+    groupSeparator: ',',
+    decimalSeparator: '.',
+    decimalScale: 9,
   });
+  return removeTrailingZeros(formattedNum);
 }
 
 /**

@@ -34,16 +34,17 @@ import {
 
 export interface PromptRequestData {
   Description: string;
-  Fees: number;
+  Fees: string;
   OperationID: number;
-  GasLimit: number;
-  Coins: number;
+  GasLimit: string;
+  Coins: string;
   Address: string;
   Function: string;
   WalletAddress: string;
   OperationType?: string;
-  MaxCoins: number;
-  MaxGas: number;
+  MaxCoins: string;
+  MaxGas: string;
+  Expiry: number;
   RollCount: number;
   RecipientAddress: string;
   Amount: string;

@@ -3,11 +3,17 @@ import { FiArrowRight } from 'react-icons/fi';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, maskAddress } from '@/utils';
+import { formatStandard, masToken, maskAddress, Unit } from '@/utils';
 
 export function Transaction(props: PromptRequestData) {
-  const { WalletAddress, RecipientAddress, OperationType, Amount, Fees } =
-    props;
+  const {
+    WalletAddress,
+    RecipientAddress,
+    OperationType,
+    Amount,
+    Fees,
+    Expiry,
+  } = props;
 
   WindowSetSize(460, 500);
 
@@ -46,7 +52,7 @@ export function Transaction(props: PromptRequestData) {
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.sending-amount')}</p>
           <p>
-            {formatStandard(Number(Amount))} {masToken}
+            {formatStandard(Amount, Unit.NanoMAS)} {masToken}
           </p>
         </div>
       </div>
@@ -54,8 +60,13 @@ export function Transaction(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>
         <p>
-          {formatStandard(Number(Fees))} {masToken}
+          {formatStandard(Fees, Unit.NanoMAS)} {masToken}
         </p>
+      </div>
+
+      <div className="flex w-full items-center justify-between">
+        <p>{Intl.t('password-prompt.sign.expiry')} </p>
+        <p>{Expiry}</p>
       </div>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
