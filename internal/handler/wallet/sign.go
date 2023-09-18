@@ -340,7 +340,7 @@ func handleWithCorrelationId(
 
 	value, err := gc.Get(key)
 	if err != nil {
-		if err == gcache.KeyNotFoundError {
+		if err.Error() == gcache.KeyNotFoundError.Error() {
 			return operations.NewSignNotFound().WithPayload(
 				&models.Error{
 					Code:    errorSignCorrelationIdNotFound,
