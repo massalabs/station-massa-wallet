@@ -29,27 +29,14 @@ export function toNanoMASS(str: string): number {
   return Number(fromMAS(formattedString));
 }
 
-// removeTrailingZerost and not rely on backtracking
 export function removeTrailingZeros(numStr: string): string {
-  const regex = /^(\d+)(\.\d*[1-9])?$/;
-  const match = regex.exec(numStr);
-
-  if (!match) {
-    // No trailing zeros found
-    return numStr;
-  }
-
-  const [_, integerPart, decimalPart] = match;
-  const cleanedNumStr = integerPart + (decimalPart || '');
-
-  return cleanedNumStr;
+  return numStr.replace(/\.?0+$/, '');
 }
 
 /**
  * Formats a number according to the specified unit and formatting options.
- * @param num - The number to format.
+ * @param value - The number to format, which can be either a string or a bigint.
  * @param unit - The unit to use for formatting. Defaults to `Unit.MAS`.
- * @param maximumFractionDigits - The maximum number of fraction digits to display. Defaults to `2`.
  * @returns The formatted number as a string.
  */
 export function formatStandard(
