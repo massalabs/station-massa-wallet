@@ -139,8 +139,8 @@ github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsIW75CHf65OeIOkyKbteujpZVXDpWK6YGZbxE=
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
-github.com/massalabs/station v0.3.3-0.20230904155315-852f45c6fe89 h1:XmEw6l1UfHuBlx2pmQL9emSvi+V+sOWdBgg3bROLwM4=
-github.com/massalabs/station v0.3.3-0.20230904155315-852f45c6fe89/go.mod h1:ZrSECv8dWd2UJESRpzIIjwo4SUKScmNfVf6STbr/2Sc=
+github.com/massalabs/station v0.3.5-0.20230918142757-8967f55f2177 h1:x7Jwx6hi9ON1lLxAfpe01L6gt8ER66lGpGChZXMKdzc=
+github.com/massalabs/station v0.3.5-0.20230918142757-8967f55f2177/go.mod h1:ZrSECv8dWd2UJESRpzIIjwo4SUKScmNfVf6STbr/2Sc=
 github.com/massalabs/station-massa-hello-world v0.0.10 h1:gzsPRD8PmFsGmd1UFG/xpOFut0zm4JKEUmjGo/g/fAA=
 github.com/massalabs/station-massa-hello-world v0.0.10/go.mod h1:K1mf69YpRPPZziE53KHXE5IKlTMqU3r1wuLL0MWM21k=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=

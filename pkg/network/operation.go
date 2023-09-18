@@ -15,7 +15,7 @@ func (n *NodeFetcher) MakeOperation(fee uint64, operation sendOperation.Operatio
 		return nil, err
 	}
 
-	msg, _, err := sendOperation.MakeOperation(client, sendOperation.DefaultSlotsDuration, fee, operation)
+	msg, _, err := sendOperation.MakeOperation(client, sendOperation.DefaultExpiryInSlot, fee, operation)
 	if err != nil {
 		return nil, err
 	}
