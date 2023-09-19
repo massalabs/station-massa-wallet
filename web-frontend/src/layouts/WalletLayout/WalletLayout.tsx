@@ -133,15 +133,16 @@ export function WalletLayout(props: IWalletLayoutProps) {
     },
   ];
 
-  const accountsItems = accounts.map((account) => ({
-    icon: <Identicon username={account.nickname} size={32} />,
-    item: account.nickname,
-    onClick: () => {
-      const lastUrl = location.pathname.split('/').pop();
-
-      return navigate(routeFor(`${account.nickname}/${lastUrl}`));
-    },
-  }));
+  const accountsItems = accounts
+    .filter((account) => account.nickname)
+    .map((account) => ({
+      icon: <Identicon username={account.nickname} size={32} />,
+      item: account.nickname,
+      onClick: () => {
+        const lastUrl = location.pathname.split('/').pop();
+        return navigate(routeFor(`${account.nickname}/${lastUrl}`));
+      },
+    }));
 
   accountsItems.push({
     icon: <FiPlus size={32} />,
