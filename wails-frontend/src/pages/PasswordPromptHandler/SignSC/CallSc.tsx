@@ -27,7 +27,7 @@ export function CallSc(props: PromptRequestData) {
   const toAddInHeigthDescription = Description ? 200 : 0;
 
   const winWidth = 460;
-  const winHeight = 460 + toAddInHeigthDescription;
+  const winHeight = 560 + toAddInHeigthDescription;
 
   WindowSetSize(winWidth, winHeight);
 
