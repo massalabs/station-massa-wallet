@@ -4,6 +4,7 @@ wallet_*.json
 wallet-plugin*
 
 coverage.out
+internal/handler/wallet/unit-test.log
 build/*
 !build/appicon.png
 node_modules

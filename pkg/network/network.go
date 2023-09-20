@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/labstack/gommon/log"
 	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 const (
@@ -22,7 +22,7 @@ type NetworkInfo struct {
 }
 
 func logFallback(action string, err error) {
-	log.Warnf("Fallback to default network: failed to %s: %v", action, err)
+	logger.Warnf("Fallback to default network: failed to %s: %v", action, err)
 }
 
 // retrieve network info from endpoint
