@@ -297,7 +297,7 @@ func AccountPath() (string, error) {
 
 	// create the directory if it doesn't exist
 	if _, err := os.Stat(accountPath); os.IsNotExist(err) {
-		err = os.Mkdir(accountPath, os.ModePerm)
+		err = os.MkdirAll(accountPath, os.ModePerm)
 		if err != nil {
 			return "", fmt.Errorf("creating account directory '%s': %w", accountPath, err)
 		}
