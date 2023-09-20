@@ -73,7 +73,7 @@ tasks:
   build-windows:
     platforms: [windows]
     cmds:
-      - cmd: mkdir build/wallet-plugin
+      - cmd: mkdir -p build/wallet-plugin
       - cmd: go build -tags desktop,production -ldflags "-w -s -H windowsgui" -o build/wallet-plugin/wallet-plugin.exe main.go
 
   build-webapp:
@@ -104,6 +104,14 @@ tasks:
         platforms: [linux, darwin]
       - cmd: cp manifest.json /usr/local/share/massastation/plugins/wallet-plugin
         platforms: [linux, darwin]
+      - cmd: mkdir -p "C:/Program Files (x86)/MassaStation/plugins/wallet-plugin"
+        platforms: [windows]
+      - cmd: cp build/wallet-plugin/wallet-plugin.exe "C:/Program Files (x86)/MassaStation/plugins/wallet-plugin"
+        platforms: [windows]
+      - cmd: cp wallet.svg "C:/Program Files (x86)/MassaStation/plugins/wallet-plugin"
+        platforms: [windows]
+      - cmd: cp manifest.json "C:/Program Files (x86)/MassaStation/plugins/wallet-plugin"
+        platforms: [windows]
 
   run:
     cmds:
