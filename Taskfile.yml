@@ -127,6 +127,12 @@ tasks:
       - task: build-standalone
       - task: run
 
+  build-install-plugin:
+    cmds: 
+      - task: generate
+      - task: build 
+      - task: install-plugin
+
   all:
     cmds:
       - task: install
