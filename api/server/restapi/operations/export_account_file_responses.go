@@ -10,7 +10,6 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
