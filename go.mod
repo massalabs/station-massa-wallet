@@ -15,6 +15,7 @@ require (
 	github.com/wailsapp/wails/v2 v2.6.0
 	golang.org/x/crypto v0.14.0
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -46,7 +47,6 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	howett.net/plist v1.0.0 // indirect
 )
 

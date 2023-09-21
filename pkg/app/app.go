@@ -9,6 +9,7 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -135,5 +136,5 @@ func (a *WalletApp) IsNicknameUnique(nickname string) bool {
 }
 
 func (a *WalletApp) IsNicknameValid(nickname string) bool {
-	return wallet.NicknameIsValid(nickname)
+	return account.NicknameIsValid(nickname)
 }

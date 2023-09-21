@@ -11,13 +11,13 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/logger"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
@@ -39,7 +39,6 @@ const (
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
-	MaxNicknameLength         = 32
 	AccountVersion            = 1
 	StatusOK                  = "ok"
 	StatusCorrupted           = "corrupted"
@@ -540,7 +539,7 @@ func createAccountFromKeys(nickname string, privateKey, publicKey VersionedKey, 
 	}
 
 	// Validate nickname
-	if !NicknameIsValid(nickname) {
+	if !account.NicknameIsValid(nickname) {
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
@@ -595,19 +594,6 @@ func NicknameIsUnique(nickname string) error {
 	}
 
 	return nil
-}
-
-// NicknameIsValid validates the nickname using the following rules:
-// - must have at least 1 character
-// - must contain only alphanumeric characters, underscores and dashes
-// - must not exceed MaxNicknameLength characters
-func NicknameIsValid(nickname string) bool {
-	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
-}
-
-func CheckAlphanumeric(str string) bool {
-	regex := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
-	return regex.MatchString(str)
 }
 
 func AddressIsUnique(address string) error {

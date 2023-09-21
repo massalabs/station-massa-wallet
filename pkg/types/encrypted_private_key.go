@@ -2,8 +2,10 @@ package types
 
 import (
 	"crypto/ed25519"
+	"fmt"
 
 	"github.com/awnumar/memguard"
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/station-massa-wallet/pkg/crypto"
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 	"lukechampine.com/blake3"
@@ -78,13 +80,13 @@ func (a *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
 }
 
 // Sign signs the given data using the private key.
-// password is destroyed just after being used even if an error occurs.
+// Guarded password is destroyed.
 func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce, data []byte) ([]byte, error) {
 	digest := blake3.Sum256(data)
 
-	privateKeyInClear, err := PrivateKey(password, salt, nonce, e.Data)
+	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Sign: %w", err)
 	}
 
 	defer privateKeyInClear.Destroy()
@@ -92,11 +94,11 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKeyInClear.Bytes(), digest[:])...), nil
 }
 
-// PublicKey returns the public key corresponding to the private key.
+// PublicKey returns the public key corresponding to the private key. Guarded password is destroyed.
 func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, nonce []byte) (*PublicKey, error) {
-	privateKeyInClear, err := PrivateKey(password, salt, nonce, e.Data)
+	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("PublicKey: %w", err)
 	}
 
 	publicKeyBytes := ed25519.PrivateKey(privateKeyInClear.Bytes()).Public().(ed25519.PublicKey)
@@ -112,7 +114,38 @@ func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, n
 	}, nil
 }
 
-func PrivateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
+// PrivateKeyTextInClear returns the private key in clear. Guarded password is destroyed.
+func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
+	privateKeyInClear, err := privateKey(password, salt, nonce, encryptedKey)
+	if err != nil {
+		return nil, fmt.Errorf("PrivateKeyTextInClear: %w", err)
+	}
+
+	seed := ed25519.PrivateKey(privateKeyInClear.Bytes()).Seed()
+	privateKeyInClear.Destroy()
+
+	seedBuffer := memguard.NewBufferFromBytes(seed)
+
+	privateKey := e.Kind.Prefix() + base58.CheckEncode(seedBuffer.Bytes(), e.Version)
+	privateKeyBuffer := memguard.NewBufferFromBytes([]byte(privateKey))
+
+	return privateKeyBuffer, nil
+}
+
+// PasswordIsValid returns true if the password is valid for the account. It destroys the password.
+func (e *EncryptedPrivateKey) PasswordIsValid(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) bool {
+	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
+	if err != nil {
+		return false
+	}
+	privateKeyInClear.Destroy()
+
+	return err == nil
+}
+
+// privateKey returns the private key in clear.
+// Guarded password is destroyed.
+func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
 	aeadCipher, secretKey, err := crypto.NewSecretCipher(password.Bytes(), salt[:])
 	defer password.Destroy()
 	defer secretKey.Destroy()

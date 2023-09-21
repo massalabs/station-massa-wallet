@@ -10,6 +10,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
 type PromptRequestUpdateAccountData struct {
@@ -66,7 +67,7 @@ func (m *walletUpdateAccount) handleUpdateAccount(wlt *wallet.Wallet, newNicknam
 	}
 
 	// Validate nickname
-	if !wallet.NicknameIsValid(string(newNickname)) {
+	if !account.NicknameIsValid(string(newNickname)) {
 		return nil, &wallet.WalletError{Err: fmt.Errorf("invalid nickname"), CodeErr: utils.ErrInvalidNickname}
 	}
 
