@@ -22,7 +22,5 @@ func Logger() error {
 		return err
 	}
 
-	defer logger.Close()
-
 	return nil
 }

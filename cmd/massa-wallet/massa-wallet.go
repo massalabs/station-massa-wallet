@@ -1,14 +1,12 @@
 package app
 
 import (
-	"log"
 	"os"
 
 	"github.com/bluele/gcache"
 	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi"
 	"github.com/massalabs/station-massa-wallet/internal/handler"
-	"github.com/massalabs/station-massa-wallet/internal/initialize"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
@@ -27,11 +25,6 @@ func StartServer(app *walletApp.WalletApp) {
 	var promptApp prompt.WalletPrompterInterface = prompt.NewWalletPrompter(app)
 	if walletApp.IsTestMode() {
 		promptApp = prompt.NewEnvPrompter(app)
-	}
-
-	err := initialize.Logger()
-	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
 	AssetsStore, err := assets.NewAssetsStore()
