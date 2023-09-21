@@ -16,9 +16,9 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/labstack/gommon/log"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station/pkg/logger"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
@@ -286,7 +286,6 @@ func GetWorkDir() (string, error) {
 }
 
 // AccountPath returns the path where the account yaml file are stored.
-// Note: the wallet directory is the folder where the wallet plugin binary resides.
 func AccountPath() (string, error) {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
@@ -328,7 +327,7 @@ func LoadAll() ([]Wallet, error) {
 			wallet, loadErr := LoadFile(filePath)
 			wallets = append(wallets, wallet)
 			if loadErr != nil {
-				log.Errorf("while loading wallet '%s': %s", filePath, loadErr.Err)
+				logger.Errorf("while loading wallet '%s': %s", filePath, loadErr.Err)
 				continue
 			}
 

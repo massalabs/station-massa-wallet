@@ -1,9 +1,9 @@
 package network
 
 import (
-	"github.com/labstack/gommon/log"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/massalabs/station/pkg/node"
 )
 
@@ -13,7 +13,7 @@ func NewMassaClient() (*node.Client, error) {
 		return nil, err
 	}
 
-	log.Infof("Connected to node URL: %s", networkInfo.URL)
+	logger.Debugf("Connected to node URL: %s", networkInfo.URL)
 
 	return node.NewClient(networkInfo.URL), nil
 }

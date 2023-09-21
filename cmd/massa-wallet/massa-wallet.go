@@ -1,7 +1,6 @@
 package app
 
 import (
-	"log"
 	"os"
 
 	"github.com/bluele/gcache"
@@ -12,6 +11,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 func StartServer(app *walletApp.WalletApp) {
@@ -29,7 +29,7 @@ func StartServer(app *walletApp.WalletApp) {
 
 	AssetsStore, err := assets.NewAssetsStore()
 	if err != nil {
-		log.Fatalf("Failed to create AssetsStore: %v", err)
+		logger.Fatalf("Failed to create AssetsStore: %v", err)
 	}
 
 	// Initializes API
@@ -40,7 +40,7 @@ func StartServer(app *walletApp.WalletApp) {
 		gc,
 	)
 	if err != nil {
-		log.Fatalln(err)
+		logger.Fatalf("Failed to initialize API: %v", err)
 	}
 
 	// instantiates and configure server
@@ -53,12 +53,12 @@ func StartServer(app *walletApp.WalletApp) {
 
 	listener, err := server.HTTPListener()
 	if err != nil {
-		log.Fatalln(err)
+		logger.Fatalf("Failed to create HTTP listener: %v", err)
 	}
 
 	plugin.RegisterPlugin(listener)
 
 	if err := server.Serve(); err != nil {
-		log.Fatalln(err)
+		logger.Fatalf("Failed to serve: %v", err)
 	}
 }

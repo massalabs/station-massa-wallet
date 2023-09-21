@@ -3,11 +3,14 @@ package main
 import (
 	"embed"
 	"fmt"
+	"log"
 
 	walletServer "github.com/massalabs/station-massa-wallet/cmd/massa-wallet"
+	"github.com/massalabs/station-massa-wallet/internal/initialize"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/wails"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 //nolint:typecheck,nolintlint
@@ -16,6 +19,13 @@ var wailsAssets embed.FS
 
 func main() {
 	app := walletApp.NewWalletApp()
+
+	err := initialize.Logger()
+	if err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
+	}
+
+	defer logger.Close()
 
 	if walletApp.IsTestMode() {
 		fmt.Println("Wallet is running in test mode")

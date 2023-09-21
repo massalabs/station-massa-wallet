@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/internal/handler/html"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/rs/cors"
 )
 
@@ -25,11 +26,7 @@ func configureAPI(api *operations.MassaWalletAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 
-	// Set your custom logger if needed. Default one is log.Printf
-	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// api.Logger = log.Printf
+	api.Logger = logger.Infof
 
 	api.UseSwaggerUI()
 	// To continue using redoc as your UI, uncomment the following line
