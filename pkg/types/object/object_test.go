@@ -50,3 +50,45 @@ func TestKind_Prefix(t *testing.T) {
 		})
 	}
 }
+
+func TestObject_Validate(t *testing.T) {
+	// Define some sample test cases
+	testCases := []struct {
+		name          string
+		object        Object
+		lastVersion   byte
+		expectedKinds []Kind
+		expectedError error
+	}{
+		{
+			name:          "ValidObject",
+			object:        Object{Data: []byte{}, Kind: EncryptedPrivateKey, Version: 1},
+			lastVersion:   2,
+			expectedKinds: []Kind{EncryptedPrivateKey},
+			expectedError: nil,
+		},
+		{
+			name:          "UnsupportedVersion",
+			object:        Object{Data: []byte{}, Kind: EncryptedPrivateKey, Version: 3},
+			lastVersion:   2,
+			expectedKinds: []Kind{EncryptedPrivateKey},
+			expectedError: ErrUnsupportedVersion,
+		},
+		{
+			name:          "InvalidKind",
+			object:        Object{Data: []byte{}, Kind: Unknown, Version: 1},
+			lastVersion:   2,
+			expectedKinds: []Kind{EncryptedPrivateKey},
+			expectedError: ErrInvalidType,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			err := testCase.object.Validate(testCase.lastVersion, testCase.expectedKinds...)
+			if err != testCase.expectedError {
+				t.Errorf("Expected error: %v, but got error: %v", testCase.expectedError, err)
+			}
+		})
+	}
+}
