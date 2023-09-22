@@ -30,7 +30,7 @@ const (
 func NewSecretCipher(password []byte, salt []byte) (cipher.AEAD, *memguard.LockedBuffer, error) {
 	secretKey := pbkdf2.Key(password, salt, Pkdf2NbRound, SecretKeySizeInBytes, sha256.New)
 
-	//this also wipes the original secretKey slice
+	// this also wipes the original secretKey slice
 	guardedKey := memguard.NewBufferFromBytes(secretKey)
 
 	block, err := aes.NewCipher(guardedKey.Bytes())
@@ -57,7 +57,7 @@ func UnsealSecret(aeadCipher cipher.AEAD, nonce []byte, encryptedSecret []byte) 
 		return nil, fmt.Errorf("failed to decrypt secret: %w", err)
 	}
 
-	//this also wipes the original secret slice
+	// this also wipes the original secret slice
 	guardedSecret := memguard.NewBufferFromBytes(secret)
 
 	return guardedSecret, nil
