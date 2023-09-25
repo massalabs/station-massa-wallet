@@ -77,7 +77,10 @@ export function Transfer() {
         </h1>
         <div className="mas-body pt-4 break-words">
           <div className="p-4 mb-2 bg-secondary rounded-lg w-full">
-            <Balance amount={formatStandard(data.Amount, Unit.NanoMAS)} />
+            <Balance
+              size="md"
+              amount={formatStandard(data.Amount, Unit.NanoMAS)}
+            />
             <div className="mb-4 mt-2 mas-caption">
               {Intl.t('password-prompt.transfer.fee', { fee: data.Fee })}
             </div>
