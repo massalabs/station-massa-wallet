@@ -65,7 +65,7 @@ func (a *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
 func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce, data []byte) ([]byte, error) {
 	digest := blake3.Sum256(data)
 
-	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
+	privateKeyInClear, err := PrivateKey(password, salt, nonce, e.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -75,21 +75,27 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKeyInClear.Bytes(), digest[:])...), nil
 }
 
-// EncryptedPrivateKey returns the public key corresponding to the private key.
-func (e *EncryptedPrivateKey) EncryptedPrivateKey(password *memguard.LockedBuffer, salt, nonce []byte) (*EncryptedPrivateKey, error) {
-	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
+// PublicKey returns the public key corresponding to the private key.
+func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, nonce []byte) (*PublicKey, error) {
+	privateKeyInClear, err := PrivateKey(password, salt, nonce, e.Data)
 	if err != nil {
 		return nil, err
 	}
 
-	EncryptedPrivateKeyBytes := ed25519.NewKeyFromSeed(privateKeyInClear.Bytes()).Public().(ed25519.PublicKey)
+	publicKeyBytes := ed25519.PrivateKey(privateKeyInClear.Bytes()).Public().(ed25519.PublicKey)
 
 	privateKeyInClear.Destroy()
 
-	return &EncryptedPrivateKey{Object: &object.Object{Data: EncryptedPrivateKeyBytes, Version: EncryptedPrivateKeyLastVersion}}, nil
+	return &PublicKey{
+		Object: &object.Object{
+			Data:    publicKeyBytes,
+			Kind:    object.PublicKey,
+			Version: PublicKeyLastVersion,
+		},
+	}, nil
 }
 
-func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
+func PrivateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
 	aeadCipher, secretKey, err := crypto.NewSecretCipher(password.Bytes(), salt[:])
 	defer password.Destroy()
 	defer secretKey.Destroy()

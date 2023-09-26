@@ -89,12 +89,12 @@ func TestEncryptedPrivateKey_Marshal(t *testing.T) {
 	})
 }
 
-func TestEncryptedPrivateKey_Sign(t *testing.T) {
+func TestEncryptedPrivateKey(t *testing.T) {
 	// Declare sample data
 	sampleData := []byte("Test")
-	samplePassword := memguard.NewBufferFromBytes([]byte("bonjour"))
 	sampleSalt := []byte{145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170}
 	sampleNonce := []byte{113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63}
+	samplePassword := memguard.NewBufferFromBytes([]byte("bonjour"))
 
 	// Prepare the secret
 	aeadCipher, secretKey, err := crypto.NewSecretCipher(samplePassword.Bytes(), sampleSalt)
@@ -113,22 +113,26 @@ func TestEncryptedPrivateKey_Sign(t *testing.T) {
 		},
 	}
 
-	// Sign the data
-	signature, err := sampleEncryptedPrivateKey.Sign(samplePassword, sampleSalt, sampleNonce, sampleData)
-	assert.NoError(t, err)
+	t.Run("Sign", func(t *testing.T) {
+		// Sign the data
+		signature, err := sampleEncryptedPrivateKey.Sign(samplePassword, sampleSalt, sampleNonce, sampleData)
+		assert.NoError(t, err)
 
-	t.Run("ValidateSignature", func(t *testing.T) {
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-
+		// Assert
 		assert.Greater(t, len(signature), 1)
 		assert.Equal(t, byte(EncryptedPrivateKeyLastVersion), signature[0])
-
-		// Assert the whole signature
 		expectedSignature := []byte{0x0, 0xe7, 0xeb, 0xd0, 0x39, 0xd3, 0xa3, 0x70, 0x70, 0xee, 0x38, 0xee, 0x95, 0x78, 0xd7, 0x3d, 0x7d, 0x74, 0xc4, 0x1a, 0x3, 0x1c, 0xfa, 0x3, 0xd4, 0x34, 0x1d, 0x67, 0x81, 0x64, 0x2c, 0xb7, 0xb0, 0x7c, 0xab, 0x30, 0xf1, 0x1d, 0x22, 0x39, 0x27, 0x7c, 0x9d, 0x5b, 0x4c, 0x9e, 0xcb, 0xa4, 0xe9, 0x8a, 0x5, 0x42, 0x20, 0xbb, 0x97, 0x7, 0x5e, 0x71, 0x87, 0x10, 0x40, 0xec, 0x8e, 0x62, 0x7}
 		assert.Equal(t, expectedSignature, signature)
 	})
 
-	samplePassword.Destroy()
+	t.Run("PublicKey", func(t *testing.T) {
+		samplePassword := memguard.NewBufferFromBytes([]byte("bonjour"))
+
+		// Get the public key from the private key
+		publicKey, err := sampleEncryptedPrivateKey.PublicKey(samplePassword, sampleSalt, sampleNonce)
+		assert.NoError(t, err)
+
+		expectedSignature := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
+		assert.Equal(t, expectedSignature, publicKey.Data)
+	})
 }
