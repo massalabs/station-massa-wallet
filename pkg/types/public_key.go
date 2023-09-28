@@ -27,6 +27,16 @@ func (pk PublicKey) MarshalYAML() (interface{}, error) {
 	return pk.MarshalBinary()
 }
 
+// Custom YAML unmarshaller for PublicKey
+func (pk *PublicKey) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var data []byte
+	if err := unmarshal(&data); err != nil {
+		return err
+	}
+
+	return pk.UnmarshalBinary(data)
+}
+
 // MarshalText overloads the TextMarshaler interface for PublicKey.
 func (a *PublicKey) MarshalText() ([]byte, error) {
 	if err := a.validate(); err != nil {

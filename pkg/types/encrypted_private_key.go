@@ -33,6 +33,16 @@ func (a EncryptedPrivateKey) MarshalYAML() (interface{}, error) {
 	return a.MarshalBinary()
 }
 
+// Custom YAML unmarshaller for EncryptedPrivateKey
+func (a *EncryptedPrivateKey) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var data []byte
+	if err := unmarshal(&data); err != nil {
+		return err
+	}
+
+	return a.UnmarshalBinary(data)
+}
+
 // MarshalText overloads the TextMarshaler interface for EncryptedPrivateKey.
 func (a *EncryptedPrivateKey) MarshalText() ([]byte, error) {
 	if err := a.validate(); err != nil {
@@ -61,9 +71,8 @@ func (a *EncryptedPrivateKey) MarshalBinary() ([]byte, error) {
 
 // UnmarshalBinary overloads the BinaryUnmarshaler interface for EncryptedPrivateKey.
 func (a *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
-	if err := a.Object.UnmarshalBinary(data); err != nil {
-		return err
-	}
+	a.Object.Version = 0x00 // We can't know the version at this stage. The version is in the plain text. `data` is ciphered.
+	a.Object.Data = data
 
 	return a.validate()
 }

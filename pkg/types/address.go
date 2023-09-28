@@ -37,6 +37,16 @@ func (a Address) MarshalYAML() (interface{}, error) {
 	return string(data), err
 }
 
+// Custom YAML unmarshaller for Address
+func (a *Address) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var data string
+	if err := unmarshal(&data); err != nil {
+		return err
+	}
+
+	return a.UnmarshalText([]byte(data))
+}
+
 // MarshalText overloads the TextMarshaler interface for Address.
 func (a *Address) MarshalText() ([]byte, error) {
 	if err := a.validate(); err != nil {

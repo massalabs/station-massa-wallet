@@ -82,7 +82,7 @@ func TestEncryptedPrivateKey_Marshal(t *testing.T) {
 			},
 		}
 
-		err := ad.UnmarshalBinary(append([]byte{0x00}, data...))
+		err := ad.UnmarshalBinary(data)
 		assert.NoError(t, err)
 		assert.Equal(t, data, ad.Object.Data)
 	})
