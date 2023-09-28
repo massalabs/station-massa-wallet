@@ -28,6 +28,11 @@ func (a *EncryptedPrivateKey) validate() error {
 	return nil
 }
 
+// Custom YAML marshaller for EncryptedPrivateKey
+func (a EncryptedPrivateKey) MarshalYAML() (interface{}, error) {
+	return a.MarshalBinary()
+}
+
 // MarshalText overloads the TextMarshaler interface for EncryptedPrivateKey.
 func (a *EncryptedPrivateKey) MarshalText() ([]byte, error) {
 	if err := a.validate(); err != nil {
@@ -41,6 +46,7 @@ func (a *EncryptedPrivateKey) UnmarshalText(text []byte) error {
 	if err := a.Object.UnmarshalText(text); err != nil {
 		return err
 	}
+
 	return a.validate()
 }
 
@@ -49,6 +55,7 @@ func (a *EncryptedPrivateKey) MarshalBinary() ([]byte, error) {
 	if err := a.validate(); err != nil {
 		return nil, err
 	}
+
 	return a.Object.MarshalBinary()
 }
 
@@ -57,6 +64,7 @@ func (a *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
 	if err := a.Object.UnmarshalBinary(data); err != nil {
 		return err
 	}
+
 	return a.validate()
 }
 

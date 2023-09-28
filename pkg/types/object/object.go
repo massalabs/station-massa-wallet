@@ -88,6 +88,7 @@ func (o *Object) Validate(lastVersion byte, expectedKinds ...Kind) error {
 // MarshalText implements the encoding.TextMarshaler interface.
 func (o *Object) MarshalText() ([]byte, error) {
 	dataStr := base58.CheckEncode(o.Data, o.Version)
+
 	return []byte(o.Kind.Prefix() + dataStr), nil
 }
 
@@ -123,6 +124,8 @@ func (o *Object) MarshalBinary() ([]byte, error) {
 		return append([]byte{0x00, o.Version}, o.Data...), nil
 	case SmartContractAddress:
 		return append([]byte{0x01, o.Version}, o.Data...), nil
+	case EncryptedPrivateKey:
+		return o.Data, nil
 	default:
 		return append([]byte{o.Version}, o.Data...), nil
 	}

@@ -70,8 +70,7 @@ func TestEncryptedPrivateKey_Marshal(t *testing.T) {
 
 		b, err := ad.MarshalBinary()
 		assert.NoError(t, err)
-		// we expect the version to be prepended to the data
-		assert.Equal(t, append([]byte{0x00}, data...), b)
+		assert.Equal(t, data, b)
 	})
 
 	t.Run("UnMarshal Binary", func(t *testing.T) {

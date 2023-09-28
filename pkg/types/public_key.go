@@ -1,6 +1,8 @@
 package types
 
-import "github.com/massalabs/station-massa-wallet/pkg/types/object"
+import (
+	"github.com/massalabs/station-massa-wallet/pkg/types/object"
+)
 
 const (
 	PublicKeyLastVersion = 0x00
@@ -20,11 +22,17 @@ func (a *PublicKey) validate() error {
 	return nil
 }
 
+// Custom YAML marshaller for PublicKey
+func (pk PublicKey) MarshalYAML() (interface{}, error) {
+	return pk.MarshalBinary()
+}
+
 // MarshalText overloads the TextMarshaler interface for PublicKey.
 func (a *PublicKey) MarshalText() ([]byte, error) {
 	if err := a.validate(); err != nil {
 		return nil, err
 	}
+
 	return a.Object.MarshalText()
 }
 
@@ -33,6 +41,7 @@ func (a *PublicKey) UnmarshalText(text []byte) error {
 	if err := a.Object.UnmarshalText(text); err != nil {
 		return err
 	}
+
 	return a.validate()
 }
 
@@ -41,6 +50,7 @@ func (a *PublicKey) MarshalBinary() ([]byte, error) {
 	if err := a.validate(); err != nil {
 		return nil, err
 	}
+
 	return a.Object.MarshalBinary()
 }
 
@@ -49,5 +59,6 @@ func (a *PublicKey) UnmarshalBinary(data []byte) error {
 	if err := a.Object.UnmarshalBinary(data); err != nil {
 		return err
 	}
+
 	return a.validate()
 }

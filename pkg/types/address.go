@@ -30,11 +30,19 @@ func (a *Address) validate() error {
 	return nil
 }
 
+// Custom YAML marshaller for EncryptedPrivateKey
+func (a Address) MarshalYAML() (interface{}, error) {
+	data, err := a.MarshalText()
+
+	return string(data), err
+}
+
 // MarshalText overloads the TextMarshaler interface for Address.
 func (a *Address) MarshalText() ([]byte, error) {
 	if err := a.validate(); err != nil {
 		return nil, err
 	}
+
 	return a.Object.MarshalText()
 }
 
@@ -43,6 +51,7 @@ func (a *Address) UnmarshalText(text []byte) error {
 	if err := a.Object.UnmarshalText(text); err != nil {
 		return err
 	}
+
 	return a.validate()
 }
 
@@ -51,6 +60,7 @@ func (a *Address) MarshalBinary() ([]byte, error) {
 	if err := a.validate(); err != nil {
 		return nil, err
 	}
+
 	return a.Object.MarshalBinary()
 }
 
