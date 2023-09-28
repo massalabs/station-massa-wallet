@@ -14,10 +14,8 @@ func TestAssetExistInNetwork(t *testing.T) {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
-	// TODO Create a mock NodeFetcher
 	nodeFetcher := NewNodeFetcher()
 
-	// Test case where the asset does not exist
 	notExists := nodeFetcher.AssetExistInNetwork("nonexistentContractAddress")
 	assert.False(t, notExists, "Expected asset not to exist in the network")
 }
