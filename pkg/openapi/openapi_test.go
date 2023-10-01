@@ -36,7 +36,7 @@ func TestNewNotFoundResponder(t *testing.T) {
 }
 
 func TestNewInternalServerErrorResponder(t *testing.T) {
-	err := DummyFunction()
+	err := DummyError()
 	responder := NewInternalServerErrorResponder(err)
 
 	assert.Equal(t, err.Error(), string(responder.Body))
@@ -57,6 +57,6 @@ func (m *mockResponseWriter) Write(p []byte) (int, error) {
 	return m.ResponseRecorder.Write(p)
 }
 
-func DummyFunction() error {
+func DummyError() error {
 	return fmt.Errorf("Some error occurred")
 }
