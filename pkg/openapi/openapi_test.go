@@ -12,7 +12,6 @@ import (
 func TestCustomResponder_WriteResponse(t *testing.T) {
 	// Test case 1: Successful response
 	responder := NewCustomResponder([]byte("Hello, World!"), map[string]string{"Content-Type": "text/plain"}, http.StatusOK)
-
 	recorder := httptest.NewRecorder()
 	responder.WriteResponse(recorder, nil)
 
@@ -22,9 +21,10 @@ func TestCustomResponder_WriteResponse(t *testing.T) {
 
 	// Test case 2: Error while writing response body
 	responderWithError := NewCustomResponder([]byte("Hello, World!"), map[string]string{"Content-Type": "text/plain"}, http.StatusOK)
-
 	recorderWithError := &mockResponseWriter{errOnWrite: true}
 	responderWithError.WriteResponse(recorderWithError, nil)
+
+	assert.Equal(t, "<nil>", recorderWithError.Body.String())
 }
 
 func TestNewNotFoundResponder(t *testing.T) {
