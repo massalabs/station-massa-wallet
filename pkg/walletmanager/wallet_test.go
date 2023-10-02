@@ -210,6 +210,6 @@ func copy(t *testing.T, src string, dst string) {
 	data, err := os.ReadFile(src)
 	assert.NoError(t, err)
 	// Write data to dst
-	err = os.WriteFile(dst, data, 0644)
+	err = os.WriteFile(dst, data, 0o644)
 	assert.NoError(t, err)
 }
