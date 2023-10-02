@@ -56,6 +56,9 @@ jobs:
       CGO_ENABLED: 1
       CC: ${{ matrix.cc }}
       CGO_LDFLAGS: ${{ matrix.cgo_ldflags }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/install
