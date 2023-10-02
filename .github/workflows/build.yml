@@ -79,6 +79,12 @@ jobs:
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
 
+      - name: Sign Windows binary
+        if: matrix.target == 'windows'
+        uses: ./.github/actions/sign-file
+        with:
+          file: $TARGET_NAME${{ matrix.ext }}
+      
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
