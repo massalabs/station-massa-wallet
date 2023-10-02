@@ -39,10 +39,12 @@ runs:
         java-version: "17"
 
     - name: Prepapre environment for signature
+      shell: bash
       run: |
         curl -L -o jsign.jar https://github.com/ebourg/jsign/releases/download/5.0/jsign-5.0.jar
         echo "${{ inputs.GCP_PEM_KEY }}" > codesign-chain.pem
 
     - name: Sign massastation with EV cert on Google Cloud
+      shell: bash
       run: |
         java -jar jsign.jar --storetype GOOGLECLOUD --storepass "$(gcloud auth print-access-token)" --keystore "${{ inputs.GCP_KEYSTORE_ID }}" --alias "${{ inputs.GCP_KEY_ALIAS }}" --certfile "codesign-chain.pem" --tsmode RFC3161 --tsaurl http://timestamp.globalsign.com/tsa/r6advanced1 ${{ inputs.file }}
