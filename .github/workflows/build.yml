@@ -84,7 +84,11 @@ jobs:
         uses: ./.github/actions/sign-file
         with:
           file: $TARGET_NAME${{ matrix.ext }}
-      
+          GCP_PEM_KEY: ${{ vars.GCP_PEM_KEY }}
+          GCP_KEYSTORE_ID: ${{ secrets.GCP_KEYSTORE_ID }}
+          GCP_KEY_ALIAS: ${{ secrets.GCP_KEY_ALIAS }}
+          GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
