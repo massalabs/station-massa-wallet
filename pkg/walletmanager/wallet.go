@@ -22,7 +22,19 @@ func (w *Wallet) AddAccount(acc *account.Account) error {
 		return fmt.Errorf("account is nil")
 	}
 
-	err := w.Persist(*acc)
+	// Validate nickname uniqueness
+	err := w.NicknameIsUnique(acc.Nickname)
+	if err != nil {
+		return fmt.Errorf("nickname is not unique: %w", err)
+	}
+
+	// Validate unique private key
+	err = w.AddressIsUnique(acc.Address)
+	if err != nil {
+		return fmt.Errorf("address is not unique: %w", err)
+	}
+
+	err = w.Persist(*acc)
 	if err != nil {
 		return fmt.Errorf("persisting account: %w", err)
 	}
@@ -49,7 +61,10 @@ func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 		return nil, fmt.Errorf("loading account: %w", err)
 	}
 
-	w.Accounts[nickname] = acc
+	err = w.AddAccount(acc)
+	if err != nil {
+		return nil, fmt.Errorf("adding account: %w", err)
+	}
 
 	return acc, nil
 }
