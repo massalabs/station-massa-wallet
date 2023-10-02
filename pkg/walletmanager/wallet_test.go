@@ -50,7 +50,8 @@ func TestWallet(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Run("Create Wallet", func(t *testing.T) {
-		newWallet := New()
+		newWallet, err := New()
+		assert.NoError(t, err)
 		w = newWallet
 		assert.NotNil(t, w)
 	})
@@ -168,6 +169,17 @@ func TestWallet(t *testing.T) {
 		err := w.DeleteAccount("unknown")
 		assert.Error(t, err)
 		assert.Equal(t, 1, w.GetAccountCount())
+	})
+
+	t.Run("New wallet to discover created accounts", func(t *testing.T) {
+		newWallet, err := New()
+		assert.NoError(t, err)
+		assert.NotNil(t, newWallet)
+		assert.Equal(t, 1, newWallet.GetAccountCount())
+		nickname := "unit-test"
+		acc, err := w.GetAccount(nickname)
+		assert.NoError(t, err)
+		assert.Equal(t, nickname, acc.Nickname)
 	})
 
 	// Clean

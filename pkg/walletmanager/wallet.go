@@ -2,6 +2,9 @@ package walletmanager
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"strings"
 
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
@@ -10,10 +13,48 @@ type Wallet struct {
 	Accounts map[string]*account.Account // Mapping from nickname to account
 }
 
-func New() *Wallet {
-	return &Wallet{
+func New() (*Wallet, error) {
+	wallet := &Wallet{
 		Accounts: make(map[string]*account.Account),
 	}
+
+	err := wallet.discover()
+	if err != nil {
+		return nil, fmt.Errorf("discovering accounts: %s\n", err)
+	}
+
+	return wallet, nil
+}
+
+func (w *Wallet) discover() error {
+	accountsPath, err := Path()
+	if err != nil {
+		return fmt.Errorf("getting accounts path: %w", err)
+	}
+
+	files, err := os.ReadDir(accountsPath)
+	if err != nil {
+		return fmt.Errorf("reading accounts path: %w", err)
+	}
+
+	for _, f := range files {
+		fileName := f.Name()
+		filePath := path.Join(accountsPath, fileName)
+
+		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
+			acc, err := w.Load(filePath)
+			if err != nil {
+				return fmt.Errorf("loading account: %w", err)
+			}
+
+			err = w.AddAccount(acc)
+			if err != nil {
+				return fmt.Errorf("adding account: %w", err)
+			}
+		}
+	}
+
+	return nil
 }
 
 // Add an account into the wallet
