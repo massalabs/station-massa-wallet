@@ -56,6 +56,9 @@ jobs:
       CGO_ENABLED: 1
       CC: ${{ matrix.cc }}
       CGO_LDFLAGS: ${{ matrix.cgo_ldflags }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/install
@@ -78,6 +81,17 @@ jobs:
           task build
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
+
+      - name: Sign Windows binary
+        if: matrix.target == 'windows'
+        uses: massalabs/station/.github/actions/sign-file@3dac9091bcbe6db4facec2c0f30292f56c11098e
+        with:
+          file: $TARGET_NAME${{ matrix.ext }}
+          GCP_PEM_KEY: ${{ vars.GCP_PEM_KEY }}
+          GCP_KEYSTORE_ID: ${{ vars.GCP_KEYSTORE_ID }}
+          GCP_KEY_ALIAS: ${{ vars.GCP_KEY_ALIAS }}
+          GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
