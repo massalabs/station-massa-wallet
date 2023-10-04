@@ -37,11 +37,12 @@ type assetData struct {
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
-func NewAssetsStore() (*AssetsStore, error) {
+// NewAssetsStore creates and initializes a new instance of AssetsStore.
+func NewAssetsStore(assetsJSONPath string) (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets: make(map[string]Assets),
 	}
-	if err := store.loadaccountsStore(); err != nil {
+	if err := store.loadaccountsStore(assetsJSONPath); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
@@ -49,12 +50,7 @@ func NewAssetsStore() (*AssetsStore, error) {
 }
 
 // loadaccountsStore loads the data from the assets JSON file into the AssetsStore.
-func (s *AssetsStore) loadaccountsStore() error {
-	assetsJSONPath, err := GetAssetsJSONPath()
-	if err != nil {
-		return errors.Wrap(err, "error getting assets JSON file")
-	}
-
+func (s *AssetsStore) loadaccountsStore(assetsJSONPath string) error {
 	// Check if the file exists, and if not, create a new one with an empty object
 	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
 		if err := createJSONFile(assetsJSONPath); err != nil {

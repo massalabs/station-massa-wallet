@@ -16,6 +16,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,7 +52,12 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 
 	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
-	AssetsStore, err := assets.NewAssetsStore()
+	assetsJSONPath, err := assets.GetAssetsJSONPath()
+	if err != nil {
+		logger.Warnf("Failed to get AssetsStore JSON file: %v", err)
+	}
+
+	AssetsStore, err := assets.NewAssetsStore(assetsJSONPath)
 	if err != nil {
 		log.Fatalf("Failed to create AssetsStore: %v", err)
 	}
