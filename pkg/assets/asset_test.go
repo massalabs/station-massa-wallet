@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
+	"github.com/stretchr/testify/assert"
 )
 
 const dummyAssetsJSON = `
@@ -33,24 +34,18 @@ const dummyAssetsJSON = `
 func TestLoadAccountsStore(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
 	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
-	if err != nil {
-		t.Fatalf("Error creating temporary file: %v", err)
-	}
+	assert.NoError(t, err)
 	defer func() {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
 	}()
 
 	_, err = tmpFile.Write([]byte(dummyAssetsJSON))
-	if err != nil {
-		t.Fatalf("Error writing to temporary file: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	store, err := NewAssetsStore(tmpFile.Name())
-	if err != nil {
-		t.Fatalf("Error creating AssetsStore: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Validate the loaded data
 	expectedAccountName := "dummyAccount"
@@ -69,24 +64,19 @@ func TestLoadAccountsStore(t *testing.T) {
 func TestAssetExists(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
 	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
-	if err != nil {
-		t.Fatalf("Error creating temporary file: %v", err)
-	}
+	assert.NoError(t, err)
+
 	defer func() {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
 	}()
 
 	_, err = tmpFile.Write([]byte(dummyAssetsJSON))
-	if err != nil {
-		t.Fatalf("Error writing to temporary file: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	store, err := NewAssetsStore(tmpFile.Name())
-	if err != nil {
-		t.Fatalf("Error creating AssetsStore: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Test case 1: Check for an existing asset
 	existingNickname := "dummyAccount"
@@ -108,9 +98,8 @@ func TestAssetExists(t *testing.T) {
 func TestAddAndDeleteAsset(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
 	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
-	if err != nil {
-		t.Fatalf("Error creating temporary file: %v", err)
-	}
+	assert.NoError(t, err)
+	
 	defer func() {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
@@ -134,15 +123,11 @@ func TestAddAndDeleteAsset(t *testing.T) {
 }
 `
 	_, err = tmpFile.Write([]byte(initialDummyJSON))
-	if err != nil {
-		t.Fatalf("Error writing to temporary file: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	store, err := NewAssetsStore(tmpFile.Name())
-	if err != nil {
-		t.Fatalf("Error creating AssetsStore: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Test case 1: Add an asset and check if it's saved to JSON
 	nickname := "dummyAccount"
@@ -157,9 +142,7 @@ func TestAddAndDeleteAsset(t *testing.T) {
 
 	// Add the asset
 	err = store.AddAsset(nickname, assetAddress, assetInfo)
-	if err != nil {
-		t.Fatalf("Error adding asset: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Check if the added asset exists
 	if !store.AssetExists(nickname, assetAddress) {
@@ -168,15 +151,11 @@ func TestAddAndDeleteAsset(t *testing.T) {
 
 	// Test case 2: Delete the added asset and check if it's removed from JSON
 	err = store.DeleteAsset(nickname, assetAddress)
-	if err != nil {
-		t.Fatalf("Error deleting asset: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Reload the AssetsStore from the JSON file after deletion
 	deletedStore, err := NewAssetsStore(tmpFile.Name())
-	if err != nil {
-		t.Fatalf("Error reloading AssetsStore after deletion: %v", err)
-	}
+	assert.NoError(t, err)
 
 	// Check if the deleted asset no longer exists
 	if deletedStore.AssetExists(nickname, assetAddress) {
