@@ -10,9 +10,8 @@ import (
 
 func (w *Wallet) NicknameIsUnique(nickname string) error {
 	for _, account := range w.Accounts {
-		fmt.Println(account.Nickname, nickname)
 		if strings.EqualFold(account.Nickname, nickname) {
-			return fmt.Errorf("this account name already exists")
+			return fmt.Errorf("this account name already exists: %s", nickname)
 		}
 	}
 

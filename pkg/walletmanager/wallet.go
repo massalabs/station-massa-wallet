@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 type Wallet struct {
@@ -21,6 +22,11 @@ func New() (*Wallet, error) {
 	err := wallet.discover()
 	if err != nil {
 		return nil, fmt.Errorf("discovering accounts: %s\n", err)
+	}
+
+	err = MigrateWallet()
+	if err != nil {
+		logger.Errorf("migrating wallet: %s", err)
 	}
 
 	return wallet, nil

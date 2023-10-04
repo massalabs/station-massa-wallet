@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/massalabs/station-massa-wallet/pkg/types"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
@@ -42,6 +44,13 @@ func (w *Wallet) accountPath(nickname string) (string, error) {
 	return filepath.Join(path, fmt.Sprintf("wallet_%s.yaml", nickname)), nil
 }
 
+func (w *Wallet) nicknameFromFilePath(filePath string) string {
+	_, nicknameFromFileName := filepath.Split(filePath)
+	nicknameFromFileName = strings.TrimPrefix(nicknameFromFileName, "wallet_")
+
+	return strings.TrimSuffix(nicknameFromFileName, ".yaml")
+}
+
 func (w *Wallet) Persist(acc account.Account) error {
 	filePath, err := w.accountPath(acc.Nickname)
 	if err != nil {
@@ -71,6 +80,16 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 	err = acc.Unmarshal(data)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshaling account: %w", err)
+	}
+
+	// Nickname in the file is optional, if it's not set, we use the filename
+	if acc.Nickname == "" {
+		acc.Nickname = w.nicknameFromFilePath(filePath)
+	}
+
+	// Address in the file is optional, if it's not set, we use the public key
+	if acc.Address.Object.Data == nil {
+		acc.Address = *types.NewAddressFromPublicKey(&acc.PublicKey)
 	}
 
 	return &acc, nil

@@ -13,7 +13,6 @@ import (
 )
 
 func TestWallet(t *testing.T) {
-	// Clean
 	clean(t)
 
 	var w *Wallet
@@ -148,10 +147,8 @@ func TestWallet(t *testing.T) {
 
 		copy(t, "../../tests/wallet_unit-test.yaml", accountPath)
 
-		acc, err := w.GetAccount(nickname)
-		assert.NoError(t, err)
+		acc := assertAccountIsPresent(t, *w, nickname)
 		assert.Equal(t, uint8(1), *acc.Version)
-		assert.Equal(t, nickname, acc.Nickname)
 		assert.Equal(t, 2, w.GetAccountCount())
 	})
 
@@ -176,13 +173,45 @@ func TestWallet(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, newWallet)
 		assert.Equal(t, 1, newWallet.GetAccountCount())
-		nickname := "unit-test"
-		acc, err := w.GetAccount(nickname)
-		assert.NoError(t, err)
-		assert.Equal(t, nickname, acc.Nickname)
+		assertAccountIsPresent(t, *newWallet, "unit-test")
 	})
 
-	// Clean
+	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
+		// prepare
+		nickname := "old-location-account"
+		accountPath, err := w.accountPath(nickname)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
+		// execute
+		newWallet, err := New()
+		assert.NoError(t, err)
+
+		// assert
+		assert.Equal(t, 2, newWallet.GetAccountCount())
+		assertAccountIsPresent(t, *newWallet, nickname)
+		assertAccountIsPresent(t, *newWallet, "unit-test")
+	})
+
+	t.Run("Load account with only required fields (no address, no nickname)", func(t *testing.T) {
+		// prepare
+		clean(t)
+		nickname := "only-required-fields"
+		accountPath, err := w.accountPath(nickname)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_only-required-fields.yaml", accountPath)
+
+		// execute
+		newWallet, err := New()
+		assert.NoError(t, err)
+
+		// assert
+		assert.Equal(t, 1, newWallet.GetAccountCount())
+		acc := assertAccountIsPresent(t, *newWallet, nickname)
+		textAddress, err := acc.Address.MarshalText()
+		assert.NoError(t, err)
+		assert.Equal(t, "AU1AAQExqUbw2PvBjNdZgodNg9jUFwxAfPP8mASPbamK3unxmXtm", string(textAddress))
+	})
+
 	clean(t)
 }
 
@@ -212,4 +241,12 @@ func copy(t *testing.T, src string, dst string) {
 	// Write data to dst
 	err = os.WriteFile(dst, data, 0o644)
 	assert.NoError(t, err)
+}
+
+func assertAccountIsPresent(t *testing.T, w Wallet, nickname string) account.Account {
+	acc, err := w.GetAccount(nickname)
+	assert.NoError(t, err)
+	assert.Equal(t, acc.Nickname, nickname)
+
+	return *acc
 }
