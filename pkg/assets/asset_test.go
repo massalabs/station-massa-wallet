@@ -51,14 +51,9 @@ func TestLoadAccountsStore(t *testing.T) {
 	expectedAccountName := "dummyAccount"
 	expectedContractAddress := "0x1234567890abcdef"
 	asset, ok := store.Assets[expectedAccountName].ContractAssets[expectedContractAddress]
-	if !ok {
-		t.Fatalf("Expected asset not found in loaded data")
-	}
+	assert.True(t, ok)
 
-	// Example: Validate the name of the loaded asset
-	if asset.Name != "DummyToken" {
-		t.Errorf("Unexpected asset name. Got %s, expected %s", asset.Name, "DummyToken")
-	}
+	assert.Equal(t, asset.Name, "DummyToken")
 }
 
 func TestAssetExists(t *testing.T) {
@@ -99,7 +94,7 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
 	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
 	assert.NoError(t, err)
-	
+
 	defer func() {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
