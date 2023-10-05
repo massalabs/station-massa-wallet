@@ -64,7 +64,7 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run("Add Account", func(t *testing.T) {
-		err := w.AddAccount(sampleAccount)
+		err := w.AddAccount(sampleAccount, true)
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, w.GetAccountCount())
@@ -74,7 +74,7 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run("Add Account: nickname not unique", func(t *testing.T) {
-		err := w.AddAccount(sampleAccount)
+		err := w.AddAccount(sampleAccount, true)
 		assert.Error(t, err)
 		assert.ErrorContains(t, err, "nickname is not unique: this account name already exists")
 
@@ -111,7 +111,7 @@ func TestWallet(t *testing.T) {
 		)
 		assert.NoError(t, err)
 
-		err = w.AddAccount(sampleAccount)
+		err = w.AddAccount(sampleAccount, true)
 		assert.Error(t, err)
 		assert.ErrorContains(t, err, "address is not unique: this account address already exists")
 
@@ -158,6 +158,18 @@ func TestWallet(t *testing.T) {
 		acc := assertAccountIsPresent(t, *w, nickname)
 		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, 2, w.GetAccountCount())
+	})
+
+	t.Run("Invalid or unsupported version", func(t *testing.T) {
+		nickname := "version-0"
+		accountPath, err := w.AccountPath(nickname)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_version-0.yaml", accountPath)
+		newWallet, err := New()
+		assert.NoError(t, err)
+		assertAccountIsPresent(t, *newWallet, "unit-test")
+		assert.Equal(t, 2, newWallet.GetAccountCount())
+		assert.Equal(t, 1, len(newWallet.InvalidAccountNicknames))
 	})
 
 	t.Run("Delete Account", func(t *testing.T) {

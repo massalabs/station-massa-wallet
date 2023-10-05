@@ -12,9 +12,7 @@ import (
 	"github.com/massalabs/station/pkg/logger"
 )
 
-var (
-	AccountNotFoundError = errors.New("account not found")
-)
+var AccountNotFoundError = errors.New("account not found")
 
 func ErrorAccountNotFound(nickname string) error {
 	return fmt.Errorf("account '%s' not found", nickname)
@@ -26,7 +24,8 @@ type WalletError struct {
 }
 
 type Wallet struct {
-	Accounts map[string]*account.Account // Mapping from nickname to account
+	Accounts                map[string]*account.Account // Mapping from nickname to account
+	InvalidAccountNicknames []string                    // List of invalid account nicknames
 }
 
 func New() (*Wallet, error) {
@@ -65,10 +64,12 @@ func (w *Wallet) discover() error {
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			acc, err := w.Load(filePath)
 			if err != nil {
-				return fmt.Errorf("loading account: %w", err)
+				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, w.nicknameFromFilePath(filePath))
+
+				continue
 			}
 
-			err = w.AddAccount(acc)
+			err = w.AddAccount(acc, false)
 			if err != nil {
 				return fmt.Errorf("adding account: %w", err)
 			}
@@ -79,7 +80,7 @@ func (w *Wallet) discover() error {
 }
 
 // Add an account into the wallet
-func (w *Wallet) AddAccount(acc *account.Account) error {
+func (w *Wallet) AddAccount(acc *account.Account, persist bool) error {
 	if acc == nil {
 		return fmt.Errorf("account is nil")
 	}
@@ -96,9 +97,11 @@ func (w *Wallet) AddAccount(acc *account.Account) error {
 		return fmt.Errorf("address is not unique: %w", err)
 	}
 
-	err = w.Persist(*acc)
-	if err != nil {
-		return fmt.Errorf("persisting account: %w", err)
+	if persist {
+		err = w.Persist(*acc)
+		if err != nil {
+			return fmt.Errorf("persisting account: %w", err)
+		}
 	}
 
 	if w.Accounts[acc.Nickname] == nil {
@@ -114,7 +117,7 @@ func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname strin
 		return nil, fmt.Errorf("generating account: %w", err)
 	}
 
-	err = w.AddAccount(acc)
+	err = w.AddAccount(acc, true)
 	if err != nil {
 		return nil, fmt.Errorf("adding account: %w", err)
 	}
@@ -139,7 +142,7 @@ func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 		return nil, AccountNotFoundError
 	}
 
-	err = w.AddAccount(acc)
+	err = w.AddAccount(acc, false)
 	if err != nil {
 		return nil, fmt.Errorf("adding account: %w", err)
 	}
