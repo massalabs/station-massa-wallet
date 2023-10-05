@@ -77,17 +77,15 @@ func TestAssetExists(t *testing.T) {
 	existingNickname := "dummyAccount"
 	existingContractAddress := "0x1234567890abcdef"
 	exists := store.AssetExists(existingNickname, existingContractAddress)
-	if !exists {
-		t.Errorf("Expected asset to exist, but AssetExists returned false")
-	}
+
+	assert.True(t, exists, "Expected asset to exist ")
 
 	// Test case 2: Check for a non-existing asset
 	nonExistingNickname := "nonExistingAccount"
 	nonExistingContractAddress := "0xabcdefabcdefabcdef"
 	notExists := store.AssetExists(nonExistingNickname, nonExistingContractAddress)
-	if notExists {
-		t.Errorf("Expected asset not to exist, but AssetExists returned true")
-	}
+
+	assert.False(t, notExists, "Expected asset  to not exist ")
 }
 
 func TestAddAndDeleteAsset(t *testing.T) {
@@ -140,9 +138,7 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Check if the added asset exists
-	if !store.AssetExists(nickname, assetAddress) {
-		t.Errorf("Added asset not found in reloaded store")
-	}
+	assert.True(t, store.AssetExists(nickname, assetAddress), "Added asset not found in reloaded store")
 
 	// Test case 2: Delete the added asset and check if it's removed from JSON
 	err = store.DeleteAsset(nickname, assetAddress)
@@ -153,7 +149,5 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Check if the deleted asset no longer exists
-	if deletedStore.AssetExists(nickname, assetAddress) {
-		t.Errorf("Deleted asset still found in reloaded store")
-	}
+	assert.False(t, deletedStore.AssetExists(nickname, assetAddress), "Deleted asset still found in reloaded store")
 }
