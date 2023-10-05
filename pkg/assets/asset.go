@@ -37,7 +37,6 @@ type assetData struct {
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
-// NewAssetsStore creates and initializes a new instance of AssetsStore.
 func NewAssetsStore(assetsJSONPath string) (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets: make(map[string]Assets),
