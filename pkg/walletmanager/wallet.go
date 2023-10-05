@@ -34,14 +34,14 @@ func New() (*Wallet, error) {
 		Accounts: make(map[string]*account.Account),
 	}
 
-	err := wallet.discover()
-	if err != nil {
-		return nil, fmt.Errorf("discovering accounts: %s\n", err)
-	}
-
-	err = MigrateWallet()
+	err := MigrateWallet()
 	if err != nil {
 		logger.Errorf("migrating wallet: %s", err)
+	}
+
+	err = wallet.discover()
+	if err != nil {
+		return nil, fmt.Errorf("discovering accounts: %s\n", err)
 	}
 
 	return wallet, nil

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -186,7 +187,9 @@ func TestWallet(t *testing.T) {
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
 		// prepare
 		nickname := "old-location-account"
-		accountPath, err := w.AccountPath(nickname)
+		oldPath, err := GetWorkDir()
+		assert.NoError(t, err)
+		accountPath := filepath.Join(oldPath, "wallet_old-location-account.yaml")
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
 		// execute
