@@ -85,7 +85,7 @@ func TestAssetExists(t *testing.T) {
 	nonExistingContractAddress := "0xabcdefabcdefabcdef"
 	notExists := store.AssetExists(nonExistingNickname, nonExistingContractAddress)
 
-	assert.False(t, notExists, "Expected asset  to not exist ")
+	assert.False(t, notExists, "Expected asset to not exist ")
 }
 
 func TestAddAndDeleteAsset(t *testing.T) {
