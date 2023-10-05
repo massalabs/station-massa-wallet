@@ -35,7 +35,7 @@ func Path() (string, error) {
 	return path, nil
 }
 
-func (w *Wallet) accountPath(nickname string) (string, error) {
+func (w *Wallet) AccountPath(nickname string) (string, error) {
 	path, err := Path()
 	if err != nil {
 		return "", err
@@ -52,7 +52,7 @@ func (w *Wallet) nicknameFromFilePath(filePath string) string {
 }
 
 func (w *Wallet) Persist(acc account.Account) error {
-	filePath, err := w.accountPath(acc.Nickname)
+	filePath, err := w.AccountPath(acc.Nickname)
 	if err != nil {
 		return err
 	}

@@ -1,14 +1,29 @@
 package walletmanager
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
 	"strings"
 
+	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/logger"
 )
+
+var (
+	AccountNotFoundError = errors.New("account not found")
+)
+
+func ErrorAccountNotFound(nickname string) error {
+	return fmt.Errorf("account '%s' not found", nickname)
+}
+
+type WalletError struct {
+	Err     error
+	CodeErr string // Sentinel error code from utils package, can be used as a translation key.
+}
 
 type Wallet struct {
 	Accounts map[string]*account.Account // Mapping from nickname to account
@@ -93,19 +108,35 @@ func (w *Wallet) AddAccount(acc *account.Account) error {
 	return nil
 }
 
+func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname string) (*account.Account, error) {
+	acc, err := account.NewGenerated(password, nickname)
+	if err != nil {
+		return nil, fmt.Errorf("generating account: %w", err)
+	}
+
+	err = w.AddAccount(acc)
+	if err != nil {
+		return nil, fmt.Errorf("adding account: %w", err)
+	}
+
+	return acc, nil
+}
+
 // Get an account from the wallet by nickname
 func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 	if w.Accounts[nickname] != nil {
 		return w.Accounts[nickname], nil
 	}
 
-	accountPath, err := w.accountPath(nickname)
+	accountPath, err := w.AccountPath(nickname)
 	if err != nil {
 		return nil, fmt.Errorf("getting account path: %w", err)
 	}
+
 	acc, err := w.Load(accountPath)
 	if err != nil {
-		return nil, fmt.Errorf("loading account: %w", err)
+		logger.Errorf("loading account: %s", err)
+		return nil, AccountNotFoundError
 	}
 
 	err = w.AddAccount(acc)
@@ -122,7 +153,7 @@ func (w *Wallet) DeleteAccount(nickname string) error {
 		return fmt.Errorf("account not found")
 	}
 
-	accountPath, err := w.accountPath(nickname)
+	accountPath, err := w.AccountPath(nickname)
 	if err != nil {
 		return fmt.Errorf("getting account path: %w", err)
 	}

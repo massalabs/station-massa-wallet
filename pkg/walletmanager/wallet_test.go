@@ -1,18 +1,25 @@
 package walletmanager
 
 import (
+	"log"
 	"os"
 	"path"
 	"strings"
 	"testing"
 
+	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/pkg/types"
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestWallet(t *testing.T) {
+	if err := logger.InitializeGlobal("./unit-test.log"); err != nil {
+		log.Fatalf("while initializing global logger: %s", err.Error())
+	}
+
 	clean(t)
 
 	var w *Wallet
@@ -60,7 +67,7 @@ func TestWallet(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, w.GetAccountCount())
-		accountPath, err := w.accountPath(sampleNickname)
+		accountPath, err := w.AccountPath(sampleNickname)
 		assert.NoError(t, err)
 		assert.FileExists(t, accountPath)
 	})
@@ -142,7 +149,7 @@ func TestWallet(t *testing.T) {
 		// we want to wallet to be able to manage this account.
 		nickname := "unit-test"
 
-		accountPath, err := w.accountPath(nickname)
+		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 
 		copy(t, "../../tests/wallet_unit-test.yaml", accountPath)
@@ -157,7 +164,7 @@ func TestWallet(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 1, w.GetAccountCount())
 
-		accountPath, err := w.accountPath(sampleNickname)
+		accountPath, err := w.AccountPath(sampleNickname)
 		assert.NoError(t, err)
 		assert.NoFileExists(t, accountPath)
 	})
@@ -179,7 +186,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
 		// prepare
 		nickname := "old-location-account"
-		accountPath, err := w.accountPath(nickname)
+		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
 		// execute
@@ -196,7 +203,7 @@ func TestWallet(t *testing.T) {
 		// prepare
 		clean(t)
 		nickname := "only-required-fields"
-		accountPath, err := w.accountPath(nickname)
+		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_only-required-fields.yaml", accountPath)
 
@@ -210,6 +217,17 @@ func TestWallet(t *testing.T) {
 		textAddress, err := acc.Address.MarshalText()
 		assert.NoError(t, err)
 		assert.Equal(t, "AU1AAQExqUbw2PvBjNdZgodNg9jUFwxAfPP8mASPbamK3unxmXtm", string(textAddress))
+	})
+
+	t.Run("Generate new account", func(t *testing.T) {
+		nickname := "new-account"
+		samplePassword := memguard.NewBufferFromBytes([]byte("password"))
+
+		acc, err := w.GenerateAccount(samplePassword, nickname)
+		assert.NoError(t, err)
+		assert.NotNil(t, acc)
+		assert.Equal(t, 2, w.GetAccountCount())
+		assertAccountIsPresent(t, *w, nickname)
 	})
 
 	clean(t)
