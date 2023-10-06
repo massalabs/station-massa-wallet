@@ -56,6 +56,7 @@ jobs:
       CGO_ENABLED: 1
       CC: ${{ matrix.cc }}
       CGO_LDFLAGS: ${{ matrix.cgo_ldflags }}
+      TAG: ${{ inputs.tag_name }}
     permissions:
       contents: write
       id-token: write
@@ -105,7 +106,7 @@ jobs:
       - name: Zip binary
         if: ${{ (matrix.target != 'darwin') && (inputs.tag_name != '') }}
         run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }} wallet.svg manifest.json
-      - name: Zip binary for dwarwin
+      - name: Zip binary for darwin
         if: ${{ (matrix.target == 'darwin') && (inputs.tag_name != '') }}
         run: zip $TARGET_NAME.zip wallet-plugin.app.zip wallet.svg manifest.json
 
@@ -119,3 +120,17 @@ jobs:
           prerelease: ${{ inputs.prerelease }}
           generate_release_notes: ${{ inputs.generate_release_notes }}
           files: ${{ env.TARGET_NAME }}.zip
+
+      - name: Configure AWS credentials
+        if: ${{ inputs.tag_name != '' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-3
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: s3 Upload
+        if: ${{ inputs.tag_name != '' }}
+        env:
+          AWS3: ${{ secrets.AWS_S3_BUCKET }}
+        run: aws s3 cp $TARGET_NAME.zip s3://${AWS3}/plugins/wallet/${TAG}/${TARGET_NAME}.zip
