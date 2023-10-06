@@ -64,7 +64,9 @@ func (w *Wallet) discover() error {
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			acc, err := w.Load(filePath)
 			if err != nil {
-				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, w.nicknameFromFilePath(filePath))
+				nickname := w.nicknameFromFilePath(filePath)
+				logger.Infof("invalid account found: %s", nickname)
+				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
 
 				continue
 			}

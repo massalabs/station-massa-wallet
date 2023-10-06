@@ -196,8 +196,21 @@ func TestWallet(t *testing.T) {
 		assertAccountIsPresent(t, *newWallet, "unit-test")
 	})
 
+	t.Run("Invalid or unsupported version: missing required fields", func(t *testing.T) {
+		clean(t)
+		nickname := "required-fields-missing"
+		accountPath, err := w.AccountPath(nickname)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_required-fields-missing.yaml", accountPath)
+		newWallet, err := New()
+		assert.NoError(t, err)
+		assert.Equal(t, 0, newWallet.GetAccountCount())
+		assert.Equal(t, 1, len(newWallet.InvalidAccountNicknames))
+	})
+
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
 		// prepare
+		clean(t)
 		nickname := "old-location-account"
 		oldPath, err := GetWorkDir()
 		assert.NoError(t, err)
@@ -209,9 +222,9 @@ func TestWallet(t *testing.T) {
 		assert.NoError(t, err)
 
 		// assert
-		assert.Equal(t, 2, newWallet.GetAccountCount())
+		assert.Equal(t, 1, newWallet.GetAccountCount())
 		assertAccountIsPresent(t, *newWallet, nickname)
-		assertAccountIsPresent(t, *newWallet, "unit-test")
+		assert.Equal(t, 0, len(newWallet.InvalidAccountNicknames))
 	})
 
 	t.Run("Load account with only required fields (no address, no nickname)", func(t *testing.T) {
