@@ -128,7 +128,7 @@ export function Sign() {
               case OPER_TRANSACTION:
                 return (
                   <>
-                    <Transaction {...signData} />;
+                    <Transaction {...signData} />
                   </>
                 );
               case OPER_PLAIN_TEXT:

@@ -5,16 +5,26 @@ import Intl from '@/i18n/i18n';
 import { formatStandard, masToken, maskAddress, Unit } from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
-  const { MaxCoins, WalletAddress, OperationType, Fees, MaxGas, Expiry } =
-    props;
+  const {
+    MaxCoins,
+    WalletAddress,
+    OperationType,
+    Fees,
+    MaxGas,
+    Expiry,
+    Nickname,
+  } = props;
 
-  WindowSetSize(460, 460);
+  WindowSetSize(460, 560);
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default">
-      <div className="flex w-full items-center justify-between">
+      <div className="flex w-full justify-between">
         <p>{Intl.t('password-prompt.sign.from')}</p>
-        <p className="mas-caption">{maskAddress(WalletAddress)}</p>
+        <div className="flex flex-col">
+          <p className="mas-menu-default">{Nickname}</p>
+          <p className="mas-caption">{maskAddress(WalletAddress)}</p>
+        </div>
       </div>
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 

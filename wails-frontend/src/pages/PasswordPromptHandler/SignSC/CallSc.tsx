@@ -22,6 +22,7 @@ export function CallSc(props: PromptRequestData) {
     OperationType,
     Description,
     Expiry,
+    Nickname,
   } = props;
 
   const toAddInHeigthDescription = Description ? 200 : 0;
@@ -35,9 +36,12 @@ export function CallSc(props: PromptRequestData) {
     <div className="flex flex-col items-center gap-4 mas-menu-default w-[326px]">
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
-          <p className="mas-menu-active">
-            {Intl.t('password-prompt.sign.from')}
-          </p>
+          <div className="flex gap-2">
+            <p className="mas-menu-active">
+              {Intl.t('password-prompt.sign.from')}
+            </p>
+            <p className="mas-menu-default">{Nickname}</p>
+          </div>
           <p className="mas-caption">{maskAddress(WalletAddress)}</p>
         </div>
         <div className="h-8 w-8 rounded-full flex items-center justify-center bg-neutral">

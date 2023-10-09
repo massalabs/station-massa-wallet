@@ -41,7 +41,7 @@
     },
     "sign": {
       "from": "From ",
-      "to": "To: ",
+      "to": "To ",
       "contract": "Contract ",
       "description": "Description",
       "message": "Message",
