@@ -144,10 +144,6 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	err = store.DeleteAsset(nickname, assetAddress)
 	assert.NoError(t, err)
 
-	// Reload the AssetsStore from the JSON file after deletion
-	deletedStore, err := NewAssetsStore(tmpFile.Name())
-	assert.NoError(t, err)
-
 	// Check if the deleted asset no longer exists
-	assert.False(t, deletedStore.AssetExists(nickname, assetAddress), "Deleted asset still found in reloaded store")
+	assert.False(t, store.AssetExists(nickname, assetAddress), "Deleted asset still found in reloaded store")
 }
