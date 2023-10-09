@@ -138,12 +138,12 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Check if the added asset exists
-	assert.True(t, store.AssetExists(nickname, assetAddress), "Added asset not found in reloaded store")
+	assert.True(t, store.AssetExists(nickname, assetAddress), "Added asset not found in the store")
 
 	// Test case 2: Delete the added asset and check if it's removed from JSON
 	err = store.DeleteAsset(nickname, assetAddress)
 	assert.NoError(t, err)
 
 	// Check if the deleted asset no longer exists
-	assert.False(t, store.AssetExists(nickname, assetAddress), "Deleted asset still found in reloaded store")
+	assert.False(t, store.AssetExists(nickname, assetAddress), "Deleted asset still found int the store")
 }
