@@ -29,7 +29,7 @@ func StartServer(app *walletApp.WalletApp) {
 
 	assetsJSONPath, err := assets.GetAssetsJSONPath()
 	if err != nil {
-		logger.Warnf("Failed to get AssetsStore JSON file: %v", err)
+		logger.Fatalf("Failed to get AssetsStore JSON file: %v", err)
 	}
 
 	AssetsStore, err := assets.NewAssetsStore(assetsJSONPath)
