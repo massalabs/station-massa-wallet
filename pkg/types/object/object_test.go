@@ -1,5 +1,3 @@
-// Package object provides functionalities for handling different types of Massa objects.
-// It supports encoding and decoding operations with appropriate prefixes and versioning.
 package object
 
 import (
