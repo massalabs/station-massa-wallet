@@ -107,36 +107,16 @@ export function Sign() {
           {(() => {
             switch (signData.OperationType) {
               case OPER_CALL_SC:
-                return (
-                  <>
-                    <CallSc {...signData} />
-                  </>
-                );
+                return <CallSc {...signData} />;
               case OPER_EXECUTE_SC:
-                return (
-                  <>
-                    <ExecuteSC {...signData} />
-                  </>
-                );
+                return <ExecuteSC {...signData} />;
               case OPER_BUY_ROLL:
               case OPER_SELL_ROLL:
-                return (
-                  <>
-                    <BuySellRoll {...signData} />
-                  </>
-                );
+                return <BuySellRoll {...signData} />;
               case OPER_TRANSACTION:
-                return (
-                  <>
-                    <Transaction {...signData} />
-                  </>
-                );
+                return <Transaction {...signData} />;
               case OPER_PLAIN_TEXT:
-                return (
-                  <>
-                    <PlainText {...signData} />
-                  </>
-                );
+                return <PlainText {...signData} />;
               default:
                 return (
                   <>
