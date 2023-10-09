@@ -145,5 +145,5 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Check if the deleted asset no longer exists
-	assert.False(t, store.AssetExists(nickname, assetAddress), "Deleted asset still found int the store")
+	assert.False(t, store.AssetExists(nickname, assetAddress), "Deleted asset still found in the store")
 }
