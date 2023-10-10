@@ -27,7 +27,12 @@ func StartServer(app *walletApp.WalletApp) {
 		promptApp = prompt.NewEnvPrompter(app)
 	}
 
-	AssetsStore, err := assets.NewAssetsStore()
+	assetsJSONPath, err := assets.GetAssetsJSONPath()
+	if err != nil {
+		logger.Fatalf("Failed to get AssetsStore JSON file: %v", err)
+	}
+
+	AssetsStore, err := assets.NewAssetsStore(assetsJSONPath)
 	if err != nil {
 		logger.Fatalf("Failed to create AssetsStore: %v", err)
 	}

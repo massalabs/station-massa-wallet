@@ -51,7 +51,12 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 
 	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
 
-	AssetsStore, err := assets.NewAssetsStore()
+	assetsJSONPath, err := assets.GetAssetsJSONPath()
+	if err != nil {
+		log.Fatalf("Failed to get AssetsStore JSON file: %v", err)
+	}
+
+	AssetsStore, err := assets.NewAssetsStore(assetsJSONPath)
 	if err != nil {
 		log.Fatalf("Failed to create AssetsStore: %v", err)
 	}
