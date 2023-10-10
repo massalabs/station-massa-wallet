@@ -37,7 +37,7 @@ export function PlainText(props: PromptRequestData) {
               isChild={false}
               iconOpen={<FiChevronDown />}
               iconClose={<FiChevronUp />}
-              customClass={'!p-0'}
+              customClass={'px-0 py-0'}
               categoryTitle={
                 <div className="flex items-center w-full gap-4">
                   <FiInfo size={18} />
