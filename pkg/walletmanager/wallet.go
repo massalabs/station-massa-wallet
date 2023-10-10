@@ -12,7 +12,9 @@ import (
 	"github.com/massalabs/station/pkg/logger"
 )
 
-var AccountNotFoundError = errors.New("account not found")
+var (
+	AccountNotFoundError = errors.New("account not found")
+)
 
 func ErrorAccountNotFound(nickname string) error {
 	return fmt.Errorf("account '%s' not found", nickname)
@@ -38,7 +40,7 @@ func New() (*Wallet, error) {
 		logger.Errorf("migrating wallet: %s", err)
 	}
 
-	err = wallet.discover()
+	err = wallet.Discover()
 	if err != nil {
 		return nil, fmt.Errorf("discovering accounts: %s\n", err)
 	}
@@ -46,7 +48,7 @@ func New() (*Wallet, error) {
 	return wallet, nil
 }
 
-func (w *Wallet) discover() error {
+func (w *Wallet) Discover() error {
 	accountsPath, err := Path()
 	if err != nil {
 		return fmt.Errorf("getting accounts path: %w", err)
@@ -62,10 +64,10 @@ func (w *Wallet) discover() error {
 		filePath := path.Join(accountsPath, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
+			nickname := w.nicknameFromFilePath(filePath)
 			acc, err := w.Load(filePath)
 			if err != nil {
-				nickname := w.nicknameFromFilePath(filePath)
-				logger.Infof("invalid account found: %s", nickname)
+				logger.Warnf("invalid account found: %s", nickname)
 				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
 
 				continue
@@ -73,7 +75,10 @@ func (w *Wallet) discover() error {
 
 			err = w.AddAccount(acc, false)
 			if err != nil {
-				return fmt.Errorf("adding account: %w", err)
+				logger.Warnf("failed to add account: %s", nickname)
+				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
+
+				continue
 			}
 		}
 	}
@@ -113,8 +118,11 @@ func (w *Wallet) AddAccount(acc *account.Account, persist bool) error {
 	return nil
 }
 
-func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname string) (*account.Account, error) {
-	acc, err := account.NewGenerated(password, nickname)
+// GenerateAccount generates a new account and adds it to the wallet.
+// It returns the generated account.
+// It destroys the guarded password.
+func (w *Wallet) GenerateAccount(guardedPassword *memguard.LockedBuffer, nickname string) (*account.Account, error) {
+	acc, err := account.NewGenerated(guardedPassword, nickname)
 	if err != nil {
 		return nil, fmt.Errorf("generating account: %w", err)
 	}
