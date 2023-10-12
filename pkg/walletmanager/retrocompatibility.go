@@ -12,7 +12,7 @@ import (
 )
 
 // MigrateWallet moves the wallet from the old location (executable file) to the new one (user config).
-func MigrateWallet() error {
+func (w *Wallet) MigrateWallet() error {
 	oldPath, err := GetWorkDir()
 	if err != nil {
 		return fmt.Errorf("reading config directory '%s': %w", oldPath, err)
@@ -23,17 +23,12 @@ func MigrateWallet() error {
 		return fmt.Errorf("reading working directory '%s': %w", oldPath, err)
 	}
 
-	newPath, err := Path()
-	if err != nil {
-		return fmt.Errorf("getting account directory '%s': %w", newPath, err)
-	}
-
 	for _, f := range files {
 		fileName := f.Name()
 		oldFilePath := path.Join(oldPath, fileName)
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
-			newFilePath := path.Join(newPath, fileName)
+			newFilePath := path.Join(w.WalletPath, fileName)
 
 			// Skip if new file path exists
 			if _, err := os.Stat(newFilePath); err == nil {

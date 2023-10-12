@@ -3,8 +3,6 @@ package walletmanager
 import (
 	"log"
 	"os"
-	"path"
-	"strings"
 	"testing"
 
 	"github.com/awnumar/memguard"
@@ -20,7 +18,8 @@ func TestWallet(t *testing.T) {
 		log.Fatalf("while initializing global logger: %s", err.Error())
 	}
 
-	clean(t)
+	walletPath, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
+	assert.NoError(t, err)
 
 	var w *Wallet
 	sampleSalt := [16]byte{145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170}
@@ -29,7 +28,7 @@ func TestWallet(t *testing.T) {
 	sampleAccount, err := account.New(
 		&[]uint8{account.AccountLastVersion}[0],
 		sampleNickname,
-		types.Address{
+		&types.Address{
 			Object: &object.Object{
 				Kind:    object.UserAddress,
 				Version: types.AddressLastVersion,
@@ -38,14 +37,14 @@ func TestWallet(t *testing.T) {
 		},
 		sampleSalt,
 		sampleNonce,
-		types.EncryptedPrivateKey{
+		&types.EncryptedPrivateKey{
 			Object: &object.Object{
 				Kind:    object.EncryptedPrivateKey,
 				Version: types.EncryptedPrivateKeyLastVersion,
 				Data:    []byte{2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83, 35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40, 28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246, 2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104, 64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135},
 			},
 		},
-		types.PublicKey{
+		&types.PublicKey{
 			Object: &object.Object{
 				Kind:    object.PublicKey,
 				Version: types.PublicKeyLastVersion,
@@ -56,7 +55,7 @@ func TestWallet(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Run("Create Wallet", func(t *testing.T) {
-		newWallet, err := New()
+		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		w = newWallet
 		assert.NotNil(t, w)
@@ -75,7 +74,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Add Account: nickname not unique", func(t *testing.T) {
 		err := w.AddAccount(sampleAccount, true)
 		assert.Error(t, err)
-		assert.ErrorContains(t, err, "nickname is not unique: this account name already exists")
+		assert.ErrorIs(t, err, ErrNicknameNotUnique)
 
 		assert.Equal(t, 1, w.GetAccountCount())
 	})
@@ -84,7 +83,7 @@ func TestWallet(t *testing.T) {
 		sampleAccount, err := account.New(
 			&[]uint8{account.AccountLastVersion}[0],
 			"bonjour3",
-			types.Address{
+			&types.Address{
 				Object: &object.Object{
 					Kind:    object.UserAddress,
 					Version: types.AddressLastVersion,
@@ -93,14 +92,14 @@ func TestWallet(t *testing.T) {
 			},
 			sampleSalt,
 			sampleNonce,
-			types.EncryptedPrivateKey{
+			&types.EncryptedPrivateKey{
 				Object: &object.Object{
 					Kind:    object.EncryptedPrivateKey,
 					Version: types.EncryptedPrivateKeyLastVersion,
 					Data:    []byte{2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83, 35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40, 28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246, 2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104, 64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135},
 				},
 			},
-			types.PublicKey{
+			&types.PublicKey{
 				Object: &object.Object{
 					Kind:    object.PublicKey,
 					Version: types.PublicKeyLastVersion,
@@ -112,7 +111,7 @@ func TestWallet(t *testing.T) {
 
 		err = w.AddAccount(sampleAccount, true)
 		assert.Error(t, err)
-		assert.ErrorContains(t, err, "address is not unique: this account address already exists")
+		assert.ErrorIs(t, err, ErrAddressNotUnique)
 
 		assert.Equal(t, 1, w.GetAccountCount())
 
@@ -154,7 +153,7 @@ func TestWallet(t *testing.T) {
 
 		copy(t, "../../tests/wallet_unit-test.yaml", accountPath)
 
-		acc := assertAccountIsPresent(t, *w, nickname)
+		acc := assertAccountIsPresent(t, w, nickname)
 		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, 2, w.GetAccountCount())
 	})
@@ -164,11 +163,11 @@ func TestWallet(t *testing.T) {
 		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_version-0.yaml", accountPath)
-		newWallet, err := New()
+		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
-		assertAccountIsPresent(t, *newWallet, "unit-test")
-		assert.Equal(t, 2, newWallet.GetAccountCount())
-		assert.Equal(t, 1, len(newWallet.InvalidAccountNicknames))
+		assertAccountIsPresent(t, newWallet, "unit-test")
+		assert.Len(t, newWallet.accounts, 2)
+		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
 	})
 
 	t.Run("Delete Account", func(t *testing.T) {
@@ -188,57 +187,57 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run("New wallet to discover created accounts", func(t *testing.T) {
-		newWallet, err := New()
+		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.NotNil(t, newWallet)
 		assert.Equal(t, 1, newWallet.GetAccountCount())
-		assertAccountIsPresent(t, *newWallet, "unit-test")
+		assertAccountIsPresent(t, newWallet, "unit-test")
 	})
 
 	t.Run("Invalid or unsupported version: missing required fields", func(t *testing.T) {
-		clean(t)
+		ClearAccounts(t, walletPath)
 		nickname := "required-fields-missing"
 		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_required-fields-missing.yaml", accountPath)
-		newWallet, err := New()
+		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.Equal(t, 0, newWallet.GetAccountCount())
-		assert.Equal(t, 1, len(newWallet.InvalidAccountNicknames))
+		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
 	})
 
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
 		// prepare
-		clean(t)
+		ClearAccounts(t, walletPath)
 		nickname := "old-location-account"
 		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
 		// execute
-		newWallet, err := New()
+		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 
 		// assert
 		assert.Equal(t, 1, newWallet.GetAccountCount())
-		assertAccountIsPresent(t, *newWallet, nickname)
-		assert.Equal(t, 0, len(newWallet.InvalidAccountNicknames))
+		assertAccountIsPresent(t, newWallet, nickname)
+		assert.Len(t, newWallet.InvalidAccountNicknames, 0)
 	})
 
 	t.Run("Load account with only required fields (no address, no nickname)", func(t *testing.T) {
 		// prepare
-		clean(t)
+		ClearAccounts(t, walletPath)
 		nickname := "only-required-fields"
 		accountPath, err := w.AccountPath(nickname)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_only-required-fields.yaml", accountPath)
 
 		// execute
-		newWallet, err := New()
+		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 
 		// assert
 		assert.Equal(t, 1, newWallet.GetAccountCount())
-		acc := assertAccountIsPresent(t, *newWallet, nickname)
+		acc := assertAccountIsPresent(t, newWallet, nickname)
 		textAddress, err := acc.Address.MarshalText()
 		assert.NoError(t, err)
 		assert.Equal(t, "AU1AAQExqUbw2PvBjNdZgodNg9jUFwxAfPP8mASPbamK3unxmXtm", string(textAddress))
@@ -252,29 +251,10 @@ func TestWallet(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, acc)
 		assert.Equal(t, 2, w.GetAccountCount())
-		assertAccountIsPresent(t, *w, nickname)
+		assertAccountIsPresent(t, w, nickname)
 	})
 
-	clean(t)
-}
-
-func clean(t *testing.T) {
-	accountsPath, err := Path()
-	assert.NoError(t, err)
-
-	files, err := os.ReadDir(accountsPath)
-	assert.NoError(t, err)
-
-	for _, f := range files {
-		fileName := f.Name()
-		filePath := path.Join(accountsPath, fileName)
-
-		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
-			os.Remove(filePath)
-		}
-	}
-
-	assert.NoError(t, err)
+	ClearAccounts(t, walletPath)
 }
 
 func copy(t *testing.T, src string, dst string) {
@@ -286,7 +266,7 @@ func copy(t *testing.T, src string, dst string) {
 	assert.NoError(t, err)
 }
 
-func assertAccountIsPresent(t *testing.T, w Wallet, nickname string) account.Account {
+func assertAccountIsPresent(t *testing.T, w *Wallet, nickname string) account.Account {
 	acc, err := w.GetAccount(nickname)
 	assert.NoError(t, err)
 	assert.Equal(t, acc.Nickname, nickname)

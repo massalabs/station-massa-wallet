@@ -1,6 +1,7 @@
 package walletmanager
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,6 +15,8 @@ const (
 	directoryName             = "massa-station-wallet"
 	FileModeUserReadWriteOnly = 0o600
 )
+
+var ErrUnmarshalAccount = errors.New("unmarshaling account")
 
 // Path returns the path where the account yaml file are stored.
 func Path() (string, error) {
@@ -36,12 +39,7 @@ func Path() (string, error) {
 }
 
 func (w *Wallet) AccountPath(nickname string) (string, error) {
-	path, err := Path()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(path, Filename(nickname)), nil
+	return filepath.Join(w.WalletPath, Filename(nickname)), nil
 }
 
 // filename returns the wallet filename based on the given nickname.
@@ -84,12 +82,16 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 	acc := account.NewEmpty()
 	err = acc.Unmarshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshaling account: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrUnmarshalAccount, err)
 	}
 
 	// Nickname in the file is optional, if it's not set, we use the filename
 	if acc.Nickname == "" {
 		acc.Nickname = w.nicknameFromFilePath(filePath)
+	}
+
+	if !account.NicknameIsValid(acc.Nickname) {
+		return nil, fmt.Errorf("%w: '%s'", account.ErrInvalidNickname, acc.Nickname) // TODO: add unit test
 	}
 
 	// Address in the file is optional, if it's not set, we use the public key
