@@ -2,7 +2,7 @@ package wallet
 
 import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/node"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 )
@@ -16,11 +16,15 @@ func NewNodeFetcherMock() *NodeFetcherMock {
 }
 
 // returns dummy balances
-func (n *NodeFetcherMock) GetAccountsInfos(wlt []wallet.Wallet) ([]network.AccountInfos, error) {
-	infos := make([]network.AccountInfos, len(wlt))
-	for i, addr := range wlt {
+func (n *NodeFetcherMock) GetAccountsInfos(accounts []account.Account) ([]network.AccountInfos, error) {
+	infos := make([]network.AccountInfos, len(accounts))
+	for i, acc := range accounts {
+		textAddress, err := acc.Address.MarshalText()
+		if err != nil {
+			return nil, err
+		}
 		infos[i] = network.AccountInfos{
-			Address:          addr.Address,
+			Address:          string(textAddress),
 			CandidateBalance: uint64(i + 1*1000000),
 			Balance:          uint64(i + 1*1000000),
 		}

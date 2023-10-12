@@ -11,7 +11,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
 type PromptRequestDeleteData struct {
@@ -30,12 +30,12 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
+	acc, resp := loadAccount(w.prompterApp.App().WalletManager, params.Nickname)
 	if resp != nil {
 		return resp
 	}
 
-	infos, err := w.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
 	if err != nil {
 		return operations.NewDeleteAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -48,21 +48,22 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 		Action: walletapp.Delete,
 		Msg:    "Delete an account",
 		Data: PromptRequestDeleteData{
-			Nickname: wlt.Nickname,
+			Nickname: acc.Nickname,
 			Balance:  fmt.Sprint(infos[0].CandidateBalance),
 		},
 	}
 
-	_, err = prompt.WakeUpPrompt(w.prompterApp, promptRequest, wlt)
+	// Ask for password, validate password.
+	_, err = prompt.WakeUpPrompt(w.prompterApp, promptRequest, acc)
 	if err != nil {
 		return operations.NewDeleteAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    fmt.Sprint(http.StatusUnauthorized),
-				Message: "Unable to unprotect wallet",
+				Message: "Unable to unprotect account",
 			})
 	}
 
-	err = wlt.DeleteFile()
+	err = w.prompterApp.App().WalletManager.DeleteAccount(acc.Nickname)
 	if err != nil {
 		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
 		fmt.Println(errStr)

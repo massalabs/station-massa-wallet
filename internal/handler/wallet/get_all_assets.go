@@ -8,24 +8,27 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 )
 
-func NewGetAllAssets(AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
+func NewGetAllAssets(wallet *walletmanager.Wallet, AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
 	return &getAllAssets{
+		wallet:      wallet,
 		AssetsStore: AssetsStore,
 		massaClient: massaClient,
 	}
 }
 
 type getAllAssets struct {
+	wallet      *walletmanager.Wallet
 	AssetsStore *assets.AssetsStore
 	massaClient network.NodeFetcherInterface
 }
 
-func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
+func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
 	// Load the wallet based on the provided Nickname
-	wlt, resp := loadWallet(params.Nickname)
+	acc, resp := loadAccount(g.wallet, params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -34,7 +37,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Fetch the account information for the wallet using the massaClient
-	infos, err := h.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	infos, err := g.massaClient.GetAccountsInfos([]account.Account{*acc})
 	if err != nil {
 		// Handle the error and return an internal server error response
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", "MASSA", err.Error())
@@ -53,14 +56,22 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	AssetsWithBalance = append(AssetsWithBalance, MassaAsset)
 
 	// Retrieve all assets from the selected WalletNickname
-	for assetAddress, assetInfo := range h.AssetsStore.Assets[params.Nickname].ContractAssets {
+	for assetAddress, assetInfo := range g.AssetsStore.Assets[params.Nickname].ContractAssets {
 		// First, check if the asset exists in the network
-		if !h.massaClient.AssetExistInNetwork(assetAddress) {
+		if !g.massaClient.AssetExistInNetwork(assetAddress) {
 			// If the asset does not exist in the network, skip it and go to the next one
 			continue
 		}
 		// Fetch the balance for the current asset
-		balance, err := h.massaClient.DatastoreAssetBalance(assetAddress, wlt.Address)
+		address, err := acc.Address.MarshalText()
+		if err != nil {
+			return operations.NewGetAllAssetsInternalServerError().WithPayload(
+				&models.Error{
+					Code:    errorGetWallet,
+					Message: ErrorAddressInvalid.Error(),
+				})
+		}
+		balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
 		if err != nil {
 			// Handle the error and return an internal server error response
 			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())

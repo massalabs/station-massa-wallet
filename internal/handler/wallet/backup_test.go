@@ -11,7 +11,6 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,11 +30,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 	nickname := "walletToBackup"
 	password := "zePassword"
-	wlt, walletError := wallet.Generate(nickname, password)
-	assert.Nil(t, walletError)
-
-	walletError = wlt.Unprotect(password)
-	assert.Nil(t, walletError)
+	acc := createAccount(password, nickname, t, prompterApp)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := backupWallet(t, api, "toto")
@@ -132,14 +127,14 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		data, ok := result.Data.(KeyPair)
 		assert.True(t, ok, "Data is not of expected type")
 
-		assert.Equal(t, wlt.GetPrivKey(), data.PrivateKey)
-		assert.Equal(t, wlt.GetPupKey(), data.PublicKey)
+		publicKeyBytes, err := acc.PublicKey.MarshalText()
+		assert.NoError(t, err)
+
+		assert.Equal(t, "S", string(data.PrivateKey[0]))
+		assert.Equal(t, string(publicKeyBytes), data.PublicKey)
 
 		checkResultChannel(t, result, true, "Backup Success")
 	})
-
-	err = cleanupTestData([]string{nickname})
-	assert.NoError(t, err)
 
 	err = os.Remove(WalletBackupFilepath)
 	assert.NoError(t, err)

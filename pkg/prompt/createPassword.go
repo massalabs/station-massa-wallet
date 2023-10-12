@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/awnumar/memguard"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
-func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interface{}) (*string, bool, error) {
+func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interface{}) (*memguard.LockedBuffer, bool, error) {
 	password, ok := input.(string)
 	if !ok {
 		return nil, false, InputTypeError(prompterApp)
@@ -22,5 +23,7 @@ func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interfac
 		return nil, true, fmt.Errorf(passwordLengthErr)
 	}
 
-	return &trimmedPassword, false, nil
+	guardedPassword := memguard.NewBufferFromBytes([]byte(trimmedPassword))
+
+	return guardedPassword, false, nil
 }

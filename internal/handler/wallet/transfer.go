@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -11,7 +12,9 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station/pkg/logger"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
@@ -34,7 +37,7 @@ type transferCoin struct {
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWallet(params.Nickname)
+	acc, resp := loadAccount(t.prompterApp.App().WalletManager, params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -63,14 +66,14 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		Action:      walletapp.Transfer,
 		CodeMessage: utils.MsgTransferRequest,
 		Data: PromptRequestTransferData{
-			NicknameFrom:     wlt.Nickname,
+			NicknameFrom:     acc.Nickname,
 			Amount:           string(params.Body.Amount),
 			Fee:              string(params.Body.Fee),
 			RecipientAddress: *params.Body.RecipientAddress,
 		},
 	}
 
-	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
+	promptOutput, err := prompt.WakeUpPrompt(t.prompterApp, promptRequest, acc)
 	if err != nil {
 		return operations.NewTransferCoinUnauthorized().WithPayload(
 			&models.Error{
@@ -79,10 +82,13 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 			})
 	}
 
+	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+
 	// create the transaction and send it to the network
-	operation, transferError := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	operation, transferError := doTransfer(acc, guardedPassword, amount, fee, *params.Body.RecipientAddress, t.massaClient)
 	if transferError != nil {
 		errStr := fmt.Sprintf("error transferring coin: %v", transferError.Err.Error())
+		logger.Error(errStr)
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: transferError.CodeErr})
 
@@ -102,11 +108,17 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		})
 }
 
-func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, *wallet.WalletError) {
+func doTransfer(
+	acc *account.Account,
+	guardedPassword *memguard.LockedBuffer,
+	amount, fee uint64,
+	recipientAddress string,
+	massaClient network.NodeFetcherInterface,
+) (*sendOperation.OperationResponse, *walletmanager.WalletError) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
-		return nil, &wallet.WalletError{Err: fmt.Errorf("Error during transaction creation: %w", err), CodeErr: errorTransferCoin}
+		return nil, &walletmanager.WalletError{Err: fmt.Errorf("Error during transaction creation: %w", err), CodeErr: errorTransferCoin}
 	}
 
-	return network.SendOperation(wlt, massaClient, operation, fee)
+	return network.SendOperation(acc, guardedPassword, massaClient, operation, fee)
 }

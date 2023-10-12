@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,8 +18,7 @@ func Test_transfer_handler(t *testing.T) {
 
 	nickname := "wallet1"
 	password := "password"
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
 
 	t.Run("Transfer with unprocessable entity", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/transfer", "nobody"), "")
@@ -70,7 +68,4 @@ func Test_transfer_handler(t *testing.T) {
 		assert.NoError(t, err)
 		verifyStatusCode(t, resp, http.StatusOK)
 	})
-
-	err = cleanupTestData([]string{nickname})
-	assert.NoError(t, err, fmt.Sprintf("while cleaning up TestData: %s", err))
 }

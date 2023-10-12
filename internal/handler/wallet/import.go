@@ -10,25 +10,25 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
 func NewImport(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.ImportAccountHandler {
-	return &wImport{prompterApp: prompterApp, massaClient: massaClient}
+	return &walletImport{prompterApp: prompterApp, massaClient: massaClient}
 }
 
-type wImport struct {
+type walletImport struct {
 	prompterApp prompt.WalletPrompterInterface
 	massaClient network.NodeFetcherInterface
 }
 
-func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder {
+func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Responder {
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Import,
 		Msg:    "Import",
 	}
 
-	promptOutput, err := prompt.WakeUpPrompt(h.prompterApp, promptRequest, nil)
+	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, nil)
 	if err != nil {
 		// an event has been emitted during WakeUpPrompt
 		errStr := fmt.Sprintf("Unable to import account: %v", err)
@@ -40,26 +40,12 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 			})
 	}
 
-	wlt, _ := promptOutput.(*wallet.Wallet)
+	acc, _ := promptOutput.(*account.Account)
 
-	err = wlt.Persist()
-	if err != nil {
-		errStr := fmt.Sprintf("Unable to persist imported account: %v", err)
-
-		h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
-
-		return operations.NewImportAccountInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorImportWallet,
-				Message: errStr,
-			})
-	}
-
-	h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountImported})
 
-	infos, err := h.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
 	if err != nil {
 		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -68,17 +54,13 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 			})
 	}
 
-	return operations.NewImportAccountOK().WithPayload(
-		&models.Account{
-			Nickname:         models.Nickname(wlt.Nickname),
-			CandidateBalance: models.Amount(fmt.Sprint(infos[0].CandidateBalance)),
-			Balance:          models.Amount(fmt.Sprint(infos[0].Balance)),
-			Address:          models.Address(wlt.Address),
-			KeyPair: models.KeyPair{
-				PrivateKey: "",
-				PublicKey:  wlt.GetPupKey(),
-				Salt:       "",
-				Nonce:      "",
-			},
-		})
+	modelWallet, resp := newAccountModel(*acc)
+	if resp != nil {
+		return resp
+	}
+
+	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))
+	modelWallet.Balance = models.Amount(fmt.Sprint(infos[0].Balance))
+
+	return operations.NewImportAccountOK().WithPayload(modelWallet)
 }

@@ -1,7 +1,7 @@
 package network
 
 import (
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 )
 
@@ -12,7 +12,7 @@ func NewNodeFetcher() *NodeFetcher {
 }
 
 type NodeFetcherInterface interface {
-	GetAccountsInfos(wlt []wallet.Wallet) ([]AccountInfos, error)
+	GetAccountsInfos(accounts []account.Account) ([]AccountInfos, error)
 	MakeOperation(fee uint64, operation sendOperation.Operation) ([]byte, error)
 	MakeRPCCall(msg []byte, signature []byte, publicKey string) ([]string, error)
 	AssetExistInNetwork(contractAddress string) bool

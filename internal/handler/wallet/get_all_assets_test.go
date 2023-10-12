@@ -8,19 +8,16 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetAllAssetsHandler(t *testing.T) {
-	api, _, _, _, err := MockAPI()
+	api, prompterApp, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
 	password := "zePassword"
-
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
 
 	// Get the assetsWithBalance
 	assetsWithBalance := getAssets(t, api, nickname)
@@ -35,9 +32,6 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	// Remove the json file created
 	err = RemoveJSONFile()
 	assert.NoError(t, err)
-
-	err = cleanupTestData([]string{nickname})
-	assert.NoError(t, err)
 }
 
 func getAssets(t *testing.T, api *operations.MassaWalletAPI, nickname string) []*models.AssetInfoWithBalance {
@@ -50,7 +44,7 @@ func getAssets(t *testing.T, api *operations.MassaWalletAPI, nickname string) []
 	resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/assets", nickname), "")
 	assert.NoError(t, err)
 
-	assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
+	assert.Equal(t, http.StatusOK, resp.Result().StatusCode, "response is %s", resp.Body.String())
 
 	// Parse the response body to get the assetsWithBalance
 	var assetsWithBalance []*models.AssetInfoWithBalance

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -11,7 +12,8 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
@@ -27,7 +29,7 @@ type tradeRolls struct {
 }
 
 func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
+	acc, resp := loadAccount(t.prompterApp.App().WalletManager, params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -57,7 +59,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		Msg:    fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
 	}
 
-	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
+	promptOutput, err := prompt.WakeUpPrompt(t.prompterApp, promptRequest, acc)
 	if err != nil {
 		return operations.NewTradeRollsUnauthorized().WithPayload(
 			&models.Error{
@@ -66,7 +68,9 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	operation, tradeRollError := doTradeRolls(wlt, amount, fee, *params.Body.Side, t.massaClient)
+	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+
+	operation, tradeRollError := doTradeRolls(acc, guardedPassword, amount, fee, *params.Body.Side, t.massaClient)
 	if tradeRollError != nil {
 		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, tradeRollError.Err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
@@ -88,7 +92,13 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		})
 }
 
-func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, *wallet.WalletError) {
+func doTradeRolls(
+	acc *account.Account,
+	guardedPassword *memguard.LockedBuffer,
+	amount, fee uint64,
+	side string,
+	massaClient network.NodeFetcherInterface,
+) (*sendOperation.OperationResponse, *walletmanager.WalletError) {
 	var operation sendOperation.Operation
 	if side == "buy" {
 		operation = buyrolls.New(amount)
@@ -96,5 +106,5 @@ func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClie
 		operation = sellrolls.New(amount)
 	}
 
-	return network.SendOperation(wlt, massaClient, operation, fee)
+	return network.SendOperation(acc, guardedPassword, massaClient, operation, fee)
 }

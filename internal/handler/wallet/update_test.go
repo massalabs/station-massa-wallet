@@ -7,19 +7,18 @@ import (
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_ModifyWallets_handler(t *testing.T) {
-	api, _, _, _, err := MockAPI()
+	api, prompterApp, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	// Create account
 	nickname := "trololol-old"
 	password := "zePassword"
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
+	assert.Equal(t, prompterApp.App().WalletManager.GetAccountCount(), 1, "there should be only one wallet")
 
 	handler, exist := api.HandlerFor("put", "/api/accounts/{nickname}")
 	assert.True(t, exist, "Endpoint doesn't exist")
@@ -44,9 +43,9 @@ func Test_ModifyWallets_handler(t *testing.T) {
 	t.Run("update account", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "PUT", fmt.Sprintf("/api/accounts/%s", nickname), payload)
 		assert.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.Result().StatusCode)
+		assert.Equal(t, http.StatusOK, resp.Result().StatusCode, "response is %s", resp.Body.String())
 
-		assertWalletBody(t, resp, newNickname, true)
+		assertAccountBody(t, resp, newNickname, true)
 
 		// Check that the old nickname doesn't exist anymore
 		resp, err = processHTTPRequest(api, "GET", "/api/accounts", "")
@@ -59,9 +58,5 @@ func Test_ModifyWallets_handler(t *testing.T) {
 
 		assert.Len(t, wallets, 1, "there should be only one wallet")
 		assert.Equal(t, wallets[0].Nickname, models.Nickname(newNickname), "the nickname should have been updated")
-
-		// Clean account file
-		err = cleanupTestData([]string{newNickname})
-		assert.NoError(t, err, fmt.Sprintf("while cleaning up TestData: %s", err))
 	})
 }

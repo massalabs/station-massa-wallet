@@ -1,16 +1,15 @@
 package wallet
 
 import (
-	"bytes"
 	"crypto/ed25519"
 	cryptorand "crypto/rand"
 	"encoding/base64"
-	"encoding/binary"
 	"fmt"
 	"io"
 	"strconv"
 	"time"
 
+	"github.com/awnumar/memguard"
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -18,7 +17,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/callsc"
 	"github.com/massalabs/station/pkg/node/sendoperation/executesc"
@@ -69,24 +68,26 @@ type walletSign struct {
 	gc          gcache.Cache
 }
 
-func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
+func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
+	acc, resp := loadAccount(w.prompterApp.App().WalletManager, params.Nickname)
 	if resp != nil {
 		return resp
 	}
 
+	var guardedPassword *memguard.LockedBuffer
+
 	var correlationId models.CorrelationID
 
-	promptRequest, err := s.getPromptRequest(params.Body.Operation.String(), wlt, params.Body.Description)
+	promptRequest, err := w.getPromptRequest(params.Body.Operation.String(), acc, params.Body.Description)
 	if err != nil {
-		return s.handleBadRequest(errorSignDecodeMessage)
+		return w.handleBadRequest(errorSignDecodeMessage)
 	}
 
 	if params.Body.CorrelationID != nil {
-		resp = handleWithCorrelationId(wlt, params, s.gc)
-		correlationId = params.Body.CorrelationID
+		// resp = handleWithCorrelationId(acc, params, w.gc)
+		// correlationId = params.Body.CorrelationID
 	} else {
-		_, err = prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
+		promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
 		if err != nil {
 			return operations.NewSignUnauthorized().WithPayload(
 				&models.Error{
@@ -95,11 +96,13 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 				})
 		}
 
-		s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		guardedPassword, _ = promptOutput.(*memguard.LockedBuffer)
+
+		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
 
 		if params.Body.Batch {
-			correlationId, resp = handleBatch(wlt, params, s, s.gc)
+			// correlationId, resp = handleBatch(acc, params, w, w.gc)
 		}
 	}
 
@@ -107,107 +110,121 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	signingOperation := true
-
-	if promptRequest.Data.(PromptRequestSignData).OperationType == Message {
-		signingOperation = false
-	}
-
-	op, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	operation, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
 	if err != nil {
-		return s.handleBadRequest(errorSignDecodeOperation)
+		return w.handleBadRequest(errorSignDecodeOperation)
 	}
-	signature := wlt.Sign(signingOperation, op)
+
+	if promptRequest.Data.(PromptRequestSignData).OperationType != Message {
+		publicKeyBytes, err := acc.PublicKey.MarshalText()
+		if err != nil {
+			return newInternalServerError(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets)
+		}
+		operation = append(publicKeyBytes, operation...)
+	}
+
+	signature, err := acc.Sign(guardedPassword, operation)
+	if err != nil {
+		return newInternalServerError(fmt.Sprintf("Unable to sign operation: %s", err.Error()), errorGetWallets)
+	}
+
+	publicKeyBytes, err := acc.PublicKey.MarshalText()
+	if err != nil {
+		return newInternalServerError(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets)
+	}
 
 	return operations.NewSignOK().WithPayload(
 		&models.SignResponse{
-			PublicKey:     wlt.GetPupKey(),
+			PublicKey:     string(publicKeyBytes),
 			Signature:     signature,
 			CorrelationID: correlationId,
 		})
 }
 
-func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
-	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+func (w *walletSign) handleBadRequest(errorCode string) middleware.Responder {
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: false, CodeMessage: errorCode})
-
-	return operations.NewSignBadRequest().WithPayload(
-		&models.Error{
-			Code:    errorCode,
-			Message: fmt.Sprintf("Error: %s", errorCode),
-		})
+	return newBadRequest(fmt.Sprintf("Error: %s", errorCode), errorCode)
 }
 
-func (s *walletSign) getPromptRequest(msgToSign string, wlt *wallet.Wallet, description string) (prompt.PromptRequest, error) {
+func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, description string) (*prompt.PromptRequest, error) {
 	var promptRequest prompt.PromptRequest
 	var opType uint64
 	var err error
 
+	addressBytes, err := acc.Address.MarshalText()
+	if err != nil {
+		return nil, fmt.Errorf("unable to marshal address: %w", err)
+	}
+	address := string(addressBytes)
+
 	decodedMsg, fees, expiry, err := sendoperation.DecodeMessage64(msgToSign)
 	if err != nil {
-		return s.prepareUnknownPromptRequest(wlt, description, expiry), errors.Wrap(err, "failed to decode transaction message")
+		return nil, errors.Wrap(err, "failed to decode transaction message")
 	}
 
 	if opType, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
 		wrappedErr := errors.Wrap(err, "failed to decode operation ID")
 
-		return s.prepareUnknownPromptRequest(wlt, description, expiry), wrappedErr
+		return nil, wrappedErr
 	} else {
 		switch opType {
 		case TransactionOpType:
 			msg, err := transaction.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode transaction message")
-				return s.prepareUnknownPromptRequest(wlt, description, expiry), wrappedErr
+				return nil, wrappedErr
 			}
-			promptRequest = s.prepareTransactionPromptRequest(msg, wlt, description, fees, expiry)
+			promptRequest = w.prepareTransactionPromptRequest(msg, acc, address, description, fees, expiry)
 
 		case BuyRollOpType, SellRollOpType:
 			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode roll message")
-				return s.prepareUnknownPromptRequest(wlt, description, expiry), wrappedErr
+				return nil, wrappedErr
 			}
-			promptRequest = s.prepareRollPromptRequest(roll, wlt, description, fees, expiry)
+			promptRequest = w.prepareRollPromptRequest(roll, acc, address, description, fees, expiry)
 
 		case ExecuteSCOpType:
 			executeSC, err := executesc.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode executeSC message")
-				return s.prepareUnknownPromptRequest(wlt, description, expiry), wrappedErr
+				return nil, wrappedErr
 			}
-			promptRequest = s.prepareExecuteSCPromptRequest(executeSC, wlt, description, fees, expiry)
+			promptRequest = w.prepareExecuteSCPromptRequest(executeSC, acc, address, description, fees, expiry)
 
 		case CallSCOpType:
 			callSC, err := callsc.DecodeMessage(decodedMsg)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode callSC message")
-				return s.prepareUnknownPromptRequest(wlt, description, expiry), wrappedErr
+				return nil, wrappedErr
 			}
-			promptRequest = s.prepareCallSCPromptRequest(callSC, wlt, description, fees, expiry)
+			promptRequest = w.prepareCallSCPromptRequest(callSC, acc, address, description, fees, expiry)
 
 		default:
 			decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
 			if err != nil {
 				wrappedErr := errors.Wrap(err, "failed to decode plainText message from b64")
-				return s.prepareUnknownPromptRequest(wlt, description, expiry), wrappedErr
+				return nil, wrappedErr
 			}
-			promptRequest = s.prepareplainTextPromptRequest(string(decodedMsg), wlt, description)
+			promptRequest = w.prepareplainTextPromptRequest(string(decodedMsg), acc, address, description)
+
 		}
 	}
 
-	return promptRequest, nil
+	return &promptRequest, nil
 }
 
-func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
-	wlt *wallet.Wallet,
+func (w *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
+	acc *account.Account,
+	address string,
 	description string,
 	fees uint64,
 	expiry uint64,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Description:   description,
 			Fees:          strconv.FormatUint(fees, 10),
@@ -218,22 +235,23 @@ func (s *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 			Address:       msg.Address,
 			Function:      msg.Function,
 			Expiry:        expiry,
-			WalletAddress: wlt.Address,
-			Nickname:      wlt.Nickname,
+			WalletAddress: address,
+			Nickname:      acc.Nickname,
 		},
 	}
 }
 
-func (s *walletSign) prepareExecuteSCPromptRequest(
+func (w *walletSign) prepareExecuteSCPromptRequest(
 	msg *executesc.MessageContent,
-	wlt *wallet.Wallet,
+	acc *account.Account,
+	address string,
 	description string,
 	fees uint64,
 	expiry uint64,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Description:   description,
 			Fees:          strconv.FormatUint(fees, 10),
@@ -241,15 +259,16 @@ func (s *walletSign) prepareExecuteSCPromptRequest(
 			MaxCoins:      strconv.FormatUint(msg.MaxCoins, 10),
 			MaxGas:        strconv.FormatUint(msg.MaxGas, 10),
 			Expiry:        expiry,
-			WalletAddress: wlt.Address,
-			Nickname:      wlt.Nickname,
+			WalletAddress: address,
+			Nickname:      acc.Nickname,
 		},
 	}
 }
 
-func (s *walletSign) prepareRollPromptRequest(
+func (w *walletSign) prepareRollPromptRequest(
 	msg *sendoperation.RollMessageContent,
-	wlt *wallet.Wallet,
+	acc *account.Account,
+	address string,
 	description string,
 	fees uint64,
 	expiry uint64,
@@ -265,29 +284,30 @@ func (s *walletSign) prepareRollPromptRequest(
 
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Description:   description,
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
 			Expiry:        expiry,
-			WalletAddress: wlt.Address,
-			Nickname:      wlt.Nickname,
+			WalletAddress: address,
+			Nickname:      acc.Nickname,
 		},
 	}
 }
 
-func (s *walletSign) prepareTransactionPromptRequest(
+func (w *walletSign) prepareTransactionPromptRequest(
 	msg *transaction.MessageContent,
-	wlt *wallet.Wallet,
+	acc *account.Account,
+	address string,
 	description string,
 	fees uint64,
 	expiry uint64,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Description:      description,
 			Fees:             strconv.FormatUint(fees, 10),
@@ -295,135 +315,121 @@ func (s *walletSign) prepareTransactionPromptRequest(
 			RecipientAddress: msg.RecipientAddress,
 			Amount:           strconv.FormatUint(msg.Amount, 10),
 			Expiry:           expiry,
-			WalletAddress:    wlt.Address,
-			Nickname:         wlt.Nickname,
+			WalletAddress:    address,
+			Nickname:         acc.Nickname,
 		},
 	}
 }
 
 func (s *walletSign) prepareplainTextPromptRequest(
 	plainText string,
-	wlt *wallet.Wallet,
+	acc *account.Account,
+	address string,
 	description string,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Description:   description,
 			OperationType: Message,
 			PlainText:     plainText,
-			WalletAddress: wlt.Address,
-			Nickname:      wlt.Nickname,
+			Nickname:      acc.Nickname,
+			WalletAddress: address,
 		},
 	}
 }
 
-func (s *walletSign) prepareUnknownPromptRequest(wlt *wallet.Wallet, description string, expiry uint64) prompt.PromptRequest {
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			OperationType: Message,
-			WalletAddress: wlt.Address,
-			Expiry:        expiry,
-			Nickname:      wlt.Nickname,
-		},
-	}
-}
+// func handleWithCorrelationId(
+// 	acc *account.Account,
+// 	params operations.SignParams,
+// 	gc gcache.Cache,
+// ) middleware.Responder {
+// 	key := CacheKey(params.Body.CorrelationID)
 
-func handleWithCorrelationId(
-	wlt *wallet.Wallet,
-	params operations.SignParams,
-	gc gcache.Cache,
-) middleware.Responder {
-	key := CacheKey(params.Body.CorrelationID)
+// 	value, err := gc.Get(key)
+// 	if err != nil {
+// 		if err.Error() == gcache.KeyNotFoundError.Error() {
+// 			return operations.NewSignNotFound().WithPayload(
+// 				&models.Error{
+// 					Code:    errorSignCorrelationIdNotFound,
+// 					Message: fmt.Sprintf("Error given correlation id not in cache: %v", err.Error()),
+// 				})
+// 		}
+// 		return operations.NewSignInternalServerError().WithPayload(
+// 			&models.Error{
+// 				Code:    errorSignLoadCache,
+// 				Message: fmt.Sprintf("Error cannot get data from cache: %v", err.Error()),
+// 			})
+// 	}
 
-	value, err := gc.Get(key)
-	if err != nil {
-		if err.Error() == gcache.KeyNotFoundError.Error() {
-			return operations.NewSignNotFound().WithPayload(
-				&models.Error{
-					Code:    errorSignCorrelationIdNotFound,
-					Message: fmt.Sprintf("Error given correlation id not in cache: %v", err.Error()),
-				})
-		}
+// 	// convert interface{} into byte[]
+// 	buf := new(bytes.Buffer)
 
-		return operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignLoadCache,
-				Message: fmt.Sprintf("Error cannot get data from cache: %v", err.Error()),
-			})
-	}
+// 	err = binary.Write(buf, binary.LittleEndian, value)
+// 	if err != nil {
+// 		return operations.NewSignInternalServerError().WithPayload(
+// 			&models.Error{
+// 				Code:    errorSignLoadCache,
+// 				Message: fmt.Sprintf("Error cannot convert cache value: %v", err.Error()),
+// 			})
+// 	}
 
-	// convert interface{} into byte[]
-	buf := new(bytes.Buffer)
+// 	bytes := buf.Bytes()
 
-	err = binary.Write(buf, binary.LittleEndian, value)
-	if err != nil {
-		return operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignLoadCache,
-				Message: fmt.Sprintf("Error cannot convert cache value: %v", err.Error()),
-			})
-	}
+// 	err = acc.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
+// 	if err != nil {
+// 		return operations.NewSignInternalServerError().WithPayload(
+// 			&models.Error{
+// 				Code:    errorSignLoadCache,
+// 				Message: fmt.Sprintf("Error cannot unprotect from cache: %v", err.Error()),
+// 			})
+// 	}
 
-	bytes := buf.Bytes()
-
-	err = wlt.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
-	if err != nil {
-		return operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignLoadCache,
-				Message: fmt.Sprintf("Error cannot unprotect from cache: %v", err.Error()),
-			})
-	}
-
-	return nil
-}
+// 	return nil
+// }
 
 func CacheKey(correlationId models.CorrelationID) [32]byte {
 	return blake3.Sum256(correlationId)
 }
 
-func handleBatch(
-	wlt *wallet.Wallet,
-	params operations.SignParams,
-	s *walletSign,
-	gc gcache.Cache,
-) (models.CorrelationID, middleware.Responder) {
-	correlationId, err := generateCorrelationId()
-	if err != nil {
-		return nil, operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignGenerateCorrelationId,
-				Message: fmt.Sprintf("Error cannot generate correlation id: %v", err.Error()),
-			})
-	}
+// func handleBatch(
+// 	acc *account.Account,
+// 	params operations.SignParams,
+// 	s *walletSign,
+// 	gc gcache.Cache,
+// ) (models.CorrelationID, middleware.Responder) {
+// 	correlationId, err := generateCorrelationId()
+// 	if err != nil {
+// 		return nil, operations.NewSignInternalServerError().WithPayload(
+// 			&models.Error{
+// 				Code:    errorSignGenerateCorrelationId,
+// 				Message: fmt.Sprintf("Error cannot generate correlation id: %v", err.Error()),
+// 			})
+// 	}
 
-	key := CacheKey(correlationId)
+// 	key := CacheKey(correlationId)
 
-	cacheValue, err := wallet.Xor(wlt.KeyPair.PrivateKey, correlationId)
-	if err != nil {
-		return nil, operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignGenerateCorrelationId,
-				Message: fmt.Sprintf("Error cannot XOR correlation id: %v", err.Error()),
-			})
-	}
+// 	cacheValue, err := wallet.Xor(acc.KeyPair.PrivateKey, correlationId)
+// 	if err != nil {
+// 		return nil, operations.NewSignInternalServerError().WithPayload(
+// 			&models.Error{
+// 				Code:    errorSignGenerateCorrelationId,
+// 				Message: fmt.Sprintf("Error cannot XOR correlation id: %v", err.Error()),
+// 			})
+// 	}
 
-	err = gc.SetWithExpire(key, cacheValue, passwordExpirationTime)
-	if err != nil {
-		return nil, operations.NewSignInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorSignGenerateCorrelationId,
-				Message: fmt.Sprintf("Error set correlation id in cache: %v", err.Error()),
-			})
-	}
+// 	err = gc.SetWithExpire(key, cacheValue, passwordExpirationTime)
+// 	if err != nil {
+// 		return nil, operations.NewSignInternalServerError().WithPayload(
+// 			&models.Error{
+// 				Code:    errorSignGenerateCorrelationId,
+// 				Message: fmt.Sprintf("Error set correlation id in cache: %v", err.Error()),
+// 			})
+// 	}
 
-	return correlationId, nil
-}
+// 	return correlationId, nil
+// }
 
 func generateCorrelationId() (models.CorrelationID, error) {
 	rand := cryptorand.Reader

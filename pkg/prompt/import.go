@@ -6,11 +6,10 @@ import (
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
-func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) (*wallet.Wallet, bool, error) {
+func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) (*account.Account, bool, error) {
 	filePath, ok := input.(string)
 	if ok {
 		return handleImportFile(prompterApp, filePath)
@@ -24,65 +23,54 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 	return nil, false, InputTypeError(prompterApp)
 }
 
-func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wallet.Wallet, bool, error) {
+func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*account.Account, bool, error) {
 	if !strings.HasSuffix(filePath, ".yaml") && !strings.HasSuffix(filePath, ".yml") {
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidFileExtension})
 		return nil, false, fmt.Errorf(InvalidAccountFileErr)
 	}
 
-	acc, loadErr := wallet.LoadFile(filePath)
-	if loadErr != nil {
-		errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err)
-		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: loadErr.CodeErr})
+	wallet := prompterApp.App().WalletManager
 
-		return nil, false, fmt.Errorf(errStr)
-	}
-
-	// Validate nickname
-	if !account.NicknameIsValid(acc.Nickname) {
-		errorCode := utils.ErrInvalidNickname
-
-		fmt.Printf("error while importing: invalid nickname: '%s'\n", acc.Nickname)
-		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: errorCode})
-
-		return nil, false, fmt.Errorf(errorCode)
-	}
-
-	// Validate nickname uniqueness
-	err := wallet.NicknameIsUnique(acc.Nickname)
+	acc, err := wallet.Load(filePath)
 	if err != nil {
-		errorCode := utils.ErrDuplicateNickname
+		msg := fmt.Sprintf("%v: %v", AccountLoadErr, err)
+		code := utils.WailsErrorCode(err)
+		fmt.Println("code is: ", code)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: errorCode})
-
-		return nil, false, fmt.Errorf(errorCode)
+			walletapp.EventData{Success: false, CodeMessage: code})
+		return nil, false, fmt.Errorf(msg)
 	}
 
-	// Validate unique private key
-	err = wallet.AddressIsUnique(acc.Address)
+	err = wallet.AddAccount(acc, true)
 	if err != nil {
-		errorCode := utils.ErrDuplicateKey
+		msg := fmt.Sprintf("failed to add account: %v", err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: errorCode})
-
-		return nil, false, fmt.Errorf(errorCode)
+			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
+		return nil, false, fmt.Errorf(msg)
 	}
 
-	return &acc, false, nil
+	return acc, false, nil
 }
 
-func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportFromPKey) (*wallet.Wallet, bool, error) {
-	wallet, importErr := wallet.Import(walletInfo.Nickname, walletInfo.PrivateKey, walletInfo.Password)
-	if importErr != nil {
-		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, importErr.Err)
+func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportFromPKey) (*account.Account, bool, error) {
+	acc, err := account.NewFromPrivateKey(walletInfo.Password, walletInfo.Nickname, walletInfo.PrivateKey)
+	if err != nil {
+		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: importErr.CodeErr})
-
+			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 		return nil, false, fmt.Errorf(errStr)
 	}
 
-	return wallet, false, nil
+	wallet := prompterApp.App().WalletManager
+
+	err = wallet.AddAccount(acc, true)
+	if err != nil {
+		msg := fmt.Sprintf("failed to add account: %v", err)
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
+		return nil, false, fmt.Errorf(msg)
+	}
+
+	return acc, false, nil
 }

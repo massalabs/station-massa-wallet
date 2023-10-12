@@ -18,7 +18,7 @@ type deleteAsset struct {
 	AssetsStore *assets.AssetsStore
 }
 
-func (h *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Responder {
+func (d *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Responder {
 	// Check if the address is valid
 	if !address.IsValidAddress(params.AssetAddress) {
 		// Return an error indicating the address is not valid
@@ -27,14 +27,14 @@ func (h *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Res
 	}
 
 	// Check if the asset exists in the loaded JSON
-	if !h.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
+	if !d.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
 		// Return an error indicating that the asset does not exist
 		errorMsg := "Asset with the provided address does not exist."
 		return operations.NewDeleteAssetBadRequest().WithPayload(&models.Error{Code: errorAssetNotExists, Message: errorMsg})
 	}
 
 	// Delete Asset From the JSON file.
-	if err := h.AssetsStore.DeleteAsset(params.Nickname, params.AssetAddress); err != nil {
+	if err := d.AssetsStore.DeleteAsset(params.Nickname, params.AssetAddress); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to delete the asset from the JSON file."
 		return operations.NewDeleteAssetInternalServerError().WithPayload(&models.Error{Code: errorDeleteAssetJSON, Message: errorMsg})

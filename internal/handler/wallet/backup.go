@@ -5,13 +5,14 @@ import (
 	"io"
 	"os"
 
+	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 )
 
 // KeyPair represents a pair of private and public keys.
@@ -29,17 +30,22 @@ type walletBackupAccount struct {
 }
 
 func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+	acc, err := w.prompterApp.App().WalletManager.GetAccount(params.Nickname)
+	if err == walletmanager.AccountNotFoundError {
+		return operations.NewGetAccountNotFound()
+	} else if err != nil {
+		return operations.NewGetAccountInternalServerError().WithPayload(&models.Error{
+			Code:    errorGetWallets,
+			Message: err.Error(),
+		})
 	}
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Backup,
-		Msg:    wlt.Nickname,
+		Msg:    acc.Nickname,
 	}
 
-	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, wlt)
+	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, acc)
 	if err != nil {
 		return operations.NewBackupAccountUnauthorized().WithPayload(
 			&models.Error{
@@ -68,8 +74,26 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 				})
 		}
 	} else {
-		privateKey = wlt.GetPrivKey()
-		publicKey = wlt.GetPupKey()
+		guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+		guardedPrivateKey, err := acc.PrivateKeyTextInClear(guardedPassword)
+		if err != nil {
+			return operations.NewBackupAccountInternalServerError().WithPayload(&models.Error{
+				Code:    errorGetWallets,
+				Message: err.Error(),
+			})
+		}
+		defer guardedPrivateKey.Destroy()
+		privateKey = string(guardedPrivateKey.Bytes())
+
+		publicKeyBytes, err := acc.PublicKey.MarshalText()
+		if err != nil {
+			return operations.NewBackupAccountInternalServerError().WithPayload(&models.Error{
+				Code:    errorGetWallets,
+				Message: err.Error(),
+			})
+		}
+
+		publicKey = string(publicKeyBytes)
 	}
 
 	data := KeyPair{
@@ -83,17 +107,17 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	return operations.NewBackupAccountNoContent()
 }
 
-func (w *walletBackupAccount) saveAccountFile(nickname string) *wallet.WalletError {
+func (w *walletBackupAccount) saveAccountFile(nickname string) *walletmanager.WalletError {
 	dstFile, err := w.prompterApp.SelectBackupFilepath(nickname)
 	if err != nil {
-		return &wallet.WalletError{
+		return &walletmanager.WalletError{
 			Err:     err,
 			CodeErr: utils.ErrAccountFile,
 		}
 	}
 
 	if dstFile == "" {
-		return &wallet.WalletError{
+		return &walletmanager.WalletError{
 			Err:     fmt.Errorf("no file selected"),
 			CodeErr: utils.ActionCanceled,
 		}
@@ -102,16 +126,16 @@ func (w *walletBackupAccount) saveAccountFile(nickname string) *wallet.WalletErr
 	// Create the destination file
 	destination, err := os.Create(dstFile)
 	if err != nil {
-		return &wallet.WalletError{
+		return &walletmanager.WalletError{
 			Err:     err,
 			CodeErr: utils.ErrAccountFile,
 		}
 	}
 	defer destination.Close()
 
-	srcFile, err := wallet.FilePath(nickname)
+	srcFile, err := w.prompterApp.App().WalletManager.AccountPath(nickname)
 	if err != nil {
-		return &wallet.WalletError{
+		return &walletmanager.WalletError{
 			Err:     err,
 			CodeErr: utils.ErrAccountFile,
 		}
@@ -119,7 +143,7 @@ func (w *walletBackupAccount) saveAccountFile(nickname string) *wallet.WalletErr
 
 	source, err := os.Open(srcFile)
 	if err != nil {
-		return &wallet.WalletError{
+		return &walletmanager.WalletError{
 			Err:     err,
 			CodeErr: utils.ErrAccountFile,
 		}
@@ -128,7 +152,7 @@ func (w *walletBackupAccount) saveAccountFile(nickname string) *wallet.WalletErr
 
 	_, err = io.Copy(destination, source)
 	if err != nil {
-		return &wallet.WalletError{
+		return &walletmanager.WalletError{
 			Err:     err,
 			CodeErr: utils.ErrAccountFile,
 		}

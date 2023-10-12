@@ -1,37 +1,31 @@
 package wallet
 
 import (
-	"fmt"
 	"io"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/awnumar/memguard"
+	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/stretchr/testify/assert"
 )
+
+func createAccount(password, nickname string, t *testing.T, prompterApp prompt.WalletPrompterInterface) *account.Account {
+	guardedPassword := memguard.NewBufferFromBytes([]byte(password))
+	acc, err := account.Generate(guardedPassword, nickname)
+	assert.NoError(t, err)
+	err = prompterApp.App().WalletManager.AddAccount(acc, true)
+	assert.NoError(t, err)
+
+	return acc
+}
 
 func verifyStatusCode(t *testing.T, resp *httptest.ResponseRecorder, statusCode int) {
 	// Log body to simplify failure analysis.
 	body := new(strings.Builder)
 	_, _ = io.Copy(body, resp.Result().Body)
 
-	assert.Equal(t, statusCode, resp.Result().StatusCode, fmt.Sprintf("the returned body is: %s", strings.TrimSpace(body.String())))
-}
-
-// cleanupTestData cleans up wallet created file.
-func cleanupTestData(nicknames []string) error {
-	for _, name := range nicknames {
-		w, err := wallet.Load(name)
-		if err != nil {
-			return err
-		}
-
-		err = w.DeleteFile()
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	assert.Equal(t, statusCode, resp.Result().StatusCode, "the returned body is: %s", strings.TrimSpace(body.String()))
 }

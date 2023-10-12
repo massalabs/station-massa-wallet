@@ -1,5 +1,9 @@
 package wallet
 
+import "errors"
+
+var ErrorAddressInvalid = errors.New("Account address is invalid")
+
 const (
 	_ = "Wallet-" + string('0'+(iota)/1000%10) + string('0'+(iota)/100%10) + string('0'+(iota)/10%10) + string('0'+(iota)/1%10)
 	errorWrongPassword

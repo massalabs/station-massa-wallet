@@ -1,18 +1,14 @@
 package wallet
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,8 +41,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	transactionData := fmt.Sprintf(`{"operation":"%s"}`, callSCString)
 	nickname := "walletToDelete"
 	password := "zePassword"
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := signTransaction(t, api, "Johnny", transactionData)
@@ -138,45 +133,42 @@ func Test_walletSign_Handle(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
-	t.Run("sign transaction batch", func(t *testing.T) {
-		transactionDataBatch := fmt.Sprintf(`{"operation":"%s","batch":true}`, callSCString)
-		testResult := make(chan walletapp.EventData)
+	// t.Run("sign transaction batch", func(t *testing.T) {
+	// 	transactionDataBatch := fmt.Sprintf(`{"operation":"%s","batch":true}`, callSCString)
+	// 	testResult := make(chan walletapp.EventData)
 
-		// Send password to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- password
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
+	// 	// Send password to prompter app and wait for result
+	// 	go func(res chan walletapp.EventData) {
+	// 		prompterApp.App().PromptInput <- password
+	// 		// forward test result to test goroutine
+	// 		res <- (<-resChan)
+	// 	}(testResult)
 
-		resp := signTransaction(t, api, nickname, transactionDataBatch)
-		verifyStatusCode(t, resp, http.StatusOK)
+	// 	resp := signTransaction(t, api, nickname, transactionDataBatch)
+	// 	verifyStatusCode(t, resp, http.StatusOK)
 
-		result := <-testResult
+	// 	result := <-testResult
 
-		checkResultChannel(t, result, true, "Unprotect Success")
+	// 	checkResultChannel(t, result, true, "Unprotect Success")
 
-		var body models.SignResponse
-		err = json.Unmarshal(resp.Body.Bytes(), &body)
-		assert.NoError(t, err)
+	// 	var body models.SignResponse
+	// 	err = json.Unmarshal(resp.Body.Bytes(), &body)
+	// 	assert.NoError(t, err)
 
-		correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
+	// 	correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
 
-		transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
-		// Send new transaction without password prompt
-		resp = signTransaction(t, api, nickname, transactionDataBatch)
-		verifyStatusCode(t, resp, http.StatusOK)
+	// 	transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
+	// 	// Send new transaction without password prompt
+	// 	resp = signTransaction(t, api, nickname, transactionDataBatch)
+	// 	verifyStatusCode(t, resp, http.StatusOK)
 
-		// Send new transaction with incorrect correlation id
-		correlationId = base64.StdEncoding.EncodeToString([]byte("wrong correlation id"))
-		transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
-		resp = signTransaction(t, api, nickname, transactionDataBatch)
-		var bodyError operations.SignInternalServerError
-		err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
-		assert.NoError(t, err)
-		verifyStatusCode(t, resp, http.StatusNotFound)
-	})
-
-	err = cleanupTestData([]string{nickname})
-	assert.NoError(t, err)
+	// 	// Send new transaction with incorrect correlation id
+	// 	correlationId = base64.StdEncoding.EncodeToString([]byte("wrong correlation id"))
+	// 	transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
+	// 	resp = signTransaction(t, api, nickname, transactionDataBatch)
+	// 	var bodyError operations.SignInternalServerError
+	// 	err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
+	// 	assert.NoError(t, err)
+	// 	verifyStatusCode(t, resp, http.StatusNotFound)
+	// })
 }

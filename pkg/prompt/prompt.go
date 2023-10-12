@@ -6,7 +6,9 @@ import (
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -36,7 +38,7 @@ func (w *WalletPrompter) EmitEvent(eventId string, data walletapp.EventData) {
 func (w *WalletPrompter) SelectBackupFilepath(nickname string) (string, error) {
 	return runtime.SaveFileDialog(w.PromptApp.Ctx, runtime.SaveDialogOptions{
 		Title:           "Backup Account File",
-		DefaultFilename: wallet.Filename(nickname),
+		DefaultFilename: walletmanager.Filename(nickname),
 		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yaml)", Pattern: "*.yaml"}},
 	})
 }
@@ -55,7 +57,7 @@ var _ WalletPrompterInterface = &WalletPrompter{}
 func WakeUpPrompt(
 	prompterApp WalletPrompterInterface,
 	req PromptRequest,
-	wallet *wallet.Wallet,
+	acc *account.Account,
 ) (interface{}, error) {
 	if prompterApp.IsListening() {
 		fmt.Println(AlreadyListeningErr)
@@ -80,7 +82,7 @@ func WakeUpPrompt(
 
 			switch req.Action {
 			case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.Unprotect:
-				output, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
+				output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)
 			case walletapp.NewPassword:
 				output, keepListening, err = handleNewPasswordPrompt(prompterApp, input)
 			case walletapp.Import:
@@ -90,13 +92,12 @@ func WakeUpPrompt(
 				if output == nil {
 					output, keepListening, err = handleBackupMethod(prompterApp, input)
 				} else {
-					output, keepListening, err = handlePasswordPrompt(prompterApp, input, wallet)
+					output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)
 				}
 			}
 
 			if err != nil {
-				fmt.Println(err)
-
+				logger.Error(err)
 				if !keepListening {
 					return nil, err
 				}
@@ -109,11 +110,12 @@ func WakeUpPrompt(
 			return output, nil
 
 		case <-prompterApp.App().CtrlChan:
-			fmt.Println(ActionCanceledErr)
+			logger.Warn(ActionCanceledErr)
+
 			return nil, fmt.Errorf(ActionCanceledErr)
 
 		case <-ctxTimeout.Done():
-			fmt.Println(TimeoutErr)
+			logger.Warn(TimeoutErr)
 			prompterApp.EmitEvent(walletapp.PromptResultEvent,
 				walletapp.EventData{Success: false, CodeMessage: utils.ErrTimeout})
 
@@ -123,7 +125,7 @@ func WakeUpPrompt(
 }
 
 func InputTypeError(prompterApp WalletPrompterInterface) error {
-	fmt.Println(InputTypeErr)
+	logger.Error(InputTypeErr)
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: false, CodeMessage: utils.ErrPromptInputType})
 
