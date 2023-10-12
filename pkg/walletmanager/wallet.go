@@ -133,9 +133,9 @@ func (w *Wallet) addAccount(acc *account.Account) {
 
 // GenerateAccount generates a new account and adds it to the wallet.
 // It returns the generated account.
-// It destroys the guarded password.
-func (w *Wallet) GenerateAccount(guardedPassword *memguard.LockedBuffer, nickname string) (*account.Account, error) {
-	acc, err := account.Generate(guardedPassword, nickname)
+// It destroys the password.
+func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname string) (*account.Account, error) {
+	acc, err := account.Generate(password, nickname)
 	if err != nil {
 		return nil, fmt.Errorf("generating account: %w", err)
 	}
