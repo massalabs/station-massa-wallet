@@ -15,26 +15,28 @@ import (
 )
 
 const (
-	AccountLastVersion = 1
+	AccountLastVersion    = 1
+	AccountUnknownVersion = 0
 )
 
 var (
 	ErrInvalidPrivateKey = errors.New("invalid private key")
 	ErrGeneratingKeyPair = errors.New("generating ed25519 key-pair")
+	ErrInvalidParameter  = errors.New("invalid parameter")
 )
 
 type Account struct {
-	Version      *uint8                    `yaml:"Version"`
-	Nickname     string                    `yaml:"Nickname,omitempty"`
-	Address      types.Address             `yaml:"Address,omitempty"`
-	Salt         [16]byte                  `yaml:"Salt,flow"`
-	Nonce        [12]byte                  `yaml:"Nonce,flow"`
-	CipheredData types.EncryptedPrivateKey `yaml:"CipheredData,flow"`
-	PublicKey    types.PublicKey           `yaml:"PublicKey,flow"`
+	Version      uint8                      `yaml:"Version"`
+	Nickname     string                     `yaml:"Nickname,omitempty"`
+	Address      *types.Address             `yaml:"Address,omitempty"`
+	Salt         [16]byte                   `yaml:"Salt,flow"`
+	Nonce        [12]byte                   `yaml:"Nonce,flow"`
+	CipheredData *types.EncryptedPrivateKey `yaml:"CipheredData,flow"`
+	PublicKey    *types.PublicKey           `yaml:"PublicKey,flow"`
 }
 
 func New(
-	version *uint8,
+	version uint8,
 	nickname string,
 	address *types.Address,
 	salt [16]byte,
@@ -42,13 +44,8 @@ func New(
 	encryptedPrivateKey *types.EncryptedPrivateKey,
 	publicKey *types.PublicKey,
 ) (*Account, error) {
-	if version == nil {
-		version = new(uint8)
-		*version = AccountLastVersion
-	}
-
-	if *version > AccountLastVersion {
-		return nil, fmt.Errorf("%w: %d", object.ErrUnsupportedVersion, *version)
+	if version > AccountLastVersion {
+		return nil, fmt.Errorf("%w: %d", ErrInvalidParameter, version)
 	}
 
 	if !NicknameIsValid(nickname) {
@@ -70,42 +67,12 @@ func New(
 	return &Account{
 		Version:      version,
 		Nickname:     nickname,
-		Address:      *address,
+		Address:      address,
 		Salt:         salt,
 		Nonce:        nonce,
-		CipheredData: *encryptedPrivateKey,
-		PublicKey:    *publicKey,
+		CipheredData: encryptedPrivateKey,
+		PublicKey:    publicKey,
 	}, nil
-}
-
-func NewEmpty() Account {
-	return Account{
-		Version:  nil,
-		Nickname: "",
-		Address: types.Address{
-			Object: &object.Object{
-				Kind:    object.UserAddress,
-				Version: 0x00,
-				Data:    nil,
-			},
-		},
-		Salt:  [16]byte{},
-		Nonce: [12]byte{},
-		CipheredData: types.EncryptedPrivateKey{
-			Object: &object.Object{
-				Kind:    object.EncryptedPrivateKey,
-				Version: 0x00,
-				Data:    nil,
-			},
-		},
-		PublicKey: types.PublicKey{
-			Object: &object.Object{
-				Kind:    object.PublicKey,
-				Version: 0x00,
-				Data:    nil,
-			},
-		},
-	}
 }
 
 // Generate generates a new account with a random private key. It destroys the password.
@@ -154,7 +121,7 @@ func Generate(password *memguard.LockedBuffer, nickname string) (*Account, error
 		},
 	}
 
-	return New(&version, nickname, address, salt, nonce, &cipheredData, &publicKey)
+	return New(version, nickname, address, salt, nonce, &cipheredData, &publicKey)
 }
 
 // NewFromPrivateKey creates a new account from a private key. It destroys the password.
@@ -209,7 +176,7 @@ func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, private
 
 	address := types.NewAddressFromPublicKey(publicKey)
 
-	return New(&version, nickname, address, salt, nonce, &encryptedPrivateKey, publicKey)
+	return New(version, nickname, address, salt, nonce, &encryptedPrivateKey, publicKey)
 }
 
 // seal encrypts the private key with the password.
@@ -263,16 +230,16 @@ func (a *Account) Unmarshal(data []byte) error {
 		return fmt.Errorf("missing nonce")
 	}
 
-	if len(a.CipheredData.Data) == 0 {
+	if a.CipheredData == nil || len(a.CipheredData.Data) == 0 {
 		return fmt.Errorf("missing ciphered data")
 	}
 
-	if len(a.PublicKey.Data) == 0 {
+	if a.PublicKey == nil || len(a.PublicKey.Data) == 0 {
 		return fmt.Errorf("missing public key")
 	}
 
-	if a.Version == nil {
-		return fmt.Errorf("missing version")
+	if a.Version == AccountUnknownVersion {
+		return fmt.Errorf("invalid or missing version")
 	}
 
 	return nil

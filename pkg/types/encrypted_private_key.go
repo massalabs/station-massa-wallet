@@ -21,8 +21,8 @@ type EncryptedPrivateKey struct {
 }
 
 // validate ensures the Object.Kind is an EncryptedPrivateKey type and the version is supported.
-func (a *EncryptedPrivateKey) validate() error {
-	err := a.Object.Validate(EncryptedPrivateKeyLastVersion, object.EncryptedPrivateKey)
+func (e *EncryptedPrivateKey) validate() error {
+	err := e.Object.Validate(EncryptedPrivateKeyLastVersion, object.EncryptedPrivateKey)
 	if err != nil {
 		return err
 	}
@@ -31,52 +31,60 @@ func (a *EncryptedPrivateKey) validate() error {
 }
 
 // Custom YAML marshaller for EncryptedPrivateKey
-func (a EncryptedPrivateKey) MarshalYAML() (interface{}, error) {
-	return a.MarshalBinary()
+func (e EncryptedPrivateKey) MarshalYAML() (interface{}, error) {
+	return e.MarshalBinary()
 }
 
 // Custom YAML unmarshaller for EncryptedPrivateKey
-func (a *EncryptedPrivateKey) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (e *EncryptedPrivateKey) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var data []byte
 	if err := unmarshal(&data); err != nil {
 		return err
 	}
 
-	return a.UnmarshalBinary(data)
+	return e.UnmarshalBinary(data)
 }
 
 // MarshalText overloads the TextMarshaler interface for EncryptedPrivateKey.
-func (a *EncryptedPrivateKey) MarshalText() ([]byte, error) {
-	if err := a.validate(); err != nil {
+func (e *EncryptedPrivateKey) MarshalText() ([]byte, error) {
+	if err := e.validate(); err != nil {
 		return nil, err
 	}
-	return a.Object.MarshalText()
+	return e.Object.MarshalText()
 }
 
 // UnmarshalText overloads the TextUnmarshaler interface for EncryptedPrivateKey.
-func (a *EncryptedPrivateKey) UnmarshalText(text []byte) error {
-	if err := a.Object.UnmarshalText(text); err != nil {
+func (e *EncryptedPrivateKey) UnmarshalText(text []byte) error {
+	if err := e.Object.UnmarshalText(text); err != nil {
 		return err
 	}
 
-	return a.validate()
+	return e.validate()
 }
 
 // MarshalBinary overloads the BinaryMarshaler interface for EncryptedPrivateKey.
-func (a *EncryptedPrivateKey) MarshalBinary() ([]byte, error) {
-	if err := a.validate(); err != nil {
+func (e *EncryptedPrivateKey) MarshalBinary() ([]byte, error) {
+	if err := e.validate(); err != nil {
 		return nil, err
 	}
 
-	return a.Object.MarshalBinary()
+	return e.Object.MarshalBinary()
 }
 
 // UnmarshalBinary overloads the BinaryUnmarshaler interface for EncryptedPrivateKey.
-func (a *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
-	a.Object.Version = 0x00 // We can't know the version at this stage. The version is in the plain text. `data` is ciphered.
-	a.Object.Data = data
+func (e *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
+	if e.Object == nil {
+		e.Object = &object.Object{
+			Kind:    object.EncryptedPrivateKey,
+			Version: 0x00,
+			Data:    nil,
+		}
+	}
 
-	return a.validate()
+	e.Object.Version = 0x00 // We can't know the version at this stage. The version is in the plain text. `data` is ciphered.
+	e.Object.Data = data
+
+	return e.validate()
 }
 
 // Sign signs the given data using the private key.

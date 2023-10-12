@@ -58,6 +58,14 @@ func (a *Address) MarshalText() ([]byte, error) {
 
 // UnmarshalText overloads the TextUnmarshaler interface for Address.
 func (a *Address) UnmarshalText(text []byte) error {
+	if a.Object == nil {
+		a.Object = &object.Object{
+			Kind:    object.UserAddress,
+			Version: 0x00,
+			Data:    nil,
+		}
+	}
+
 	if err := a.Object.UnmarshalText(text); err != nil {
 		return err
 	}
