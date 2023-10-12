@@ -87,8 +87,7 @@ func (e *EncryptedPrivateKey) UnmarshalBinary(data []byte) error {
 	return e.validate()
 }
 
-// Sign signs the given data using the private key.
-// Guarded password is destroyed.
+// Sign signs the given data using the private key. Password is destroyed.
 func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce, data []byte) ([]byte, error) {
 	digest := blake3.Sum256(data)
 
@@ -102,7 +101,7 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKeyInClear.Bytes(), digest[:])...), nil
 }
 
-// PublicKey returns the public key corresponding to the private key. Guarded password is destroyed.
+// PublicKey returns the public key corresponding to the private key. Password is destroyed.
 func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, nonce []byte) (*PublicKey, error) {
 	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
@@ -122,7 +121,7 @@ func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, n
 	}, nil
 }
 
-// PrivateKeyTextInClear returns the private key in clear. Guarded password is destroyed.
+// PrivateKeyTextInClear returns the private key in clear. Password is destroyed.
 func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
 	privateKeyInClear, err := privateKey(password, salt, nonce, encryptedKey)
 	if err != nil {
@@ -151,8 +150,7 @@ func (e *EncryptedPrivateKey) PasswordIsValid(password *memguard.LockedBuffer, s
 	return err == nil
 }
 
-// privateKey returns the private key in clear.
-// Guarded password is destroyed.
+// privateKey returns the private key in clear. Password is destroyed.
 func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
 	aeadCipher, secretKey, err := crypto.NewSecretCipher(password.Bytes(), salt[:])
 	defer password.Destroy()
