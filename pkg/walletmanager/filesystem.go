@@ -79,7 +79,7 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 		return nil, fmt.Errorf("reading wallet from '%s': %w", filePath, err)
 	}
 
-	acc := account.NewEmpty()
+	acc := account.Account{}
 	err = acc.Unmarshal(data)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrUnmarshalAccount, err)
@@ -95,8 +95,8 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 	}
 
 	// Address in the file is optional, if it's not set, we use the public key
-	if acc.Address.Object.Data == nil {
-		acc.Address = *types.NewAddressFromPublicKey(&acc.PublicKey)
+	if acc.Address == nil || acc.Address.Object == nil || acc.Address.Object.Data == nil {
+		acc.Address = types.NewAddressFromPublicKey(acc.PublicKey)
 	}
 
 	return &acc, nil

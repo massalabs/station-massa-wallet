@@ -26,7 +26,7 @@ func TestWallet(t *testing.T) {
 	sampleNonce := [12]byte{113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63}
 	sampleNickname := "bonjour2"
 	sampleAccount, err := account.New(
-		&[]uint8{account.AccountLastVersion}[0],
+		uint8(account.AccountLastVersion),
 		sampleNickname,
 		&types.Address{
 			Object: &object.Object{
@@ -81,7 +81,7 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Add Account: address not unique", func(t *testing.T) {
 		sampleAccount, err := account.New(
-			&[]uint8{account.AccountLastVersion}[0],
+			uint8(account.AccountLastVersion),
 			"bonjour3",
 			&types.Address{
 				Object: &object.Object{
@@ -122,7 +122,7 @@ func TestWallet(t *testing.T) {
 		acc, err := w.GetAccount(sampleNickname)
 		assert.NoError(t, err)
 		assert.NotNil(t, acc)
-		assert.Equal(t, uint8(1), *acc.Version)
+		assert.Equal(t, uint8(1), acc.Version)
 		assert.Equal(t, sampleNickname, acc.Nickname)
 		assert.Equal(t, sampleSalt, acc.Salt)
 		assert.Equal(t, sampleNonce, acc.Nonce)
@@ -154,7 +154,7 @@ func TestWallet(t *testing.T) {
 		copy(t, "../../tests/wallet_unit-test.yaml", accountPath)
 
 		acc := assertAccountIsPresent(t, w, nickname)
-		assert.Equal(t, uint8(1), *acc.Version)
+		assert.Equal(t, uint8(1), acc.Version)
 		assert.Equal(t, 2, w.GetAccountCount())
 	})
 

@@ -24,7 +24,7 @@ func (w *Wallet) NicknameIsUnique(nickname string) error {
 	return nil
 }
 
-func (w *Wallet) AddressIsUnique(address types.Address) error {
+func (w *Wallet) AddressIsUnique(address *types.Address) error {
 	for _, account := range w.accounts {
 		if bytes.Equal(account.Address.Data, address.Data) {
 			return ErrAddressNotUnique
