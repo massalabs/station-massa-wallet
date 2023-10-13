@@ -41,7 +41,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
-        run: npm run test
+        run: npm run test-ci
+        env:
+          VITE_CI_TEST: true
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: |
+            ./web-frontend/cypress-visual-report/*
+            ./web-frontend/cypress-visual-screenshots/*
+          if-no-files-found: error
+          retention-days: 7
 
   test-wail-frontend:
     defaults:
