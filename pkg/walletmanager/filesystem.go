@@ -80,6 +80,7 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 	}
 
 	acc := account.Account{}
+
 	err = acc.Unmarshal(data)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrUnmarshalAccount, err)
@@ -91,7 +92,7 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 	}
 
 	if !account.NicknameIsValid(acc.Nickname) {
-		return nil, fmt.Errorf("%w: '%s'", account.ErrInvalidNickname, acc.Nickname) // TODO: add unit test
+		return nil, fmt.Errorf("%w: the provided nickname is invalid: %s", account.ErrInvalidParameter, acc.Nickname) // TODO: add unit test
 	}
 
 	// Address in the file is optional, if it's not set, we use the public key

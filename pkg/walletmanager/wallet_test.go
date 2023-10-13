@@ -26,7 +26,7 @@ func TestWallet(t *testing.T) {
 	sampleNonce := [12]byte{113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63}
 	sampleNickname := "bonjour2"
 	sampleAccount, err := account.New(
-		uint8(account.AccountLastVersion),
+		uint8(account.LastVersion),
 		sampleNickname,
 		&types.Address{
 			Object: &object.Object{
@@ -81,7 +81,7 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Add Account: address not unique", func(t *testing.T) {
 		sampleAccount, err := account.New(
-			uint8(account.AccountLastVersion),
+			uint8(account.LastVersion),
 			"bonjour3",
 			&types.Address{
 				Object: &object.Object{

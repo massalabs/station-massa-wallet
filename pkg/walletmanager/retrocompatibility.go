@@ -36,6 +36,7 @@ func (w *Wallet) MigrateWallet() error {
 			}
 
 			logger.Infof("Migrating wallet from", oldFilePath, "to", newFilePath)
+
 			err = os.Rename(oldFilePath, newFilePath)
 			if err != nil {
 				logger.Errorf("moving account file from '%s' to '%s': %w", oldFilePath, newFilePath, err)

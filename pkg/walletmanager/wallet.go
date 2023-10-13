@@ -74,6 +74,7 @@ func (w *Wallet) Discover() error {
 			if w.accounts[nickname] != nil {
 				continue
 			}
+
 			acc, err := w.Load(filePath)
 			if err != nil {
 				logger.Warnf("invalid account found: %s", nickname)
