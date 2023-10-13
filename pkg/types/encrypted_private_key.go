@@ -106,7 +106,7 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, nonce []byte) (*PublicKey, error) {
 	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
-		return nil, fmt.Errorf("PublicKey: %w", err)
+		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
 
 	publicKeyBytes := ed25519.PrivateKey(privateKeyInClear.Bytes()).Public().(ed25519.PublicKey)
@@ -126,7 +126,7 @@ func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, n
 func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
 	privateKeyInClear, err := privateKey(password, salt, nonce, encryptedKey)
 	if err != nil {
-		return nil, fmt.Errorf("PrivateKeyTextInClear: %w", err)
+		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
 
 	seed := ed25519.PrivateKey(privateKeyInClear.Bytes()).Seed()
@@ -135,6 +135,7 @@ func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuf
 	seedBuffer := memguard.NewBufferFromBytes(seed)
 
 	privateKey := e.Kind.Prefix() + base58.CheckEncode(seedBuffer.Bytes(), e.Version)
+	seedBuffer.Destroy()
 	privateKeyBuffer := memguard.NewBufferFromBytes([]byte(privateKey))
 
 	return privateKeyBuffer, nil
@@ -149,7 +150,7 @@ func (e *EncryptedPrivateKey) PasswordIsValid(password *memguard.LockedBuffer, s
 
 	privateKeyInClear.Destroy()
 
-	return err == nil
+	return true
 }
 
 // privateKey returns the private key in clear. Password is destroyed.

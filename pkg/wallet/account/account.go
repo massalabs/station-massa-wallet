@@ -15,13 +15,13 @@ import (
 )
 
 const (
-	AccountLastVersion    = 1
-	AccountUnknownVersion = 0
+	LastVersion    = 1
+	UnknownVersion = 0
 )
 
 var (
 	ErrInvalidPrivateKey = errors.New("invalid private key")
-	ErrGeneratingKeyPair = errors.New("generating ed25519 key-pair")
+	ErrRuntime           = errors.New("runtime execution")
 	ErrInvalidParameter  = errors.New("invalid parameter")
 )
 
@@ -44,24 +44,24 @@ func New(
 	encryptedPrivateKey *types.EncryptedPrivateKey,
 	publicKey *types.PublicKey,
 ) (*Account, error) {
-	if version > AccountLastVersion {
-		return nil, fmt.Errorf("%w: %d", ErrInvalidParameter, version)
+	if version > LastVersion {
+		return nil, fmt.Errorf("%w: the provided version is invalid: %d", ErrInvalidParameter, version)
 	}
 
 	if !NicknameIsValid(nickname) {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidNickname, nickname)
+		return nil, fmt.Errorf("%w: the provided nickname is invalid: %s", ErrInvalidNickname, nickname)
 	}
 
 	if err := address.Validate(address.Version, object.UserAddress, object.SmartContractAddress); err != nil {
-		return nil, fmt.Errorf("validating address: %w", err)
+		return nil, fmt.Errorf("%w: the provided address is invalid: %w", ErrInvalidParameter, err)
 	}
 
 	if err := encryptedPrivateKey.Validate(encryptedPrivateKey.Version, object.EncryptedPrivateKey); err != nil {
-		return nil, fmt.Errorf("validating encrypted private key: %w", err)
+		return nil, fmt.Errorf("%w: the provided encrypted private key is invalid: %w", ErrInvalidPrivateKey, err)
 	}
 
 	if err := publicKey.Validate(publicKey.Version, object.PublicKey); err != nil {
-		return nil, fmt.Errorf("validating public key: %w", err)
+		return nil, fmt.Errorf("%w: the provided public key is invalid: %w", ErrInvalidParameter, err)
 	}
 
 	return &Account{
@@ -77,11 +77,11 @@ func New(
 
 // Generate generates a new account with a random private key. It destroys the password.
 func Generate(password *memguard.LockedBuffer, nickname string) (*Account, error) {
-	version := uint8(AccountLastVersion)
+	version := uint8(LastVersion)
 
 	publicKeyBytes, privateKeyBytes, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrGeneratingKeyPair, err)
+		return nil, fmt.Errorf("%w: %w", ErrRuntime, err)
 	}
 
 	var salt [16]byte
@@ -130,7 +130,7 @@ func Generate(password *memguard.LockedBuffer, nickname string) (*Account, error
 
 // NewFromPrivateKey creates a new account from a private key. It destroys the password.
 func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, privateKeyText *memguard.LockedBuffer) (*Account, error) {
-	version := uint8(AccountLastVersion)
+	version := uint8(LastVersion)
 
 	var salt [16]byte
 
@@ -211,12 +211,7 @@ func (a *Account) Sign(password *memguard.LockedBuffer, data []byte) ([]byte, er
 }
 
 func (a *Account) Marshal() ([]byte, error) {
-	yamlMarshaled, err := yaml.Marshal(a)
-	if err != nil {
-		return nil, fmt.Errorf("marshalling account: %w", err)
-	}
-
-	return yamlMarshaled, nil
+	return yaml.Marshal(a)
 }
 
 // PasswordIsValid returns true if the password is valid for the account. It destroys the password.
@@ -246,7 +241,7 @@ func (a *Account) Unmarshal(data []byte) error {
 		return fmt.Errorf("missing public key")
 	}
 
-	if a.Version == AccountUnknownVersion {
+	if a.Version == UnknownVersion {
 		return fmt.Errorf("invalid or missing version")
 	}
 
