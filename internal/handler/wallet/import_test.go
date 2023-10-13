@@ -21,6 +21,7 @@ func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.Respon
 
 	resp, err := handleHTTPRequest(handler, "PUT", "/api/accounts", "")
 	assert.NoError(t, err)
+
 	return resp
 }
 

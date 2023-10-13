@@ -38,6 +38,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 		Action: walletapp.Backup,
 		Msg:    wlt.Nickname,
 	}
+
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, wlt)
 	if err != nil {
 		return operations.NewBackupAccountUnauthorized().WithPayload(
@@ -59,6 +60,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 		if walletErr != nil {
 			w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 				walletapp.EventData{Success: false, CodeMessage: walletErr.CodeErr})
+
 			return operations.NewBackupAccountBadRequest().WithPayload(
 				&models.Error{
 					Code:    errorSaveAccount,
@@ -114,6 +116,7 @@ func (w *walletBackupAccount) saveAccountFile(nickname string) *wallet.WalletErr
 			CodeErr: utils.ErrAccountFile,
 		}
 	}
+
 	source, err := os.Open(srcFile)
 	if err != nil {
 		return &wallet.WalletError{

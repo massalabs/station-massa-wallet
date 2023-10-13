@@ -30,20 +30,24 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidFileExtension})
 		return nil, false, fmt.Errorf(InvalidAccountFileErr)
 	}
+
 	acc, loadErr := wallet.LoadFile(filePath)
 	if loadErr != nil {
 		errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: loadErr.CodeErr})
+
 		return nil, false, fmt.Errorf(errStr)
 	}
 
 	// Validate nickname
 	if !account.NicknameIsValid(acc.Nickname) {
 		errorCode := utils.ErrInvalidNickname
+
 		fmt.Printf("error while importing: invalid nickname: '%s'\n", acc.Nickname)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
@@ -53,6 +57,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 		errorCode := utils.ErrDuplicateNickname
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
@@ -62,6 +67,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 		errorCode := utils.ErrDuplicateKey
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
@@ -74,6 +80,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, importErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: importErr.CodeErr})
+
 		return nil, false, fmt.Errorf(errStr)
 	}
 

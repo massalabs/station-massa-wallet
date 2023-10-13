@@ -26,7 +26,7 @@ func TestNewAccount(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.NotNil(t, account)
-		assert.Equal(t, uint8(AccountLastVersion), account.Version)
+		assert.Equal(t, uint8(LastVersion), account.Version)
 		assert.Equal(t, nickname, account.Nickname)
 	})
 }
@@ -48,7 +48,7 @@ func TestNewAccountFromPrivateKey(t *testing.T) {
 
 	t.Run("ValidateAccountCreation", func(t *testing.T) {
 		assert.NotNil(t, account)
-		assert.Equal(t, uint8(AccountLastVersion), account.Version)
+		assert.Equal(t, uint8(LastVersion), account.Version)
 		assert.Equal(t, nickname, account.Nickname)
 
 		expectedPublicKey := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
@@ -118,7 +118,7 @@ PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 2
 	sampleSalt := [16]byte{145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170}
 	sampleNonce := [12]byte{113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63}
 	sampleAccount, err := New(
-		uint8(AccountLastVersion),
+		uint8(LastVersion),
 		nickname,
 		&types.Address{
 			Object: &object.Object{
@@ -158,7 +158,7 @@ PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 2
 		err := account.Unmarshal([]byte(accountText))
 		assert.NoError(t, err)
 
-		assert.Equal(t, uint8(AccountLastVersion), account.Version)
+		assert.Equal(t, uint8(LastVersion), account.Version)
 		assert.Equal(t, nickname, account.Nickname)
 		assert.Equal(t, sampleSalt, account.Salt)
 		assert.Equal(t, sampleNonce, account.Nonce)

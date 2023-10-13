@@ -34,6 +34,7 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	if err != nil {
 		errMsg := "Unable to retrieve accounts infos"
 		fmt.Printf("%s: %v", errMsg, err)
+
 		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
@@ -47,6 +48,7 @@ func (h *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))
 		wlts = append(wlts, &modelWallet)
 	}
+
 	for u := 0; u < len(walletsWithError); u++ {
 		modelWalletErr := createModelWallet(walletsWithError[u])
 		wlts = append(wlts, &modelWalletErr)
@@ -60,6 +62,7 @@ func splitWalletsPerReadError(wallets []wallet.Wallet, err error) ([]wallet.Wall
 		walletsWithError    []wallet.Wallet
 		walletsWithoutError []wallet.Wallet
 	)
+
 	for _, w := range wallets {
 		if w.Status == wallet.StatusOK {
 			walletsWithoutError = append(walletsWithoutError, w)
@@ -67,5 +70,6 @@ func splitWalletsPerReadError(wallets []wallet.Wallet, err error) ([]wallet.Wall
 			walletsWithError = append(walletsWithError, w)
 		}
 	}
+
 	return walletsWithError, walletsWithoutError
 }

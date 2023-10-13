@@ -35,6 +35,7 @@ func TestLoadAccountsStore(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
 	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
 	assert.NoError(t, err)
+
 	defer func() {
 		tmpFile.Close()
 		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test

@@ -85,22 +85,26 @@ func Generate(password *memguard.LockedBuffer, nickname string) (*Account, error
 	}
 
 	var salt [16]byte
+
 	_, err = rand.Read(salt[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random salt: %w", err)
 	}
 
 	var nonce [12]byte
+
 	_, err = rand.Read(nonce[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
 	privateKey := memguard.NewBufferFromBytes(privateKeyBytes)
+
 	encryptedSecret, err := seal(privateKey, password, salt[:], nonce[:])
 	if err != nil {
 		return nil, fmt.Errorf("sealing secret: %w", err)
 	}
+
 	password.Destroy()
 
 	publicKey := types.PublicKey{
@@ -129,18 +133,21 @@ func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, private
 	version := uint8(AccountLastVersion)
 
 	var salt [16]byte
+
 	_, err := rand.Read(salt[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random salt: %w", err)
 	}
 
 	var nonce [12]byte
+
 	_, err = rand.Read(nonce[:])
 	if err != nil {
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
 	seed, privateKeyVersion, err := base58.CheckDecode(string(privateKeyText.Bytes()[1:])) // omit the first byte because it's 'S' for secret key
+
 	seedBuffer := memguard.NewBufferFromBytes(seed)
 	if err != nil {
 		seedBuffer.Destroy()
@@ -170,6 +177,7 @@ func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, private
 
 	publicKey, err := encryptedPrivateKey.PublicKey(password, salt[:], nonce[:])
 	password.Destroy()
+
 	if err != nil {
 		return nil, fmt.Errorf("getting public key from encrypted private key: %w", err)
 	}

@@ -54,6 +54,7 @@ func (m *mockResponseWriter) Write(p []byte) (int, error) {
 	if m.errOnWrite {
 		return 0, assert.AnError
 	}
+
 	return m.ResponseRecorder.Write(p)
 }
 

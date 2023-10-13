@@ -27,6 +27,7 @@ func HandleWebApp(params operations.WebAppParams) middleware.Responder {
 	resourceContent, err := contentWebApp.ReadFile(basePathWebApp + resourceName)
 	if err != nil {
 		resourceName = "index.html"
+
 		resourceContent, err = contentWebApp.ReadFile(basePathWebApp + resourceName)
 		if err != nil {
 			return operations.NewWebAppNotFound()

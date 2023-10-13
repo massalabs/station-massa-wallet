@@ -81,6 +81,7 @@ func (m *walletUpdateAccount) handleUpdateAccount(wlt *wallet.Wallet, newNicknam
 
 	// persist new nickname before deleting old file
 	wlt.Nickname = string(newNickname)
+
 	err = wlt.Persist()
 	if err != nil {
 		return nil, &wallet.WalletError{

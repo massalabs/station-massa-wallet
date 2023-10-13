@@ -31,6 +31,7 @@ func (n *NodeFetcher) DatastoreAssetName(contractAddress string) (string, error)
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch asset name: %w", err)
 	}
+
 	return string(nameData), nil
 }
 
@@ -40,6 +41,7 @@ func (n *NodeFetcher) DatastoreAssetSymbol(contractAddress string) (string, erro
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch asset symbol: %w", err)
 	}
+
 	return string(symbolData), nil
 }
 
@@ -49,6 +51,7 @@ func (n *NodeFetcher) DatastoreAssetDecimals(contractAddress string) (uint8, err
 	if err != nil {
 		return 0, fmt.Errorf("failed to fetch asset decimals: %w", err)
 	}
+
 	return uint8(decimalsData[0]), nil
 }
 
@@ -83,5 +86,6 @@ func DatastoreEntry(contractAddress string, key []byte) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch datastore entry: %w", err)
 	}
+
 	return entry.CandidateValue, nil
 }

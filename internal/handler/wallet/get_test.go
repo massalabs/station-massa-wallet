@@ -144,6 +144,7 @@ func assertWalletContent(t *testing.T, wallet models.Account, cyphered bool) {
 	assert.NotEmpty(t, wallet.Nickname)
 	assert.NotEmpty(t, wallet.CandidateBalance)
 	assert.NotEmpty(t, wallet.Balance)
+
 	if cyphered {
 		assert.Empty(t, wallet.KeyPair)
 	} else {

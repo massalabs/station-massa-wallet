@@ -39,7 +39,9 @@ func NewWalletApp() *WalletApp {
 		Shutdown:    false,
 		IsListening: false,
 	}
+
 	go app.cleanExit()
+
 	return app
 }
 
@@ -55,6 +57,7 @@ func (a *WalletApp) Startup(ctx context.Context) {
 
 func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	a.Hide()
+
 	if a.Shutdown {
 		return false
 	}
@@ -64,6 +67,7 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 		fmt.Println("canceling prompt before closing")
 		a.CtrlChan <- Cancel
 	}
+
 	runtime.WindowReloadApp(a.Ctx)
 
 	return true

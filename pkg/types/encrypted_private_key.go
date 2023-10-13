@@ -50,6 +50,7 @@ func (e *EncryptedPrivateKey) MarshalText() ([]byte, error) {
 	if err := e.validate(); err != nil {
 		return nil, err
 	}
+
 	return e.Object.MarshalText()
 }
 
@@ -145,6 +146,7 @@ func (e *EncryptedPrivateKey) PasswordIsValid(password *memguard.LockedBuffer, s
 	if err != nil {
 		return false
 	}
+
 	privateKeyInClear.Destroy()
 
 	return err == nil
