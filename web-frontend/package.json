@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 8080",
     "build": "tsc && vite build --mode massastation",
     "build:standalone": "tsc && vite build --mode standalone",
     "preview": "vite preview",
@@ -12,6 +12,11 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
+    "cy:open": "cypress open",
+    "cy:e2e": "start-server-and-test dev http://localhost:8080 'cypress run --browser chrome'",
+    "cy:e2e-ci": "start-server-and-test dev http://localhost:8080 'cypress run --browser chrome --env VITE_CI_TEST=true'",
+    "cy:component": "cypress run --component --browser chrome",
+    "cy:component-ci": "cypress run --component --browser chrome --env VITE_CI_TEST=true",
     "fmt": "npm run prettier:fix && npm run lint:fix",
     "fmt:check": "npm run prettier && npm run lint",
     "prepare": "cd .. && husky install web-frontend/.husky"
@@ -48,6 +53,8 @@
     "@vitejs/plugin-react": "^4.0.0-beta.0",
     "autoprefixer": "^10.4.14",
     "babel-jest": "^29.5.0",
+    "cypress": "^13.3.1",
+    "cypress-image-diff-js": "^1.31.0",
     "eslint": "^8.38.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.28.0",
@@ -58,13 +65,20 @@
     "jest-environment-jsdom": "^29.6.4",
     "lint-staged": "^13.2.1",
     "miragejs": "^0.1.47",
+    "npm-platform-dependencies": "^0.0.1",
     "postcss": "^8.4.23",
     "postcss-loader": "^7.2.4",
     "prop-types": "^15.8.1",
     "react-icons": "^4.8.0",
     "react-test-renderer": "^18.2.0",
+    "start-server-and-test": "^2.0.1",
     "tailwindcss": "^3.3.1",
     "typescript": "^5.0.2",
     "vite": "^4.3.9"
+  },
+  "darwinDependencies": {
+    "devDependencies": {
+      "@esbuild/darwin-arm64": "^0.19.4"
+    }
   }
 }

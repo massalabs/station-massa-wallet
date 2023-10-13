@@ -13,3 +13,8 @@ wails-frontend/dist
 internal/handler/wallet/*.yaml
 internal/handler/html/dist
 internal/handler/wallet/assets.json
+
+web-frontend/cypress-visual-report
+web-frontend/cypress/screenshots
+web-frontend/cypress-visual-screenshots/comparison
+web-frontend/cypress-visual-screenshots/diff
