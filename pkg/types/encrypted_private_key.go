@@ -93,7 +93,7 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 
 	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
-		return nil, fmt.Errorf("Sign: %w", err)
+		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
 
 	defer privateKeyInClear.Destroy()
