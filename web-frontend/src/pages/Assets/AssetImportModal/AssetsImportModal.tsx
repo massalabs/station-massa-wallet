@@ -78,7 +78,7 @@ export function AssetsImportModal(props: ImportModalProps) {
         );
         break;
       default:
-        toast.error(Intl.t('assets.import.failure-screen.unkown-error'));
+        toast.error(Intl.t('assets.import.failure-screen.unknown-error'));
     }
   }
 

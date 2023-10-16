@@ -60,7 +60,7 @@ export function routesForAccounts(server: Server) {
         return new Response(
           404,
           {},
-          { code: '404', error: 'Failed to retreive assets' },
+          { code: '404', error: 'Failed to retrieve assets' },
         );
 
       return accounts.assets.models;
