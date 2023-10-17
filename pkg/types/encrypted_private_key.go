@@ -141,8 +141,8 @@ func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuf
 	return privateKeyBuffer, nil
 }
 
-// PasswordIsValid returns true if the password is valid for the account. It destroys the password.
-func (e *EncryptedPrivateKey) PasswordIsValid(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) bool {
+// HasAccess returns true if the password is valid for the account. It destroys the password.
+func (e *EncryptedPrivateKey) HasAccess(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) bool {
 	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
 		return false

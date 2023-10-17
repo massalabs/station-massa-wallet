@@ -214,9 +214,9 @@ func (a *Account) Marshal() ([]byte, error) {
 	return yaml.Marshal(a)
 }
 
-// PasswordIsValid returns true if the password is valid for the account. It destroys the password.
-func (a *Account) PasswordIsValid(password *memguard.LockedBuffer) bool {
-	return a.CipheredData.PasswordIsValid(password, a.Salt[:], a.Nonce[:], a.CipheredData.Data)
+// HasAccess returns true if the password is valid for the account. It destroys the password.
+func (a *Account) HasAccess(password *memguard.LockedBuffer) bool {
+	return a.CipheredData.HasAccess(password, a.Salt[:], a.Nonce[:], a.CipheredData.Data)
 }
 
 func (a *Account) Unmarshal(data []byte) error {
