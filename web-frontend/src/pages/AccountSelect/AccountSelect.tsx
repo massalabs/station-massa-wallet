@@ -39,7 +39,10 @@ export default function AccountSelect() {
       {isLoading ? (
         <Loading />
       ) : hasAccounts ? (
-        <div className="flex flex-col justify-center items-center h-screen">
+        <div
+          className="flex flex-col justify-center items-center h-screen"
+          data-testid="account-select-page"
+        >
           <div className="flex flex-col justify-center items-start w-full h-full max-w-lg">
             <h1 className="mas-banner text-f-primary pb-6">
               {Intl.t('account.header.title')}
@@ -47,12 +50,17 @@ export default function AccountSelect() {
             <label className="mas-body text-info pb-6" htmlFor="account-select">
               {Intl.t('account.select')}
             </label>
-            <div id="account-select" className="pb-4 w-full">
+            <div
+              id="account-select"
+              className="pb-4 w-full"
+              data-testid="account-select-list"
+            >
               {accounts.map((account: AccountObject, index: number) => (
                 <Link
                   key={index}
                   className="w-full"
                   to={routeFor(`${account.nickname}/home`)}
+                  data-testid={`account-select-list-${index}`}
                 >
                   <div className="pb-4" key={account.nickname}>
                     <Selector
@@ -66,7 +74,10 @@ export default function AccountSelect() {
                   </div>
                 </Link>
               ))}
-              <Link to={routeFor('account-create')}>
+              <Link
+                to={routeFor('account-create')}
+                data-testid="account-create"
+              >
                 <Button variant="secondary" preIcon={<FiPlus />}>
                   {Intl.t('account.add')}
                 </Button>

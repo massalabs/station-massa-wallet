@@ -1,0 +1,61 @@
+[
+  {
+    "address": "AU123456789abcdef",
+    "balance": "1000",
+    "candidateBalance": "500",
+    "keyPair": {
+      "publicKey": "123abc",
+      "privateKey": "456def"
+    },
+    "nickname": "Account1",
+    "assets": [
+      {
+        "name": "Asset1",
+        "value": "200"
+      },
+      {
+        "name": "Asset2",
+        "value": "300"
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "address": "AUabcdef123456789",
+    "balance": "800",
+    "candidateBalance": "400",
+    "keyPair": {
+      "publicKey": "789ghi",
+      "privateKey": "012jkl"
+    },
+    "nickname": "Account2",
+    "assets": [
+      {
+        "name": "Asset3",
+        "value": "150"
+      }
+    ],
+    "status": "active"
+  },
+  {
+    "address": "AU789abcdef123456",
+    "balance": "1200",
+    "candidateBalance": "600",
+    "keyPair": {
+      "publicKey": "345mno",
+      "privateKey": "678pqr"
+    },
+    "nickname": "Account3",
+    "assets": [
+      {
+        "name": "Asset4",
+        "value": "250"
+      },
+      {
+        "name": "Asset5",
+        "value": "200"
+      }
+    ],
+    "status": "active"
+  }
+]
