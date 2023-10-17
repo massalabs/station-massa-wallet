@@ -47,7 +47,7 @@
         "invalid-address": "The provided address is not valid.",
         "not-found": "The asset with the provided address was not found in the network.",
         "internal-server-error": "An error occurred while trying to add the asset. Please try again later.",
-        "unkown-error": "Oops, an unknown error occurred. Please try again later."
+        "unknown-error": "Oops, an unknown error occurred. Please try again later."
       }
     }
   },
