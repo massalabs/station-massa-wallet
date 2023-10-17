@@ -38,6 +38,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	if err != nil {
 		// Handle the error and return an internal server error response
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", "MASSA", err.Error())
+
 		return operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
 			Code:    errorFetchAssetBalance,
 			Message: errorMsg,
@@ -63,6 +64,7 @@ func (h *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		if err != nil {
 			// Handle the error and return an internal server error response
 			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
+
 			return operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
 				Code:    errorFetchAssetBalance,
 				Message: errorMsg,

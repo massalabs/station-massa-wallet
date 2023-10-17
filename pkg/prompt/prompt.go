@@ -61,6 +61,7 @@ func WakeUpPrompt(
 		fmt.Println(AlreadyListeningErr)
 		return nil, fmt.Errorf(AlreadyListeningErr)
 	}
+
 	prompterApp.Lock()
 	defer prompterApp.Unlock()
 
@@ -74,7 +75,6 @@ func WakeUpPrompt(
 	for {
 		select {
 		case input := <-prompterApp.App().PromptInput:
-
 			var keepListening bool
 			var err error
 
@@ -96,13 +96,16 @@ func WakeUpPrompt(
 
 			if err != nil {
 				fmt.Println(err)
+
 				if !keepListening {
 					return nil, err
 				}
 			}
+
 			if keepListening {
 				continue
 			}
+
 			return output, nil
 
 		case <-prompterApp.App().CtrlChan:

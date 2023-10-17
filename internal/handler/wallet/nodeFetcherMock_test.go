@@ -25,6 +25,7 @@ func (n *NodeFetcherMock) GetAccountsInfos(wlt []wallet.Wallet) ([]network.Accou
 			Balance:          uint64(i + 1*1000000),
 		}
 	}
+
 	return infos, nil
 }
 

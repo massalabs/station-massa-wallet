@@ -14,6 +14,7 @@ func (e *envPrompter) PromptRequest(req PromptRequest) {
 	// create a go routine to send password when requested
 	go func() {
 		password := os.Getenv("WALLET_PASSWORD")
+
 		switch req.Action {
 		case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.NewPassword, walletapp.Unprotect:
 			e.PromptApp.PromptInput <- password

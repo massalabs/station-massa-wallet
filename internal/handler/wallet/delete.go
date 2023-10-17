@@ -68,6 +68,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 		fmt.Println(errStr)
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
+
 		return operations.NewDeleteAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    utils.ErrAccountFile,

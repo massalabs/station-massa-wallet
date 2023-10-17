@@ -76,6 +76,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 
 	var correlationId models.CorrelationID
+
 	promptRequest, err := s.getPromptRequest(params.Body.Operation.String(), wlt, params.Body.Description)
 	if err != nil {
 		return s.handleBadRequest(errorSignDecodeMessage)
@@ -129,6 +130,7 @@ func (s *walletSign) Handle(params operations.SignParams) middleware.Responder {
 func (s *walletSign) handleBadRequest(errorCode string) middleware.Responder {
 	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 	return operations.NewSignBadRequest().WithPayload(
 		&models.Error{
 			Code:    errorCode,
@@ -253,6 +255,7 @@ func (s *walletSign) prepareRollPromptRequest(
 	expiry uint64,
 ) prompt.PromptRequest {
 	operationType := ""
+
 	switch msg.OperationID {
 	case 1:
 		operationType = BuyRoll
@@ -346,6 +349,7 @@ func handleWithCorrelationId(
 					Message: fmt.Sprintf("Error given correlation id not in cache: %v", err.Error()),
 				})
 		}
+
 		return operations.NewSignInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorSignLoadCache,

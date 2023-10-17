@@ -42,6 +42,7 @@ func GetNetworkInfo() (*NetworkInfo, error) {
 	}
 
 	var data NetworkInfo
+
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		logFallback("parse JSON", err)

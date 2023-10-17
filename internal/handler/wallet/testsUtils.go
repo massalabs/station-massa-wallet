@@ -26,6 +26,7 @@ func cleanupTestData(nicknames []string) error {
 		if err != nil {
 			return err
 		}
+
 		err = w.DeleteFile()
 		if err != nil {
 			return err

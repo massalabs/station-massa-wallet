@@ -24,6 +24,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 	// Concurrently fetch asset name
 	go func() {
 		defer wg.Done()
+
 		nameData, err := massaClient.DatastoreAssetName(contractAddress)
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset name: %w", err)
@@ -35,6 +36,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 	// Concurrently fetch asset symbol
 	go func() {
 		defer wg.Done()
+
 		symbolData, err := massaClient.DatastoreAssetSymbol(contractAddress)
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset symbol: %w", err)
@@ -46,6 +48,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 	// Concurrently fetch asset decimals
 	go func() {
 		defer wg.Done()
+
 		decimals, err := massaClient.DatastoreAssetDecimals(contractAddress)
 		if err != nil {
 			errCh <- fmt.Errorf("failed to fetch asset decimals: %w", err)

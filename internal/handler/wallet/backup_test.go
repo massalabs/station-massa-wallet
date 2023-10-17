@@ -21,6 +21,7 @@ func backupWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 
 	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/backup", nickname), "")
 	assert.NoError(t, err)
+
 	return resp
 }
 

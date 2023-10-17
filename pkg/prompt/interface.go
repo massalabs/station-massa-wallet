@@ -37,6 +37,7 @@ func (w *PromptLocker) Unlock() {
 func (w *PromptLocker) IsListening() bool {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
+
 	return w.PromptApp.IsListening
 }
 

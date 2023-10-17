@@ -79,6 +79,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 	//ICOQUEST: To be removed when ICO is over
 	//nolint:errcheck
 	ico.ValidateQuest("CREATE_WALLET", wlt.Address)
+
 	return operations.NewCreateAccountOK().WithPayload(
 		&models.Account{
 			Nickname:         models.Nickname(wlt.Nickname),

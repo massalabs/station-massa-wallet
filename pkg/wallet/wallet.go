@@ -11,13 +11,13 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"runtime"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/logger"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/exp/slices"
@@ -39,7 +39,6 @@ const (
 	UserAddressPrefix         = "AU"
 	PublicKeyPrefix           = "P"
 	PrivateKeyPrefix          = "S"
-	MaxNicknameLength         = 32
 	AccountVersion            = 1
 	StatusOK                  = "ok"
 	StatusCorrupted           = "corrupted"
@@ -191,10 +190,12 @@ func Xor(a, b []byte) ([]byte, error) {
 	if len(a) != len(b) {
 		return nil, fmt.Errorf("length of two arrays must be same")
 	}
+
 	result := make([]byte, len(a))
 	for i := 0; i < len(a); i++ {
 		result[i] = a[i] ^ b[i]
 	}
+
 	return result, nil
 }
 
@@ -251,6 +252,7 @@ func MigrateWallet() error {
 			}
 
 			fmt.Println("Migrating wallet from", oldFilePath, "to", newFilePath) // Log
+
 			err = os.Rename(oldFilePath, newFilePath)
 			if err != nil {
 				return fmt.Errorf("moving account file from '%s' to '%s': %w", oldFilePath, newFilePath, err)
@@ -319,6 +321,7 @@ func LoadAll() ([]Wallet, error) {
 	}
 
 	wallets := []Wallet{}
+
 	for _, f := range files {
 		fileName := f.Name()
 		filePath := path.Join(walletDir, fileName)
@@ -326,11 +329,11 @@ func LoadAll() ([]Wallet, error) {
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			wallet, loadErr := LoadFile(filePath)
 			wallets = append(wallets, wallet)
+
 			if loadErr != nil {
 				logger.Errorf("while loading wallet '%s': %s", filePath, loadErr.Err)
 				continue
 			}
-
 		}
 	}
 
@@ -378,9 +381,11 @@ func LoadFile(filePath string) (Wallet, *WalletError) {
 	baseAccount := Wallet{
 		Nickname: nicknameFromFileName,
 	}
+
 	if walletHasNickname {
 		baseAccount.Nickname = accountSerialized.Nickname
 	}
+
 	errMissingFields := checkMandatoryFields(accountSerialized)
 	if errMissingFields != nil {
 		return baseAccount, errMissingFields
@@ -462,6 +467,7 @@ func DeleteAccount(nickname string) error {
 func NicknameFromFilePath(filePath string) string {
 	_, nicknameFromFileName := filepath.Split(filePath)
 	nicknameFromFileName = strings.TrimPrefix(nicknameFromFileName, "wallet_")
+
 	return strings.TrimSuffix(nicknameFromFileName, ".yaml")
 }
 
@@ -501,6 +507,7 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("decoding private key: %w", err), utils.ErrInvalidPrivateKey}
 	}
+
 	if !VersionIsKnown(version, []byte{PrivKeyVersion}) {
 		return nil, &WalletError{fmt.Errorf("unknown private key version: %d", version), utils.ErrInvalidPrivateKey}
 	}
@@ -528,19 +535,21 @@ func Import(nickname string, privateKeyB58V string, password string) (*Wallet, *
 // It protects the private key with the given password.
 func createAccountFromKeys(nickname string, privateKey, publicKey VersionedKey, password string) (*Wallet, *WalletError) {
 	var salt [16]byte
+
 	_, err := rand.Read(salt[:])
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("generating random salt: %w", err), utils.ErrUnknown}
 	}
 
 	var nonce [12]byte
+
 	_, err = rand.Read(nonce[:])
 	if err != nil {
 		return nil, &WalletError{fmt.Errorf("generating random nonce: %w", err), utils.ErrUnknown}
 	}
 
 	// Validate nickname
-	if !NicknameIsValid(nickname) {
+	if !account.NicknameIsValid(nickname) {
 		return nil, &WalletError{fmt.Errorf("invalid nickname"), utils.ErrInvalidNickname}
 	}
 
@@ -595,19 +604,6 @@ func NicknameIsUnique(nickname string) error {
 	}
 
 	return nil
-}
-
-// NicknameIsValid validates the nickname using the following rules:
-// - must have at least 1 character
-// - must contain only alphanumeric characters, underscores and dashes
-// - must not exceed MaxNicknameLength characters
-func NicknameIsValid(nickname string) bool {
-	return CheckAlphanumeric(nickname) && len(nickname) <= MaxNicknameLength
-}
-
-func CheckAlphanumeric(str string) bool {
-	regex := regexp.MustCompile("^[a-zA-Z0-9-_]+$")
-	return regex.MatchString(str)
 }
 
 func AddressIsUnique(address string) error {

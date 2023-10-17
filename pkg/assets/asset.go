@@ -74,6 +74,7 @@ func (s *AssetsStore) loadaccountsStore(assetsJSONPath string) error {
 			Assets []assetData `json:"assets"`
 		} `json:"accounts"`
 	}
+
 	if err := json.Unmarshal(data, &accountsData); err != nil {
 		return errors.Wrap(err, "failed to unmarshal JSON data")
 	}
@@ -112,6 +113,7 @@ func (s *AssetsStore) AssetExists(nickname, contractAddress string) bool {
 
 	// Look up the asset information in the ContractAssets map of the specific account
 	_, assetFound := accountAssets.ContractAssets[contractAddress]
+
 	return assetFound
 }
 
@@ -130,6 +132,7 @@ func (s *AssetsStore) save() error {
 
 	for accountName, accountAssets := range s.Assets {
 		var assetsData assetsData
+
 		for contractAddress, assetInfo := range accountAssets.ContractAssets {
 			asset := assetData{
 				ContractAddress: contractAddress,

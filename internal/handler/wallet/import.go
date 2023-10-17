@@ -32,6 +32,7 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 	if err != nil {
 		// an event has been emitted during WakeUpPrompt
 		errStr := fmt.Sprintf("Unable to import account: %v", err)
+
 		return operations.NewImportAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,
@@ -44,8 +45,10 @@ func (h *wImport) Handle(_ operations.ImportAccountParams) middleware.Responder 
 	err = wlt.Persist()
 	if err != nil {
 		errStr := fmt.Sprintf("Unable to persist imported account: %v", err)
+
 		h.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
+
 		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorImportWallet,

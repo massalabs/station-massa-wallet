@@ -9,6 +9,7 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -38,7 +39,9 @@ func NewWalletApp() *WalletApp {
 		Shutdown:    false,
 		IsListening: false,
 	}
+
 	go app.cleanExit()
+
 	return app
 }
 
@@ -54,6 +57,7 @@ func (a *WalletApp) Startup(ctx context.Context) {
 
 func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	a.Hide()
+
 	if a.Shutdown {
 		return false
 	}
@@ -63,6 +67,7 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 		fmt.Println("canceling prompt before closing")
 		a.CtrlChan <- Cancel
 	}
+
 	runtime.WindowReloadApp(a.Ctx)
 
 	return true
@@ -135,5 +140,5 @@ func (a *WalletApp) IsNicknameUnique(nickname string) bool {
 }
 
 func (a *WalletApp) IsNicknameValid(nickname string) bool {
-	return wallet.NicknameIsValid(nickname)
+	return account.NicknameIsValid(nickname)
 }

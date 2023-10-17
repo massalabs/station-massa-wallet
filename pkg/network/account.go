@@ -43,11 +43,13 @@ func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]AccountInfos, err
 	res := make([]AccountInfos, len(infos))
 	for i, info := range infos {
 		res[i].Address = info.Address
+
 		nano, err := utils.MasToNano(info.CandidateBalance)
 		if err != nil {
 			return nil, err
 		}
 		res[i].CandidateBalance = nano
+
 		nano, err = utils.MasToNano(info.FinalBalance)
 		if err != nil {
 			return nil, err

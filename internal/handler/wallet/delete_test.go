@@ -19,6 +19,7 @@ func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 
 	resp, err := handleHTTPRequest(handler, "DELETE", fmt.Sprintf("/api/accounts/%s", nickname), "")
 	assert.NoError(t, err)
+
 	return resp
 }
 

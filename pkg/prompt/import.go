@@ -7,6 +7,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
 func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) (*wallet.Wallet, bool, error) {
@@ -29,42 +30,48 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*wa
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidFileExtension})
 		return nil, false, fmt.Errorf(InvalidAccountFileErr)
 	}
-	account, loadErr := wallet.LoadFile(filePath)
+
+	acc, loadErr := wallet.LoadFile(filePath)
 	if loadErr != nil {
 		errStr := fmt.Sprintf("%v: %v", AccountLoadErr, loadErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: loadErr.CodeErr})
+
 		return nil, false, fmt.Errorf(errStr)
 	}
 
 	// Validate nickname
-	if !wallet.NicknameIsValid(account.Nickname) {
+	if !account.NicknameIsValid(acc.Nickname) {
 		errorCode := utils.ErrInvalidNickname
-		fmt.Printf("error while importing: invalid nickname: '%s'\n", account.Nickname)
+
+		fmt.Printf("error while importing: invalid nickname: '%s'\n", acc.Nickname)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
 	// Validate nickname uniqueness
-	err := wallet.NicknameIsUnique(account.Nickname)
+	err := wallet.NicknameIsUnique(acc.Nickname)
 	if err != nil {
 		errorCode := utils.ErrDuplicateNickname
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
 	// Validate unique private key
-	err = wallet.AddressIsUnique(account.Address)
+	err = wallet.AddressIsUnique(acc.Address)
 	if err != nil {
 		errorCode := utils.ErrDuplicateKey
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: errorCode})
+
 		return nil, false, fmt.Errorf(errorCode)
 	}
 
-	return &account, false, nil
+	return &acc, false, nil
 }
 
 func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportFromPKey) (*wallet.Wallet, bool, error) {
@@ -73,6 +80,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, importErr.Err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: importErr.CodeErr})
+
 		return nil, false, fmt.Errorf(errStr)
 	}
 

@@ -13,8 +13,8 @@ type PublicKey struct {
 }
 
 // validate ensures the Object.Kind is an PublicKey type and the version is supported.
-func (a *PublicKey) validate() error {
-	err := a.Object.Validate(PublicKeyLastVersion, object.PublicKey)
+func (p *PublicKey) validate() error {
+	err := p.Object.Validate(PublicKeyLastVersion, object.PublicKey)
 	if err != nil {
 		return err
 	}
@@ -23,8 +23,8 @@ func (a *PublicKey) validate() error {
 }
 
 // Custom YAML marshaller for PublicKey
-func (pk PublicKey) MarshalYAML() (interface{}, error) {
-	return pk.MarshalBinary()
+func (p PublicKey) MarshalYAML() (interface{}, error) {
+	return p.MarshalBinary()
 }
 
 // Custom YAML unmarshaller for PublicKey
@@ -38,37 +38,45 @@ func (pk *PublicKey) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 // MarshalText overloads the TextMarshaler interface for PublicKey.
-func (a *PublicKey) MarshalText() ([]byte, error) {
-	if err := a.validate(); err != nil {
+func (p *PublicKey) MarshalText() ([]byte, error) {
+	if err := p.validate(); err != nil {
 		return nil, err
 	}
 
-	return a.Object.MarshalText()
+	return p.Object.MarshalText()
 }
 
 // UnmarshalText overloads the TextUnmarshaler interface for PublicKey.
-func (a *PublicKey) UnmarshalText(text []byte) error {
-	if err := a.Object.UnmarshalText(text); err != nil {
+func (p *PublicKey) UnmarshalText(text []byte) error {
+	if err := p.Object.UnmarshalText(text); err != nil {
 		return err
 	}
 
-	return a.validate()
+	return p.validate()
 }
 
 // MarshalBinary overloads the BinaryMarshaler interface for PublicKey.
-func (a *PublicKey) MarshalBinary() ([]byte, error) {
-	if err := a.validate(); err != nil {
+func (p *PublicKey) MarshalBinary() ([]byte, error) {
+	if err := p.validate(); err != nil {
 		return nil, err
 	}
 
-	return a.Object.MarshalBinary()
+	return p.Object.MarshalBinary()
 }
 
 // UnmarshalBinary overloads the BinaryUnmarshaler interface for PublicKey.
-func (a *PublicKey) UnmarshalBinary(data []byte) error {
-	if err := a.Object.UnmarshalBinary(data); err != nil {
+func (p *PublicKey) UnmarshalBinary(data []byte) error {
+	if p.Object == nil {
+		p.Object = &object.Object{
+			Kind:    object.PublicKey,
+			Version: 0x00,
+			Data:    nil,
+		}
+	}
+
+	if err := p.Object.UnmarshalBinary(data); err != nil {
 		return err
 	}
 
-	return a.validate()
+	return p.validate()
 }

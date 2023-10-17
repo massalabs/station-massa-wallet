@@ -71,6 +71,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, tradeRollError.Err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: tradeRollError.CodeErr})
+
 		return operations.NewTradeRollsInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
@@ -80,6 +81,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, CodeMessage: utils.MsgRollTradeSuccess})
+
 	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,

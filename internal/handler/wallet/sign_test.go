@@ -24,6 +24,7 @@ func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname stri
 
 	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body)
 	assert.NoError(t, err)
+
 	return resp
 }
 

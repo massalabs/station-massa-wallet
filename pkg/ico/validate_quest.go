@@ -14,8 +14,8 @@ const (
 // ValidateQuest validates a quest for a given address.
 func ValidateQuest(questID string, address string) error {
 	url := url + projectName + "/" + questID + "/" + address
-	_, err := http.Post(url, "", nil)
 
+	_, err := http.Post(url, "", nil)
 	if err != nil {
 		fmt.Printf("error validating quest: %v\n", err)
 	} else {

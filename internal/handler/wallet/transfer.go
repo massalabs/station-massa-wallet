@@ -85,6 +85,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		errStr := fmt.Sprintf("error transferring coin: %v", transferError.Err.Error())
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: transferError.CodeErr})
+
 		return operations.NewTransferCoinInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorTransferCoin,
@@ -94,6 +95,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true, CodeMessage: utils.MsgTransferSuccess})
+
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,

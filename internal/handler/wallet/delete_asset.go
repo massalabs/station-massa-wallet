@@ -41,5 +41,6 @@ func (h *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Res
 	}
 
 	response := operations.NewDeleteAssetNoContent()
+
 	return response
 }

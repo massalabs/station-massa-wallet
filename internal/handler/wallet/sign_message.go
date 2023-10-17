@@ -69,6 +69,7 @@ func (s *walletSignMessage) prepareSignMessagePromptRequest(wlt *wallet.Wallet, 
 	if body.DisplayData != nil {
 		DisplayData = *body.DisplayData
 	}
+
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),

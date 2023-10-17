@@ -101,6 +101,7 @@ func TestEncryptedPrivateKey(t *testing.T) {
 	// secretBuffer is the secret key in clear without the version.
 	secretBuffer := memguard.NewBufferFromBytes([]byte{216, 39, 16, 253, 102, 99, 172, 42, 205, 205, 17, 23, 123, 144, 171, 13, 91, 219, 194, 251, 186, 234, 11, 222, 23, 221, 6, 75, 22, 61, 235, 254, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147})
 	encryptedSecret := crypto.SealSecret(aeadCipher, sampleNonce, secretBuffer)
+
 	secretKey.Destroy()
 
 	// Prepare the encrypted private key object
