@@ -100,7 +100,7 @@ The primary module detailed in this document, consisting of:
 
 This diagram visually represents the interactions between the user and the Massa Station system, focusing on the Wallet module:
 
-[plantuml, format="svg", id="use-case", width="100%", pdfwidth="100%"]
+[plantuml, format="svg", id="use-case", width="80%", role="center-image"]
 ----
 @startuml
 left to right direction
@@ -235,7 +235,7 @@ Understanding the types of data and their significance is essential. Here's a br
 
 The flow diagram visually represents how different components of the Massa Station Wallet interact and communicate. This aids in understanding the data flow and the relationships between various modules:
 
-[plantuml, format="svg", id="application-mapping-diagram", width="100%", pdfwidth="100%"]
+[plantuml, format="svg", id="application-mapping-diagram", width="60%", role="center-image"]
 ----
 @startuml
 package "Browser" {
