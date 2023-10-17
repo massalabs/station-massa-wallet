@@ -16,8 +16,10 @@
     "cy:open": "cypress open",
     "cy:e2e": "start-server-and-test dev http://localhost:8080 'cypress run --browser chrome'",
     "cy:e2e-ci": "start-server-and-test dev http://localhost:8080 'cypress run --browser chrome --env VITE_CI_TEST=true'",
+    "postcy:e2e-ci": "mv -n cypress-visual-report/cypress-visual-report.html cypress-visual-report/cypress-visual-report-e2e.html",
     "cy:component": "cypress run --component --browser chrome",
-    "cy:component-ci": "cypress run --component --browser chrome --env VITE_CI_TEST=true",
+    "cy:component-ci": "export VITE_CI_TEST=true && cypress run --component --browser chrome",
+    "postcy:component-ci": "mv -n cypress-visual-report/cypress-visual-report.html cypress-visual-report/cypress-visual-report-component.html",
     "fmt": "npm run prettier:fix && npm run lint:fix",
     "fmt:check": "npm run prettier && npm run lint",
     "prepare": "cd .. && husky install web-frontend/.husky"

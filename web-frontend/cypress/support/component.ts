@@ -19,33 +19,3 @@ import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-
-import { mount } from 'cypress/react18';
-import compareSnapshotCommand from 'cypress-image-diff-js/dist/command';
-import { RecurseDefaults } from 'cypress-recurse';
-
-// Augment the Cypress namespace to include type definitions for
-// your custom command.
-// Alternatively, can be defined in cypress/support/component.d.ts
-// with a <reference path="./component" /> at the top of your spec.
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      compareSnapshot(
-        name: string,
-        testThreshold?: number,
-        retryOptions?: Partial<typeof RecurseDefaults>,
-      ): Chainable<Element>;
-    }
-    interface Chainable {
-      mount: typeof mount;
-    }
-  }
-}
-
-compareSnapshotCommand();
-
-Cypress.Commands.add('mount', mount);
-
-// Example use:
-// cy.mount(<MyComponent />)
