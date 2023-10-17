@@ -47,14 +47,22 @@ export default function AccountSelect() {
             <label className="mas-body text-info pb-6" htmlFor="account-select">
               {Intl.t('account.select')}
             </label>
-            <div id="account-select" className="pb-4 w-full">
+            <div
+              id="account-select"
+              className="pb-4 w-full"
+              data-testid="accounts-list"
+            >
               {accounts.map((account: AccountObject, index: number) => (
                 <Link
                   key={index}
                   className="w-full"
                   to={routeFor(`${account.nickname}/home`)}
                 >
-                  <div className="pb-4" key={account.nickname}>
+                  <div
+                    className="pb-4"
+                    key={account.nickname}
+                    data-testid={`account-${index}`}
+                  >
                     <Selector
                       preIcon={
                         <Identicon username={account.nickname} size={32} />
