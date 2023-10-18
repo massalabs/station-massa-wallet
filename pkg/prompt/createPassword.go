@@ -14,7 +14,5 @@ func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interfac
 
 	trimmedPassword := strings.TrimSpace(password)
 
-	guardedPassword := memguard.NewBufferFromBytes([]byte(trimmedPassword))
-
-	return guardedPassword, false, nil
+	return memguard.NewBufferFromBytes([]byte(trimmedPassword)), false, nil
 }

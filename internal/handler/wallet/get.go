@@ -59,9 +59,9 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 				})
 		}
 
-		guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+		password, _ := promptOutput.(*memguard.LockedBuffer)
 
-		guardedPrivateKey, err := acc.PrivateKeyTextInClear(guardedPassword)
+		guardedPrivateKey, err := acc.PrivateKeyTextInClear(password)
 		if err != nil {
 			return operations.NewGetAccountInternalServerError().WithPayload(&models.Error{
 				Code:    errorGetWallets,

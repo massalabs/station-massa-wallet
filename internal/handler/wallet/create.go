@@ -47,9 +47,9 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 		return newErrorResponse("Unable to create wallet", errorCanceledAction, http.StatusUnauthorized)
 	}
 
-	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+	password, _ := promptOutput.(*memguard.LockedBuffer)
 
-	acc, err := w.prompterApp.App().WalletManager.GenerateAccount(guardedPassword, nickname)
+	acc, err := w.prompterApp.App().WalletManager.GenerateAccount(password, nickname)
 	if err != nil {
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})

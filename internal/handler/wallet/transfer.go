@@ -69,10 +69,10 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		return newErrorResponse("Unable to unprotect wallet", errorCanceledAction, http.StatusUnauthorized)
 	}
 
-	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+	password, _ := promptOutput.(*memguard.LockedBuffer)
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(acc, guardedPassword, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	operation, err := doTransfer(acc, password, amount, fee, *params.Body.RecipientAddress, t.massaClient)
 	if err != nil {
 		msg := fmt.Sprintf("error transferring coin: %v", err.Error())
 
@@ -93,7 +93,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 func doTransfer(
 	acc *account.Account,
-	guardedPassword *memguard.LockedBuffer,
+	password *memguard.LockedBuffer,
 	amount, fee uint64,
 	recipientAddress string,
 	massaClient network.NodeFetcherInterface,
@@ -103,5 +103,5 @@ func doTransfer(
 		return nil, fmt.Errorf("Error during transaction creation: %w", err)
 	}
 
-	return network.SendOperation(acc, guardedPassword, massaClient, operation, fee)
+	return network.SendOperation(acc, password, massaClient, operation, fee)
 }

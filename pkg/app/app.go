@@ -137,9 +137,12 @@ type ImportFromPKey struct {
 
 func (a *WalletApp) ImportPrivateKey(privateKeyText string, nickname string, password string) {
 	guardedPrivateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
-	guardedPassword := memguard.NewBufferFromBytes([]byte(password))
 
-	a.PromptInput <- ImportFromPKey{PrivateKey: guardedPrivateKey, Nickname: nickname, Password: guardedPassword}
+	a.PromptInput <- ImportFromPKey{
+		PrivateKey: guardedPrivateKey,
+		Nickname:   nickname,
+		Password:   memguard.NewBufferFromBytes([]byte(password)),
+	}
 }
 
 func (a *WalletApp) IsNicknameUnique(nickname string) bool {

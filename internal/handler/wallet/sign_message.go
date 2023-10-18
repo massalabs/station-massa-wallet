@@ -56,9 +56,9 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 	}
 
-	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+	password, _ := promptOutput.(*memguard.LockedBuffer)
 
-	signature, err := acc.Sign(guardedPassword, []byte(params.Body.Message))
+	signature, err := acc.Sign(password, []byte(params.Body.Message))
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("unable to sign message: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}

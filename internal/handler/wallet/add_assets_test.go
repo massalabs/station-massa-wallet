@@ -29,8 +29,7 @@ func TestAddAssetHandler(t *testing.T) {
 	nickname := "GoodNickname"
 	password := "zePassword"
 
-	guardedPassword := memguard.NewBufferFromBytes([]byte(password))
-	_, err = account.Generate(guardedPassword, nickname)
+	_, err = account.Generate(memguard.NewBufferFromBytes([]byte(password)), nickname)
 	assert.Nil(t, err)
 
 	type testCase struct {

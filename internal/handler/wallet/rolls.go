@@ -59,9 +59,9 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+	password, _ := promptOutput.(*memguard.LockedBuffer)
 
-	operation, err := doTradeRolls(acc, guardedPassword, amount, fee, *params.Body.Side, t.massaClient)
+	operation, err := doTradeRolls(acc, password, amount, fee, *params.Body.Side, t.massaClient)
 	if err != nil {
 		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 
@@ -82,7 +82,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 func doTradeRolls(
 	acc *account.Account,
-	guardedPassword *memguard.LockedBuffer,
+	password *memguard.LockedBuffer,
 	amount, fee uint64,
 	side string,
 	massaClient network.NodeFetcherInterface,
@@ -94,5 +94,5 @@ func doTradeRolls(
 		operation = sellrolls.New(amount)
 	}
 
-	return network.SendOperation(acc, guardedPassword, massaClient, operation, fee)
+	return network.SendOperation(acc, password, massaClient, operation, fee)
 }

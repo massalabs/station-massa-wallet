@@ -63,8 +63,8 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 			return newErrorResponse(utils.ErrAccountFile, errorSaveAccount, http.StatusBadRequest)
 		}
 	} else {
-		guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
-		guardedPrivateKey, err := acc.PrivateKeyTextInClear(guardedPassword)
+		password, _ := promptOutput.(*memguard.LockedBuffer)
+		guardedPrivateKey, err := acc.PrivateKeyTextInClear(password)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorGetWallets, http.StatusInternalServerError)
 		}

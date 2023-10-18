@@ -25,7 +25,7 @@ func (n *NodeFetcher) MakeOperation(fee uint64, operation sendOperation.Operatio
 
 func SendOperation(
 	acc *account.Account,
-	guardedPassword *memguard.LockedBuffer,
+	password *memguard.LockedBuffer,
 	massaClient NodeFetcherInterface,
 	operation sendOperation.Operation,
 	fee uint64,
@@ -43,7 +43,7 @@ func SendOperation(
 	operationDataToSign := append(publicKey, operationData...)
 
 	// TODO: we do not implement the handling of the correlation id for now
-	signature, err := acc.Sign(guardedPassword, operationDataToSign)
+	signature, err := acc.Sign(password, operationDataToSign)
 	if err != nil {
 		return nil, fmt.Errorf("Error while signing operation: %w", err)
 	}
