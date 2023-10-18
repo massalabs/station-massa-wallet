@@ -99,7 +99,7 @@ func TestEncryptedPrivateKey(t *testing.T) {
 	aeadCipher, secretKey, err := crypto.NewSecretCipher(samplePassword.Bytes(), sampleSalt)
 	assert.NoError(t, err)
 	// secretBuffer is the secret key in clear without the version.
-	secretBuffer := memguard.NewBufferFromBytes([]byte{216, 39, 16, 253, 102, 99, 172, 42, 205, 205, 17, 23, 123, 144, 171, 13, 91, 219, 194, 251, 186, 234, 11, 222, 23, 221, 6, 75, 22, 61, 235, 254, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147})
+	secretBuffer := memguard.NewBufferFromBytes([]byte{0, 216, 39, 16, 253, 102, 99, 172, 42, 205, 205, 17, 23, 123, 144, 171, 13, 91, 219, 194, 251, 186, 234, 11, 222, 23, 221, 6, 75, 22, 61, 235, 254, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147})
 	encryptedSecret := crypto.SealSecret(aeadCipher, sampleNonce, secretBuffer)
 
 	secretKey.Destroy()
@@ -134,5 +134,16 @@ func TestEncryptedPrivateKey(t *testing.T) {
 
 		expectedSignature := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
 		assert.Equal(t, expectedSignature, publicKey.Data)
+	})
+
+	t.Run("PrivateKeyBytesInClear", func(t *testing.T) {
+		samplePassword := memguard.NewBufferFromBytes([]byte("bonjour"))
+
+		// Get the public key from the private key
+		privateKeyBytesInClear, err := sampleEncryptedPrivateKey.PrivateKeyBytesInClear(samplePassword, sampleSalt, sampleNonce)
+		assert.NoError(t, err)
+
+		expectedPrivateKeyBytesInClear := []byte{0xd8, 0x27, 0x10, 0xfd, 0x66, 0x63, 0xac, 0x2a, 0xcd, 0xcd, 0x11, 0x17, 0x7b, 0x90, 0xab, 0xd, 0x5b, 0xdb, 0xc2, 0xfb, 0xba, 0xea, 0xb, 0xde, 0x17, 0xdd, 0x6, 0x4b, 0x16, 0x3d, 0xeb, 0xfe, 0x2d, 0x96, 0xbc, 0xda, 0xcb, 0xbe, 0x41, 0x38, 0x2c, 0xa2, 0x3e, 0x52, 0xe3, 0xd2, 0x19, 0x6c, 0xba, 0x65, 0xe7, 0xa1, 0xac, 0xd2, 0x9, 0xdf, 0xc9, 0x5c, 0x6b, 0x32, 0xb6, 0xa1, 0x8a, 0x93}
+		assert.Equal(t, expectedPrivateKeyBytesInClear, privateKeyBytesInClear.Bytes())
 	})
 }

@@ -36,7 +36,7 @@ func newAccount(t *testing.T) *Account {
 	samplePassword := memguard.NewBufferFromBytes([]byte(password))
 	privateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
 
-	// Call the New function with the test values
+	// Call the NewFromPrivateKey function with the test values
 	account, err := NewFromPrivateKey(samplePassword, nickname, privateKey)
 	assert.NoError(t, err)
 
@@ -52,10 +52,10 @@ func TestNewAccountFromPrivateKey(t *testing.T) {
 		assert.Equal(t, nickname, account.Nickname)
 
 		expectedPublicKey := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
-		assert.Equal(t, expectedPublicKey, account.PublicKey.Object.Data)
+		assert.Equal(t, expectedPublicKey, account.PublicKey.Data)
 
 		expectedAddress := []byte{0x77, 0x13, 0x86, 0x8f, 0xe5, 0x5a, 0xd1, 0xdb, 0x9c, 0x8, 0x30, 0x7c, 0x61, 0x5e, 0xdf, 0xc0, 0xc8, 0x3b, 0x5b, 0xd9, 0x88, 0xec, 0x2e, 0x3c, 0xe9, 0xe4, 0x1c, 0xf1, 0xf9, 0x4d, 0xc5, 0xd1}
-		assert.Equal(t, expectedAddress, account.Address.Object.Data)
+		assert.Equal(t, expectedAddress, account.Address.Data)
 	})
 }
 

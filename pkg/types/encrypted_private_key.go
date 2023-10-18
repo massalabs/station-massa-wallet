@@ -102,6 +102,15 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKeyInClear.Bytes(), digest[:])...), nil
 }
 
+// SignWithPrivateKey signs the given data using the private key. Private key is destroyed.
+func (e *EncryptedPrivateKey) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) ([]byte, error) {
+	digest := blake3.Sum256(data)
+
+	defer privateKey.Destroy()
+
+	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKey.Bytes(), digest[:])...), nil
+}
+
 // PublicKey returns the public key corresponding to the private key. Password is destroyed.
 func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, nonce []byte) (*PublicKey, error) {
 	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
@@ -123,8 +132,8 @@ func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, n
 }
 
 // PrivateKeyTextInClear returns the private key in clear. Password is destroyed.
-func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) (*memguard.LockedBuffer, error) {
-	privateKeyInClear, err := privateKey(password, salt, nonce, encryptedKey)
+func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuffer, salt, nonce []byte) (*memguard.LockedBuffer, error) {
+	privateKeyInClear, err := e.PrivateKeyBytesInClear(password, salt, nonce)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
@@ -141,8 +150,17 @@ func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuf
 	return privateKeyBuffer, nil
 }
 
+func (e *EncryptedPrivateKey) PrivateKeyBytesInClear(password *memguard.LockedBuffer, salt, nonce []byte) (*memguard.LockedBuffer, error) {
+	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
+	if err != nil {
+		return nil, fmt.Errorf("PrivateKeyTextInClear: %w", err)
+	}
+
+	return privateKeyInClear, nil
+}
+
 // HasAccess returns true if the password is valid for the account. It destroys the password.
-func (e *EncryptedPrivateKey) HasAccess(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byte) bool {
+func (e *EncryptedPrivateKey) HasAccess(password *memguard.LockedBuffer, salt, nonce []byte) bool {
 	privateKeyInClear, err := privateKey(password, salt, nonce, e.Data)
 	if err != nil {
 		return false
@@ -163,5 +181,15 @@ func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byt
 		return nil, err
 	}
 
-	return crypto.UnsealSecret(aeadCipher, nonce[:], encryptedKey)
+	secret, err := crypto.UnsealSecret(aeadCipher, nonce[:], encryptedKey)
+	if err != nil {
+		return nil, err
+	}
+
+	data := secret.Bytes()
+	result := memguard.NewBuffer(64)
+	result.Copy(data[1:])
+	secret.Destroy()
+
+	return result, nil
 }
