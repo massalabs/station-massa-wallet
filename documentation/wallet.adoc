@@ -29,21 +29,20 @@ This document is intended for:
 
 To ensure clarity and a shared understanding, let's define some key terms and concepts:
 
-==== Data Sensitivity Levels
+Request:: In sequence diagrams, this term describes an external call to an API endpoint.
+Execute:: In sequence diagrams, this term indicates an internal or "local" function call.
+Fetch:: In sequence diagrams, this term signifies a retrieval action, whether it's from a file system, database, or direct user input.
 
-Understanding the sensitivity of data is crucial for its proper handling, storage, and transmission. Different sensitivity levels dictate the measures and precautions to be taken.
+Presence::
+Required:::: Must be provided in every request.
+Optional:::: Can be provided, but it's not mandatory.
+Conditional:::: Must be provided under specific conditions or scenarios.
 
-Confidential::
-Data that, if disclosed, could have a severe impact. Examples: private keys, passwords.
-
-Personal::
-Data related to individual identity. Examples: public keys, addresses, transactions.
-
-Semi-public::
-Data with limited sensitivity. Examples: cryptographic data like nonces or salts.
-
-Public::
-Open data with no repercussions if accessed. Examples: signed hashes, public announcements.
+Data Sensitivity Levels::
+Confidential:::: Data that, if disclosed, could have a severe impact. Examples: private keys, passwords.
+Personal:::: Data related to individual identity. Examples: public keys, addresses, transactions.
+Semi-public:::: Data with limited sensitivity. Examples: cryptographic data like nonces or salts.
+Public:::: Open data with no repercussions if accessed. Examples: signed hashes, public announcements.
 
 === Revision History
 
@@ -201,6 +200,42 @@ stationFront_useDApp --> walletAPI_cRUDLinkedFungibleTokenAddress
 
 === Sequence Diagram
 
+==== Sign Message
+
+The following diagram illustrates the sequence of events when signing a message considering a fictive dApp needing to check the user's identity.
+
+[plantuml, format="svg", id="sign-message", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+skinparam handwritten true
+
+participant "User" as user
+participant "dApp" as dapp
+participant "Massa Station" as station
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Front" as wallet_front
+
+user -> dapp ++ : Click "Sign In"
+    dapp -> station ++: Request //Sign Message//
+        station -> wallet_api ++: Request //Sign Message//
+        wallet_api -> wallet_api: Execute //Validate Arguments//
+            wallet_api -> wallet_core ++: Execute //Sign Message//
+            wallet_core -> wallet_core: Fetch //Account Data//
+                wallet_core -> wallet_front ++: Fetch //Password Input//
+                wallet_front <-> user: Enter password
+                return password
+            wallet_core -> wallet_core: Execute //Unseal Private Key//
+            wallet_core -> wallet_core: Execute //Generate message signature//
+            return message signature
+        return message signature
+    return message signature
+dapp -> dapp: Verify signature
+dapp -> dapp: Open user access
+return logout
+@enduml
+----
+ 
 == Data 
 
 In the Massa Station Wallet, various data elements play crucial roles in ensuring smooth operations and user interactions. This section provides a comprehensive overview of these data elements, their descriptions, and their sensitivity levels.
@@ -289,12 +324,63 @@ Apart from the regular data flow, certain data elements are used in specific sce
 | Core | Processes various requests. | Private Key, Password
 |===
 
-== Functional Requirements:
+== Functional Requirements
 
-Detailed description of the product's functionalities.
-Inputs, processes, and outputs for each functionality.
+=== API
 
-== Non-Functional Requirements:
+The API will adhere to the HTML REST JSON standard, utilizing classic HTTP responses to indicate the status and nature of each response.
+
+NOTE: For hands-on testing and examples, refer to the provided Swagger documentation and consider using tools like Postman.
+
+==== Sign Message Endpoint
+
+This endpoint facilitates the signing of a message using a specific account resource, identified by its unique nickname. It's important to note that this endpoint is not idempotent: identical calls with the same data will initiate separate executions.
+
+===== Parameters
+
+[%header,cols="1,3,1,1"]
+|===
+| Name | Description | Presence | Format
+| `nickname` | Identifier for the account. | Required | String
+| `description` | Text describing the signing intent. | Optional | String (Default: "", Max: 280 characters)
+| `operation` | Serialized attributes for signing. | Required | Byte string
+| `batch` | Specifies if the operation is part of a batch. | Optional | Boolean (Default: `false`)
+| `correlationId` | Identifier for correlating multiple requests. | Optional | String (Default: "")
+|===
+
+IMPORTANT: To ensure security, the `correlationId` should be sent in the request body, not in the query string.
+
+===== Response
+
+On successful execution, the response will return the signature and public key of the signed message.
+
+=== Functions
+
+==== Validate Arguments
+
+This function ensures that arguments provided to any endpoint are correct and conform to the expected format. It checks for the presence of required parameters, validates data types, and ensures compliance with any constraints or limits.
+
+==== Account Data
+
+Account data is persistently stored on the file system. The structure and format of this data must strictly adhere to the standards outlined in the Massa Labs documentation, specifically the wallet file format standard available [here](https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md).
+
+==== Password Input
+
+This function captures the user's password input. It is designed with flexibility in mind, accommodating both manual user entry and automated input for testing purposes. This ensures that automated tests can simulate user interactions seamlessly.
+
+IMPORTANT: The password input is neither stored nor cached. It is utilized only for the duration of the function call. Implementing memory safety mechanisms, such as zeroing out the memory or ensuring the content isn't swapped to disk, is essential.
+
+==== Unseal Private Key
+
+For certain operations, the encrypted and stored private key must be decrypted or "unsealed". This function manages the decryption process, ensuring compliance with the cryptographic constraints specified in the Massa Labs standard available [here](https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md).
+
+IMPORTANT: The unsealed private key is neither stored nor cached. It is utilized only for the duration of the function call. Implementing memory safety mechanisms, such as zeroing out the memory or ensuring the content isn't swapped to disk, is essential.
+
+==== Generate Message Signature
+
+To sign a message, the content undergoes hashing using the Blake3 algorithm. The hashed value is subsequently signed using the ED25519 signature scheme. This function ensures the message signature process aligns with the Massa Labs cryptography standard.
+
+== Non-Functional Requirements
 
 Performance requirements, security requirements, usability requirements, etc.
 Any other requirements that don't relate directly to specific functionalities.
