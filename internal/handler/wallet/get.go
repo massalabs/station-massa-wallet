@@ -33,7 +33,7 @@ type walletGet struct {
 }
 
 func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().WalletManager, params.Nickname)
+	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
 	if resp != nil || acc == nil {
 		return resp
 	}

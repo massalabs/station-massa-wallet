@@ -71,7 +71,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 		checkResultChannel(t, result, true, "")
 
-		assertWallet(t, prompterApp.App().WalletManager, nickname)
+		assertWallet(t, prompterApp.App().Wallet, nickname)
 
 		os.Remove(filePath)
 	})
@@ -205,7 +205,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			checkResultChannel(t, result, tt.wantResult.Success, tt.wantResult.CodeMessage)
 
 			if tt.wantResult.Success {
-				assertWallet(t, prompterApp.App().WalletManager, tt.nickname)
+				assertWallet(t, prompterApp.App().Wallet, tt.nickname)
 			}
 		})
 	}

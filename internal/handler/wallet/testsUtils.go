@@ -15,7 +15,7 @@ import (
 func createAccount(password, nickname string, t *testing.T, prompterApp prompt.WalletPrompterInterface) *account.Account {
 	acc, err := account.Generate(memguard.NewBufferFromBytes([]byte(password)), nickname)
 	assert.NoError(t, err)
-	err = prompterApp.App().WalletManager.AddAccount(acc, true)
+	err = prompterApp.App().Wallet.AddAccount(acc, true)
 	assert.NoError(t, err)
 
 	return acc

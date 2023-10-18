@@ -73,7 +73,7 @@ type walletSign struct {
 }
 
 func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().WalletManager, params.Nickname)
+	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
 	if resp != nil {
 		return resp
 	}

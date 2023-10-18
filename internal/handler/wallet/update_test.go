@@ -18,7 +18,7 @@ func Test_ModifyWallets_handler(t *testing.T) {
 	nickname := "trololol-old"
 	password := "zePassword"
 	createAccount(password, nickname, t, prompterApp)
-	assert.Equal(t, prompterApp.App().WalletManager.GetAccountCount(), 1, "there should be only one wallet")
+	assert.Equal(t, prompterApp.App().Wallet.GetAccountCount(), 1, "there should be only one wallet")
 
 	handler, exist := api.HandlerFor("put", "/api/accounts/{nickname}")
 	assert.True(t, exist, "Endpoint doesn't exist")

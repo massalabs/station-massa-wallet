@@ -16,7 +16,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,7 +55,7 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 		log.Fatalf("while creating temporary wallet directory: %s", err.Error())
 	}
 
-	wallet, err := walletmanager.New(walletPath)
+	wallet, err := wallet.New(walletPath)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}

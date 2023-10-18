@@ -9,11 +9,11 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 )
 
-func NewGetAllAssets(wallet *walletmanager.Wallet, AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
+func NewGetAllAssets(wallet *wallet.Wallet, AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
 	return &getAllAssets{
 		wallet:      wallet,
 		AssetsStore: AssetsStore,
@@ -22,7 +22,7 @@ func NewGetAllAssets(wallet *walletmanager.Wallet, AssetsStore *assets.AssetsSto
 }
 
 type getAllAssets struct {
-	wallet      *walletmanager.Wallet
+	wallet      *wallet.Wallet
 	AssetsStore *assets.AssetsStore
 	massaClient network.NodeFetcherInterface
 }

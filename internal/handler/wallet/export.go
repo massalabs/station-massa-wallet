@@ -11,15 +11,15 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
-func NewWalletExportFile(wallet *walletmanager.Wallet) operations.ExportAccountFileHandler {
+func NewWalletExportFile(wallet *wallet.Wallet) operations.ExportAccountFileHandler {
 	return &walletExportFile{wallet: wallet}
 }
 
 type walletExportFile struct {
-	wallet *walletmanager.Wallet
+	wallet *wallet.Wallet
 }
 
 // Handle handles an export file request

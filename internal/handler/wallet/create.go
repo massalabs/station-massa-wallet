@@ -49,7 +49,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 
 	password, _ := promptOutput.(*memguard.LockedBuffer)
 
-	acc, err := w.prompterApp.App().WalletManager.GenerateAccount(password, nickname)
+	acc, err := w.prompterApp.App().Wallet.GenerateAccount(password, nickname)
 	if err != nil {
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})

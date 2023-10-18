@@ -3,8 +3,8 @@ package utils
 import (
 	"errors"
 
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 )
 
 // Error codes
@@ -46,11 +46,11 @@ func WailsErrorCode(err error) string {
 		return ""
 	}
 
-	if errors.Is(err, walletmanager.ErrNicknameNotUnique) {
+	if errors.Is(err, wallet.ErrNicknameNotUnique) {
 		return ErrDuplicateNickname
 	}
 
-	if errors.Is(err, walletmanager.ErrAddressNotUnique) {
+	if errors.Is(err, wallet.ErrAddressNotUnique) {
 		return ErrDuplicateKey
 	}
 
@@ -62,7 +62,7 @@ func WailsErrorCode(err error) string {
 		return ErrInvalidPrivateKey
 	}
 
-	if errors.Is(err, walletmanager.ErrUnmarshalAccount) {
+	if errors.Is(err, wallet.ErrUnmarshalAccount) {
 		return ErrAccountFile
 	}
 

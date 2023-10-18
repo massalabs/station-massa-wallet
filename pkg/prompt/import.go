@@ -23,7 +23,7 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 }
 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*account.Account, bool, error) {
-	wallet := prompterApp.App().WalletManager
+	wallet := prompterApp.App().Wallet
 
 	acc, err := wallet.Load(filePath)
 	if err != nil {
@@ -54,7 +54,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 		return nil, false, fmt.Errorf("unable to import private key: %w", err)
 	}
 
-	wallet := prompterApp.App().WalletManager
+	wallet := prompterApp.App().Wallet
 
 	err = wallet.AddAccount(acc, true)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ func Test_getWallets_handler(t *testing.T) {
 	api, prompterApp, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
-	walletmanager.ClearAccounts(t, prompterApp.App().WalletManager.WalletPath)
+	wallet.ClearAccounts(t, prompterApp.App().Wallet.WalletPath)
 
 	// test empty configuration first.
 	t.Run("Get empty list", func(t *testing.T) {
@@ -58,7 +58,7 @@ func Test_getWallets_handler(t *testing.T) {
 		assertAccountsBody(t, resp, true)
 	})
 
-	walletmanager.ClearAccounts(t, prompterApp.App().WalletManager.WalletPath)
+	wallet.ClearAccounts(t, prompterApp.App().Wallet.WalletPath)
 }
 
 func Test_getWallet_handler(t *testing.T) {
@@ -88,7 +88,7 @@ func Test_getWallet_handler(t *testing.T) {
 
 		assertAccountBody(t, resp, nickname, true)
 
-		walletmanager.ClearAccounts(t, prompterApp.App().WalletManager.WalletPath)
+		wallet.ClearAccounts(t, prompterApp.App().Wallet.WalletPath)
 	})
 
 	// test with un-ciphered data.

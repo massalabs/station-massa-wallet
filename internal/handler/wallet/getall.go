@@ -8,16 +8,16 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station/pkg/logger"
 )
 
-func NewGetAll(wallet *walletmanager.Wallet, massaClient network.NodeFetcherInterface) operations.AccountListHandler {
+func NewGetAll(wallet *wallet.Wallet, massaClient network.NodeFetcherInterface) operations.AccountListHandler {
 	return &walletGetAll{wallet: wallet, massaClient: massaClient}
 }
 
 type walletGetAll struct {
-	wallet      *walletmanager.Wallet
+	wallet      *wallet.Wallet
 	massaClient network.NodeFetcherInterface
 }
 

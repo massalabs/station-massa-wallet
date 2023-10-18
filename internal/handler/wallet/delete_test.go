@@ -71,7 +71,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 
-		_, err = prompterApp.App().WalletManager.GetAccount(nickname)
+		_, err = prompterApp.App().Wallet.GetAccount(nickname)
 		assert.NoError(t, err)
 	})
 
@@ -91,7 +91,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		checkResultChannel(t, result, true, "")
 
-		_, err = prompterApp.App().WalletManager.GetAccount(nickname)
+		_, err = prompterApp.App().Wallet.GetAccount(nickname)
 		assert.Error(t, err, "Wallet should have been deleted")
 	})
 }

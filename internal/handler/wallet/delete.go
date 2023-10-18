@@ -30,7 +30,7 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().WalletManager, params.Nickname)
+	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -63,7 +63,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 			})
 	}
 
-	err = w.prompterApp.App().WalletManager.DeleteAccount(acc.Nickname)
+	err = w.prompterApp.App().Wallet.DeleteAccount(acc.Nickname)
 	if err != nil {
 		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
 		fmt.Println(errStr)

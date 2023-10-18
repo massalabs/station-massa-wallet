@@ -9,19 +9,19 @@ import (
 
 	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 	"github.com/massalabs/station/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type WalletApp struct {
-	Ctx           context.Context
-	CtrlChan      chan PromptCtrl
-	PromptInput   chan interface{}
-	WalletManager *walletmanager.Wallet
-	Shutdown      bool
-	IsListening   bool
+	Ctx         context.Context
+	CtrlChan    chan PromptCtrl
+	PromptInput chan interface{}
+	Wallet      *wallet.Wallet
+	Shutdown    bool
+	IsListening bool
 }
 
 func (a *WalletApp) cleanExit() {
@@ -35,13 +35,13 @@ func (a *WalletApp) cleanExit() {
 	}
 }
 
-func NewWalletApp(wallet *walletmanager.Wallet) *WalletApp {
+func NewWalletApp(wallet *wallet.Wallet) *WalletApp {
 	app := &WalletApp{
-		CtrlChan:      make(chan PromptCtrl),
-		PromptInput:   make(chan interface{}),
-		WalletManager: wallet,
-		Shutdown:      false,
-		IsListening:   false,
+		CtrlChan:    make(chan PromptCtrl),
+		PromptInput: make(chan interface{}),
+		Wallet:      wallet,
+		Shutdown:    false,
+		IsListening: false,
 	}
 
 	go app.cleanExit()
@@ -120,7 +120,7 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 		return selectFileResult{Err: utils.ErrNoFile, CodeMessage: utils.ErrNoFile}
 	}
 
-	acc, err := a.WalletManager.Load(filePath)
+	acc, err := a.Wallet.Load(filePath)
 	if err != nil {
 		logger.Errorf("error while loading file: %v", err)
 		return selectFileResult{Err: err.Error(), CodeMessage: utils.WailsErrorCode(err)}
@@ -146,7 +146,7 @@ func (a *WalletApp) ImportPrivateKey(privateKeyText string, nickname string, pas
 }
 
 func (a *WalletApp) IsNicknameUnique(nickname string) bool {
-	return a.WalletManager.NicknameIsUnique(nickname) != nil
+	return a.Wallet.NicknameIsUnique(nickname) != nil
 }
 
 func (a *WalletApp) IsNicknameValid(nickname string) bool {

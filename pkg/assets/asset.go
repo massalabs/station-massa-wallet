@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/pkg/errors"
 )
 
@@ -240,7 +240,7 @@ func createJSONFile(path string) error {
 
 // GetAssetsJSONPath returns the path to the assets JSON file.
 func GetAssetsJSONPath() (string, error) {
-	walletPath, err := walletmanager.Path()
+	walletPath, err := wallet.Path()
 	if err != nil {
 		return "", err
 	}

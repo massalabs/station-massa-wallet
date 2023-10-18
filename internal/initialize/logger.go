@@ -3,7 +3,7 @@ package initialize
 import (
 	"path/filepath"
 
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station/pkg/logger"
 )
 
@@ -12,7 +12,7 @@ const (
 )
 
 func Logger() error {
-	logPath, err := walletmanager.Path()
+	logPath, err := wallet.Path()
 	if err != nil {
 		return err
 	}

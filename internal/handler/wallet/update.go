@@ -9,8 +9,8 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 )
 
 type PromptRequestUpdateAccountData struct {
@@ -29,7 +29,7 @@ type walletUpdateAccount struct {
 
 // HandleDelete handles an update request
 func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().WalletManager, params.Nickname)
+	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
 	if resp != nil {
 		return resp
 	}
@@ -62,7 +62,7 @@ func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickname models.Nickname) (*account.Account, error) {
 	// check if the nickname does not change
 	if acc.Nickname == string(newNickname) {
-		return nil, walletmanager.ErrNicknameNotUnique
+		return nil, wallet.ErrNicknameNotUnique
 	}
 
 	// save the old nickname in a variable
@@ -81,12 +81,12 @@ func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickn
 		return nil, fmt.Errorf("creating new account: %w", err)
 	}
 
-	err = w.prompterApp.App().WalletManager.DeleteAccount(string(oldNickname))
+	err = w.prompterApp.App().Wallet.DeleteAccount(string(oldNickname))
 	if err != nil {
 		return nil, err
 	}
 
-	err = w.prompterApp.App().WalletManager.AddAccount(newAcc, true)
+	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true)
 	if err != nil {
 		return nil, err
 	}

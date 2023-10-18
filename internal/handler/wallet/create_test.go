@@ -9,7 +9,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -57,7 +57,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 
 			checkResultChannel(t, result, true, "")
 
-			assertWallet(t, prompterApp.App().WalletManager, nickname)
+			assertWallet(t, prompterApp.App().Wallet, nickname)
 		}
 	}
 }
@@ -85,7 +85,7 @@ func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, testName str
 	})
 }
 
-func assertWallet(t *testing.T, wallet *walletmanager.Wallet, nickname string) {
+func assertWallet(t *testing.T, wallet *wallet.Wallet, nickname string) {
 	acc, err := wallet.GetAccount(nickname)
 	assert.NoError(t, err)
 

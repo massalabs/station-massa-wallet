@@ -8,7 +8,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/internal/initialize"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/wails"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station/pkg/logger"
 )
 
@@ -24,7 +24,7 @@ func main() {
 
 	defer logger.Close()
 
-	wallet, err := walletmanager.New("")
+	wallet, err := wallet.New("")
 	if err != nil {
 		logger.Fatalf("Failed to initialize wallet: %v", err)
 	}

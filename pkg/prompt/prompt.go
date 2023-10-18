@@ -6,8 +6,8 @@ import (
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 	"github.com/massalabs/station/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -36,7 +36,7 @@ func (w *WalletPrompter) EmitEvent(eventId string, data walletapp.EventData) {
 func (w *WalletPrompter) SelectBackupFilepath(nickname string) (string, error) {
 	return runtime.SaveFileDialog(w.PromptApp.Ctx, runtime.SaveDialogOptions{
 		Title:           "Backup Account File",
-		DefaultFilename: walletmanager.Filename(nickname),
+		DefaultFilename: wallet.Filename(nickname),
 		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yaml)", Pattern: "*.yaml"}},
 	})
 }
