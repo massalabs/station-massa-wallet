@@ -18,6 +18,7 @@ func NewNodeFetcherMock() *NodeFetcherMock {
 // returns dummy balances
 func (n *NodeFetcherMock) GetAccountsInfos(accounts []account.Account) ([]network.AccountInfos, error) {
 	infos := make([]network.AccountInfos, len(accounts))
+
 	for i, acc := range accounts {
 		textAddress, err := acc.Address.MarshalText()
 		if err != nil {

@@ -54,6 +54,7 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 	if err != nil {
 		log.Fatalf("while creating temporary wallet directory: %s", err.Error())
 	}
+
 	wallet, err := walletmanager.New(walletPath)
 	if err != nil {
 		return nil, nil, nil, nil, err

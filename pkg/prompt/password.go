@@ -1,7 +1,6 @@
 package prompt
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/awnumar/memguard"
@@ -12,22 +11,24 @@ import (
 
 // handlePasswordPrompt returns the password as a LockedBuffer, or an error if the input is not a string.
 func handlePasswordPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*memguard.LockedBuffer, bool, error) {
-	password, ok := input.(string)
+	inputString, ok := input.(string)
 	if !ok {
 		return nil, false, InputTypeError(prompterApp)
 	}
 
-	guardedPassword := memguard.NewBufferFromBytes([]byte(password))
+	password := memguard.NewBufferFromBytes([]byte(inputString))
 
-	// guardedPassword will be destroy in acc.PasswordIsValid, so we need to create a new one.
-	guardedPasswordReturned := memguard.NewBufferFromBytes([]byte(password))
+	// password will be destroy in acc.HasAccess, so we need to create a new one.
+	passwordReturned := memguard.NewBufferFromBytes([]byte(inputString))
 
-	if acc != nil && !acc.PasswordIsValid(guardedPassword) {
+	if acc != nil && !acc.HasAccess(password) {
 		msg := fmt.Sprintf("Invalid password for account %s", acc.Nickname)
+
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WrongPassword})
-		return nil, true, errors.New(msg)
+
+		return nil, true, fmt.Errorf("%w: %s", ErrWrongPassword, msg)
 	}
 
-	return guardedPasswordReturned, false, nil
+	return passwordReturned, false, nil
 }

@@ -8,7 +8,6 @@ const (
 	ErrInvalidPrivateKey    = "PrivateKey-0001"
 	ErrAccountFile          = "AccountFile-0001" // for errors related to folder, read/write file, unmarshal...
 	ErrNoFile               = "NoFile-0001"
-	ErrInvalidFileFormat    = "InvalidFileFormat-0001"    // for errors related to file content
 	ErrInvalidFileExtension = "InvalidFileExtension-0001" // for errors related to file name extension
 	ErrDuplicateKey         = "DuplicateKey-0001"
 	ErrUnknown              = "Unknown-0001"

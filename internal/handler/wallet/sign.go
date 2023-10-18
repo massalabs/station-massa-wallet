@@ -1,11 +1,15 @@
 package wallet
 
 import (
+	"bytes"
 	"crypto/ed25519"
 	cryptorand "crypto/rand"
 	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"io"
+	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -27,7 +31,7 @@ import (
 )
 
 const (
-	passwordExpirationTime = time.Second * 60 * 30
+	passwordExpirationTime = time.Second * 60 * 10
 	BuyRoll                = "Buy Roll"
 	SellRoll               = "Sell Roll"
 	Message                = "Plain Text"
@@ -74,63 +78,102 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return resp
 	}
 
-	var guardedPassword *memguard.LockedBuffer
-
-	var correlationId models.CorrelationID
-
 	promptRequest, err := w.getPromptRequest(params.Body.Operation.String(), acc, params.Body.Description)
 	if err != nil {
-		return w.handleBadRequest(errorSignDecodeMessage)
+		return newErrorResponse(fmt.Sprintf("Error: %s", errorSignDecodeMessage), errorSignDecodeMessage, http.StatusBadRequest)
 	}
+
+	var correlationID models.CorrelationID
+	var privateKey *memguard.LockedBuffer
 
 	if params.Body.CorrelationID != nil {
-		// resp = handleWithCorrelationId(acc, params, w.gc)
-		// correlationId = params.Body.CorrelationID
-	} else {
-		promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
+		correlationID = params.Body.CorrelationID
+
+		pk, err := w.privateKeyFromCache(acc, correlationID)
 		if err != nil {
-			return operations.NewSignUnauthorized().WithPayload(
-				&models.Error{
-					Code:    errorCanceledAction,
-					Message: "Unable to unprotect wallet",
-				})
+			if errors.Is(err, utils.ErrCorrelationIDNotFound) {
+				return newErrorResponse(err.Error(), errorSignCorrelationIdNotFound, http.StatusNotFound)
+			}
+
+			return newErrorResponse(err.Error(), errorSign, http.StatusInternalServerError)
 		}
 
-		guardedPassword, _ = promptOutput.(*memguard.LockedBuffer)
+		privateKey = pk
+	} else {
+		password, err := w.PromptPassword(acc, promptRequest)
+		if err != nil {
+			msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
+			if errors.Is(err, prompt.ErrWrongPassword) || errors.Is(err, prompt.ErrActionCanceled) {
+				return newErrorResponse(msg, errorGetWallets, http.StatusUnauthorized)
+			}
+			return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
+		}
 
-		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+		pk, err := acc.PrivateKeyBytesInClear(password)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorWrongPassword, http.StatusInternalServerError)
+		}
+
+		privateKey = pk
 
 		if params.Body.Batch {
-			// correlationId, resp = handleBatch(acc, params, w, w.gc)
+			cID, err := w.CacheAccount(acc, privateKey)
+			if err != nil {
+				return newErrorResponse(err.Error(), errorSignCorrelationIdNotFound, http.StatusInternalServerError)
+			}
+			correlationID = *cID
 		}
 	}
 
-	if resp != nil {
-		return resp
-	}
-
-	operation, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	operation, err := w.prepareOperation(acc, params, promptRequest)
 	if err != nil {
-		return w.handleBadRequest(errorSignDecodeOperation)
+		return newErrorResponse(err.Error(), errorSignDecodeOperation, http.StatusBadRequest)
 	}
 
-	if promptRequest.Data.(PromptRequestSignData).OperationType != Message {
-		publicKeyBytes, err := acc.PublicKey.MarshalText()
-		if err != nil {
-			return newInternalServerError(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets)
-		}
-		operation = append(publicKeyBytes, operation...)
-	}
+	signature := acc.SignWithPrivateKey(privateKey, operation)
 
-	signature, err := acc.Sign(guardedPassword, operation)
+	return w.Success(acc, signature, correlationID)
+}
+
+func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.PromptRequest) (*memguard.LockedBuffer, error) {
+	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
 	if err != nil {
-		return newInternalServerError(fmt.Sprintf("Unable to sign operation: %s", err.Error()), errorGetWallets)
+		return nil, fmt.Errorf("prompting password: %w", err)
 	}
 
+	password, _ := promptOutput.(*memguard.LockedBuffer)
+
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+
+	return password, nil
+}
+
+func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) (*models.CorrelationID, error) {
+	correlationID, err := generateCorrelationId()
+	if err != nil {
+		return nil, fmt.Errorf("Error cannot generate correlation id: %w", err)
+	}
+
+	key := CacheKey(correlationID)
+
+	cacheValue, err := Xor(privateKey.Bytes(), correlationID)
+	if err != nil {
+		return nil, fmt.Errorf("Error cannot XOR correlation id: %w", err)
+	}
+
+	err = w.gc.SetWithExpire(key, cacheValue, expirationDuration())
+	if err != nil {
+		return nil, fmt.Errorf("Error set correlation id in cache: %v", err.Error())
+	}
+
+	return &correlationID, nil
+}
+
+func (w *walletSign) Success(acc *account.Account, signature []byte, correlationId models.CorrelationID) middleware.Responder {
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return newInternalServerError(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets)
+		return newErrorResponse(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}
 
 	return operations.NewSignOK().WithPayload(
@@ -141,10 +184,22 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		})
 }
 
-func (w *walletSign) handleBadRequest(errorCode string) middleware.Responder {
-	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: errorCode})
-	return newBadRequest(fmt.Sprintf("Error: %s", errorCode), errorCode)
+func (w *walletSign) prepareOperation(acc *account.Account, params operations.SignParams, promptRequest *prompt.PromptRequest) ([]byte, error) {
+	operation, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
+	if err != nil {
+		return nil, fmt.Errorf("Unable to decode operation: %w", err)
+	}
+
+	if promptRequest.Data.(PromptRequestSignData).OperationType != Message {
+		publicKeyBytes, err := acc.PublicKey.MarshalBinary()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to marshal public key: %w", err)
+		}
+
+		operation = append(publicKeyBytes, operation...)
+	}
+
+	return operation, nil
 }
 
 func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, description string) (*prompt.PromptRequest, error) {
@@ -340,102 +395,76 @@ func (s *walletSign) prepareplainTextPromptRequest(
 	}
 }
 
-// func handleWithCorrelationId(
-// 	acc *account.Account,
-// 	params operations.SignParams,
-// 	gc gcache.Cache,
-// ) middleware.Responder {
-// 	key := CacheKey(params.Body.CorrelationID)
+// privateKeyFromCache return the private key from the cache or an error.
+func (w *walletSign) privateKeyFromCache(
+	acc *account.Account,
+	correlationID models.CorrelationID,
+) (*memguard.LockedBuffer, error) {
+	key := CacheKey(correlationID)
 
-// 	value, err := gc.Get(key)
-// 	if err != nil {
-// 		if err.Error() == gcache.KeyNotFoundError.Error() {
-// 			return operations.NewSignNotFound().WithPayload(
-// 				&models.Error{
-// 					Code:    errorSignCorrelationIdNotFound,
-// 					Message: fmt.Sprintf("Error given correlation id not in cache: %v", err.Error()),
-// 				})
-// 		}
-// 		return operations.NewSignInternalServerError().WithPayload(
-// 			&models.Error{
-// 				Code:    errorSignLoadCache,
-// 				Message: fmt.Sprintf("Error cannot get data from cache: %v", err.Error()),
-// 			})
-// 	}
+	value, err := w.gc.Get(key)
+	if err != nil {
+		if err.Error() == gcache.KeyNotFoundError.Error() {
+			return nil, fmt.Errorf("%w: %w", utils.ErrCorrelationIDNotFound, err)
+		}
 
-// 	// convert interface{} into byte[]
-// 	buf := new(bytes.Buffer)
+		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
+	}
 
-// 	err = binary.Write(buf, binary.LittleEndian, value)
-// 	if err != nil {
-// 		return operations.NewSignInternalServerError().WithPayload(
-// 			&models.Error{
-// 				Code:    errorSignLoadCache,
-// 				Message: fmt.Sprintf("Error cannot convert cache value: %v", err.Error()),
-// 			})
-// 	}
+	// convert interface{} into byte[]
+	buf := new(bytes.Buffer)
 
-// 	bytes := buf.Bytes()
+	err = binary.Write(buf, binary.LittleEndian, value)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
+	}
 
-// 	err = acc.UnprotectFromCorrelationId(bytes, params.Body.CorrelationID)
-// 	if err != nil {
-// 		return operations.NewSignInternalServerError().WithPayload(
-// 			&models.Error{
-// 				Code:    errorSignLoadCache,
-// 				Message: fmt.Sprintf("Error cannot unprotect from cache: %v", err.Error()),
-// 			})
-// 	}
+	cipheredPrivateKey := buf.Bytes()
 
-// 	return nil
-// }
+	privateKey, err := Xor(cipheredPrivateKey, correlationID)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
+	}
 
-func CacheKey(correlationId models.CorrelationID) [32]byte {
-	return blake3.Sum256(correlationId)
+	return memguard.NewBufferFromBytes(privateKey), nil
 }
 
-// func handleBatch(
-// 	acc *account.Account,
-// 	params operations.SignParams,
-// 	s *walletSign,
-// 	gc gcache.Cache,
-// ) (models.CorrelationID, middleware.Responder) {
-// 	correlationId, err := generateCorrelationId()
-// 	if err != nil {
-// 		return nil, operations.NewSignInternalServerError().WithPayload(
-// 			&models.Error{
-// 				Code:    errorSignGenerateCorrelationId,
-// 				Message: fmt.Sprintf("Error cannot generate correlation id: %v", err.Error()),
-// 			})
-// 	}
+func Xor(a, b []byte) ([]byte, error) {
+	if len(a) != len(b) {
+		return nil, fmt.Errorf("length of two arrays must be same, %d and %d", len(a), len(b))
+	}
+	result := make([]byte, len(a))
 
-// 	key := CacheKey(correlationId)
+	for i := 0; i < len(a); i++ {
+		result[i] = a[i] ^ b[i]
+	}
 
-// 	cacheValue, err := wallet.Xor(acc.KeyPair.PrivateKey, correlationId)
-// 	if err != nil {
-// 		return nil, operations.NewSignInternalServerError().WithPayload(
-// 			&models.Error{
-// 				Code:    errorSignGenerateCorrelationId,
-// 				Message: fmt.Sprintf("Error cannot XOR correlation id: %v", err.Error()),
-// 			})
-// 	}
+	return result, nil
+}
 
-// 	err = gc.SetWithExpire(key, cacheValue, passwordExpirationTime)
-// 	if err != nil {
-// 		return nil, operations.NewSignInternalServerError().WithPayload(
-// 			&models.Error{
-// 				Code:    errorSignGenerateCorrelationId,
-// 				Message: fmt.Sprintf("Error set correlation id in cache: %v", err.Error()),
-// 			})
-// 	}
+func CacheKey(correlationID models.CorrelationID) [32]byte {
+	return blake3.Sum256(correlationID)
+}
 
-// 	return correlationId, nil
-// }
+func expirationDuration() time.Duration {
+	fromEnv := os.Getenv("BATCH_EXPIRATION_TIME")
+
+	if fromEnv == "" {
+		return passwordExpirationTime
+	}
+
+	duration, err := time.ParseDuration(fromEnv)
+	if err != nil {
+		return passwordExpirationTime
+	}
+
+	return duration
+}
 
 func generateCorrelationId() (models.CorrelationID, error) {
 	rand := cryptorand.Reader
 
-	// Correlation id must have the same size as the versioned private key.
-	correlationId := make([]byte, ed25519.PrivateKeySize+1)
+	correlationId := make([]byte, ed25519.PrivateKeySize)
 	if _, err := io.ReadFull(rand, correlationId); err != nil {
 		return nil, err
 	}

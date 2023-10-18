@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 
 	"github.com/awnumar/memguard"
@@ -13,7 +14,6 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
@@ -70,17 +70,14 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
 
-	operation, tradeRollError := doTradeRolls(acc, guardedPassword, amount, fee, *params.Body.Side, t.massaClient)
-	if tradeRollError != nil {
-		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, tradeRollError.Err.Error())
-		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: tradeRollError.CodeErr})
+	operation, err := doTradeRolls(acc, guardedPassword, amount, fee, *params.Body.Side, t.massaClient)
+	if err != nil {
+		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 
-		return operations.NewTradeRollsInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: errStr,
-			})
+		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false})
+
+		return newErrorResponse(msg, errorTransferCoin, http.StatusInternalServerError)
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
@@ -98,7 +95,7 @@ func doTradeRolls(
 	amount, fee uint64,
 	side string,
 	massaClient network.NodeFetcherInterface,
-) (*sendOperation.OperationResponse, *walletmanager.WalletError) {
+) (*sendOperation.OperationResponse, error) {
 	var operation sendOperation.Operation
 	if side == "buy" {
 		operation = buyrolls.New(amount)

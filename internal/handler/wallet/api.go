@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
@@ -48,27 +49,30 @@ func loadAccount(wallet *walletmanager.Wallet, nickname string) (*account.Accoun
 	}
 
 	if errors.Is(err, walletmanager.AccountNotFoundError) {
-		return nil, operations.NewGetAccountNotFound().WithPayload(&errorObj)
+		return nil, newErrorResponse(err.Error(), errorGetWallet, http.StatusNotFound)
 	} else {
 		return nil, operations.NewGetAccountBadRequest().WithPayload(&errorObj)
 	}
 }
 
-func newInternalServerError(message, code string) middleware.Responder {
+func newErrorResponse(message, code string, status int16) middleware.Responder {
 	logger.Error(message)
 
-	return operations.NewGetAccountInternalServerError().WithPayload(&models.Error{
+	payload := &models.Error{
 		Code:    code,
 		Message: message,
-	})
-}
+	}
 
-func newBadRequest(message, code string) middleware.Responder {
-	logger.Error(message)
-
-	return operations.NewSignBadRequest().WithPayload(
-		&models.Error{
-			Code:    code,
-			Message: message,
-		})
+	switch status {
+	case http.StatusBadRequest:
+		return operations.NewGetAccountBadRequest().WithPayload(payload)
+	case http.StatusUnauthorized:
+		return operations.NewGetAccountUnauthorized().WithPayload(payload)
+	case http.StatusNotFound:
+		return operations.NewGetAccountNotFound().WithPayload(payload)
+	case http.StatusInternalServerError:
+		return operations.NewGetAccountInternalServerError().WithPayload(payload)
+	default:
+		return operations.NewAccountListInternalServerError().WithPayload(payload)
+	}
 }

@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 
 	"github.com/awnumar/memguard"
@@ -13,8 +14,6 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
-	"github.com/massalabs/station/pkg/logger"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
@@ -85,18 +84,14 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
 
 	// create the transaction and send it to the network
-	operation, transferError := doTransfer(acc, guardedPassword, amount, fee, *params.Body.RecipientAddress, t.massaClient)
-	if transferError != nil {
-		errStr := fmt.Sprintf("error transferring coin: %v", transferError.Err.Error())
-		logger.Error(errStr)
-		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: transferError.CodeErr})
+	operation, err := doTransfer(acc, guardedPassword, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	if err != nil {
+		msg := fmt.Sprintf("error transferring coin: %v", err.Error())
 
-		return operations.NewTransferCoinInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: errStr,
-			})
+		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: errorTransferCoin})
+
+		return newErrorResponse(msg, errorTransferCoin, http.StatusInternalServerError)
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
@@ -114,10 +109,10 @@ func doTransfer(
 	amount, fee uint64,
 	recipientAddress string,
 	massaClient network.NodeFetcherInterface,
-) (*sendOperation.OperationResponse, *walletmanager.WalletError) {
+) (*sendOperation.OperationResponse, error) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
-		return nil, &walletmanager.WalletError{Err: fmt.Errorf("Error during transaction creation: %w", err), CodeErr: errorTransferCoin}
+		return nil, fmt.Errorf("Error during transaction creation: %w", err)
 	}
 
 	return network.SendOperation(acc, guardedPassword, massaClient, operation, fee)

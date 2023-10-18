@@ -39,6 +39,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*ac
 		fmt.Println("code is: ", code)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: code})
+
 		return nil, false, fmt.Errorf(msg)
 	}
 
@@ -47,6 +48,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*ac
 		msg := fmt.Sprintf("failed to add account: %v", err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
+
 		return nil, false, fmt.Errorf(msg)
 	}
 
@@ -59,6 +61,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
+
 		return nil, false, fmt.Errorf(errStr)
 	}
 
@@ -69,6 +72,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 		msg := fmt.Sprintf("failed to add account: %v", err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
+
 		return nil, false, fmt.Errorf(msg)
 	}
 

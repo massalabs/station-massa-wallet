@@ -1,6 +1,7 @@
 package prompt
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -12,11 +13,19 @@ const (
 	ActionCanceledErr     = "Action canceled by user"
 	TimeoutErr            = "Password prompt reached timeout"
 	PasswordLengthErr     = "password length must be %d characters minimum"
-	UnprotectErr          = "error unprotecting wallet"
 	InputTypeErr          = "Invalid prompt input type"
 	AlreadyListeningErr   = "prompter is already listening"
 )
 
-var passwordLengthErr = fmt.Sprintf(PasswordLengthErr, PASSWORD_MIN_LENGTH)
+const (
+	PASSWORD_MIN_LENGTH = 5
+	TIMEOUT             = 5 * time.Minute
+)
 
-const TIMEOUT = 5 * time.Minute
+var passwordLengthErrMsg = fmt.Sprintf(PasswordLengthErr, PASSWORD_MIN_LENGTH)
+
+var (
+	ErrWrongPassword  = errors.New("wrong password")
+	ErrActionCanceled = errors.New(ActionCanceledErr)
+	ErrTimeout        = errors.New(TimeoutErr)
+)

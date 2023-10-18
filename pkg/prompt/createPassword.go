@@ -20,7 +20,7 @@ func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interfac
 		// TODO implement/refactor password strength check
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidPassword})
-		return nil, true, fmt.Errorf(passwordLengthErr)
+		return nil, true, fmt.Errorf(passwordLengthErrMsg)
 	}
 
 	guardedPassword := memguard.NewBufferFromBytes([]byte(trimmedPassword))

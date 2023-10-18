@@ -31,6 +31,7 @@ func (n *NodeFetcher) GetAccountsInfos(accounts []account.Account) ([]AccountInf
 	}
 
 	addresses := make([]string, len(accounts))
+
 	for i, acc := range accounts {
 		textAddress, err := acc.Address.MarshalText()
 		if err != nil {

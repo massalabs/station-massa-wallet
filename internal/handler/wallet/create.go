@@ -85,6 +85,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 				Message: ErrorAddressInvalid.Error(),
 			})
 	}
+
 	publicKey, err := acc.PublicKey.MarshalText()
 	if err != nil {
 		return operations.NewCreateAccountInternalServerError().WithPayload(

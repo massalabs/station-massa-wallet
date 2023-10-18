@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/awnumar/memguard"
 	"github.com/bluele/gcache"
@@ -54,9 +55,10 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	}
 
 	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
+
 	signature, err := acc.Sign(guardedPassword, []byte(params.Body.Message))
 	if err != nil {
-		return newInternalServerError(fmt.Sprintf("Unable to sign message: %s", err.Error()), errorGetWallets)
+		return newErrorResponse(fmt.Sprintf("unable to sign message: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
@@ -64,7 +66,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return newInternalServerError(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets)
+		return newErrorResponse(fmt.Sprintf("unable to marshal public key: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}
 
 	// Return the signature and public key as the response
@@ -84,7 +86,7 @@ func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessa
 
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return nil, newInternalServerError(fmt.Sprintf("Unable to marshal address: %s", err.Error()), errorGetWallets)
+		return nil, newErrorResponse(fmt.Sprintf("Unable to marshal address: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}
 
 	return &prompt.PromptRequest{

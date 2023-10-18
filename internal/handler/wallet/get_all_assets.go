@@ -71,6 +71,7 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 					Message: ErrorAddressInvalid.Error(),
 				})
 		}
+
 		balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
 		if err != nil {
 			// Handle the error and return an internal server error response

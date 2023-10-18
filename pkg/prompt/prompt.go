@@ -12,8 +12,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-const PASSWORD_MIN_LENGTH = 5
-
 type PromptRequest struct {
 	Action      walletapp.PromptRequestAction
 	Msg         string
@@ -60,7 +58,7 @@ func WakeUpPrompt(
 	acc *account.Account,
 ) (interface{}, error) {
 	if prompterApp.IsListening() {
-		fmt.Println(AlreadyListeningErr)
+		logger.Warn(AlreadyListeningErr)
 		return nil, fmt.Errorf(AlreadyListeningErr)
 	}
 
@@ -98,6 +96,7 @@ func WakeUpPrompt(
 
 			if err != nil {
 				logger.Error(err)
+
 				if !keepListening {
 					return nil, err
 				}
@@ -112,14 +111,14 @@ func WakeUpPrompt(
 		case <-prompterApp.App().CtrlChan:
 			logger.Warn(ActionCanceledErr)
 
-			return nil, fmt.Errorf(ActionCanceledErr)
+			return nil, ErrActionCanceled
 
 		case <-ctxTimeout.Done():
 			logger.Warn(TimeoutErr)
 			prompterApp.EmitEvent(walletapp.PromptResultEvent,
 				walletapp.EventData{Success: false, CodeMessage: utils.ErrTimeout})
 
-			return nil, fmt.Errorf(TimeoutErr)
+			return nil, ErrTimeout
 		}
 	}
 }

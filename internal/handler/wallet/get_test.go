@@ -34,8 +34,9 @@ func Test_getWallets_handler(t *testing.T) {
 	})
 
 	// Create accounts
-	nicknames := []string{"account1", "account2", "account3"}
 	password := "zePassword"
+
+	nicknames := []string{"account1", "account2", "account3"}
 	for _, nickname := range nicknames {
 		createAccount(password, nickname, t, prompterApp)
 	}

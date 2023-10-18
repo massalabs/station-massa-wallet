@@ -18,7 +18,7 @@ const (
 	errorSignEmptyNickname
 	errorSignDecodeOperation
 	errorSignDecodeMessage
-	errorSignRead
+	errorSign
 	errorSignLoadCache
 	errorSignCorrelationIdNotFound
 	errorSignGenerateCorrelationId

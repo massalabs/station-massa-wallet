@@ -25,6 +25,7 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	if err != nil {
 		errMsg := "Unable to discover accounts"
 		logger.Infof("%s: %v", errMsg, err)
+
 		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
@@ -33,10 +34,12 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	}
 
 	accounts := w.wallet.AllAccounts()
+
 	infos, err := w.massaClient.GetAccountsInfos(accounts)
 	if err != nil {
 		errMsg := "Unable to retrieve accounts infos"
 		logger.Infof("%s: %v", errMsg, err)
+
 		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
 				Code:    errorGetWallets,
