@@ -219,7 +219,7 @@ func (a *Account) Sign(password *memguard.LockedBuffer, data []byte) ([]byte, er
 }
 
 // SignWithPrivateKey signs the data with the private key and destroys the private key.
-func (a *Account) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) ([]byte, error) {
+func (a *Account) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) []byte {
 	return a.CipheredData.SignWithPrivateKey(privateKey, data)
 }
 

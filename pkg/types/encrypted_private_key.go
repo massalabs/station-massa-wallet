@@ -103,12 +103,12 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 }
 
 // SignWithPrivateKey signs the given data using the private key. Private key is destroyed.
-func (e *EncryptedPrivateKey) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) ([]byte, error) {
+func (e *EncryptedPrivateKey) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) []byte {
 	digest := blake3.Sum256(data)
 
 	defer privateKey.Destroy()
 
-	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKey.Bytes(), digest[:])...), nil
+	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKey.Bytes(), digest[:])...)
 }
 
 // PublicKey returns the public key corresponding to the private key. Password is destroyed.
