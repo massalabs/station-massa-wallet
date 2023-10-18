@@ -69,37 +69,11 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 		verifyStatusCode(t, resp, http.StatusOK)
 
-		checkResultChannel(t, result, true, "Import Success")
+		checkResultChannel(t, result, true, "")
 
 		assertWallet(t, prompterApp.App().WalletManager, nickname)
 
 		os.Remove(filePath)
-	})
-
-	t.Run("import invalid path file", func(t *testing.T) {
-		walletFile := "InvalidWallet"
-
-		filePath := "importMe.yaml"
-		// Write wallet file
-		data := []byte(walletFile)
-		err = os.WriteFile(filePath, data, 0o644)
-		assert.NoError(t, err)
-		defer os.Remove(filePath)
-
-		testResult := make(chan walletapp.EventData)
-
-		// Send filepath to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			// Send invalid filename to prompter app and wait for result
-			prompterApp.App().PromptInput <- "invalidFilename"
-			failRes := <-resChan
-
-			checkResultChannel(t, failRes, false, utils.ErrInvalidFileExtension)
-		}(testResult)
-
-		resp := importWallet(t, api)
-
-		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
 	t.Run("import invalid account file", func(t *testing.T) {
@@ -184,8 +158,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			password:   memguard.NewBufferFromBytes([]byte("aGoodPassword")),
 			wantStatus: http.StatusOK,
 			wantResult: walletapp.EventData{
-				Success:     true,
-				CodeMessage: utils.MsgAccountImported,
+				Success: true,
 			},
 		},
 		{

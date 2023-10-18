@@ -9,9 +9,11 @@ import (
 
 // Sentinel errors
 var (
-	ErrInvalidPrivateKeySentinel = errors.New(ErrInvalidPrivateKey)
-	ErrCorrelationIDNotFound     = errors.New("Correlation ID not found")
-	ErrCache                     = errors.New("Error loading cache")
+	ErrCorrelationIDNotFound = errors.New("Correlation ID not found")
+	ErrCache                 = errors.New("Error loading cache")
+	ErrWrongPassword         = errors.New("wrong password")
+	ErrActionCanceled        = errors.New("Action canceled by user")
+	ErrTimeout               = errors.New("Password prompt reached timeout")
 )
 
 func WailsErrorCode(err error) string {
@@ -37,6 +39,10 @@ func WailsErrorCode(err error) string {
 
 	if errors.Is(err, walletmanager.ErrUnmarshalAccount) {
 		return ErrAccountFile
+	}
+
+	if errors.Is(err, ErrActionCanceled) {
+		return ActionCanceled
 	}
 
 	return ErrUnknown

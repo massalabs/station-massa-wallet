@@ -10,6 +10,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station-massa-wallet/pkg/openapi"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station-massa-wallet/pkg/walletmanager"
@@ -37,25 +38,21 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 }
 
 // loadAccount loads a wallet from the file system or returns an error.
+// Here it is acceptable to return a middleware.Responder to simplify the code.
 func loadAccount(wallet *walletmanager.Wallet, nickname string) (*account.Account, middleware.Responder) {
-	w, err := wallet.GetAccount(nickname)
+	acc, err := wallet.GetAccount(nickname)
 	if err == nil {
-		return w, nil
-	}
-
-	errorObj := models.Error{
-		Code:    errorGetWallets,
-		Message: err.Error(),
+		return acc, nil
 	}
 
 	if errors.Is(err, walletmanager.AccountNotFoundError) {
-		return nil, newErrorResponse(err.Error(), errorGetWallet, http.StatusNotFound)
+		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusNotFound)
 	} else {
-		return nil, operations.NewGetAccountBadRequest().WithPayload(&errorObj)
+		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusBadRequest)
 	}
 }
 
-func newErrorResponse(message, code string, status int16) middleware.Responder {
+func newErrorResponse(message, code string, statusCode int) middleware.Responder {
 	logger.Error(message)
 
 	payload := &models.Error{
@@ -63,16 +60,5 @@ func newErrorResponse(message, code string, status int16) middleware.Responder {
 		Message: message,
 	}
 
-	switch status {
-	case http.StatusBadRequest:
-		return operations.NewGetAccountBadRequest().WithPayload(payload)
-	case http.StatusUnauthorized:
-		return operations.NewGetAccountUnauthorized().WithPayload(payload)
-	case http.StatusNotFound:
-		return operations.NewGetAccountNotFound().WithPayload(payload)
-	case http.StatusInternalServerError:
-		return operations.NewGetAccountInternalServerError().WithPayload(payload)
-	default:
-		return operations.NewAccountListInternalServerError().WithPayload(payload)
-	}
+	return openapi.NewPayloadResponder(statusCode, payload)
 }

@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -65,11 +66,7 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		// Fetch the balance for the current asset
 		address, err := acc.Address.MarshalText()
 		if err != nil {
-			return operations.NewGetAllAssetsInternalServerError().WithPayload(
-				&models.Error{
-					Code:    errorGetWallet,
-					Message: ErrorAddressInvalid.Error(),
-				})
+			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
 
 		balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))

@@ -50,7 +50,7 @@ func SendOperation(
 
 	publicKeyText, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return nil, fmt.Errorf("Unable to marshal public key: %w", err)
+		return nil, err
 	}
 
 	// send the operationData to the network

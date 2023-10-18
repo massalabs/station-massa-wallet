@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -24,7 +25,7 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	err := w.wallet.Discover()
 	if err != nil {
 		errMsg := "Unable to discover accounts"
-		logger.Infof("%s: %v", errMsg, err)
+		logger.Errorf("%s: %v", errMsg, err)
 
 		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
@@ -38,7 +39,7 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	infos, err := w.massaClient.GetAccountsInfos(accounts)
 	if err != nil {
 		errMsg := "Unable to retrieve accounts infos"
-		logger.Infof("%s: %v", errMsg, err)
+		logger.Warnf("%s: %v", errMsg, err)
 
 		return operations.NewAccountListInternalServerError().WithPayload(
 			&models.Error{
@@ -50,9 +51,9 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 	var accountModels []*models.Account
 
 	for i := 0; i < len(accounts); i++ {
-		modelWallet, resp := newAccountModel(accounts[i])
-		if resp != nil {
-			return resp
+		modelWallet, err := newAccountModel(accounts[i])
+		if err != nil {
+			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
 		modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[i].CandidateBalance))
 		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))

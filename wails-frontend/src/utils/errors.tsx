@@ -1,8 +1,8 @@
 export enum ErrorCode {
   InvalidNickname = 'Nickname-0001',
   InvalidPrivateKey = 'PrivateKey-0001',
-  ErrNoFile = 'NoFile-0001',
   FilesystemError = 'AccountFile-0001',
+  ErrNoFile = 'NoFile-0001',
   DuplicateKey = 'DuplicateKey-0001',
   UnknownError = 'Unknown-0001',
   DuplicateNickname = 'DuplicateNickname-001',

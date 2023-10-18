@@ -44,21 +44,13 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(string(params.Body.Amount), 10, 64)
 	if err != nil {
-		return operations.NewTransferCoinBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during amount conversion",
-			})
+		return newErrorResponse("Error during amount conversion", errorTransferCoin, http.StatusBadRequest)
 	}
 
 	// convert fee to uint64
 	fee, err := strconv.ParseUint(string(params.Body.Fee), 10, 64)
 	if err != nil {
-		return operations.NewTransferCoinBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during fee conversion",
-			})
+		return newErrorResponse("Error during fee conversion", errorTransferCoin, http.StatusBadRequest)
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -74,11 +66,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	promptOutput, err := prompt.WakeUpPrompt(t.prompterApp, promptRequest, acc)
 	if err != nil {
-		return operations.NewTransferCoinUnauthorized().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: "Unable to unprotect wallet",
-			})
+		return newErrorResponse("Unable to unprotect wallet", errorCanceledAction, http.StatusUnauthorized)
 	}
 
 	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
@@ -95,7 +83,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgTransferSuccess})
+		walletapp.EventData{Success: true})
 
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{

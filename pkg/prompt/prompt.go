@@ -109,16 +109,16 @@ func WakeUpPrompt(
 			return output, nil
 
 		case <-prompterApp.App().CtrlChan:
-			logger.Warn(ActionCanceledErr)
+			logger.Warn(utils.ErrActionCanceled.Error())
 
-			return nil, ErrActionCanceled
+			return nil, utils.ErrActionCanceled
 
 		case <-ctxTimeout.Done():
-			logger.Warn(TimeoutErr)
+			logger.Warn(utils.ErrTimeout.Error())
 			prompterApp.EmitEvent(walletapp.PromptResultEvent,
-				walletapp.EventData{Success: false, CodeMessage: utils.ErrTimeout})
+				walletapp.EventData{Success: false, CodeMessage: utils.ErrTimeoutMsg})
 
-			return nil, ErrTimeout
+			return nil, utils.ErrTimeout
 		}
 	}
 }

@@ -89,7 +89,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountDeleted)
+		checkResultChannel(t, result, true, "")
 
 		_, err = prompterApp.App().WalletManager.GetAccount(nickname)
 		assert.Error(t, err, "Wallet should have been deleted")

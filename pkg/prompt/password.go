@@ -27,7 +27,7 @@ func handlePasswordPrompt(prompterApp WalletPrompterInterface, input interface{}
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WrongPassword})
 
-		return nil, true, fmt.Errorf("%w: %s", ErrWrongPassword, msg)
+		return nil, true, fmt.Errorf("%w: %s", utils.ErrWrongPassword, msg)
 	}
 
 	return passwordReturned, false, nil

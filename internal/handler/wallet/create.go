@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/awnumar/memguard"
@@ -43,11 +44,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, nil)
 	if err != nil {
-		return operations.NewCreateAccountUnauthorized().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: "Unable to create wallet",
-			})
+		return newErrorResponse("Unable to create wallet", errorCanceledAction, http.StatusUnauthorized)
 	}
 
 	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
@@ -66,7 +63,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountCreated})
+		walletapp.EventData{Success: true})
 
 	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
 	if err != nil {
@@ -79,20 +76,12 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return operations.NewCreateAccountInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCreateNew,
-				Message: ErrorAddressInvalid.Error(),
-			})
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	publicKey, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return operations.NewCreateAccountInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorCreateNew,
-				Message: "Account public key is invalid",
-			})
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	//ICOQUEST: To be removed when ICO is over

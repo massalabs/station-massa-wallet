@@ -103,9 +103,10 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		password, err := w.PromptPassword(acc, promptRequest)
 		if err != nil {
 			msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
-			if errors.Is(err, prompt.ErrWrongPassword) || errors.Is(err, prompt.ErrActionCanceled) {
+			if errors.Is(err, utils.ErrWrongPassword) || errors.Is(err, utils.ErrActionCanceled) {
 				return newErrorResponse(msg, errorGetWallets, http.StatusUnauthorized)
 			}
+
 			return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 		}
 
@@ -144,7 +145,7 @@ func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.
 	password, _ := promptOutput.(*memguard.LockedBuffer)
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+		walletapp.EventData{Success: true})
 
 	return password, nil
 }
@@ -173,7 +174,7 @@ func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.Loc
 func (w *walletSign) Success(acc *account.Account, signature []byte, correlationId models.CorrelationID) middleware.Responder {
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return newErrorResponse(fmt.Sprintf("Unable to marshal public key: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	return operations.NewSignOK().WithPayload(
@@ -209,7 +210,7 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 
 	addressBytes, err := acc.Address.MarshalText()
 	if err != nil {
-		return nil, fmt.Errorf("unable to marshal address: %w", err)
+		return nil, err
 	}
 	address := string(addressBytes)
 
@@ -227,40 +228,35 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 		case TransactionOpType:
 			msg, err := transaction.DecodeMessage(decodedMsg)
 			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode transaction message")
-				return nil, wrappedErr
+				return nil, errors.Wrap(err, "failed to decode transaction message")
 			}
 			promptRequest = w.prepareTransactionPromptRequest(msg, acc, address, description, fees, expiry)
 
 		case BuyRollOpType, SellRollOpType:
 			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode roll message")
-				return nil, wrappedErr
+				return nil, errors.Wrap(err, "failed to decode roll message")
 			}
 			promptRequest = w.prepareRollPromptRequest(roll, acc, address, description, fees, expiry)
 
 		case ExecuteSCOpType:
 			executeSC, err := executesc.DecodeMessage(decodedMsg)
 			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode executeSC message")
-				return nil, wrappedErr
+				return nil, errors.Wrap(err, "failed to decode executeSC message")
 			}
 			promptRequest = w.prepareExecuteSCPromptRequest(executeSC, acc, address, description, fees, expiry)
 
 		case CallSCOpType:
 			callSC, err := callsc.DecodeMessage(decodedMsg)
 			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode callSC message")
-				return nil, wrappedErr
+				return nil, errors.Wrap(err, "failed to decode callSC message")
 			}
 			promptRequest = w.prepareCallSCPromptRequest(callSC, acc, address, description, fees, expiry)
 
 		default:
 			decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
 			if err != nil {
-				wrappedErr := errors.Wrap(err, "failed to decode plainText message from b64")
-				return nil, wrappedErr
+				return nil, errors.Wrap(err, "failed to decode plainText message from b64")
 			}
 			promptRequest = w.prepareplainTextPromptRequest(string(decodedMsg), acc, address, description)
 

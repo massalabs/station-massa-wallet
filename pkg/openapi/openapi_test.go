@@ -27,23 +27,6 @@ func TestCustomResponder_WriteResponse(t *testing.T) {
 	assert.Equal(t, "<nil>", recorderWithError.Body.String())
 }
 
-func TestNewNotFoundResponder(t *testing.T) {
-	responder := NewNotFoundResponder()
-
-	assert.Equal(t, "Page not found", string(responder.Body))
-	assert.Equal(t, http.StatusNotFound, responder.StatusCode)
-	assert.Equal(t, "text/html", responder.Header["Content-Type"])
-}
-
-func TestNewInternalServerErrorResponder(t *testing.T) {
-	err := DummyError()
-	responder := NewInternalServerErrorResponder(err)
-
-	assert.Equal(t, err.Error(), string(responder.Body))
-	assert.Equal(t, http.StatusInternalServerError, responder.StatusCode)
-	assert.Equal(t, "text/html", responder.Header["Content-Type"])
-}
-
 // Mock response writer for testing
 type mockResponseWriter struct {
 	httptest.ResponseRecorder

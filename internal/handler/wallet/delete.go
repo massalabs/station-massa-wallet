@@ -39,7 +39,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 	if err != nil {
 		return operations.NewDeleteAccountInternalServerError().WithPayload(
 			&models.Error{
-				Code:    errorGetWallet,
+				Code:    errorGetAccount,
 				Message: "Unable to retrieve account infos",
 			})
 	}
@@ -78,7 +78,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountDeleted})
+		walletapp.EventData{Success: true})
 
 	return operations.NewDeleteAccountNoContent()
 }

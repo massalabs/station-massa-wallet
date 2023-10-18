@@ -2,7 +2,6 @@ package prompt
 
 import (
 	"fmt"
-	"strings"
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -24,23 +23,14 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 }
 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*account.Account, bool, error) {
-	if !strings.HasSuffix(filePath, ".yaml") && !strings.HasSuffix(filePath, ".yml") {
-		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidFileExtension})
-		return nil, false, fmt.Errorf(InvalidAccountFileErr)
-	}
-
 	wallet := prompterApp.App().WalletManager
 
 	acc, err := wallet.Load(filePath)
 	if err != nil {
-		msg := fmt.Sprintf("%v: %v", AccountLoadErr, err)
-		code := utils.WailsErrorCode(err)
-		fmt.Println("code is: ", code)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: code})
+			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 
-		return nil, false, fmt.Errorf(msg)
+		return nil, false, fmt.Errorf("unable to load account file: %w", err)
 	}
 
 	err = wallet.AddAccount(acc, true)
@@ -58,11 +48,10 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*ac
 func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportFromPKey) (*account.Account, bool, error) {
 	acc, err := account.NewFromPrivateKey(walletInfo.Password, walletInfo.Nickname, walletInfo.PrivateKey)
 	if err != nil {
-		errStr := fmt.Sprintf("%v: %v", ImportPrivateKeyErr, err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 
-		return nil, false, fmt.Errorf(errStr)
+		return nil, false, fmt.Errorf("unable to import private key: %w", err)
 	}
 
 	wallet := prompterApp.App().WalletManager

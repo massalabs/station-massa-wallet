@@ -12,7 +12,6 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
@@ -37,21 +36,13 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(string(params.Body.Amount), 10, 64)
 	if err != nil {
-		return operations.NewTradeRollsBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during amount conversion",
-			})
+		return newErrorResponse("Error during amount conversion", errorTradeRoll, http.StatusBadRequest)
 	}
 
 	// convert fee to uint64
 	fee, err := strconv.ParseUint(string(params.Body.Fee), 10, 64)
 	if err != nil {
-		return operations.NewTradeRollsBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during fee conversion",
-			})
+		return newErrorResponse("Error during fee conversion", errorTradeRoll, http.StatusBadRequest)
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -81,7 +72,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgRollTradeSuccess})
+		walletapp.EventData{Success: true})
 
 	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{

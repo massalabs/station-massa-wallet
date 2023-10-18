@@ -109,7 +109,7 @@ func Test_getWallet_handler(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, "Unprotect Success")
+		checkResultChannel(t, result, true, "")
 	})
 }
 

@@ -3,11 +3,11 @@ package wallet
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 
 	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
@@ -34,10 +34,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	if err == walletmanager.AccountNotFoundError {
 		return operations.NewGetAccountNotFound()
 	} else if err != nil {
-		return operations.NewGetAccountInternalServerError().WithPayload(&models.Error{
-			Code:    errorGetWallets,
-			Message: err.Error(),
-		})
+		return newErrorResponse(err.Error(), errorGetWallets, http.StatusInternalServerError)
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -47,11 +44,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, acc)
 	if err != nil {
-		return operations.NewBackupAccountUnauthorized().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: "Unable to backup account",
-			})
+		return newErrorResponse("Unable to backup account", errorCanceledAction, http.StatusUnauthorized)
 	}
 
 	// If the user choose to backup the wallet using the yaml file, promptOutput will be a BackupMethod
@@ -62,35 +55,25 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	var publicKey string = ""
 
 	if isYmlBackup {
-		walletErr := w.saveAccountFile(params.Nickname)
-		if walletErr != nil {
+		err = w.saveAccountFile(params.Nickname)
+		if err != nil {
 			w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-				walletapp.EventData{Success: false, CodeMessage: walletErr.CodeErr})
+				walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 
-			return operations.NewBackupAccountBadRequest().WithPayload(
-				&models.Error{
-					Code:    errorSaveAccount,
-					Message: walletErr.CodeErr,
-				})
+			return newErrorResponse(utils.ErrAccountFile, errorSaveAccount, http.StatusBadRequest)
 		}
 	} else {
 		guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
 		guardedPrivateKey, err := acc.PrivateKeyTextInClear(guardedPassword)
 		if err != nil {
-			return operations.NewBackupAccountInternalServerError().WithPayload(&models.Error{
-				Code:    errorGetWallets,
-				Message: err.Error(),
-			})
+			return newErrorResponse(err.Error(), errorGetWallets, http.StatusInternalServerError)
 		}
 		defer guardedPrivateKey.Destroy()
 		privateKey = string(guardedPrivateKey.Bytes())
 
 		publicKeyBytes, err := acc.PublicKey.MarshalText()
 		if err != nil {
-			return operations.NewBackupAccountInternalServerError().WithPayload(&models.Error{
-				Code:    errorGetWallets,
-				Message: err.Error(),
-			})
+			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
 
 		publicKey = string(publicKeyBytes)
@@ -102,60 +85,42 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgBackupSuccess, Data: data})
+		walletapp.EventData{Success: true, Data: data})
 
 	return operations.NewBackupAccountNoContent()
 }
 
-func (w *walletBackupAccount) saveAccountFile(nickname string) *walletmanager.WalletError {
+func (w *walletBackupAccount) saveAccountFile(nickname string) error {
 	dstFile, err := w.prompterApp.SelectBackupFilepath(nickname)
 	if err != nil {
-		return &walletmanager.WalletError{
-			Err:     err,
-			CodeErr: utils.ErrAccountFile,
-		}
+		return err
 	}
 
 	if dstFile == "" {
-		return &walletmanager.WalletError{
-			Err:     fmt.Errorf("no file selected"),
-			CodeErr: utils.ActionCanceled,
-		}
+		return fmt.Errorf("no file selected: %w", utils.ErrActionCanceled)
 	}
 
 	// Create the destination file
 	destination, err := os.Create(dstFile)
 	if err != nil {
-		return &walletmanager.WalletError{
-			Err:     err,
-			CodeErr: utils.ErrAccountFile,
-		}
+		return err
 	}
 	defer destination.Close()
 
 	srcFile, err := w.prompterApp.App().WalletManager.AccountPath(nickname)
 	if err != nil {
-		return &walletmanager.WalletError{
-			Err:     err,
-			CodeErr: utils.ErrAccountFile,
-		}
+		return err
 	}
 
 	source, err := os.Open(srcFile)
 	if err != nil {
-		return &walletmanager.WalletError{
-			Err:     err,
-			CodeErr: utils.ErrAccountFile,
-		}
+		return err
 	}
 	defer source.Close()
 
 	_, err = io.Copy(destination, source)
 	if err != nil {
-		return &walletmanager.WalletError{
-			Err:     err,
-			CodeErr: utils.ErrAccountFile,
-		}
+		return err
 	}
 
 	return nil

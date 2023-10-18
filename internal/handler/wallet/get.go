@@ -38,9 +38,9 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		return resp
 	}
 
-	modelWallet, resp := newAccountModel(*acc)
-	if resp != nil {
-		return resp
+	modelWallet, err := newAccountModel(*acc)
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	// if request not ciphered data, ask for password and unprotect the wallet
@@ -72,11 +72,11 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		defer guardedPrivateKey.Destroy()
 
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+			walletapp.EventData{Success: true})
 
-		modelWallet.KeyPair, resp = newKeyPairModel(*acc, guardedPrivateKey)
-		if resp != nil {
-			return resp
+		modelWallet.KeyPair, err = newKeyPairModel(*acc, guardedPrivateKey)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
 	}
 
@@ -95,14 +95,10 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 	return operations.NewGetAccountOK().WithPayload(modelWallet)
 }
 
-func newAccountModel(acc account.Account) (*models.Account, middleware.Responder) {
+func newAccountModel(acc account.Account) (*models.Account, error) {
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return nil, operations.NewGetAccountInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorGetWallet,
-				Message: ErrorAddressInvalid.Error(),
-			})
+		return nil, err
 	}
 
 	return &models.Account{
@@ -113,13 +109,10 @@ func newAccountModel(acc account.Account) (*models.Account, middleware.Responder
 	}, nil
 }
 
-func newKeyPairModel(acc account.Account, guardedPrivateKey *memguard.LockedBuffer) (models.KeyPair, middleware.Responder) {
+func newKeyPairModel(acc account.Account, guardedPrivateKey *memguard.LockedBuffer) (models.KeyPair, error) {
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return models.KeyPair{}, operations.NewGetAccountInternalServerError().WithPayload(&models.Error{
-			Code:    errorGetWallets,
-			Message: err.Error(),
-		})
+		return models.KeyPair{}, err
 	}
 
 	return models.KeyPair{

@@ -1,12 +1,9 @@
 package prompt
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/awnumar/memguard"
-	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
 func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interface{}) (*memguard.LockedBuffer, bool, error) {
@@ -16,12 +13,6 @@ func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interfac
 	}
 
 	trimmedPassword := strings.TrimSpace(password)
-	if len(trimmedPassword) < PASSWORD_MIN_LENGTH {
-		// TODO implement/refactor password strength check
-		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidPassword})
-		return nil, true, fmt.Errorf(passwordLengthErrMsg)
-	}
 
 	guardedPassword := memguard.NewBufferFromBytes([]byte(trimmedPassword))
 

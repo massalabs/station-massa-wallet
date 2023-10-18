@@ -75,7 +75,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, "Backup Success")
+		checkResultChannel(t, result, true, "")
 	})
 
 	t.Run("chose private backup then cancel", func(t *testing.T) {
@@ -133,7 +133,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		assert.Equal(t, "S", string(data.PrivateKey[0]))
 		assert.Equal(t, string(publicKeyBytes), data.PublicKey)
 
-		checkResultChannel(t, result, true, "Backup Success")
+		checkResultChannel(t, result, true, "")
 	})
 
 	err = os.Remove(WalletBackupFilepath)

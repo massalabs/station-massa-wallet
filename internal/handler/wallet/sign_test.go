@@ -66,7 +66,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+		checkResultChannel(t, result, true, "")
 	})
 
 	t.Run("sign a plain text message", func(t *testing.T) {
@@ -87,7 +87,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+		checkResultChannel(t, result, true, "")
 	})
 
 	// The handler will not return until a the good password is sent or the action is canceled
@@ -115,7 +115,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+		checkResultChannel(t, result, true, "")
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
@@ -152,7 +152,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, "Unprotect Success")
+		checkResultChannel(t, result, true, "")
 
 		var body models.SignResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &body)

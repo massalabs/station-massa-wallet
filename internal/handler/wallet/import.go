@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -9,7 +10,6 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
@@ -43,7 +43,7 @@ func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Respo
 	acc, _ := promptOutput.(*account.Account)
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountImported})
+		walletapp.EventData{Success: true})
 
 	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
 	if err != nil {
@@ -54,9 +54,9 @@ func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Respo
 			})
 	}
 
-	modelWallet, resp := newAccountModel(*acc)
-	if resp != nil {
-		return resp
+	modelWallet, err := newAccountModel(*acc)
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))

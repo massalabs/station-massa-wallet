@@ -19,11 +19,6 @@ var (
 	AccountNotFoundError = errors.New("account not found")
 )
 
-type WalletError struct {
-	Err     error
-	CodeErr string // Sentinel error code from utils package, can be used as a translation key.
-}
-
 type Wallet struct {
 	accounts                map[string]*account.Account // Mapping from nickname to account
 	InvalidAccountNicknames []string                    // List of invalid account nicknames

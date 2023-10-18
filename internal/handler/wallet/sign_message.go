@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -39,19 +40,20 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	}
 
 	// Create a promptRequest for signing the message
-	promptRequest, resp := prepareSignMessagePromptRequest(*acc, params.Body)
-	if resp != nil {
-		return resp
+	promptRequest, err := prepareSignMessagePromptRequest(*acc, params.Body)
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	// Use the prompt-based logic to sign the message
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
 	if err != nil {
-		return operations.NewSignMessageUnauthorized().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: "Unable to unprotect wallet",
-			})
+		msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
+		if errors.Is(err, utils.ErrWrongPassword) || errors.Is(err, utils.ErrActionCanceled) {
+			return newErrorResponse(msg, errorGetWallets, http.StatusUnauthorized)
+		}
+
+		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 	}
 
 	guardedPassword, _ := promptOutput.(*memguard.LockedBuffer)
@@ -62,11 +64,11 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+		walletapp.EventData{Success: true})
 
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
-		return newErrorResponse(fmt.Sprintf("unable to marshal public key: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	// Return the signature and public key as the response
@@ -77,7 +79,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		})
 }
 
-func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessageRequest) (*prompt.PromptRequest, middleware.Responder) {
+func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessageRequest) (*prompt.PromptRequest, error) {
 	DisplayData := true
 	// Check if DisplayData is provided in the request, if not, use the default (true)
 	if body.DisplayData != nil {
@@ -86,7 +88,7 @@ func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessa
 
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return nil, newErrorResponse(fmt.Sprintf("Unable to marshal address: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
+		return nil, err
 	}
 
 	return &prompt.PromptRequest{
