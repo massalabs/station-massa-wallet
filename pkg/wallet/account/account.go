@@ -98,6 +98,7 @@ func Generate(password *memguard.LockedBuffer, nickname string) (*Account, error
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
+	privateKeyBytes = append([]byte{types.EncryptedPrivateKeyLastVersion}, []byte(privateKeyBytes)...)
 	privateKey := memguard.NewBufferFromBytes(privateKeyBytes)
 
 	encryptedSecret, err := seal(privateKey, password, salt[:], nonce[:])
@@ -147,15 +148,17 @@ func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, private
 	}
 
 	seed, privateKeyVersion, err := base58.CheckDecode(string(privateKeyText.Bytes()[1:])) // omit the first byte because it's 'S' for secret key
-
-	seedBuffer := memguard.NewBufferFromBytes(seed)
 	if err != nil {
-		seedBuffer.Destroy()
 		return nil, fmt.Errorf("%w: decoding base58 private key: %w", ErrInvalidPrivateKey, err)
 	}
 
-	privateKey := memguard.NewBufferFromBytes(ed25519.NewKeyFromSeed(seedBuffer.Bytes()))
+	seedBuffer := memguard.NewBufferFromBytes(seed)
+
+	privateKeyBytes := ed25519.NewKeyFromSeed(seedBuffer.Bytes())
 	seedBuffer.Destroy()
+
+	privateKeyBytes = append([]byte{privateKeyVersion}, privateKeyBytes...)
+	privateKey := memguard.NewBufferFromBytes(privateKeyBytes)
 
 	encryptedSecret, err := seal(privateKey, password, salt[:], nonce[:])
 	if err != nil {
@@ -193,6 +196,7 @@ func seal(privateKey, password *memguard.LockedBuffer, salt, nonce []byte) ([]by
 	if err != nil {
 		return nil, fmt.Errorf("creating secret cipher: %w", err)
 	}
+
 	encryptedSecret := crypto.SealSecret(aeadCipher, nonce[:], privateKey)
 
 	secretKey.Destroy()
@@ -202,12 +206,21 @@ func seal(privateKey, password *memguard.LockedBuffer, salt, nonce []byte) ([]by
 
 // PrivateKeyTextInClear returns the private key in clear and destroys the password.
 func (a *Account) PrivateKeyTextInClear(password *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
-	return a.CipheredData.PrivateKeyTextInClear(password, a.Salt[:], a.Nonce[:], a.CipheredData.Data)
+	return a.CipheredData.PrivateKeyTextInClear(password, a.Salt[:], a.Nonce[:])
+}
+
+func (a *Account) PrivateKeyBytesInClear(password *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
+	return a.CipheredData.PrivateKeyBytesInClear(password, a.Salt[:], a.Nonce[:])
 }
 
 // Sign signs the data with the private key and destroys the password.
 func (a *Account) Sign(password *memguard.LockedBuffer, data []byte) ([]byte, error) {
 	return a.CipheredData.Sign(password, a.Salt[:], a.Nonce[:], data)
+}
+
+// SignWithPrivateKey signs the data with the private key and destroys the private key.
+func (a *Account) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) []byte {
+	return a.CipheredData.SignWithPrivateKey(privateKey, data)
 }
 
 func (a *Account) Marshal() ([]byte, error) {
@@ -216,7 +229,7 @@ func (a *Account) Marshal() ([]byte, error) {
 
 // HasAccess returns true if the password is valid for the account. It destroys the password.
 func (a *Account) HasAccess(password *memguard.LockedBuffer) bool {
-	return a.CipheredData.HasAccess(password, a.Salt[:], a.Nonce[:], a.CipheredData.Data)
+	return a.CipheredData.HasAccess(password, a.Salt[:], a.Nonce[:])
 }
 
 func (a *Account) Unmarshal(data []byte) error {
