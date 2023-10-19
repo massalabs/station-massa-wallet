@@ -1,11 +1,75 @@
+import { mockServer } from '../../../../src/mirage';
 import { compareSnapshot } from '../../../compareSnapshot';
 
-describe('E2E | Acceptance | Account', function () {
+describe('E2E | Acceptance | Account', () => {
+  let server;
+
+  beforeEach(() => {
+    server = mockServer('test');
+  });
+
+  afterEach(() => {
+    server.shutdown();
+  });
+
   describe('/account-select', () => {
-    it('should match snapshot', () => {
+    it('should have loading state', () => {
       cy.visit('/');
 
-      compareSnapshot(cy, 'account-select');
+      cy.url()
+        .should('eq', Cypress.config().baseUrl + '/index')
+        .then(() => {
+          cy.get('[data-testid="loading"]')
+            .should('be.visible')
+            .then(() => {
+              cy.get('[data-testid="loading"]').should('not.exist');
+            });
+        });
+
+      compareSnapshot(cy, 'account-select-loading');
+    });
+
+    it('should have accounts loaded', () => {
+      const accounts = server.createList('account', 2);
+      accounts.forEach((account) => {
+        server.createList('asset', 3, { account });
+      });
+
+      cy.visit('/');
+      cy.url().should('eq', Cypress.config().baseUrl + '/index');
+
+      cy.get('[data-testid="accounts-list"]')
+        .find('[data-testid="selector"]')
+        .should('have.length', 2);
+      cy.get('[data-testid="button"]').should('exist');
+
+      compareSnapshot(cy, 'accounts-list');
+    });
+
+    it('should land in create new account when click add account button', () => {
+      const accounts = server.createList('account', 2);
+      accounts.forEach((account) => {
+        server.createList('asset', 3, { account });
+      });
+
+      cy.visit('/');
+      cy.get('[data-testid="button"]').click();
+
+      cy.url().should('eq', Cypress.config().baseUrl + '/account-create');
+    });
+
+    it('should land in the account home when click on account selector', () => {
+      const accounts = server.createList('account', 2);
+      const nickname = 'Mario';
+      accounts.push(server.create('account', { nickname }));
+      accounts.forEach((account) => {
+        server.createList('asset', 3, { account });
+      });
+
+      cy.visit('/');
+      cy.get('[data-testid="account-2"]').click();
+
+      cy.url().should('eq', Cypress.config().baseUrl + `/${nickname}/home`);
     });
   });
 });

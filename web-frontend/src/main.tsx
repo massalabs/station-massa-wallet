@@ -14,7 +14,7 @@ import '@massalabs/react-ui-kit/src/global.css';
 import './index.css';
 
 import { ENV } from '@/const/env/env';
-import { mockServer } from '@/mirage';
+import { mockServer, mockServerWithCypress } from '@/mirage';
 import AccountCreate from '@/pages/AccountCreate/AccountCreate.tsx';
 import AccountSelect from '@/pages/AccountSelect/AccountSelect.tsx';
 import Assets from '@/pages/Assets/Assets.tsx';
@@ -38,6 +38,7 @@ const baseENV = import.meta.env.VITE_ENV;
 // Add ENV.STANDALONE to the array to enable MirageJS
 if ([ENV.DEV, ENV.TEST].includes(baseENV)) {
   mockServer(import.meta.env.VITE_ENV);
+  mockServerWithCypress();
 }
 
 const queryClient = new QueryClient();
