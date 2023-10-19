@@ -152,7 +152,7 @@ package "Massa Wallet" {
         usecase "Manage (CRUD) Accounts" as walletAPI_cRUDAccount
         usecase "Send Massa" as walletAPI_sendMassa
         usecase "Buy/Sell Rolls" as walletAPI_buySellRolls
-        usecase "Sign Transaction" as walletAPI_signTransaction
+        usecase "Sign Transaction" as walletAPI_signOperation
         usecase "Sign Message" as walletAPI_signMessage
         usecase "Backup Account" as walletAPI_backupAccount
         usecase "Manage (CRD) Token Addresses" as walletAPI_cRUDLinkedFungibleTokenAddress
@@ -191,7 +191,7 @@ stationFront_useDApp --> walletAPI_serveWebSite
 stationFront_useDApp --> walletAPI_cRUDAccount
 stationFront_useDApp --> walletAPI_sendMassa
 stationFront_useDApp --> walletAPI_buySellRolls
-stationFront_useDApp --> walletAPI_signTransaction
+stationFront_useDApp --> walletAPI_signOperation
 stationFront_useDApp --> walletAPI_signMessage
 stationFront_useDApp --> walletAPI_backupAccount
 stationFront_useDApp --> walletAPI_cRUDLinkedFungibleTokenAddress
@@ -200,9 +200,50 @@ stationFront_useDApp --> walletAPI_cRUDLinkedFungibleTokenAddress
 
 === Sequence Diagram
 
-==== Sign Message
+This section provides sequence diagrams for main functionalities of each 
+Massa Wallet component.
 
-The following diagram illustrates the sequence of events when signing a message considering a fictive dApp needing to check the user's identity.
+==== API
+===== Sing Operation
+This sequence diagrams illustrates signing a Transaction operation. It applies to all other types: Roll buy and Roll sell, CallSC and ExecuteSC.
+
+[plantuml, format="svg", id="sign-operation", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+skinparam handwritten true
+
+participant "User" as user
+participant "dApp" as dapp
+participant "Massa Station" as station
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Front" as wallet_front
+
+user -> dapp ++ : Click "Sign In"
+    dapp -> station ++: Request //Sign Operation//
+        station -> wallet_api ++: Request //Sign Operation//
+        wallet_api -> wallet_api: Execute //Validate Arguments//
+            wallet_api -> wallet_core ++: Execute //Sign Operation//
+            wallet_core -> wallet_core: Fetch //Account Data//
+                wallet_core -> wallet_front ++: Fetch //Password Input//
+                wallet_front <-> user: Enter password
+                return password
+            wallet_core -> wallet_core: Execute //Unseal Private Key//
+            wallet_core -> wallet_core: Execute //Generate operation signature//
+            return operation signature
+        return operation signature
+    return operation signature
+dapp -> dapp: Verify signature
+dapp -> dapp: Open user access
+return logout
+@enduml
+----
+
+
+===== Sign Message
+The following diagram illustrates the sequence of events when
+signing a message considering a fictive dApp needing to check the
+user's identity.
 
 [plantuml, format="svg", id="sign-message", width="100%", role="center-image", options="interactive"]
 ----
@@ -332,9 +373,12 @@ The API will adhere to the HTML REST JSON standard, utilizing classic HTTP respo
 
 NOTE: For hands-on testing and examples, refer to the provided Swagger documentation and consider using tools like Postman.
 
-==== Sign Message Endpoint
+==== Sign (operation) Endpoint
 
-This endpoint facilitates the signing of a message using a specific account resource, identified by its unique nickname. It's important to note that this endpoint is not idempotent: identical calls with the same data will initiate separate executions.
+This endpoint serves the purpose of signing all five operation 
+types, including Transaction, Roll buy/sell, CallSC, and 
+ExecuteSC. It also provides the capability to batch operations by 
+utilizing the correlationID parameter.
 
 ===== Parameters
 
@@ -348,7 +392,30 @@ This endpoint facilitates the signing of a message using a specific account reso
 | `correlationId` | Identifier for correlating multiple requests. | Optional | String (Default: "")
 |===
 
+
 IMPORTANT: To ensure security, the `correlationId` should be sent in the request body, not in the query string.
+===== Response
+
+On successful execution, the response will the signature, public key, and correlationId (if provided).
+
+==== Sign Message Endpoint
+
+This endpoint facilitates the signing of a message using a 
+specific account resource, identified by its unique nickname. It's 
+important to note that this endpoint is not idempotent: identical 
+calls with the same data will initiate separate executions.
+
+===== Parameters
+
+[%header,cols="1,3,1,1"]
+|===
+| Name | Description | Presence | Format
+| `nickname` | Identifier for the account. | Required | String
+| `description` | Text describing the signing intent. | Optional | String (Default: "", Max: 280 characters)
+| `message` | **tbd** | Optional/Required |**define type**
+| `DisplayData` | to be defined)
+|===
+
 
 ===== Response
 
@@ -381,9 +448,64 @@ IMPORTANT: The unsealed private key is neither stored nor cached. It is utilized
 To sign a message, the content undergoes hashing using the Blake3 algorithm. The hashed value is subsequently signed using the ED25519 signature scheme. This function ensures the message signature process aligns with the Massa Labs cryptography standard.
 
 == Non-Functional Requirements
+=== Performance Requirements:
+** 1. Response Time:**
+The Massa Wallet module has a responsive user interface, with an
+ average response time for any user action (e.g., sending funds, 
+checking balances), not exceeding 2 seconds.
 
-Performance requirements, security requirements, usability requirements, etc.
-Any other requirements that don't relate directly to specific functionalities.
+**2. Scalability:**
+The module is able to handle a growing number of transactions and users by design. 
+All wallet components, including the API, run locally on the user's computer, so each user have API instance.
+*The scalability bottleneck is on the node side; if 10,000 users
+request to do an operation at the same time on the same node,
+it may be a problem for Massa Wallet users.*
+
+**3. Resource Utilization:**
+The module is resource-efficient, consuming no more than 100 MB of RAM and 1% of CPU utilization 
+during typical usage. During periods of inactivity or when the wallet is idle, resource utilization is near 0%.
+
+=== Security Requirements:
+
+**1. Data Encryption:**
+All sensitive user data, such as private keys and transaction history, are encrypted both at 
+rest and during transmission. 
+
+**name Industry-standard encryption protocols, and link to their usage.**
+
+**2. Authentication and Authorization:**
+Users are required to authenticate using password, or follow the recovery process to restore wallet accounts. 
+
+**Define rules for password authorization mechanism here** 
+
+
+**3. Protection Against Cyberattacks:** 
+
+**to add**
+
+**4. Backup and Recovery:**
+Users have the ability to create backups of their wallet 
+data, including private keys. In case of data loss, the module  
+provides a secure and user-friendly recovery process. 
+1. By providing previously exported and stored private key of the wallet. 
+2. By attaching .yaml file of the wallet. 
+**describe where are they stored per OS**
+
+IMPORTANT: After a successful uninstallation, the user's computer retains the Wallet .yaml files.
+
+=== Other Requirements:
+
+**1. Compliance with Cryptocurrency Standards:** 
+
+**To which industry standards and best practices, 
+do we adhere?**
+
+**2. Cross-Platform Compatibility:** 
+Massa Wallet is compatible with major desktop operating systems, including Windows, macOS, and Linux. 
+**List versions of OSs**
+
+Massa Wallet runs on Chromium and Firefox browsers.
+
 
 == User Interface & User Experience Design
 
