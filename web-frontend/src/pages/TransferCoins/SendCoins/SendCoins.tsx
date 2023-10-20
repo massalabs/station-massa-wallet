@@ -64,7 +64,7 @@ function SendCoins({ ...props }) {
   }
 
   return (
-    <div className="mt-5">
+    <div className="mt-5" data-testid="send-coins">
       {submit ? (
         <SendConfirmation
           data={data}

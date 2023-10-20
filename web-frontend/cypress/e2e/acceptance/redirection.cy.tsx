@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+import { Server } from 'miragejs/server';
+
 import { mockServer } from '../../../src/mirage';
 
 describe('E2E | Acceptance | Redirection', () => {
-  let server;
+  let server: Server;
 
   beforeEach(() => {
     server = mockServer('test');
@@ -20,7 +24,6 @@ describe('E2E | Acceptance | Redirection', () => {
     cy.visit('/');
 
     cy.url().should('eq', Cypress.config().baseUrl + '/index');
-    cy.wait(500);
     cy.url().should('eq', Cypress.config().baseUrl + '/account-select');
   });
 
@@ -28,7 +31,6 @@ describe('E2E | Acceptance | Redirection', () => {
     cy.visit('/index');
 
     cy.url().should('eq', Cypress.config().baseUrl + '/index');
-    cy.wait(500);
     cy.url().should('eq', Cypress.config().baseUrl + '/account-select');
   });
 });

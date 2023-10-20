@@ -67,6 +67,16 @@ compareSnapshotCommand();
 
 Cypress.Commands.add('mount', mount);
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+Cypress.Commands.add('assertValueCopiedFromClipboard', (value) => {
+  cy.window().then((win) => {
+    win.navigator.clipboard.readText().then((text) => {
+      expect(text).to.eq(value);
+    });
+  });
+});
+
 after(() => {
   cy.task('generateReport');
 });

@@ -47,6 +47,7 @@ export default function Home() {
             <Balance size="lg" amount={formattedBalance} customClass="mb-6" />
             <div className="flex gap-7">
               <Button
+                data-testid="receive-button"
                 variant="secondary"
                 preIcon={<FiArrowDownLeft />}
                 onClick={() =>
@@ -58,6 +59,7 @@ export default function Home() {
                 {Intl.t('home.buttons.receive')}
               </Button>
               <Button
+                data-testid="send-button"
                 preIcon={<FiArrowUpRight />}
                 onClick={() =>
                   navigate(
