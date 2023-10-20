@@ -1,6 +1,9 @@
 export function Loading() {
   return (
-    <div className="flex flex-col justify-center items-center gap-5 w-1/2">
+    <div
+      className="flex flex-col justify-center items-center gap-5 w-1/2"
+      data-testid="loading"
+    >
       <div className="bg-secondary rounded-2xl w-full max-w-lg p-12">
         <div className="h-2 w-20 bg-c-disabled-1 rounded-lg animate-pulse mb-4"></div>
         <div data-testid="balance" className="flex items-center w-fit mb-6">
