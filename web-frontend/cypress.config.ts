@@ -45,7 +45,11 @@ export default defineConfig({
       return compareSnapshotsPlugin;
     },
   },
-
+  env: {
+    browserPermissions: {
+      clipboard: 'allow',
+    },
+  },
   e2e: {
     // macbook-15 default
     viewportWidth: 1440,

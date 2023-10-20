@@ -84,29 +84,18 @@ describe('E2E | Acceptance | Home', () => {
       cy.get('[data-testid="receive-coins"]').should('be.visible');
     });
 
-    // it('should copy wallet address when clipboard field is clicked', () => {
-    //   // we are adding the permission to chrome on the fly
-    //   cy.wrap(
-    //     Cypress.automation('remote:debugger:protocol', {
-    //       command: 'Browser.grantPermissions',
-    //       params: {
-    //         permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
-    //         origin: window.location.origin,
-    //       },
-    //     }),
-    //   );
+    it('should copy wallet address when clipboard field is clicked', () => {
+      const account = mockedAccounts.at(2);
 
-    //   const account = mockedAccounts.at(2);
+      cy.visit('/');
 
-    //   cy.visit('/');
+      cy.get('[data-testid="account-2"]').click();
+      cy.url().should('eq', `${baseUrl}/Mario/home`);
 
-    //   cy.get('[data-testid="account-2"]').click();
-    //   cy.url().should('eq', `${baseUrl}/Mario/home`);
+      compareSnapshot(cy, 'wallet-home');
 
-    //   compareSnapshot(cy, 'wallet-home');
-
-    //   cy.get('[data-testid="clipboard-field"]').click();
-    //   cy.assertValueCopiedFromClipboard(account.address);
-    // });
+      cy.get('[data-testid="clipboard-field"]').click();
+      cy.assertValueCopiedFromClipboard(account.address);
+    });
   });
 });
