@@ -3,6 +3,7 @@ import { compareSnapshot } from '../../../compareSnapshot';
 
 describe('E2E | Acceptance | Account', () => {
   let server;
+  const baseUrl = Cypress.config().baseUrl;
 
   beforeEach(() => {
     server = mockServer('test');
@@ -17,7 +18,7 @@ describe('E2E | Acceptance | Account', () => {
       cy.visit('/');
 
       cy.url()
-        .should('eq', Cypress.config().baseUrl + '/index')
+        .should('eq', `${baseUrl}/index`)
         .then(() => {
           cy.get('[data-testid="loading"]')
             .should('be.visible')
@@ -36,7 +37,7 @@ describe('E2E | Acceptance | Account', () => {
       });
 
       cy.visit('/');
-      cy.url().should('eq', Cypress.config().baseUrl + '/index');
+      cy.url().should('eq', `${baseUrl}/index`);
 
       cy.get('[data-testid="accounts-list"]')
         .find('[data-testid="selector"]')
@@ -55,7 +56,7 @@ describe('E2E | Acceptance | Account', () => {
       cy.visit('/');
       cy.get('[data-testid="button"]').click();
 
-      cy.url().should('eq', Cypress.config().baseUrl + '/account-create');
+      cy.url().should('eq', `${baseUrl}/account-create`);
     });
 
     it('should land in the account home when click on account selector', () => {
@@ -69,7 +70,7 @@ describe('E2E | Acceptance | Account', () => {
       cy.visit('/');
       cy.get('[data-testid="account-2"]').click();
 
-      cy.url().should('eq', Cypress.config().baseUrl + `/${nickname}/home`);
+      cy.url().should('eq', `${baseUrl}/${nickname}/home`);
     });
   });
 });

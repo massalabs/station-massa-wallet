@@ -6,6 +6,7 @@ import { mockServer } from '../../../src/mirage';
 
 describe('E2E | Acceptance | Redirection', () => {
   let server: Server;
+  const baseUrl = Cypress.config().baseUrl;
 
   beforeEach(() => {
     server = mockServer('test');
@@ -23,14 +24,14 @@ describe('E2E | Acceptance | Redirection', () => {
   it('should land in /account-select when hit /', () => {
     cy.visit('/');
 
-    cy.url().should('eq', Cypress.config().baseUrl + '/index');
-    cy.url().should('eq', Cypress.config().baseUrl + '/account-select');
+    cy.url().should('eq', `${baseUrl}/index`);
+    cy.url().should('eq', `${baseUrl}/account-select`);
   });
 
   it('should land in /account-select when hit /index', () => {
     cy.visit('/index');
 
-    cy.url().should('eq', Cypress.config().baseUrl + '/index');
-    cy.url().should('eq', Cypress.config().baseUrl + '/account-select');
+    cy.url().should('eq', `${baseUrl}/index`);
+    cy.url().should('eq', `${baseUrl}/account-select`);
   });
 });

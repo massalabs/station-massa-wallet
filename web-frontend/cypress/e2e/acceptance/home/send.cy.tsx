@@ -7,6 +7,7 @@ import { compareSnapshot } from '../../../compareSnapshot';
 
 describe('E2E | Acceptance | Home', () => {
   let server: Server;
+  const baseUrl = Cypress.config().baseUrl;
 
   beforeEach(() => {
     server = mockServer('test');
@@ -45,7 +46,7 @@ describe('E2E | Acceptance | Home', () => {
       cy.get('[data-testid="account-2"]').click();
 
       cy.url()
-        .should('eq', Cypress.config().baseUrl + `/${account.nickname}/home`)
+        .should('eq', `${baseUrl}/${account.nickname}/home`)
         .then(() => {
           cy.get('[data-testid="loading"]')
             .should('be.visible')
@@ -64,10 +65,7 @@ describe('E2E | Acceptance | Home', () => {
 
       cy.get('[data-testid="account-2"]').click();
       cy.get('[data-testid="send-button"]').click();
-      cy.url().should(
-        'eq',
-        Cypress.config().baseUrl + `/${account.nickname}/transfer-coins`,
-      );
+      cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
       cy.get('[data-testid="send-coins"]').should('be.visible');
       cy.get('[data-testid="receive-coins"]').should('not.be.visible');
@@ -80,10 +78,7 @@ describe('E2E | Acceptance | Home', () => {
 
       cy.get('[data-testid="account-2"]').click();
       cy.get('[data-testid="receive-button"]').click();
-      cy.url().should(
-        'eq',
-        Cypress.config().baseUrl + `/${account.nickname}/transfer-coins`,
-      );
+      cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
       cy.get('[data-testid="send-coins"]').should('not.be.visible');
       cy.get('[data-testid="receive-coins"]').should('be.visible');
@@ -106,7 +101,7 @@ describe('E2E | Acceptance | Home', () => {
     //   cy.visit('/');
 
     //   cy.get('[data-testid="account-2"]').click();
-    //   cy.url().should('eq', Cypress.config().baseUrl + `/Mario/home`);
+    //   cy.url().should('eq', `${baseUrl}/Mario/home`);
 
     //   compareSnapshot(cy, 'wallet-home');
 
