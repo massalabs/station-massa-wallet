@@ -204,7 +204,7 @@ This section provides sequence diagrams for main functionalities of each
 Massa Wallet component.
 
 ==== API
-===== Sing Operation
+==== Sign Operation
 This sequence diagrams illustrates signing a Transaction operation. It applies to all other types: Roll buy and Roll sell, CallSC and ExecuteSC.
 
 [plantuml, format="svg", id="sign-operation", width="100%", role="center-image", options="interactive"]
