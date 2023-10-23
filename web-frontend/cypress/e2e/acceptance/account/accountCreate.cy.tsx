@@ -31,7 +31,7 @@ describe('E2E | Acceptance | Account | Create', () => {
       compareSnapshot(cy, 'account-create-step-one');
     });
 
-    it('should  create a new account', () => {
+    it('should create a new account', () => {
       cy.visit('/account-create-step-one');
 
       cy.url().should('eq', `${baseUrl}/account-create-step-one`);
@@ -53,6 +53,37 @@ describe('E2E | Acceptance | Account | Create', () => {
 
       cy.url().should('eq', `${baseUrl}/testAccount/home`);
       compareSnapshot(cy, 'account-create-home');
+    });
+
+    it('should prevent me from creating an account with wrong nickname', () => {
+      cy.visit('/account-create-step-one');
+
+      cy.get('[data-testid="input-field"]').type('testA ccount');
+      cy.get('[data-testid="button"]').contains('Next').click();
+
+      cy.get('[data-testid="input-field-message"]')
+        .should('exist')
+        .contains("The account name can't contain any special characters");
+      cy.get('[data-testid="button"]').contains('Next').click();
+      cy.url().should('eq', `${baseUrl}/account-create-step-one`);
+
+      compareSnapshot(cy, 'wrong-account-name-format');
+    });
+
+    it('should create account after correcting mistake', () => {
+      cy.visit('/account-create-step-one');
+
+      cy.get('[data-testid="input-field"]').type('testA ccount');
+      cy.get('[data-testid="button"]').contains('Next').click();
+
+      cy.url().should('eq', `${baseUrl}/account-create-step-one`);
+
+      cy.get('[data-testid="input-field"]').clear().type('testAccount');
+      cy.get('[data-testid="button"]').contains('Next').click();
+
+      cy.url().should('eq', `${baseUrl}/account-create-step-two`);
+
+      compareSnapshot(cy, 'wrong-account-name-format');
     });
   });
 });
