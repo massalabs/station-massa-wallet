@@ -18,7 +18,6 @@ describe('E2E | Acceptance | Home', () => {
   });
 
   describe('delete', () => {
-    // accounts used for test
     let mockedAccounts;
 
     function mockAccounts() {
@@ -26,7 +25,6 @@ describe('E2E | Acceptance | Home', () => {
       mockedAccounts.forEach((account) => {
         server.createList('asset', 1, { account });
       });
-      // reference account
       const account = {
         nickname: 'Mario',
         address: 'AUHdadXyJZUeINwiUVMtXZXJRTFXtYdihRWitUcAJSBwAHgcKAjtxx',
@@ -40,13 +38,22 @@ describe('E2E | Acceptance | Home', () => {
       mockedAccounts = mockAccounts();
     });
 
+    // util functions
+    function selectAccount(index) {
+      const account = mockedAccounts.at(index);
+      cy.visit('/');
+      cy.get(`[data-testid="account-${index}"]`).click();
+    }
+
+    function navigateToSettings() {
+      cy.get('[data-testid="side-menu"]').click();
+      cy.get('[data-testid="side-menu-settings-icon"]').click();
+    }
+
     it('should direct me to /nickname/home', () => {
-      // position of reference account in mockedAccounts
       const account = mockedAccounts.at(1);
 
-      cy.visit('/');
-
-      cy.get('[data-testid="account-1"]').click();
+      selectAccount(1);
 
       cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
 
@@ -57,9 +64,7 @@ describe('E2E | Acceptance | Home', () => {
     it('should access delete page', () => {
       const account = mockedAccounts.at(1);
 
-      cy.visit('/');
-
-      cy.get('[data-testid="account-1"]').click();
+      selectAccount(1);
 
       cy.get('[data-testid="side-menu"]').click();
 
@@ -75,13 +80,8 @@ describe('E2E | Acceptance | Home', () => {
     it('should delete account', () => {
       const account = mockedAccounts.at(1);
 
-      cy.visit('/');
-
-      cy.get('[data-testid="account-1"]').click();
-
-      cy.get('[data-testid="side-menu"]').click();
-
-      cy.get('[data-testid="side-menu-settings-icon"]').click();
+      selectAccount(1);
+      navigateToSettings();
 
       cy.get('[data-testid="button"]')
         .contains('Delete account')
