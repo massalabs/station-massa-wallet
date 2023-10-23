@@ -397,6 +397,7 @@ after being prompted to provide a password once.
 
 
 IMPORTANT: To ensure security, the `correlationId` should be sent in the request body, not in the query string.
+
 ===== Response
 
 On successful execution, the response will include an array containing: signature, public key, and the correlationId will be included if the batch parameter is set to true.
