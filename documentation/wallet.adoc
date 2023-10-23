@@ -276,6 +276,34 @@ return logout
 @enduml
 ----
 
+===== Backup Account
+The following diagram illustrates the sequence of events when backing up an account.
+
+[plantuml, format="svg", id="backup-account", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Click "Backup Account"
+    wallet_front -> wallet_api ++: Request //Backup Account//
+        wallet_api -> wallet_core ++: Execute //Backup Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+            wallet_embedded_front <-> user: Enter password
+            return password
+        wallet_core -> wallet_core: Execute //Unseal Private Key//
+        wallet_core -> wallet_embedded_front: Execute //Display Private Key//
+        wallet_embedded_front <-> user: Read/Copy Private Key
+        user -> wallet_embedded_front: Close
+        return Success
+    return Success
+return Success
+@enduml
+----
+
 == Data 
 
 In the Massa Station Wallet, various data elements play crucial roles in ensuring smooth operations and user interactions. This section provides a comprehensive overview of these data elements, their descriptions, and their sensitivity levels.
