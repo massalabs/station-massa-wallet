@@ -14,7 +14,7 @@ export function mockServer(environment = ENV.DEV) {
     models,
     factories,
     seeds(server) {
-      const accounts = server.createList('account', 5);
+      const accounts: AccountObject[] = server.createList('account', 5);
       accounts.forEach((account: AccountObject) => {
         server.createList('asset', 3, { account });
       });
