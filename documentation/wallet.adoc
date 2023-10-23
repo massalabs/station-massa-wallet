@@ -292,7 +292,7 @@ Understanding the types of data and their significance is essential. Here's a br
 [%header,cols="1,3,1"]
 |===
 | Data | Description | Sensitivity
-| Private Key | Asymmetric private key used for transaction signatures. | Confidential
+| Private Key | Asymmetric private key used for operation signatures. | Confidential
 | Public Key | Asymmetric public key used for signature verification. | Personal
 | Address | Hexadecimal string identifying the account. | Personal
 | Nickname | String identifier for the account. | Personal
@@ -306,7 +306,7 @@ Understanding the types of data and their significance is essential. Here's a br
 |===
 | Data | Description | Sensitivity
 | Balance | Amount of Massa owned by the account. | Personal
-| Transaction | Transaction signed by the account. | Personal
+| Operation | Operation signed by the account. | Personal
 | Linked Asset | Asset associated with the account. | Personal
 |===
 
@@ -314,7 +314,7 @@ Understanding the types of data and their significance is essential. Here's a br
 
 === Flow Diagram
 
-The flow diagram visually represents how different components of the Massa Station Wallet interact and communicate. This aids in understanding the data flow and the relationships between various modules:
+The flow diagram visually represents how different components of Massa Station Wallet interact and communicate. This aids in understanding the data flow and relationships between various modules:
 
 [plantuml, format="svg", id="application-mapping-diagram", width="60%", role="center-image"]
 ----
@@ -356,8 +356,8 @@ Data circulation refers to the movement and interaction of data elements across 
 |===
 | Step | Description | Data Involved
 | 1 | User interaction with a wallet web page. | Address, Balance, Linked Asset
-| 2 | Massa Station serves wallet web pages and API. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash, Balance, Transaction, Linked Asset
-| 3 | Massa Wallet API communicates data to/from the core process. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash, Balance, Transaction, Linked Asset
+| 2 | Massa Station serves wallet web pages and API. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash, Balance, Operation, Linked Asset
+| 3 | Massa Wallet API communicates data to/from the core process. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash, Balance, Operation, Linked Asset
 | 4 | Massa Wallet Front communicates data to/from the core process. | Password, Private Key
 | 5 | Massa Wallet Core interacts with the file system. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash
 |===
