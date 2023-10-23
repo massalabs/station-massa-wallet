@@ -203,8 +203,8 @@ stationFront_useDApp --> walletAPI_cRUDLinkedFungibleTokenAddress
 This section provides sequence diagrams for main functionalities of each 
 Massa Wallet component.
 
-==== API
 ==== Sign Operation
+
 This sequence diagrams illustrates signing a Transaction operation. It applies to all other operation types: Roll buy and Roll sell, CallSC and ExecuteSC.
 
 [plantuml, format="svg", id="sign-operation", width="100%", role="center-image", options="interactive"]
@@ -373,12 +373,15 @@ The API will adhere to the HTML REST JSON standard, utilizing classic HTTP respo
 
 NOTE: For hands-on testing and examples, refer to the provided Swagger documentation and consider using tools like Postman.
 
-==== Sign (operation) Endpoint
+==== Sign Operation
 
-This endpoint serves the purpose of signing all five operation 
+The 'sign' endpoint serves the purpose of signing all five operation 
 types, including Transaction, Roll buy/sell, CallSC, and 
-ExecuteSC. It also provides the capability to batch operations by 
-utilizing the correlationID parameter.
+ExecuteSC. It provides the capability to batch operation requests by 
+utilizing the correlationID parameter. No user interaction is required once first operation processing is underway. 
+Batching operation requests in Massa Wallet does not entail processing the operations as a group. 
+Instead, it enhances the user experience by allowing users to, sequentially, sign multiple operations 
+after being prompted to provide a password once.
 
 ===== Parameters
 
@@ -396,9 +399,9 @@ utilizing the correlationID parameter.
 IMPORTANT: To ensure security, the `correlationId` should be sent in the request body, not in the query string.
 ===== Response
 
-On successful execution, the response will the signature, public key, and correlationId (if provided).
+On successful execution, the response will include an array containing: signature, public key, and the correlationId will be included if the batch parameter is set to true.
 
-==== Sign Message Endpoint
+==== Sign Message
 
 This endpoint facilitates the signing of a message using a 
 specific account resource, identified by its unique nickname. It's 
@@ -413,7 +416,7 @@ calls with the same data will initiate separate executions.
 | `nickname` | Identifier for the account. | Required | String
 | `description` | Text describing the signing intent. | Optional | String (Default: "", Max: 280 characters)
 | `message` | **tbd** | Optional/Required |**define type**
-| `DisplayData` | to be defined)
+| `displayData` | **tbd** | **tbd** | **tbd**
 |===
 
 
@@ -452,14 +455,11 @@ To sign a message, the content undergoes hashing using the Blake3 algorithm. The
 ** 1. Response Time:**
 The Massa Wallet module has a responsive user interface, with an
  average response time for any user action (e.g., sending funds, 
-checking balances), not exceeding 2 seconds.
+checking balances), not exceeding 1 second.
 
 **2. Scalability:**
 The module is able to handle a growing number of transactions and users by design. 
 All wallet components, including the API, run locally on the user's computer, so each user have API instance.
-*The scalability bottleneck is on the node side; if 10,000 users
-request to do an operation at the same time on the same node,
-it may be a problem for Massa Wallet users.*
 
 **3. Resource Utilization:**
 The module is resource-efficient, consuming no more than 100 MB of RAM and 1% of CPU utilization 
@@ -468,20 +468,10 @@ during typical usage. During periods of inactivity or when the wallet is idle, r
 === Security Requirements:
 
 **1. Data Encryption:**
-All sensitive user data, such as private keys and transaction history, are encrypted both at 
-rest and during transmission. 
+All sensitive user data, such as private keys, are encrypted both at 
+rest and during operation signing. 
 
 **name Industry-standard encryption protocols, and link to their usage.**
-
-**2. Authentication and Authorization:**
-Users are required to authenticate using password, or follow the recovery process to restore wallet accounts. 
-
-**Define rules for password authorization mechanism here** 
-
-
-**3. Protection Against Cyberattacks:** 
-
-**to add**
 
 **4. Backup and Recovery:**
 Users have the ability to create backups of their wallet 
@@ -491,20 +481,16 @@ provides a secure and user-friendly recovery process.
 2. By attaching .yaml file of the wallet. 
 **describe where are they stored per OS**
 
-IMPORTANT: After a successful uninstallation, the user's computer retains the Wallet .yaml files.
+IMPORTANT: After a successful uninstallation, the user's computer must retain the Wallet .yaml files.
 
 === Other Requirements:
 
-**1. Compliance with Cryptocurrency Standards:** 
-
-**To which industry standards and best practices, 
-do we adhere?**
-
-**2. Cross-Platform Compatibility:** 
+**1. Cross-Platform Compatibility:** 
 Massa Wallet is compatible with major desktop operating systems, including Windows, macOS, and Linux. 
 **List versions of OSs**
 
 Massa Wallet runs on Chromium and Firefox browsers.
+**List supported browser versions**
 
 
 == User Interface & User Experience Design
