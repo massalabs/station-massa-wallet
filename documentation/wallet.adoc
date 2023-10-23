@@ -58,7 +58,7 @@ Public:::: Open data with no repercussions if accessed. Examples: signed hashes,
 Describe the main goals the product aims to achieve, such as facilitating secure blockchain transactions and providing an intuitive interface for users.
 
 === Key Features
-List the main features of the Massa Station Wallet concisely
+List the main features of the Massa Station Wallet concisely.
 
 === Architecture Overview
 Highlight the main components (API, front-end...) and briefly describe how the end user will interact with the product.
@@ -198,6 +198,8 @@ stationFront_useDApp --> walletAPI_cRUDLinkedFungibleTokenAddress
 @enduml
 ----
 
+<<<
+
 === Sequence Diagram
 
 This section provides sequence diagrams for main functionalities of each 
@@ -239,6 +241,7 @@ return logout
 @enduml
 ----
 
+<<<
 
 ===== Sign Message
 The following diagram illustrates the sequence of events when
@@ -276,7 +279,7 @@ dapp -> dapp: Open user access
 return logout
 @enduml
 ----
- 
+
 == Data 
 
 In the Massa Station Wallet, various data elements play crucial roles in ensuring smooth operations and user interactions. This section provides a comprehensive overview of these data elements, their descriptions, and their sensitivity levels.
@@ -306,6 +309,8 @@ Understanding the types of data and their significance is essential. Here's a br
 | Transaction | Transaction signed by the account. | Personal
 | Linked Asset | Asset associated with the account. | Personal
 |===
+
+<<<
 
 === Flow Diagram
 
@@ -340,12 +345,14 @@ massaWalletCore --> fileSystem: [5] - System Calls
 @enduml
 ----
 
+<<<
+
 === Circulation
 
 Data circulation refers to the movement and interaction of data elements across the system. Here's a step-by-step breakdown:
 
 .Data Circulation
-[%header,cols="1,3,1"]
+[%header,cols="1,3,3"]
 |===
 | Step | Description | Data Involved
 | 1 | User interaction with a wallet web page. | Address, Balance, Linked Asset
@@ -433,7 +440,7 @@ This function ensures that arguments provided to any endpoint are correct and co
 
 ==== Account Data
 
-Account data is persistently stored on the file system. The structure and format of this data must strictly adhere to the standards outlined in the Massa Labs documentation, specifically the wallet file format standard available [here](https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md).
+Account data is persistently stored on the file system. The structure and format of this data must strictly adhere to the standards outlined in the Massa Labs documentation, specifically the wallet file format standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
 
 ==== Password Input
 
@@ -443,7 +450,7 @@ IMPORTANT: The password input is neither stored nor cached. It is utilized only 
 
 ==== Unseal Private Key
 
-For certain operations, the encrypted and stored private key must be decrypted or "unsealed". This function manages the decryption process, ensuring compliance with the cryptographic constraints specified in the Massa Labs standard available [here](https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md).
+For certain operations, the encrypted and stored private key must be decrypted or "unsealed". This function manages the decryption process, ensuring compliance with the cryptographic constraints specified in the Massa Labs standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
 
 IMPORTANT: The unsealed private key is neither stored nor cached. It is utilized only for the duration of the function call. Implementing memory safety mechanisms, such as zeroing out the memory or ensuring the content isn't swapped to disk, is essential.
 
@@ -453,7 +460,7 @@ To sign a message, the content undergoes hashing using the Blake3 algorithm. The
 
 == Non-Functional Requirements
 === Performance Requirements:
-** 1. Response Time:**
+**1. Response Time:**
 The Massa Wallet module has a responsive user interface, with an
  average response time for any user action (e.g., sending funds, 
 checking balances), not exceeding 1 second.
@@ -474,11 +481,13 @@ rest and during operation signing.
 
 **name Industry-standard encryption protocols, and link to their usage.**
 
-**4. Backup and Recovery:**
+**2. Backup and Recovery:**
 Users have the ability to create backups of their wallet 
 data, including private keys. In case of data loss, the module  
-provides a secure and user-friendly recovery process. 
+provides a secure and user-friendly recovery process
+
 1. By providing previously exported and stored private key of the wallet. 
+
 2. By attaching .yaml file of the wallet. 
 **describe where are they stored per OS**
 
