@@ -1,6 +1,5 @@
 import { mockServer } from '../../../../src/mirage';
 import { compareSnapshot } from '../../../compareSnapshot';
-// import { AccountObject } from '@/models/AccountModel';
 
 describe('E2E | Acceptance | Account | Create', () => {
   let server: any;
@@ -32,7 +31,7 @@ describe('E2E | Acceptance | Account | Create', () => {
       compareSnapshot(cy, 'account-create-step-one');
     });
 
-    it('should let me create a new account', () => {
+    it('should  create a new account', () => {
       cy.visit('/account-create-step-one');
 
       cy.url().should('eq', `${baseUrl}/account-create-step-one`);
