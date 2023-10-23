@@ -21,18 +21,24 @@ import './commands';
 // require('./commands')
 
 Cypress.on('window:before:load', (win) => {
-  win.handleFromCypress = (request) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  win.handleFromCypress = (request: any) => {
     return fetch(request.url, {
       method: request.method,
       headers: request.requestHeaders,
       body: request.requestBody,
     }).then((res) => {
-      let content = res.headers.get('content-type').includes('application/json')
-        ? res.json()
-        : res.text();
-      return new Promise((resolve) => {
-        content.then((body) => resolve([res.status, res.headers, body]));
-      });
+      if (res && res.headers) {
+        let contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          return res.json().then((body) => [res.status, res.headers, body]);
+        } else {
+          return res.text().then((body) => [res.status, res.headers, body]);
+        }
+      } else {
+        throw new Error('Response or headers is null or undefined');
+      }
     });
   };
 });

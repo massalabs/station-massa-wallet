@@ -1,8 +1,9 @@
 import { mockServer } from '../../../../src/mirage';
 import { compareSnapshot } from '../../../compareSnapshot';
+import { AccountObject } from '@/models/AccountModel';
 
 describe('E2E | Acceptance | Account', () => {
-  let server;
+  let server: any;
   const baseUrl = Cypress.config().baseUrl;
 
   beforeEach(() => {
@@ -32,7 +33,7 @@ describe('E2E | Acceptance | Account', () => {
 
     it('should have accounts loaded', () => {
       const accounts = server.createList('account', 2);
-      accounts.forEach((account) => {
+      accounts.forEach((account: AccountObject) => {
         server.createList('asset', 3, { account });
       });
 
@@ -49,7 +50,7 @@ describe('E2E | Acceptance | Account', () => {
 
     it('should land in create new account when click add account button', () => {
       const accounts = server.createList('account', 2);
-      accounts.forEach((account) => {
+      accounts.forEach((account: AccountObject) => {
         server.createList('asset', 3, { account });
       });
 
@@ -63,7 +64,7 @@ describe('E2E | Acceptance | Account', () => {
       const accounts = server.createList('account', 2);
       const nickname = 'Mario';
       accounts.push(server.create('account', { nickname }));
-      accounts.forEach((account) => {
+      accounts.forEach((account: AccountObject) => {
         server.createList('asset', 3, { account });
       });
 
