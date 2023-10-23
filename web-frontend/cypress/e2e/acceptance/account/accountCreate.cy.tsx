@@ -29,6 +29,7 @@ describe('E2E | Acceptance | Account | Create', () => {
       cy.get('[data-testid="button"]').contains('Create an account').click();
 
       cy.url().should('eq', `${baseUrl}/account-create-step-one`);
+      compareSnapshot(cy, 'account-create-step-one');
     });
 
     it('should let me create a new account', () => {
@@ -40,16 +41,19 @@ describe('E2E | Acceptance | Account | Create', () => {
       cy.get('[data-testid="button"]').contains('Next').click();
 
       cy.url().should('eq', `${baseUrl}/account-create-step-two`);
+      compareSnapshot(cy, 'account-create-step-two');
 
       cy.get('[data-testid="button"]').contains('Define a password').click();
 
       cy.url().should('eq', `${baseUrl}/account-create-step-three`);
+      compareSnapshot(cy, 'account-create-step-three');
 
       cy.get('[data-testid="button"]').contains('Skip').click();
 
       server.createList('account', 1);
 
       cy.url().should('eq', `${baseUrl}/testAccount/home`);
+      compareSnapshot(cy, 'account-create-home');
     });
   });
 });
