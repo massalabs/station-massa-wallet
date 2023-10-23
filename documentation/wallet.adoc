@@ -125,8 +125,6 @@ skinparam package {
 
 actor User as user
 
-usecase "To be confirmed" as tbc  #red
-
 package "Browser" {
     package "Station Front" {
         usecase "List Websites" as stationFront_listWebSites
@@ -152,10 +150,10 @@ package "Massa Wallet" {
         usecase "Manage (CRUD) Accounts" as walletAPI_cRUDAccount
         usecase "Send Massa" as walletAPI_sendMassa
         usecase "Buy/Sell Rolls" as walletAPI_buySellRolls
-        usecase "Sign Transaction" as walletAPI_signOperation
+        usecase "Sign Operation" as walletAPI_signOperation
         usecase "Sign Message" as walletAPI_signMessage
         usecase "Backup Account" as walletAPI_backupAccount
-        usecase "Manage (CRD) Token Addresses" as walletAPI_cRUDLinkedFungibleTokenAddress
+        usecase "Manage (CRD) Token Addresses" as walletAPI_cRUDAsset
     }
 
     package "Front" {
@@ -182,9 +180,9 @@ walletWebFront_createAccount                --> walletAPI_cRUDAccount
 walletWebFront_importAccount                --> walletAPI_cRUDAccount
 walletWebFront_listAccounts                 --> walletAPI_cRUDAccount
 walletWebFront_sendReceiveMassa             --> walletAPI_sendMassa
-walletWebFront_checkMassaBalance            --> tbc
-walletWebFront_importFungibleTokenAddress   --> walletAPI_cRUDLinkedFungibleTokenAddress
-walletWebFront_checkTokenBalance            --> tbc
+walletWebFront_checkMassaBalance            --> walletAPI_cRUDAccount
+walletWebFront_importFungibleTokenAddress   --> walletAPI_cRUDAsset
+walletWebFront_checkTokenBalance            --> walletAPI_cRUDAsset
 walletWebFront_backupWallet                 --> walletAPI_backupAccount
 
 stationFront_useDApp --> walletAPI_serveWebSite
@@ -194,11 +192,9 @@ stationFront_useDApp --> walletAPI_buySellRolls
 stationFront_useDApp --> walletAPI_signOperation
 stationFront_useDApp --> walletAPI_signMessage
 stationFront_useDApp --> walletAPI_backupAccount
-stationFront_useDApp --> walletAPI_cRUDLinkedFungibleTokenAddress
+stationFront_useDApp --> walletAPI_cRUDAsset
 @enduml
 ----
-
-<<<
 
 === Sequence Diagram
 
@@ -215,31 +211,31 @@ This sequence diagrams illustrates signing a Transaction operation. It applies t
 skinparam handwritten true
 
 participant "User" as user
-participant "dApp" as dapp
+participant "dApp or Wallet" as dapp
 participant "Massa Station" as station
 participant "Massa Wallet API" as wallet_api
 participant "Massa Wallet Core" as wallet_core
-participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet Front" as wallet_embedded_front
 
-user -> dapp ++ : Click "Sign In"
+user -> dapp ++ : Click "Send coins"
     dapp -> station ++: Request //Sign Operation//
         station -> wallet_api ++: Request //Sign Operation//
         wallet_api -> wallet_api: Execute //Validate Arguments//
             wallet_api -> wallet_core ++: Execute //Sign Operation//
             wallet_core -> wallet_core: Fetch //Account Data//
-                wallet_core -> wallet_front ++: Fetch //Password Input//
-                wallet_front <-> user: Enter password
+                wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+                wallet_embedded_front <-> user: Enter password
                 return password
             wallet_core -> wallet_core: Execute //Unseal Private Key//
             wallet_core -> wallet_core: Execute //Generate operation signature//
             return operation signature
         return operation signature
     return operation signature
-dapp -> dapp: Verify signature
-dapp -> dapp: Open user access
-return logout
+    dapp -> dapp: Submit operation
 @enduml
 ----
+
+The submitting the operation is not part of the Massa Wallet scope.
 
 <<<
 
@@ -258,7 +254,7 @@ participant "dApp" as dapp
 participant "Massa Station" as station
 participant "Massa Wallet API" as wallet_api
 participant "Massa Wallet Core" as wallet_core
-participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
 
 user -> dapp ++ : Click "Sign In"
     dapp -> station ++: Request //Sign Message//
@@ -266,8 +262,8 @@ user -> dapp ++ : Click "Sign In"
         wallet_api -> wallet_api: Execute //Validate Arguments//
             wallet_api -> wallet_core ++: Execute //Sign Message//
             wallet_core -> wallet_core: Fetch //Account Data//
-                wallet_core -> wallet_front ++: Fetch //Password Input//
-                wallet_front <-> user: Enter password
+                wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+                wallet_embedded_front <-> user: Enter password
                 return password
             wallet_core -> wallet_core: Execute //Unseal Private Key//
             wallet_core -> wallet_core: Execute //Generate message signature//
