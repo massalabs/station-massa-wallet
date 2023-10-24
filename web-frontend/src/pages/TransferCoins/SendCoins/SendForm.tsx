@@ -136,24 +136,28 @@ export function SendForm({ ...props }) {
         <div className="flex flex-row-reverse">
           <ul className="flex flex-row mas-body2">
             <li
+              data-testid="send-percent-25"
               onClick={() => handlePercent(balance, 0.25)}
               className="mr-3.5 hover:cursor-pointer"
             >
               25%
             </li>
             <li
+              data-testid="send-percent-50"
               onClick={() => handlePercent(balance, 0.5)}
               className="mr-3.5 hover:cursor-pointer"
             >
               50%
             </li>
             <li
+              data-testid="send-percent-75"
               onClick={() => handlePercent(balance, 0.75)}
               className="mr-3.5 hover:cursor-pointer"
             >
               75%
             </li>
             <li
+              data-testid="send-percent-100"
               onClick={() => handlePercent(balance, 1)}
               className="mr-3.5 hover:cursor-pointer"
             >

@@ -50,10 +50,10 @@ describe('E2E | Acceptance | Home', () => {
       cy.get('[data-testid="account-2"]').click();
     }
 
-    function navigateToTransfercoins() {
+    function navigateToTransfercoins(index) {
       cy.visit('/');
 
-      cy.get('[data-testid="account-2"]').click();
+      cy.get(`[data-testid="account-${index}"]`).click();
       cy.get('[data-testid="side-menu"]').click();
       cy.get('[data-testid="side-menu-sendreceive-icon"]').click();
     }
@@ -66,22 +66,51 @@ describe('E2E | Acceptance | Home', () => {
     }
 
     // mimics currency field formating
+    // custom fn because currency field input component uses a specific component node modules
     function customFormatNumber(number) {
-      // Convert the number to a string
       let numberString = number.toString();
-
-      // Split the number into integer and decimal parts
       let [integerPart, decimalPart] = numberString.split('.');
-
-      // Add commas for thousands separation to the integer part
       integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-      // If there is a decimal part, combine integer and decimal parts with a dot
       if (decimalPart !== undefined) {
         return `${integerPart}.${decimalPart} MAS`;
       } else {
         return `${integerPart} MAS`;
       }
+    }
+
+    // mimics handlepercent fn in sendForm.tsx
+    // TODO: refactor handlePercent to be a util function
+    function handlePercent(amount = 0, percent: number, fees, balance) {
+      let newAmount = amount * percent;
+      const feesAsNumber = Number(fees);
+
+      if (newAmount > balance - feesAsNumber)
+        newAmount = Math.max(balance - feesAsNumber, 0);
+
+      return toMASS(newAmount);
+    }
+
+    // standardize percent testing
+    function performPercentAction(percentValue, account, fees) {
+      const balance = Number(account?.candidateBalance);
+      cy.get(`[data-testid="send-percent-${percentValue * 100}"]`)
+        .should('exist')
+        .trigger('mouseover')
+        .click();
+
+      cy.get('[data-testid="currency-field"')
+        .should(
+          'have.value',
+          customFormatNumber(
+            handlePercent(
+              balance,
+              percentValue,
+              fees,
+              account?.candidateBalance,
+            ),
+          ),
+        )
+        .clear();
     }
 
     it('should have loading state', () => {
@@ -127,7 +156,7 @@ describe('E2E | Acceptance | Home', () => {
     it('should render balance and amount should equal account balance', () => {
       const account = mockedAccounts.at(2);
 
-      navigateToTransfercoins();
+      navigateToTransfercoins(2);
       // cy.get('[data-testid="balance-amount"]').contains(getBalance(account));
       cy.get('[data-testid="balance-amount"]').should(
         'contain',
@@ -144,7 +173,7 @@ describe('E2E | Acceptance | Home', () => {
 
       const standardFees = '1000';
 
-      navigateToTransfercoins();
+      navigateToTransfercoins(2);
       cy.get('[data-testid="currency-field"')
         .should('exist')
         .type(amount)
@@ -175,6 +204,22 @@ describe('E2E | Acceptance | Home', () => {
       cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
 
       compareSnapshot(cy, 'home-page');
+    });
+
+    it('should process any % as input', () => {
+      const account = mockedAccounts.at(1);
+      const recipientAccount = mockedAccounts.at(2);
+      const standardFees = '1000';
+
+      navigateToTransfercoins(1);
+
+      // we have to wait or else balance is not initialized properly
+      cy.wait(1000);
+
+      performPercentAction(0.25, account, standardFees);
+      performPercentAction(0.5, account, standardFees);
+      performPercentAction(0.75, account, standardFees);
+      performPercentAction(1, account, standardFees);
     });
 
     // it('should land on receive page when receive CTA is clicked', () => {
