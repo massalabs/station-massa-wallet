@@ -39,7 +39,6 @@ function ReceiveCoins({ ...props }) {
           <Clipboard
             displayedContent={address}
             rawContent={address}
-            toggleHover={false}
             error={Intl.t('errors.no-content-to-copy')}
           />
         </div>
