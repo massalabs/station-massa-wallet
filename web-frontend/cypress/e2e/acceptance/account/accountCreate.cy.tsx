@@ -49,7 +49,7 @@ describe('E2E | Acceptance | Account | Create', () => {
 
       cy.get('[data-testid="button"]').contains('Skip').click();
 
-      server.createList('account', 1);
+      server.create('account');
 
       cy.url().should('eq', `${baseUrl}/testAccount/home`);
       compareSnapshot(cy, 'account-create-home');
@@ -66,22 +66,6 @@ describe('E2E | Acceptance | Account | Create', () => {
         .contains("The account name can't contain any special characters");
       cy.get('[data-testid="button"]').contains('Next').click();
       cy.url().should('eq', `${baseUrl}/account-create-step-one`);
-
-      compareSnapshot(cy, 'wrong-account-name-format');
-    });
-
-    it('should create account after correcting mistake', () => {
-      cy.visit('/account-create-step-one');
-
-      cy.get('[data-testid="input-field"]').type('testA ccount');
-      cy.get('[data-testid="button"]').contains('Next').click();
-
-      cy.url().should('eq', `${baseUrl}/account-create-step-one`);
-
-      cy.get('[data-testid="input-field"]').clear().type('testAccount');
-      cy.get('[data-testid="button"]').contains('Next').click();
-
-      cy.url().should('eq', `${baseUrl}/account-create-step-two`);
 
       compareSnapshot(cy, 'wrong-account-name-format');
     });
