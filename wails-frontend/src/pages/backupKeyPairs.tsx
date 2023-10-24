@@ -123,7 +123,6 @@ function BackupKeyPairs() {
                 <Clipboard
                   displayedContent={publicKey}
                   rawContent={publicKey as string}
-                  toggleHover={false}
                 />
               </div>
               <div>
