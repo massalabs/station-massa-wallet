@@ -222,6 +222,33 @@ describe('E2E | Acceptance | Home', () => {
       performPercentAction(1, account, standardFees);
     });
 
+    it('should transfer to accounts', () => {
+      const randomIndex = Math.floor(Math.random() * mockedAccounts.length);
+      const selectedAccount = mockedAccounts.at(randomIndex);
+
+      console.log(mockedAccounts);
+
+      navigateToTransfercoins(2);
+
+      cy.get('[data-testid="transfer-between-accounts"]')
+        .should('exist')
+        .click();
+
+      cy.get('[data-testid="popup-modal-content"').should('exist');
+
+      cy.get('[data-testid="selector-account-list"]').should('exist');
+
+      for (let i = 0; i < mockedAccounts.length; i++) {
+        cy.get(`[data-testid="selector-account-${i}"]`).should('exist');
+      }
+
+      cy.get(`[data-testid="selector-account-${randomIndex}"]`).click();
+      cy.get(`[data-testid="input-field"]`).should(
+        'have.value',
+        selectedAccount.address,
+      );
+    });
+
     // it('should land on receive page when receive CTA is clicked', () => {
     //   const account = mockedAccounts.at(2);
 

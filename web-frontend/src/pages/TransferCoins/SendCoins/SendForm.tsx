@@ -179,6 +179,7 @@ export function SendForm({ ...props }) {
           <div className="flex flex-row-reverse pb-3.5">
             <p className="hover:cursor-pointer">
               <u
+                data-testid="transfer-between-accounts"
                 className="mas-body2"
                 onClick={() => setContactListModal(true)}
               >

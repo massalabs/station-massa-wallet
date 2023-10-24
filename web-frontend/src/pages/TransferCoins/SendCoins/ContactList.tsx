@@ -36,11 +36,15 @@ function AccountSelect(props: ContactListProps) {
         <label className="mas-title mb-6">My accounts</label>
       </PopupModalHeader>
       <PopupModalContent>
-        <div className="overflow-scroll h-80">
+        <div
+          data-testid="selector-account-list"
+          className="overflow-scroll h-80"
+        >
           {accounts.map((filteredAccount: AccountObject, index: number) => (
             <Selector
               customClass="pb-4"
               key={index}
+              data-testid={`selector-account-${index}`}
               preIcon={<Identicon username={filteredAccount.nickname} />}
               posIcon={<MassaLogo size={24} />}
               content={filteredAccount.nickname}
