@@ -157,7 +157,7 @@ describe('E2E | Acceptance | Home', () => {
       const account = mockedAccounts.at(2);
 
       navigateToTransfercoins(2);
-      // cy.get('[data-testid="balance-amount"]').contains(getBalance(account));
+
       cy.get('[data-testid="balance-amount"]').should(
         'contain',
         getBalance(account),
@@ -249,30 +249,102 @@ describe('E2E | Acceptance | Home', () => {
       );
     });
 
-    // it('should land on receive page when receive CTA is clicked', () => {
-    //   const account = mockedAccounts.at(2);
+    it('should refuse wrong currency input', () => {
+      const account = mockedAccounts.at(2);
+      const recipientAccount = mockedAccounts.at(1);
 
-    //   cy.visit('/');
+      const amount = 1000.12311132;
+      const invalidAmount = 'things';
+      const tooMuch = Number(account?.candidateBalance) + 1000;
+      const tooLow = 0;
+      const notEnoughForFees = Number(account?.candidateBalance);
 
-    //   cy.get('[data-testid="account-2"]').click();
-    //   cy.get('[data-testid="receive-button"]').click();
-    //   cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
+      const standardFees = '1000';
+      navigateToTransfercoins(2);
 
-    //   cy.get('[data-testid="send-coins"]').should('not.be.visible');
-    //   cy.get('[data-testid="receive-coins"]').should('be.visible');
-    // });
+      cy.get('[data-testid="currency-field"')
+        .should('exist')
+        .type(invalidAmount);
 
-    // it('should copy wallet address when clipboard field is clicked', () => {
-    //   // we are adding the permission to chrome on the fly
-    //   cy.wrap(
-    //     Cypress.automation('remote:debugger:protocol', {
-    //       command: 'Browser.grantPermissions',
-    //       params: {
-    //         permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
-    //         origin: window.location.origin,
-    //       },
-    //     }),
-    //   );
+      cy.get('[data-testid="input-field"').type(recipientAccount.address);
+
+      cy.get('[data-testid="button"]').contains('Send').click();
+
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Invalid amount',
+      );
+
+      cy.get('[data-testid="currency-field"')
+        .clear()
+        .should('exist')
+        .type(tooMuch);
+
+      cy.get('[data-testid="button"]').contains('Send').click();
+
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Insufficient funds',
+      );
+
+      cy.get('[data-testid="currency-field"')
+        .clear()
+        .should('exist')
+        .type(tooLow);
+
+      cy.get('[data-testid="button"]').contains('Send').click();
+
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Amount must be greater than zero',
+      );
+
+      // testing amount + fees to hugh seems tricky
+      // amount + fees to high also triggers insufficient funds
+      // there mayeb we can refacto it ?
+      // See sendForm.tsx line 84
+
+      cy.get('[data-testid="currency-field"')
+        .clear()
+        .should('exist')
+        .type(notEnoughForFees);
+
+      cy.get('[data-testid="button"]').contains('Send').click();
+
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Insufficient funds',
+      );
+    });
+
+    it('should refuse wrong addrress input', () => {
+      const account = mockedAccounts.at(2);
+      const wrongAddress = 'wrong address';
+
+      const amount = 1000.12311132;
+
+      navigateToTransfercoins(2);
+      cy.get('[data-testid="currency-field"')
+        .should('exist')
+        .type(amount)
+        .should('have.value', customFormatNumber(amount));
+
+      cy.get('[data-testid="input-field"').type(wrongAddress);
+      cy.get('[data-testid="button"]').contains('Send').click();
+
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Recipient address is not a valid Massa address',
+      );
+
+      cy.get('[data-testid="input-field"').clear();
+      cy.get('[data-testid="button"]').contains('Send').click();
+
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Recipient is required',
+      );
+    });
 
     //   const account = mockedAccounts.at(2);
 

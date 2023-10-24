@@ -119,7 +119,7 @@
       "link": "Go back to the Welcome page!"
     },
     "send-coins": {
-      "invalid-amount": "invalid amount",
+      "invalid-amount": "Invalid amount",
       "amount-to-high": "Insufficient funds",
       "amount-plus-fees-to-high": "Insufficient funds to pay fees",
       "amount-to-low": "Amount must be greater than zero",
