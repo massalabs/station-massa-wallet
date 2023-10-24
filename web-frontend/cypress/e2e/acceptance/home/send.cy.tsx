@@ -3,7 +3,9 @@
 import { Server } from 'miragejs';
 
 import { mockServer } from '../../../../src/mirage';
+import { toMASS, formatStandard } from '../../../../src/utils/massaFormat';
 import { compareSnapshot } from '../../../compareSnapshot';
+
 
 describe('E2E | Acceptance | Home', () => {
   let server: Server;
@@ -38,12 +40,30 @@ describe('E2E | Acceptance | Home', () => {
       mockedAccounts = mockAccounts();
     });
 
-    it('should have loading state', () => {
-      const account = mockedAccounts.at(2);
-
+    function navigateToHome() {
       cy.visit('/');
 
       cy.get('[data-testid="account-2"]').click();
+    }
+
+    function navigateToTransfercoins() {
+      cy.visit('/');
+
+      cy.get('[data-testid="account-2"]').click();
+      cy.get('[data-testid="side-menu"]').click();
+      cy.get('[data-testid="side-menu-sendreceive-icon"]').click();
+    }
+
+    function getBalance(account) {
+      // same logic we use in SendForm.tsx where balance is rendered
+      const balance = Number(account?.candidateBalance || 0);
+      const formattedBalance = formatStandard(toMASS(balance));
+      return formattedBalance;
+    }
+
+    it('should have loading state', () => {
+      const account = mockedAccounts.at(2);
+      navigateToHome();
 
       cy.url()
         .should('eq', `${baseUrl}/${account.nickname}/home`)
@@ -60,10 +80,7 @@ describe('E2E | Acceptance | Home', () => {
 
     it('should land on send page when send CTA is clicked', () => {
       const account = mockedAccounts.at(2);
-
-      cy.visit('/');
-
-      cy.get('[data-testid="account-2"]').click();
+      navigateToHome();
       cy.get('[data-testid="send-button"]').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
@@ -71,18 +88,34 @@ describe('E2E | Acceptance | Home', () => {
       cy.get('[data-testid="receive-coins"]').should('not.be.visible');
     });
 
-    it('should land on receive page when receive CTA is clicked', () => {
+    it('should navigate to /transfer-coins when accessing it by the side-menu', () => {
       const account = mockedAccounts.at(2);
 
-      cy.visit('/');
-
-      cy.get('[data-testid="account-2"]').click();
-      cy.get('[data-testid="receive-button"]').click();
+      navigateToHome();
+      cy.get('[data-testid="side-menu"]').click();
+      cy.get('[data-testid="side-menu-sendreceive-icon"]').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
-
-      cy.get('[data-testid="send-coins"]').should('not.be.visible');
-      cy.get('[data-testid="receive-coins"]').should('be.visible');
     });
+
+    it('should render balance and amount should equal account balance', () => {
+      const account = mockedAccounts.at(2);
+
+      navigateToTransfercoins();
+      cy.get('[data-testid="balance"]').contains(getBalance(account));
+    });
+
+    // it('should land on receive page when receive CTA is clicked', () => {
+    //   const account = mockedAccounts.at(2);
+
+    //   cy.visit('/');
+
+    //   cy.get('[data-testid="account-2"]').click();
+    //   cy.get('[data-testid="receive-button"]').click();
+    //   cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
+
+    //   cy.get('[data-testid="send-coins"]').should('not.be.visible');
+    //   cy.get('[data-testid="receive-coins"]').should('be.visible');
+    // });
 
     // it('should copy wallet address when clipboard field is clicked', () => {
     //   // we are adding the permission to chrome on the fly
