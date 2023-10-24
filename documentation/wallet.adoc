@@ -40,7 +40,7 @@ Conditional:::: Must be provided under specific conditions or scenarios.
 
 Data Sensitivity Levels::
 Confidential:::: Data that, if disclosed, could have a severe impact. Examples: private keys, passwords.
-Personal:::: Data related to individual identity. Examples: public keys, addresses, transactions.
+Personal:::: Data related to individual identity. Examples: public keys, addresses, operations.
 Semi-public:::: Data with limited sensitivity. Examples: cryptographic data like nonces or salts.
 Public:::: Open data with no repercussions if accessed. Examples: signed hashes, public announcements.
 
@@ -55,7 +55,8 @@ Public:::: Open data with no repercussions if accessed. Examples: signed hashes,
 == Product Overview
 
 === Purpose and Objective
-Describe the main goals the product aims to achieve, such as facilitating secure blockchain transactions and providing an intuitive interface for users.
+Product aims to facilitate user-friendly communication between user wallet-accounts and Massa blockchain, either inside the module itself, or when requested upon by decentralized applications, via https://github.com/massalabs/wallet-provider[Wallet Provider] library. Massa Wallet module provides an intuitive interface for checking MAS balance, sending and receiving MAS coins, and importing fungible token assets, following a https://github.com/massalabs/massa-standards/tree/main/smart-contracts/assembly/contracts/FT[Fungible Token standard], Massa Labs' implementation of the ERC-20 standard.
+
 
 === Key Features
 List the main features of the Massa Station Wallet concisely.
@@ -217,14 +218,16 @@ participant "Massa Wallet API" as wallet_api
 participant "Massa Wallet Core" as wallet_core
 participant "Massa Wallet Front" as wallet_embedded_front
 
-user -> dapp ++ : Click "Send coins"
+user -> dapp ++ : Click "Send Coins"
     dapp -> station ++: Request //Sign Operation//
         station -> wallet_api ++: Request //Sign Operation//
         wallet_api -> wallet_api: Execute //Validate Arguments//
             wallet_api -> wallet_core ++: Execute //Sign Operation//
             wallet_core -> wallet_core: Fetch //Account Data//
-                wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
-                wallet_embedded_front <-> user: Enter password
+                wallet_api -> wallet_front ++: Fetch //Operation details
+
+                wallet_core -> wallet_front ++: Fetch //Password Input//
+                wallet_front <-> user: Enter password
                 return password
             wallet_core -> wallet_core: Execute //Unseal Private Key//
             wallet_core -> wallet_core: Execute //Generate operation signature//
@@ -483,10 +486,11 @@ IMPORTANT: The unsealed private key is neither stored nor cached. It is utilized
 To sign a message, the content undergoes hashing using the Blake3 algorithm. The hashed value is subsequently signed using the ED25519 signature scheme. This function ensures the message signature process aligns with the Massa Labs cryptography standard.
 
 == Non-Functional Requirements
+
 === Performance Requirements:
 **1. Response Time:**
 The Massa Wallet module has a responsive user interface, with an
- average response time for any user action (e.g., sending funds, 
+ average response time for most user actions (e.g., sending funds, 
 checking balances), not exceeding 1 second.
 
 **2. Scalability:**
@@ -501,22 +505,18 @@ during typical usage. During periods of inactivity or when the wallet is idle, r
 
 **1. Data Encryption:**
 All sensitive user data, such as private keys, are encrypted both at 
-rest and during operation signing. 
-
-**name Industry-standard encryption protocols, and link to their usage.**
+rest, and during signing process of an operation or a message. See https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[the wallet file standard] for details.
+**describe the concept of a persisted wallet here**
 
 **2. Backup and Recovery:**
 Users have the ability to create backups of their wallet 
 data, including private keys. In case of data loss, the module  
-provides a secure and user-friendly recovery process
+provides a secure and user-friendly recovery process. 
 
 1. By providing previously exported and stored private key of the wallet. 
 
-2. By attaching .yaml file of the wallet.
-
-On MacOs, the account files are stored in `~/Library/Application\ Support/massa-station-wallet`.
-On Ubuntu, the account files are stored in `~/.config/massa-station-wallet`.
-On Windows, the account files are stored in `%APPDATA%\massa-station-wallet`.
+2. By attaching .yaml file of the wallet. 
+**describe where are they stored per OS**
 
 IMPORTANT: After a successful uninstallation, the user's computer must retain the Wallet .yaml files.
 
@@ -533,11 +533,12 @@ Massa Wallet is compatible with major desktop operating systems, including Windo
 - MacOs AMD
 - Ubuntu 20.4
 
-Massa Wallet runs browsers:
+Massa Wallet runs on Chromium-based and Firefox browsers.
+Supported browser versions:
 
-- Google Chrome
-- Mozilla Firefox
+1. Chromium version -> **Identify Chromium version supported, list browser versions for main chromium-based browsers**
 
+2. Firefox version 114 and higher.
 
 == User Interface & User Experience Design
 
