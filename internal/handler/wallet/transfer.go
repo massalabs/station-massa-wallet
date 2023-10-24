@@ -12,18 +12,10 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
-
-type PromptRequestTransferData struct {
-	NicknameFrom     string
-	Amount           string
-	Fee              string
-	RecipientAddress string
-}
 
 func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
 	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient}
@@ -53,14 +45,22 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		return newErrorResponse("Error during fee conversion", errorTransferCoin, http.StatusBadRequest)
 	}
 
+	addressBytes, err := acc.Address.MarshalText()
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+	}
+	address := string(addressBytes)
+
 	promptRequest := prompt.PromptRequest{
-		Action:      walletapp.Transfer,
-		CodeMessage: utils.MsgTransferRequest,
-		Data: PromptRequestTransferData{
-			NicknameFrom:     acc.Nickname,
-			Amount:           string(params.Body.Amount),
-			Fee:              string(params.Body.Fee),
+		Action: walletapp.Sign,
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
+		Data: PromptRequestSignData{
+			Fees:             string(params.Body.Fee),
+			OperationType:    "Transaction",
 			RecipientAddress: *params.Body.RecipientAddress,
+			Amount:           string(params.Body.Amount),
+			WalletAddress:    address,
+			Nickname:         acc.Nickname,
 		},
 	}
 

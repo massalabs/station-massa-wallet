@@ -11,7 +11,6 @@ export enum promptAction {
   signReq = 2,
   importReq = 3,
   backupReq = 4,
-  transferReq = 5,
   tradeRollsReq = 6,
   unprotectReq = 7,
 }

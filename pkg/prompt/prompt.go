@@ -79,7 +79,7 @@ func WakeUpPrompt(
 			var err error
 
 			switch req.Action {
-			case walletapp.Delete, walletapp.Transfer, walletapp.Sign, walletapp.TradeRolls, walletapp.Unprotect:
+			case walletapp.Delete, walletapp.Sign, walletapp.TradeRolls, walletapp.Unprotect:
 				output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)
 			case walletapp.NewPassword:
 				output, keepListening, err = handleNewPasswordPrompt(prompterApp, input)

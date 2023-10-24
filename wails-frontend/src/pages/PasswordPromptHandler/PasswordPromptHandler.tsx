@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { Default } from './Default';
 import { Delete } from './Delete';
 import { Sign } from './Sign';
-import { Transfer } from './Transfer';
 import { promptAction, promptRequest } from '@/events/events';
 
 export interface PromptRequestDeleteData {
@@ -14,7 +13,7 @@ export interface PromptRequestDeleteData {
 function PasswordPromptHandler() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
-  const { deleteReq, signReq, transferReq } = promptAction;
+  const { deleteReq, signReq } = promptAction;
 
   return (
     <>
@@ -24,8 +23,6 @@ function PasswordPromptHandler() {
             return <Delete />;
           case signReq:
             return <Sign />;
-          case transferReq:
-            return <Transfer />;
           default:
             return <Default />;
         }

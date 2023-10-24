@@ -21,8 +21,6 @@ function Success() {
         return Intl.t('success.sign');
       case promptAction.backupReq:
         return Intl.t('success.backup');
-      case promptAction.transferReq:
-        return Intl.t('success.transfer');
       default:
         return Intl.t('success.success');
     }
