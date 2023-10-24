@@ -24,7 +24,7 @@ type AccountInfos struct {
 	Balance          uint64
 }
 
-func (n *NodeFetcher) GetAccountsInfos(accounts []account.Account) ([]AccountInfos, error) {
+func (n *NodeFetcher) GetAccountsInfos(accounts []*account.Account) ([]AccountInfos, error) {
 	client, err := NewMassaClient()
 	if err != nil {
 		return nil, err

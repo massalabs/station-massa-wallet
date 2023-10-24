@@ -28,9 +28,9 @@ type tradeRolls struct {
 }
 
 func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Responder {
-	acc, resp := loadAccount(t.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(t.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// convert amount to uint64

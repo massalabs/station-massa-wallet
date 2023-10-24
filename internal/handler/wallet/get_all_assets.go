@@ -29,16 +29,16 @@ type getAllAssets struct {
 
 func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
 	// Load the wallet based on the provided Nickname
-	acc, resp := loadAccount(g.wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(g.wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// Create a slice to store the assets with their balances
 	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Fetch the account information for the wallet using the massaClient
-	infos, err := g.massaClient.GetAccountsInfos([]account.Account{*acc})
+	infos, err := g.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		// Handle the error and return an internal server error response
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", "MASSA", err.Error())

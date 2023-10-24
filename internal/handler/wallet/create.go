@@ -65,7 +65,7 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true})
 
-	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewCreateAccountInternalServerError().WithPayload(
 			&models.Error{

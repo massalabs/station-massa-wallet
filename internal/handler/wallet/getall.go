@@ -50,8 +50,8 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 
 	var accountModels []*models.Account
 
-	for i := 0; i < len(accounts); i++ {
-		modelWallet, err := newAccountModel(accounts[i])
+	for i, account := range accounts {
+		modelWallet, err := newAccountModel(account)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
@@ -60,9 +60,9 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 		accountModels = append(accountModels, modelWallet)
 	}
 
-	for u := 0; u < len(w.wallet.InvalidAccountNicknames); u++ {
+	for _, nickname := range w.wallet.InvalidAccountNicknames {
 		invalidAccount := &models.Account{
-			Nickname: models.Nickname(w.wallet.InvalidAccountNicknames[u]),
+			Nickname: models.Nickname(nickname),
 		}
 		invalidAccount.Status = accountStatusCorrupted
 		accountModels = append(accountModels, invalidAccount)

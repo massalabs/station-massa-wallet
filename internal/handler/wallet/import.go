@@ -45,7 +45,7 @@ func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Respo
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true})
 
-	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewImportAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -54,7 +54,7 @@ func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Respo
 			})
 	}
 
-	modelWallet, err := newAccountModel(*acc)
+	modelWallet, err := newAccountModel(acc)
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}

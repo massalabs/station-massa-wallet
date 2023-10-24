@@ -30,12 +30,12 @@ type walletDelete struct {
 
 // HandleDelete handles a delete request
 func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
-	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewDeleteAccountInternalServerError().WithPayload(
 			&models.Error{

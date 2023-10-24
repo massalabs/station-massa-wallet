@@ -20,15 +20,14 @@ var (
 )
 
 type Wallet struct {
-	accounts                map[string]*account.Account // Mapping from nickname to account
-	InvalidAccountNicknames []string                    // List of invalid account nicknames
+	accounts                *sync.Map // Mapping from nickname to account
+	InvalidAccountNicknames []string  // List of invalid account nicknames
 	WalletPath              string
-	mutex                   sync.Mutex
 }
 
 func New(walletPath string) (*Wallet, error) {
 	wallet := &Wallet{
-		accounts: make(map[string]*account.Account),
+		accounts: &sync.Map{},
 	}
 
 	if walletPath == "" {
@@ -66,7 +65,9 @@ func (w *Wallet) Discover() error {
 
 		if strings.HasPrefix(fileName, "wallet_") && strings.HasSuffix(fileName, ".yaml") {
 			nickname := w.nicknameFromFilePath(filePath)
-			if w.accounts[nickname] != nil {
+
+			_, found := w.accounts.Load(nickname)
+			if found {
 				continue
 			}
 
@@ -116,15 +117,9 @@ func (w *Wallet) AddAccount(acc *account.Account, persist bool) error {
 		}
 	}
 
-	w.addAccount(acc)
+	w.accounts.Store(acc.Nickname, acc)
 
 	return nil
-}
-
-func (w *Wallet) addAccount(acc *account.Account) {
-	w.mutex.Lock()
-	w.accounts[acc.Nickname] = acc
-	w.mutex.Unlock()
 }
 
 // GenerateAccount generates a new account and adds it to the wallet.
@@ -146,8 +141,8 @@ func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname strin
 
 // Get an account from the wallet by nickname
 func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
-	if w.accounts[nickname] != nil {
-		return w.accounts[nickname], nil
+	if acc, found := w.accounts.Load(nickname); found {
+		return acc.(*account.Account), nil
 	}
 
 	accountPath, err := w.AccountPath(nickname)
@@ -171,7 +166,7 @@ func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 
 // Delete an account from the wallet
 func (w *Wallet) DeleteAccount(nickname string) error {
-	if w.accounts[nickname] == nil {
+	if _, found := w.accounts.Load(nickname); !found {
 		return AccountNotFoundError
 	}
 
@@ -185,24 +180,23 @@ func (w *Wallet) DeleteAccount(nickname string) error {
 		return fmt.Errorf("deleting account file: %w", err)
 	}
 
-	delete(w.accounts, nickname)
+	w.accounts.Delete(nickname)
 
 	return nil
 }
 
-// Get the number of accounts in the wallet
-func (w *Wallet) GetAccountCount() int {
-	return len(w.accounts)
-}
+func (w *Wallet) AllAccounts() []*account.Account {
+	var accounts []*account.Account
 
-func (w *Wallet) AllAccounts() []account.Account {
-	accounts := make([]account.Account, 0, len(w.accounts))
+	w.accounts.Range(func(_, value interface{}) bool {
+		acc, ok := value.(*account.Account)
+		if ok {
+			accounts = append(accounts, acc)
+		}
+		return true
+	})
 
-	for _, acc := range w.accounts {
-		accounts = append(accounts, *acc)
-	}
-
-	sort.SliceStable(accounts, func(i, j int) bool {
+	sort.Slice(accounts, func(i, j int) bool {
 		return accounts[i].Nickname < accounts[j].Nickname
 	})
 

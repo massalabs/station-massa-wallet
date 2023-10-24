@@ -12,7 +12,7 @@ func NewNodeFetcher() *NodeFetcher {
 }
 
 type NodeFetcherInterface interface {
-	GetAccountsInfos(accounts []account.Account) ([]AccountInfos, error)
+	GetAccountsInfos(accounts []*account.Account) ([]AccountInfos, error)
 	MakeOperation(fee uint64, operation sendOperation.Operation) ([]byte, error)
 	MakeRPCCall(msg []byte, signature []byte, publicKey string) ([]string, error)
 	AssetExistInNetwork(contractAddress string) bool

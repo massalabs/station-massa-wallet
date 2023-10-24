@@ -34,9 +34,9 @@ type walletSignMessage struct {
 }
 
 func (w *walletSignMessage) Handle(params operations.SignMessageParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// Create a promptRequest for signing the message

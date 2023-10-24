@@ -33,12 +33,12 @@ type walletGet struct {
 }
 
 func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil || acc == nil {
-		return resp
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil || acc == nil {
+		return errResp
 	}
 
-	modelWallet, err := newAccountModel(*acc)
+	modelWallet, err := newAccountModel(acc)
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
@@ -70,6 +70,7 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		}
 
 		defer guardedPrivateKey.Destroy()
+		defer password.Destroy()
 
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: true})
@@ -80,7 +81,7 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 		}
 	}
 
-	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -95,7 +96,7 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 	return operations.NewGetAccountOK().WithPayload(modelWallet)
 }
 
-func newAccountModel(acc account.Account) (*models.Account, error) {
+func newAccountModel(acc *account.Account) (*models.Account, error) {
 	address, err := acc.Address.MarshalText()
 	if err != nil {
 		return nil, err

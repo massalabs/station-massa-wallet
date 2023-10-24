@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/massalabs/station-massa-wallet/pkg/types"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
 var (
@@ -15,20 +16,48 @@ var (
 )
 
 func (w *Wallet) NicknameIsUnique(nickname string) error {
-	for _, account := range w.accounts {
-		if strings.EqualFold(account.Nickname, nickname) {
-			return fmt.Errorf("%w: %s", ErrNicknameNotUnique, nickname)
+	var duplicateNickname string
+
+	w.accounts.Range(func(_, acc interface{}) bool {
+		account, ok := acc.(*account.Account)
+		if !ok {
+			return true
 		}
+
+		if strings.EqualFold(account.Nickname, nickname) {
+			duplicateNickname = nickname
+			return false
+		}
+
+		return true
+	})
+
+	if duplicateNickname != "" {
+		return fmt.Errorf("%w: %s", ErrNicknameNotUnique, duplicateNickname)
 	}
 
 	return nil
 }
 
 func (w *Wallet) AddressIsUnique(address *types.Address) error {
-	for _, account := range w.accounts {
-		if bytes.Equal(account.Address.Data, address.Data) {
-			return ErrAddressNotUnique
+	duplicateAddress := false
+
+	w.accounts.Range(func(_, acc interface{}) bool {
+		account, ok := acc.(*account.Account)
+		if !ok {
+			return true
 		}
+
+		if bytes.Equal(account.Address.Data, address.Data) {
+			duplicateAddress = true
+			return false
+		}
+
+		return true
+	})
+
+	if duplicateAddress {
+		return ErrAddressNotUnique
 	}
 
 	return nil

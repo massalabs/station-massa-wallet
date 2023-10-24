@@ -36,9 +36,9 @@ type transferCoin struct {
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	acc, resp := loadAccount(t.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(t.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// convert amount to uint64

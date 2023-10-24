@@ -12,7 +12,6 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
 // KeyPair represents a pair of private and public keys.
@@ -30,11 +29,9 @@ type walletBackupAccount struct {
 }
 
 func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) middleware.Responder {
-	acc, err := w.prompterApp.App().Wallet.GetAccount(params.Nickname)
-	if err == wallet.AccountNotFoundError {
-		return operations.NewGetAccountNotFound()
-	} else if err != nil {
-		return newErrorResponse(err.Error(), errorGetWallets, http.StatusInternalServerError)
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -68,7 +65,10 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 		if err != nil {
 			return newErrorResponse(err.Error(), errorGetWallets, http.StatusInternalServerError)
 		}
+
 		defer guardedPrivateKey.Destroy()
+		defer password.Destroy()
+
 		privateKey = string(guardedPrivateKey.Bytes())
 
 		publicKeyBytes, err := acc.PublicKey.MarshalText()

@@ -26,9 +26,9 @@ type walletExportFile struct {
 // It will serve the yaml file so that the client can download it.
 func (w *walletExportFile) Handle(params operations.ExportAccountFileParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	acc, resp := loadAccount(w.wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(w.wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	pathToAccount, err := w.wallet.AccountPath(acc.Nickname)

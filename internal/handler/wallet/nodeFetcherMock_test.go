@@ -16,7 +16,7 @@ func NewNodeFetcherMock() *NodeFetcherMock {
 }
 
 // returns dummy balances
-func (n *NodeFetcherMock) GetAccountsInfos(accounts []account.Account) ([]network.AccountInfos, error) {
+func (n *NodeFetcherMock) GetAccountsInfos(accounts []*account.Account) ([]network.AccountInfos, error) {
 	infos := make([]network.AccountInfos, len(accounts))
 
 	for i, acc := range accounts {

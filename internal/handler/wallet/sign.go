@@ -31,15 +31,15 @@ import (
 )
 
 const (
-	passwordExpirationTime = time.Second * 60 * 10
-	BuyRoll                = "Buy Roll"
-	SellRoll               = "Sell Roll"
-	Message                = "Plain Text"
-	TransactionOpType      = uint64(0)
-	BuyRollOpType          = uint64(1)
-	SellRollOpType         = uint64(2)
-	ExecuteSCOpType        = uint64(3)
-	CallSCOpType           = uint64(4)
+	defaultExpirationTime = time.Second * 60 * 10
+	BuyRoll               = "Buy Roll"
+	SellRoll              = "Sell Roll"
+	Message               = "Plain Text"
+	TransactionOpType     = uint64(0)
+	BuyRollOpType         = uint64(1)
+	SellRollOpType        = uint64(2)
+	ExecuteSCOpType       = uint64(3)
+	CallSCOpType          = uint64(4)
 )
 
 type PromptRequestSignData struct {
@@ -73,9 +73,9 @@ type walletSign struct {
 }
 
 func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	promptRequest, err := w.getPromptRequest(params.Body.Operation.String(), acc, params.Body.Description)
@@ -83,16 +83,16 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return newErrorResponse(fmt.Sprintf("Error: %s", errorSignDecodeMessage), errorSignDecodeMessage, http.StatusBadRequest)
 	}
 
-	var correlationID models.CorrelationID
+	var correlationID *memguard.LockedBuffer
 	var privateKey *memguard.LockedBuffer
 
 	if params.Body.CorrelationID != nil {
-		correlationID = params.Body.CorrelationID
+		correlationID = memguard.NewBufferFromBytes(params.Body.CorrelationID)
 
 		pk, err := w.privateKeyFromCache(acc, correlationID)
 		if err != nil {
 			if errors.Is(err, utils.ErrCorrelationIDNotFound) {
-				return newErrorResponse(err.Error(), errorSignCorrelationIdNotFound, http.StatusNotFound)
+				return newErrorResponse(err.Error(), errorSignCorrelationIDNotFound, http.StatusNotFound)
 			}
 
 			return newErrorResponse(err.Error(), errorSign, http.StatusInternalServerError)
@@ -120,9 +120,11 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		if params.Body.Batch {
 			cID, err := w.CacheAccount(acc, privateKey)
 			if err != nil {
-				return newErrorResponse(err.Error(), errorSignCorrelationIdNotFound, http.StatusInternalServerError)
+				return newErrorResponse(err.Error(), errorSignCorrelationIDNotFound, http.StatusInternalServerError)
 			}
-			correlationID = *cID
+			correlationID = cID
+		} else {
+			correlationID = memguard.NewBufferFromBytes([]byte{})
 		}
 	}
 
@@ -150,28 +152,28 @@ func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.
 	return password, nil
 }
 
-func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) (*models.CorrelationID, error) {
-	correlationID, err := generateCorrelationId()
+func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
+	correlationID, err := generateCorrelationID()
 	if err != nil {
 		return nil, fmt.Errorf("Error cannot generate correlation id: %w", err)
 	}
 
-	key := CacheKey(correlationID)
+	key := CacheKey(correlationID.Bytes())
 
-	cacheValue, err := Xor(privateKey.Bytes(), correlationID)
+	cacheValue, err := Xor(privateKey, correlationID)
 	if err != nil {
 		return nil, fmt.Errorf("Error cannot XOR correlation id: %w", err)
 	}
 
-	err = w.gc.SetWithExpire(key, cacheValue, expirationDuration())
+	err = w.gc.SetWithExpire(key, cacheValue.Bytes(), expirationDuration())
 	if err != nil {
 		return nil, fmt.Errorf("Error set correlation id in cache: %v", err.Error())
 	}
 
-	return &correlationID, nil
+	return correlationID, nil
 }
 
-func (w *walletSign) Success(acc *account.Account, signature []byte, correlationId models.CorrelationID) middleware.Responder {
+func (w *walletSign) Success(acc *account.Account, signature []byte, correlationId *memguard.LockedBuffer) middleware.Responder {
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
@@ -181,7 +183,7 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, correlation
 		&models.SignResponse{
 			PublicKey:     string(publicKeyBytes),
 			Signature:     signature,
-			CorrelationID: correlationId,
+			CorrelationID: correlationId.Bytes(),
 		})
 }
 
@@ -394,9 +396,9 @@ func (s *walletSign) prepareplainTextPromptRequest(
 // privateKeyFromCache return the private key from the cache or an error.
 func (w *walletSign) privateKeyFromCache(
 	acc *account.Account,
-	correlationID models.CorrelationID,
+	correlationID *memguard.LockedBuffer,
 ) (*memguard.LockedBuffer, error) {
-	key := CacheKey(correlationID)
+	key := CacheKey(correlationID.Bytes())
 
 	value, err := w.gc.Get(key)
 	if err != nil {
@@ -415,17 +417,20 @@ func (w *walletSign) privateKeyFromCache(
 		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
 	}
 
-	cipheredPrivateKey := buf.Bytes()
+	cipheredPrivateKey := memguard.NewBufferFromBytes(buf.Bytes())
 
 	privateKey, err := Xor(cipheredPrivateKey, correlationID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
 	}
 
-	return memguard.NewBufferFromBytes(privateKey), nil
+	return privateKey, nil
 }
 
-func Xor(a, b []byte) ([]byte, error) {
+func Xor(bufferA, bufferB *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
+	a := bufferA.Bytes()
+	b := bufferB.Bytes()
+
 	if len(a) != len(b) {
 		return nil, fmt.Errorf("length of two arrays must be same, %d and %d", len(a), len(b))
 	}
@@ -435,7 +440,7 @@ func Xor(a, b []byte) ([]byte, error) {
 		result[i] = a[i] ^ b[i]
 	}
 
-	return result, nil
+	return memguard.NewBufferFromBytes(result), nil
 }
 
 func CacheKey(correlationID models.CorrelationID) [32]byte {
@@ -446,18 +451,18 @@ func expirationDuration() time.Duration {
 	fromEnv := os.Getenv("BATCH_EXPIRATION_TIME")
 
 	if fromEnv == "" {
-		return passwordExpirationTime
+		return defaultExpirationTime
 	}
 
 	duration, err := time.ParseDuration(fromEnv)
 	if err != nil {
-		return passwordExpirationTime
+		return defaultExpirationTime
 	}
 
 	return duration
 }
 
-func generateCorrelationId() (models.CorrelationID, error) {
+func generateCorrelationID() (*memguard.LockedBuffer, error) {
 	rand := cryptorand.Reader
 
 	correlationId := make([]byte, ed25519.PrivateKeySize)
@@ -465,5 +470,5 @@ func generateCorrelationId() (models.CorrelationID, error) {
 		return nil, err
 	}
 
-	return correlationId, nil
+	return memguard.NewBufferFromBytes(correlationId), nil
 }

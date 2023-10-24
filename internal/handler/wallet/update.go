@@ -29,9 +29,9 @@ type walletUpdateAccount struct {
 
 // HandleDelete handles an update request
 func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) middleware.Responder {
-	acc, resp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	newAcc, err := w.handleUpdateAccount(acc, params.Body.Nickname)
@@ -39,12 +39,12 @@ func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 		return newErrorResponse(err.Error(), "", http.StatusInternalServerError)
 	}
 
-	modelWallet, err := newAccountModel(*newAcc)
+	modelWallet, err := newAccountModel(newAcc)
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
-	infos, err := w.massaClient.GetAccountsInfos([]account.Account{*acc})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
