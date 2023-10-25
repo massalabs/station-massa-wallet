@@ -50,6 +50,26 @@ export function routesForAccounts(server: Server) {
     { timing: 500 },
   );
 
+  server.delete(
+    'accounts/:nickname',
+    (schema: AppSchema, request) => {
+      const { nickname } = request.params;
+      const accountName = schema.findBy('account', { nickname });
+
+      if (!accountName)
+        return new Response(
+          404,
+          {},
+          { code: '404', error: 'Account not found' },
+        );
+
+      accountName.destroy();
+
+      return new Response(200);
+    },
+    { timing: 500 },
+  );
+
   server.get(
     'accounts/:nickname/assets',
     (schema: AppSchema, request) => {
