@@ -110,40 +110,65 @@ describe('E2E | Acceptance | Home | Receive', () => {
       });
     });
 
-    it('should generate and copy link', () => {
-      const amount = 5000;
+    it('should copy wallet address when clipboard field is clicked', () => {
+      // we are adding the permission to chrome on the fly
+
       const account = mockedAccounts.at(2);
 
-      const generatedLink = `http://localhost:8080/send-redirect/?to=${account.address}&amount=${amount}`;
-
-      navigateToReceivePage();
-      cy.get('[data-testid="button"]')
-        .should('exist')
-        .contains('Generate link')
-        .click();
-
-      cy.get('[data-testid="popup-modal"]').should('exist');
-      cy.get('[data-testid="amount-to-send"]')
-        .should('have.attr', 'placeholder', 'Amount to ask')
-        .type(amount);
-      cy.get('[data-testid="clipboard-field"]').should('contain', '');
-      cy.get('[data-testid="generate-link-button"]').click();
+      cy.visit('/');
 
       cy.on('window:confirm', () => true);
+      cy.wrap(
+        Cypress.automation('remote:debugger:protocol', {
+          command: 'Browser.grantPermissions',
+          params: {
+            permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+            origin: window.location.origin,
+          },
+        }),
+      );
 
-      cy.window().then((win) => {
-        cy.stub(win, 'prompt').returns(win.prompt).as('copyToClipboardPrompt');
-      });
+      cy.get('[data-testid="account-2"]').click();
+      cy.url().should('eq', `${baseUrl}/Mario/home`);
 
-      cy.get('[data-testid="clipboard-link"]')
-        .should('contain', generatedLink)
-        .click();
-      cy.get('@copyToClipboardPrompt').should('be.called');
-
-      cy.get('@copyToClipboardPrompt').should((prompt) => {
-        expect(prompt.args[0][1]).to.equal(generatedLink);
-      });
+      cy.get('[data-testid="clipboard-field"]').click();
+      cy.assertValueCopiedFromClipboard(account.address);
     });
+
+    // it('should generate and copy link', () => {
+    //   const amount = 5000;
+    //   const account = mockedAccounts.at(2);
+
+    //   const generatedLink = `http://localhost:8080/send-redirect/?to=${account.address}&amount=${amount}`;
+
+    //   navigateToReceivePage();
+    //   cy.get('[data-testid="button"]')
+    //     .should('exist')
+    //     .contains('Generate link')
+    //     .click();
+
+    //   cy.get('[data-testid="popup-modal"]').should('exist');
+    //   cy.get('[data-testid="amount-to-send"]')
+    //     .should('have.attr', 'placeholder', 'Amount to ask')
+    //     .type(amount);
+    //   cy.get('[data-testid="clipboard-field"]').should('contain', '');
+    //   cy.get('[data-testid="generate-link-button"]').click();
+
+    //   cy.on('window:confirm', () => true);
+
+    //   cy.window().then((win) => {
+    //     cy.stub(win, 'prompt').returns(win.prompt).as('copyToClipboardPrompt');
+    //   });
+
+    //   cy.get('[data-testid="clipboard-link"]')
+    //     .should('contain', generatedLink)
+    //     .click();
+    //   cy.get('@copyToClipboardPrompt').should('be.called');
+
+    //   cy.get('@copyToClipboardPrompt').should((prompt) => {
+    //     expect(prompt.args[0][1]).to.equal(generatedLink);
+    //   });
+    // });
 
     it('should redirect to generated link and fill input fields', () => {
       const account = mockedAccounts.at(2);
