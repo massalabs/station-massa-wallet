@@ -43,6 +43,36 @@ describe('E2E | Acceptance | Home | Receive', () => {
       cy.get('[data-testid="receive-button"]').click();
     }
 
+    function generateLink(amount) {
+      cy.get('[data-testid="button"]')
+        .should('exist')
+        .contains('Generate link')
+        .click();
+
+      cy.get('[data-testid="amount-to-send"]').type(amount);
+
+      cy.get('[data-testid="generate-link-button"]').click();
+
+      cy.on('window:confirm', () => true);
+
+      cy.window().then((win) => {
+        cy.stub(win, 'prompt').returns(win.prompt).as('copyToClipboardPrompt');
+      });
+
+      cy.get('[data-testid="clipboard-link"]').click();
+    }
+
+    function customFormatNumber(number) {
+      let numberString = number.toString();
+      let [integerPart, decimalPart] = numberString.split('.');
+      integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      if (decimalPart !== undefined) {
+        return `${integerPart}.${decimalPart} MAS`;
+      } else {
+        return `${integerPart} MAS`;
+      }
+    }
+
     it('should land on receive page when receive CTA is clicked', () => {
       const account = mockedAccounts.at(2);
 
@@ -94,7 +124,6 @@ describe('E2E | Acceptance | Home | Receive', () => {
 
       cy.get('[data-testid="popup-modal"]').should('exist');
       cy.get('[data-testid="amount-to-send"]')
-
         .should('have.attr', 'placeholder', 'Amount to ask')
         .type(amount);
       cy.get('[data-testid="clipboard-field"]').should('contain', '');
@@ -114,6 +143,28 @@ describe('E2E | Acceptance | Home | Receive', () => {
       cy.get('@copyToClipboardPrompt').should((prompt) => {
         expect(prompt.args[0][1]).to.equal(generatedLink);
       });
+    });
+
+    it('should redirect to generated link and fill input fields', () => {
+      const account = mockedAccounts.at(2);
+      const amount = 5000;
+
+      const generatedLink = `http://localhost:8080/send-redirect/?to=${account.address}&amount=${amount}`;
+
+      navigateToReceivePage();
+
+      generateLink(amount);
+
+      cy.visit(generatedLink);
+
+      cy.get('[data-testid="currency-field"')
+        .should('exist')
+        .should('have.value', customFormatNumber(amount));
+
+      cy.get('[data-testid="input-field"').should(
+        'have.value',
+        account.address,
+      );
     });
   });
 });
