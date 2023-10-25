@@ -308,6 +308,160 @@ return Success
 @enduml
 ----
 
+<<<
+
+===== Add asset
+The following diagram illustrates the sequence of events when adding an asset.
+
+[plantuml, format="svg", id="add-asset", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+
+user -> wallet_front ++ : Click "Import Token"
+user -> wallet_front : Enter "Token Address"
+    wallet_front -> wallet_api ++: Request //Add Asset//
+        wallet_api -> wallet_core ++: Execute //Add Asset//
+            wallet_core -> wallet_core: Execute //Update Assets File//
+        return Asset
+    return Asset
+return Success
+@enduml
+----
+
+===== Create New Account
+The following diagram illustrates the sequence of events when creating a new account (generate new key pair).
+
+[plantuml, format="svg", id="create-account", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Click "Add an account"
+user -> wallet_front : Click "Create an account"
+user -> wallet_front : Enter "Account Nickname"
+user -> wallet_front : Click "Define a password"
+    wallet_front -> wallet_api ++: Request //Create Account//
+        wallet_api -> wallet_core ++: Execute //Create Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //New Password Input//
+            wallet_embedded_front <-> user: Enter new password
+            wallet_embedded_front <-> user: Enter new password confirmation
+            return new password
+        wallet_core -> wallet_core: Execute //Generate Private Key//
+        wallet_core -> wallet_core: Execute //Seal Private Key//
+        wallet_core -> wallet_core: Execute //Save Account File//
+        return Account
+    return Account
+return Success
+@enduml
+----
+
+<<<
+
+===== Import Account: Private Key
+The following diagram illustrates the sequence of events when importing an account from a private key.
+
+[plantuml, format="svg", id="import-private-key", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Click "Add an account"
+user -> wallet_front : Click "Import an existing account"
+    wallet_front -> wallet_api ++: Request //Import Account//
+        wallet_api -> wallet_core ++: Execute //Import Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Import Choice//
+            wallet_embedded_front <-> user: Click: "I have a private key"
+            return Choice
+            wallet_core -> wallet_embedded_front ++: Fetch //Private key//
+            wallet_embedded_front <-> user: Enter private key
+            wallet_embedded_front <-> user: Enter account nickname
+            wallet_embedded_front <-> user: Enter new password
+            wallet_embedded_front <-> user: Enter new password confirmation
+            return Private Key and password
+        wallet_core -> wallet_core: Execute //Seal Private Key//
+        wallet_core -> wallet_core: Execute //Save Account File//
+        return Account
+    return Account
+return Success
+@enduml
+----
+
+===== Import Account: Account File
+The following diagram illustrates the sequence of events when importing an account from a .yaml file.
+
+[plantuml, format="svg", id="import-file", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Click "Add an account"
+user -> wallet_front : Click "Import an existing account"
+    wallet_front -> wallet_api ++: Request //Import Account//
+        wallet_api -> wallet_core ++: Execute //Import Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Import Choice//
+            wallet_embedded_front <-> user: Click: "I have a .yaml file"
+            return Choice
+            wallet_core -> wallet_embedded_front ++: Fetch //Account File//
+            wallet_embedded_front <-> user: Select a .yaml file
+            return .yaml file path
+        wallet_core -> wallet_core: Execute //Save Account File//
+        return Account
+    return Account
+return Success
+@enduml
+----
+
+<<<
+
+===== Delete Account
+The following diagram illustrates the sequence of events when deleting an account.
+
+A confirmation step is prompted when the balance of the account being deleted is above 0.
+
+[plantuml, format="svg", id="delete-account", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Click "Settings"
+user -> wallet_front : Click "Delete account"
+    wallet_front -> wallet_api ++: Request //Delete Account//
+        wallet_api -> wallet_core ++: Execute //Delete Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+            wallet_embedded_front <-> user: Enter password
+            alt balance is over 0
+                wallet_embedded_front <-> user: Confirm deletion
+            end
+            return Password
+            wallet_core -> wallet_core: Execute //Verify Password//
+            wallet_core -> wallet_core: Execute //Delete Account//        
+        return Success
+    return Success
+return Success
+
+@enduml
+----
+
 == Data 
 
 In the Massa Station Wallet, various data elements play crucial roles in ensuring smooth operations and user interactions. This section provides a comprehensive overview of these data elements, their descriptions, and their sensitivity levels.
