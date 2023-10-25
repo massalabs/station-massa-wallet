@@ -1,4 +1,5 @@
 = Massa Station Wallet: Documentation
+firstname middlename lastname <email>; firstname2 middlename2 lastname2 <email2>
 :doctype: book
 :toc:
 :sectnums:
