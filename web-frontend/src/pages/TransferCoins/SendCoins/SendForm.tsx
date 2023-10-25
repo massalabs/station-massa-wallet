@@ -16,6 +16,7 @@ import {
   reverseFormatStandard,
   fetchAccounts,
 } from '@/utils';
+import { handlePercent } from '@/utils/math';
 
 interface InputsErrors {
   amount?: string;
@@ -50,16 +51,6 @@ export function SendForm({ ...props }) {
     setAmount(redirectAmount);
     setRecipient(to);
   }, []);
-
-  function handlePercent(amount = 0, percent: number) {
-    let newAmount = amount * percent;
-    const feesAsNumber = Number(fees);
-
-    if (newAmount > balance - feesAsNumber)
-      newAmount = Math.max(balance - feesAsNumber, 0);
-
-    setAmount(toMASS(newAmount));
-  }
 
   function validate(formObject: IForm) {
     const { amount, recipient } = formObject;
@@ -137,28 +128,36 @@ export function SendForm({ ...props }) {
           <ul className="flex flex-row mas-body2">
             <li
               data-testid="send-percent-25"
-              onClick={() => handlePercent(balance, 0.25)}
+              onClick={() =>
+                setAmount(handlePercent(balance, 0.25, fees, balance))
+              }
               className="mr-3.5 hover:cursor-pointer"
             >
               25%
             </li>
             <li
               data-testid="send-percent-50"
-              onClick={() => handlePercent(balance, 0.5)}
+              onClick={() =>
+                setAmount(handlePercent(balance, 0.5, fees, balance))
+              }
               className="mr-3.5 hover:cursor-pointer"
             >
               50%
             </li>
             <li
               data-testid="send-percent-75"
-              onClick={() => handlePercent(balance, 0.75)}
+              onClick={() =>
+                setAmount(handlePercent(balance, 0.75, fees, balance))
+              }
               className="mr-3.5 hover:cursor-pointer"
             >
               75%
             </li>
             <li
               data-testid="send-percent-100"
-              onClick={() => handlePercent(balance, 1)}
+              onClick={() =>
+                setAmount(handlePercent(balance, 1, fees, balance))
+              }
               className="mr-3.5 hover:cursor-pointer"
             >
               Max

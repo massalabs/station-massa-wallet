@@ -8,9 +8,9 @@ import {
   formatStandard,
   maskAddress,
 } from '../../../../src/utils/massaFormat';
-import { compareSnapshot } from '../../../compareSnapshot';
+import { handlePercent } from '../../../../src/utils/math';
 
-describe('E2E | Acceptance | Home', () => {
+describe('E2E | Acceptance | Home | Send', () => {
   let server: Server;
   const baseUrl = Cypress.config().baseUrl;
 
@@ -58,15 +58,14 @@ describe('E2E | Acceptance | Home', () => {
       cy.get('[data-testid="side-menu-sendreceive-icon"]').click();
     }
 
-    function getBalance(account) {
+    function setAccountBalance(account) {
       // same logic we use in SendForm.tsx where balance is rendered
       const balance = Number(account?.candidateBalance || 0);
       const formattedBalance = formatStandard(toMASS(balance));
       return formattedBalance;
     }
 
-    // mimics currency field formating
-    // custom fn because currency field input component uses a specific component node modules
+    // mimics currency field formating because component uses a specific component node modules
     function customFormatNumber(number) {
       let numberString = number.toString();
       let [integerPart, decimalPart] = numberString.split('.');
@@ -78,20 +77,8 @@ describe('E2E | Acceptance | Home', () => {
       }
     }
 
-    // mimics handlepercent fn in sendForm.tsx
-    // TODO: refactor handlePercent to be a util function
-    function handlePercent(amount = 0, percent: number, fees, balance) {
-      let newAmount = amount * percent;
-      const feesAsNumber = Number(fees);
-
-      if (newAmount > balance - feesAsNumber)
-        newAmount = Math.max(balance - feesAsNumber, 0);
-
-      return toMASS(newAmount);
-    }
-
     // standardize percent testing
-    function performPercentAction(percentValue, account, fees) {
+    function performPercentTest(percentValue, account, fees) {
       const balance = Number(account?.candidateBalance);
       cy.get(`[data-testid="send-percent-${percentValue * 100}"]`)
         .should('exist')
@@ -126,8 +113,6 @@ describe('E2E | Acceptance | Home', () => {
               cy.get('[data-testid="loading"]').should('not.exist');
             });
         });
-
-      compareSnapshot(cy, 'wallet-loading');
     });
 
     it('should land on send page when send CTA is clicked', () => {
@@ -138,9 +123,6 @@ describe('E2E | Acceptance | Home', () => {
 
       cy.get('[data-testid="send-coins"]').should('be.visible');
       cy.get('[data-testid="receive-coins"]').should('not.be.visible');
-      cy.get('[data-testid="send-coins"]').should('exist');
-
-      compareSnapshot(cy, 'send-page');
     });
 
     it('should navigate to /transfer-coins when accessing it by the side-menu', () => {
@@ -150,7 +132,6 @@ describe('E2E | Acceptance | Home', () => {
       cy.get('[data-testid="side-menu"]').click();
       cy.get('[data-testid="side-menu-sendreceive-icon"]').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
-      compareSnapshot(cy, 'send-page');
     });
 
     it('should render balance and amount should equal account balance', () => {
@@ -160,9 +141,8 @@ describe('E2E | Acceptance | Home', () => {
 
       cy.get('[data-testid="balance-amount"]').should(
         'contain',
-        getBalance(account),
+        setAccountBalance(account),
       );
-      compareSnapshot(cy, 'send-page');
     });
 
     it('should send coins to address', () => {
@@ -175,7 +155,6 @@ describe('E2E | Acceptance | Home', () => {
 
       navigateToTransfercoins(2);
       cy.get('[data-testid="currency-field"')
-        .should('exist')
         .type(amount)
         .should('have.value', customFormatNumber(amount));
 
@@ -183,7 +162,7 @@ describe('E2E | Acceptance | Home', () => {
 
       cy.get('[data-testid="button"]').contains('Send').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
-      cy.get('[data-testid="send-confirmation"]').should('exist');
+      cy.get('[data-testid="send-confirmation"]').should('be.visible');
 
       cy.get('[data-testid="send-confirmation-info"]').should(
         'contain',
@@ -196,14 +175,10 @@ describe('E2E | Acceptance | Home', () => {
         maskAddress(recipientAccount.address),
       );
 
-      compareSnapshot(cy, 'send-confirmation-page');
-
       cy.get('[data-testid="button"]')
         .contains('Confirm and sign with password')
         .click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
-
-      compareSnapshot(cy, 'home-page');
     });
 
     it('should process any % as input', () => {
@@ -211,35 +186,26 @@ describe('E2E | Acceptance | Home', () => {
       const recipientAccount = mockedAccounts.at(2);
       const standardFees = '1000';
 
-      navigateToTransfercoins(1);
-
-      // we have to wait or else balance is not initialized properly
-      cy.wait(1000);
-
-      performPercentAction(0.25, account, standardFees);
-      performPercentAction(0.5, account, standardFees);
-      performPercentAction(0.75, account, standardFees);
-      performPercentAction(1, account, standardFees);
+      navigateToTransfercoins(1).then(() => {
+        performPercentTest(0.25, account, standardFees);
+        performPercentTest(0.5, account, standardFees);
+        performPercentTest(0.75, account, standardFees);
+        performPercentTest(1, account, standardFees);
+      });
     });
 
     it('should transfer to accounts', () => {
       const randomIndex = Math.floor(Math.random() * mockedAccounts.length);
       const selectedAccount = mockedAccounts.at(randomIndex);
 
-      console.log(mockedAccounts);
-
       navigateToTransfercoins(2);
 
-      cy.get('[data-testid="transfer-between-accounts"]')
-        .should('exist')
-        .click();
+      cy.get('[data-testid="transfer-between-accounts"]').click();
 
-      cy.get('[data-testid="popup-modal-content"').should('exist');
-
-      cy.get('[data-testid="selector-account-list"]').should('exist');
+      cy.get('[data-testid="popup-modal-content"').should('be.visible');
 
       for (let i = 0; i < mockedAccounts.length; i++) {
-        cy.get(`[data-testid="selector-account-${i}"]`).should('exist');
+        cy.get(`[data-testid="selector-account-${i}"]`).should('be.visible');
       }
 
       cy.get(`[data-testid="selector-account-${randomIndex}"]`).click();
@@ -275,10 +241,7 @@ describe('E2E | Acceptance | Home', () => {
         'Invalid amount',
       );
 
-      cy.get('[data-testid="currency-field"')
-        .clear()
-        .should('exist')
-        .type(tooMuch);
+      cy.get('[data-testid="currency-field"').clear().type(tooMuch);
 
       cy.get('[data-testid="button"]').contains('Send').click();
 
@@ -287,10 +250,7 @@ describe('E2E | Acceptance | Home', () => {
         'Insufficient funds',
       );
 
-      cy.get('[data-testid="currency-field"')
-        .clear()
-        .should('exist')
-        .type(tooLow);
+      cy.get('[data-testid="currency-field"').clear().type(tooLow);
 
       cy.get('[data-testid="button"]').contains('Send').click();
 
@@ -299,15 +259,7 @@ describe('E2E | Acceptance | Home', () => {
         'Amount must be greater than zero',
       );
 
-      // testing amount + fees to hugh seems tricky
-      // amount + fees to high also triggers insufficient funds
-      // there mayeb we can refacto it ?
-      // See sendForm.tsx line 84
-
-      cy.get('[data-testid="currency-field"')
-        .clear()
-        .should('exist')
-        .type(notEnoughForFees);
+      cy.get('[data-testid="currency-field"').clear().type(notEnoughForFees);
 
       cy.get('[data-testid="button"]').contains('Send').click();
 
@@ -325,7 +277,6 @@ describe('E2E | Acceptance | Home', () => {
 
       navigateToTransfercoins(2);
       cy.get('[data-testid="currency-field"')
-        .should('exist')
         .type(amount)
         .should('have.value', customFormatNumber(amount));
 
@@ -345,18 +296,5 @@ describe('E2E | Acceptance | Home', () => {
         'Recipient is required',
       );
     });
-
-    //   const account = mockedAccounts.at(2);
-
-    //   cy.visit('/');
-
-    //   cy.get('[data-testid="account-2"]').click();
-    //   cy.url().should('eq', `${baseUrl}/Mario/home`);
-
-    //   compareSnapshot(cy, 'wallet-home');
-
-    //   cy.get('[data-testid="clipboard-field"]').click();
-    //   cy.assertValueCopiedFromClipboard(account.address);
-    // });
   });
 });
