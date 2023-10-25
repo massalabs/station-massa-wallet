@@ -79,6 +79,7 @@ describe('E2E | Acceptance | Home | Receive', () => {
       cy.visit('/');
 
       cy.get('[data-testid="account-2"]').click();
+
       cy.get('[data-testid="receive-button"]').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
@@ -110,65 +111,41 @@ describe('E2E | Acceptance | Home | Receive', () => {
       });
     });
 
-    it('should copy wallet address when clipboard field is clicked', () => {
-      // we are adding the permission to chrome on the fly
-
+    it('should generate and copy link', () => {
+      const amount = 5000;
       const account = mockedAccounts.at(2);
 
-      cy.visit('/');
+      const generatedLink = `http://localhost:8080/send-redirect/?to=${account.address}&amount=${amount}`;
+
+      navigateToReceivePage();
+      cy.get('[data-testid="button"]').contains('Generate link').click();
+
+      cy.get('[data-testid="popup-modal"]').should('be.visible');
+
+      cy.get('[data-testid="amount-to-send"]')
+        .should('have.attr', 'placeholder', 'Amount to ask')
+        .type(amount);
+
+      cy.get('[data-testid="clipboard-field"]').should('contain', '');
+
+      cy.get('[data-testid="generate-link-button"]').click();
 
       cy.on('window:confirm', () => true);
-      cy.wrap(
-        Cypress.automation('remote:debugger:protocol', {
-          command: 'Browser.grantPermissions',
-          params: {
-            permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
-            origin: window.location.origin,
-          },
-        }),
-      );
 
-      cy.get('[data-testid="account-2"]').click();
-      cy.url().should('eq', `${baseUrl}/Mario/home`);
+      cy.window().then((win) => {
+        cy.stub(win, 'prompt').returns(win.prompt).as('copyToClipboardPrompt');
+      });
 
-      cy.get('[data-testid="clipboard-field"]').click();
-      cy.assertValueCopiedFromClipboard(account.address);
+      cy.get('[data-testid="clipboard-link"]')
+        .should('contain', generatedLink)
+        .click();
+
+      cy.get('@copyToClipboardPrompt').should('be.called');
+
+      cy.get('@copyToClipboardPrompt').should((prompt) => {
+        expect(prompt.args[0][1]).to.equal(generatedLink);
+      });
     });
-
-    // it('should generate and copy link', () => {
-    //   const amount = 5000;
-    //   const account = mockedAccounts.at(2);
-
-    //   const generatedLink = `http://localhost:8080/send-redirect/?to=${account.address}&amount=${amount}`;
-
-    //   navigateToReceivePage();
-    //   cy.get('[data-testid="button"]')
-    //     .should('exist')
-    //     .contains('Generate link')
-    //     .click();
-
-    //   cy.get('[data-testid="popup-modal"]').should('exist');
-    //   cy.get('[data-testid="amount-to-send"]')
-    //     .should('have.attr', 'placeholder', 'Amount to ask')
-    //     .type(amount);
-    //   cy.get('[data-testid="clipboard-field"]').should('contain', '');
-    //   cy.get('[data-testid="generate-link-button"]').click();
-
-    //   cy.on('window:confirm', () => true);
-
-    //   cy.window().then((win) => {
-    //     cy.stub(win, 'prompt').returns(win.prompt).as('copyToClipboardPrompt');
-    //   });
-
-    //   cy.get('[data-testid="clipboard-link"]')
-    //     .should('contain', generatedLink)
-    //     .click();
-    //   cy.get('@copyToClipboardPrompt').should('be.called');
-
-    //   cy.get('@copyToClipboardPrompt').should((prompt) => {
-    //     expect(prompt.args[0][1]).to.equal(generatedLink);
-    //   });
-    // });
 
     it('should redirect to generated link and fill input fields', () => {
       const account = mockedAccounts.at(2);
@@ -182,9 +159,10 @@ describe('E2E | Acceptance | Home | Receive', () => {
 
       cy.visit(generatedLink);
 
-      cy.get('[data-testid="currency-field"')
-        .should('exist')
-        .should('have.value', customFormatNumber(amount));
+      cy.get('[data-testid="currency-field"').should(
+        'have.value',
+        customFormatNumber(amount),
+      );
 
       cy.get('[data-testid="input-field"').should(
         'have.value',
