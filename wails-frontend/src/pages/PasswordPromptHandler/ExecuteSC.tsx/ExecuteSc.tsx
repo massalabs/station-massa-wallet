@@ -17,7 +17,6 @@ export function ExecuteSC(props: PromptRequestData) {
     OperationType,
     Fees,
     MaxGas,
-    Expiry,
     Nickname,
   } = props;
 
@@ -48,10 +47,6 @@ export function ExecuteSC(props: PromptRequestData) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-gas')} </p>
         <p>{formatStandard(MaxGas)}</p>
-      </div>
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.expiry')} </p>
-        <p>{Expiry}</p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>

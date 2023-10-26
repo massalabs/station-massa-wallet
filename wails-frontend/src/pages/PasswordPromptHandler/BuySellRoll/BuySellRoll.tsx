@@ -5,7 +5,7 @@ import Intl from '@/i18n/i18n';
 import { formatStandard, masToken, Unit } from '@/utils';
 
 export function BuySellRoll(props: PromptRequestData) {
-  const { RollCount, OperationType, Coins, Fees, Expiry } = props;
+  const { RollCount, OperationType, Coins, Fees } = props;
 
   WindowSetSize(460, 460);
 
@@ -36,10 +36,6 @@ export function BuySellRoll(props: PromptRequestData) {
         <p>
           {formatStandard(Fees, Unit.NanoMAS)} {masToken}
         </p>
-      </div>
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.expiry')} </p>
-        <p>{Expiry}</p>
       </div>
     </div>
   );

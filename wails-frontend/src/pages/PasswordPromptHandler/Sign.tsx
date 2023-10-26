@@ -43,7 +43,6 @@ export interface PromptRequestData {
   OperationType?: string;
   MaxCoins: string;
   MaxGas: string;
-  Expiry: number;
   RollCount: number;
   RecipientAddress: string;
   RecipientNickname: string;
