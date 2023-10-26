@@ -35,7 +35,6 @@ import {
 export interface PromptRequestData {
   Description: string;
   Fees: string;
-  OperationID: number;
   GasLimit: string;
   Coins: string;
   Address: string;

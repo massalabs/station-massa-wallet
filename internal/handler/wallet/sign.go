@@ -23,8 +23,10 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/node/sendoperation"
+	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/callsc"
 	"github.com/massalabs/station/pkg/node/sendoperation/executesc"
+	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 	"github.com/pkg/errors"
 	"lukechampine.com/blake3"
@@ -35,18 +37,12 @@ const (
 	BuyRoll               = "Buy Roll"
 	SellRoll              = "Sell Roll"
 	Message               = "Plain Text"
-	TransactionOpType     = uint64(0)
-	BuyRollOpType         = uint64(1)
-	SellRollOpType        = uint64(2)
-	ExecuteSCOpType       = uint64(3)
-	CallSCOpType          = uint64(4)
 )
 
 type PromptRequestSignData struct {
 	Description       string
 	Fees              string
 	OperationType     string
-	OperationID       uint64
 	Coins             string
 	Address           string
 	Function          string
@@ -222,34 +218,34 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 		return nil, errors.Wrap(err, "failed to decode transaction message")
 	}
 
-	if opType, err = sendoperation.DecodeOperationID(decodedMsg); err != nil {
+	if opType, err = sendoperation.DecodeOperationType(decodedMsg); err != nil {
 		wrappedErr := errors.Wrap(err, "failed to decode operation ID")
 
 		return nil, wrappedErr
 	} else {
 		switch opType {
-		case TransactionOpType:
+		case transaction.TransactionOpType:
 			msg, err := transaction.DecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode transaction message")
 			}
 			promptRequest = w.prepareTransactionPromptRequest(msg, acc, address, description, fees, expiry)
 
-		case BuyRollOpType, SellRollOpType:
+		case buyrolls.OpID, sellrolls.SellRollOpID:
 			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode roll message")
 			}
 			promptRequest = w.prepareRollPromptRequest(roll, acc, address, description, fees, expiry)
 
-		case ExecuteSCOpType:
+		case executesc.ExecuteSCOpID:
 			executeSC, err := executesc.DecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode executeSC message")
 			}
 			promptRequest = w.prepareExecuteSCPromptRequest(executeSC, acc, address, description, fees, expiry)
 
-		case CallSCOpType:
+		case callsc.CallSCOpID:
 			callSC, err := callsc.DecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode callSC message")
@@ -282,7 +278,6 @@ func (w *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 			Description:   description,
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: "Call SC",
-			OperationID:   msg.OperationID,
 			MaxGas:        strconv.FormatUint(msg.MaxGas, 10),
 			Coins:         strconv.FormatUint(msg.Coins, 10),
 			Address:       msg.Address,
@@ -328,10 +323,10 @@ func (w *walletSign) prepareRollPromptRequest(
 ) prompt.PromptRequest {
 	operationType := ""
 
-	switch msg.OperationID {
-	case 1:
+	switch msg.OperationType {
+	case buyrolls.OpID:
 		operationType = BuyRoll
-	case 2:
+	case sellrolls.SellRollOpID:
 		operationType = SellRoll
 	}
 
