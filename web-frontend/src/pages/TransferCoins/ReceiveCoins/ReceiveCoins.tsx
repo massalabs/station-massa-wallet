@@ -43,7 +43,7 @@ function ReceiveCoins({ ...props }) {
           />
         </div>
         <Button onClick={() => setModal(!modal)} preIcon={<FiLink size={24} />}>
-          {Intl.t('receive-coins.receive-account')}
+          {Intl.t('receive-coins.generate-link')}
         </Button>
       </div>
       {modal ? <GenerateLink {...modalArgs} /> : null}

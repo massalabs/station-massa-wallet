@@ -91,6 +91,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 {Intl.t('receive-coins.receive-amount')}
               </p>
               <Currency
+                data-testid="amount-to-send"
                 placeholder={Intl.t('receive-coins.amount-to-ask')}
                 name="amount"
                 value={amount}
@@ -114,14 +115,15 @@ function GenerateLink(props: GenerateLinkProps) {
               </p>
               <div className="h-16">
                 <Clipboard
+                  data-testid="clipboard-link"
                   rawContent={link}
                   error={Intl.t('errors.no-content-to-copy')}
                 />
               </div>
             </div>
             <div className="pb-3">
-              <Button type="submit">
-                {Intl.t('receive-coins.receive-account')}
+              <Button data-testid="generate-link-button" type="submit">
+                {Intl.t('receive-coins.generate-link')}
               </Button>
             </div>
           </div>
