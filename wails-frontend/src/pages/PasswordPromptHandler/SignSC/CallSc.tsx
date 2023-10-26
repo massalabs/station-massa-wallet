@@ -77,29 +77,30 @@ export function CallSc(props: PromptRequestData) {
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
       {Description && (
-        <div className="flex flex-col w-full h-fit">
-          <AccordionCategory
-            isChild={false}
-            iconOpen={<FiChevronDown />}
-            iconClose={<FiChevronUp />}
-            customClass={'!p-0'}
-            categoryTitle={
-              <div className="flex items-center w-full gap-4">
-                <FiInfo size={18} />
-                <p>{Intl.t('password-prompt.sign.description')}</p>
-              </div>
-            }
-          >
-            <AccordionContent customClass={'px-0 pt-4 pb-0'}>
-              <div className="max-w-full overflow-hidden">
-                <p>{Description}</p>
-              </div>
-            </AccordionContent>
-          </AccordionCategory>
-        </div>
+        <>
+          <div className="flex flex-col w-full h-fit">
+            <AccordionCategory
+              isChild={false}
+              iconOpen={<FiChevronDown />}
+              iconClose={<FiChevronUp />}
+              customClass={'!p-0'}
+              categoryTitle={
+                <div className="flex items-center w-full gap-4">
+                  <FiInfo size={18} />
+                  <p>{Intl.t('password-prompt.sign.description')}</p>
+                </div>
+              }
+            >
+              <AccordionContent customClass={'px-0 pt-4 pb-0'}>
+                <div className="max-w-full overflow-hidden">
+                  <p>{Description}</p>
+                </div>
+              </AccordionContent>
+            </AccordionCategory>
+          </div>
+          <hr className="h-0.25 bg-neutral opacity-40 w-full" />
+        </>
       )}
-
-      {Description && <hr className="h-0.25 bg-neutral opacity-40 w-full" />}
 
       <div className="flex flex-col gap-2 w-full">
         <div className="flex w-full items-center justify-between">
