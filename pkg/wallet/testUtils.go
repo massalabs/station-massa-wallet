@@ -1,4 +1,4 @@
-package walletmanager
+package wallet
 
 import (
 	"os"
@@ -8,6 +8,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+// Get the number of accounts in the wallet
+func (w *Wallet) GetAccountCount() int {
+	return len(w.AllAccounts())
+}
 
 func ClearAccounts(t *testing.T, walletPath string) {
 	files, err := os.ReadDir(walletPath)

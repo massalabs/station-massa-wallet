@@ -1,4 +1,4 @@
-package walletmanager
+package wallet
 
 import (
 	"errors"

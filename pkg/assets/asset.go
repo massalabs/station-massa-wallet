@@ -240,12 +240,12 @@ func createJSONFile(path string) error {
 
 // GetAssetsJSONPath returns the path to the assets JSON file.
 func GetAssetsJSONPath() (string, error) {
-	walletDir, err := wallet.AccountPath()
+	walletPath, err := wallet.Path()
 	if err != nil {
 		return "", err
 	}
 
-	return filepath.Join(walletDir, "assets.json"), nil
+	return filepath.Join(walletPath, "assets.json"), nil
 }
 
 func MASInfo() models.AssetInfo {

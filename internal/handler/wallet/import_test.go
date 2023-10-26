@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -30,7 +31,7 @@ func Test_walletImport_Handle(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Run("import wallet file", func(t *testing.T) {
-		nickname := "walletToBeImported"
+		nickname := "walletToBeImportedForTest"
 
 		walletFile := fmt.Sprintf(
 			`Version: 1
@@ -68,40 +69,11 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 		verifyStatusCode(t, resp, http.StatusOK)
 
-		checkResultChannel(t, result, true, "Import Success")
+		checkResultChannel(t, result, true, "")
 
-		assertWallet(t, nickname)
-
-		err = cleanupTestData([]string{nickname})
-		assert.NoError(t, err)
+		assertWallet(t, prompterApp.App().Wallet, nickname)
 
 		os.Remove(filePath)
-	})
-
-	t.Run("import invalid path file", func(t *testing.T) {
-		walletFile := "InvalidWallet"
-
-		filePath := "importMe.yaml"
-		// Write wallet file
-		data := []byte(walletFile)
-		err = os.WriteFile(filePath, data, 0o644)
-		assert.NoError(t, err)
-		defer os.Remove(filePath)
-
-		testResult := make(chan walletapp.EventData)
-
-		// Send filepath to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			// Send invalid filename to prompter app and wait for result
-			prompterApp.App().PromptInput <- "invalidFilename"
-			failRes := <-resChan
-
-			checkResultChannel(t, failRes, false, utils.ErrInvalidFileExtension)
-		}(testResult)
-
-		resp := importWallet(t, api)
-
-		verifyStatusCode(t, resp, http.StatusUnauthorized)
 	})
 
 	t.Run("import invalid account file", func(t *testing.T) {
@@ -174,27 +146,26 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 	tests := []struct {
 		name       string
 		nickname   string
-		privateKey string
-		password   string
+		privateKey *memguard.LockedBuffer
+		password   *memguard.LockedBuffer
 		wantStatus int
 		wantResult walletapp.EventData
 	}{
 		{
 			name:       "import private key",
 			nickname:   "walletToBeImported",
-			privateKey: "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA",
-			password:   "aGoodPassword",
+			privateKey: memguard.NewBufferFromBytes([]byte("S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA")),
+			password:   memguard.NewBufferFromBytes([]byte("aGoodPassword")),
 			wantStatus: http.StatusOK,
 			wantResult: walletapp.EventData{
-				Success:     true,
-				CodeMessage: utils.MsgAccountImported,
+				Success: true,
 			},
 		},
 		{
 			name:       "import invalid nickname",
 			nickname:   "with special char: !@#$%^&*()_+",
-			privateKey: "S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA",
-			password:   "aWrongPassword",
+			privateKey: memguard.NewBufferFromBytes([]byte("S12XPyhXmGnx4hnx59mRUXPo6BDb18D6a7tA1xyAxAQPPFDUSNXA")),
+			password:   memguard.NewBufferFromBytes([]byte("aWrongPassword")),
 			wantStatus: http.StatusUnauthorized,
 			wantResult: walletapp.EventData{
 				Success:     false,
@@ -204,8 +175,8 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		{
 			name:       "import invalid private key",
 			nickname:   "walletToBeImported",
-			privateKey: "invalidPrivateKey",
-			password:   "aWrongPassword",
+			privateKey: memguard.NewBufferFromBytes([]byte("invalidPrivateKey")),
+			password:   memguard.NewBufferFromBytes([]byte("aWrongPassword")),
 			wantStatus: http.StatusUnauthorized,
 			wantResult: walletapp.EventData{
 				Success:     false,
@@ -234,9 +205,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			checkResultChannel(t, result, tt.wantResult.Success, tt.wantResult.CodeMessage)
 
 			if tt.wantResult.Success {
-				assertWallet(t, tt.nickname)
-				err := cleanupTestData([]string{tt.nickname})
-				assert.NoError(t, err)
+				assertWallet(t, prompterApp.App().Wallet, tt.nickname)
 			}
 		})
 	}

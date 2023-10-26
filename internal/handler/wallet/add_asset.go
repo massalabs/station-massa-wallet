@@ -25,7 +25,7 @@ type addAsset struct {
 	massaClient network.NodeFetcherInterface
 }
 
-func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
+func (a *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
 	// Check if the address is valid
 	if !address.IsValidAddress(params.AssetAddress) {
 		// Return an error indicating the address is not valid
@@ -34,21 +34,21 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// First, check if the asset exists in the network
-	if !h.massaClient.AssetExistInNetwork(params.AssetAddress) {
+	if !a.massaClient.AssetExistInNetwork(params.AssetAddress) {
 		// If the asset does not exist in the network, return a 404 response
 		errorMsg := "Asset with the provided address not found in the network."
 		return operations.NewAddAssetNotFound().WithPayload(&models.Error{Code: errorAssetNotFound, Message: errorMsg})
 	}
 
 	// Check if the address exists in the loaded JSON
-	if h.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
+	if a.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
 		// Return that the asset already exists
 		errorMsg := "Asset with the provided address already exists."
 		return operations.NewAddAssetBadRequest().WithPayload(&models.Error{Code: errorAssetExists, Message: errorMsg})
 	}
 
 	// Fetch the asset information from the SC
-	assetInfoFromSC, err := assets.AssetInfo(params.AssetAddress, h.massaClient)
+	assetInfoFromSC, err := assets.AssetInfo(params.AssetAddress, a.massaClient)
 	if err != nil {
 		// Return error occurred during SC fetch
 		errorMsg := "Failed to fetch asset information from the smart contract."
@@ -56,7 +56,7 @@ func (h *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Add Asset and persist in JSON file.
-	if err := h.AssetsStore.AddAsset(params.Nickname, params.AssetAddress, *assetInfoFromSC); err != nil {
+	if err := a.AssetsStore.AddAsset(params.Nickname, params.AssetAddress, *assetInfoFromSC); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to add the asset to the JSON file."
 		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorAddAssetJSON, Message: errorMsg})

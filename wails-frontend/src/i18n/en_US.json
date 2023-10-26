@@ -25,7 +25,8 @@
       "transfer-request": "Sign a transaction",
       "sign": "Sign an operation",
       "sign-message": "Sign a message",
-      "delete": "Delete an account"
+      "delete": "Delete an account",
+      "unlock": "Unlock"
     },
     "subtitle": {
       "default": "Enter your password below to validate.",

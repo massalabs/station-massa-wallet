@@ -1,8 +1,11 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 
+	"github.com/awnumar/memguard"
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -10,7 +13,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
 type PromptRequestSignMessageData struct {
@@ -30,55 +33,73 @@ type walletSignMessage struct {
 	gc          gcache.Cache
 }
 
-func (s *walletSignMessage) Handle(params operations.SignMessageParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+func (w *walletSignMessage) Handle(params operations.SignMessageParams) middleware.Responder {
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// Create a promptRequest for signing the message
-	promptRequest := s.prepareSignMessagePromptRequest(wlt, params.Body)
-
-	// Use the prompt-based logic to sign the message
-	_, err := prompt.WakeUpPrompt(s.prompterApp, promptRequest, wlt)
+	promptRequest, err := prepareSignMessagePromptRequest(*acc, params.Body)
 	if err != nil {
-		return operations.NewSignUnauthorized().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: "Unable to unprotect wallet",
-			})
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
-	s.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+	// Use the prompt-based logic to sign the message
+	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
+	if err != nil {
+		msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
+		if errors.Is(err, utils.ErrWrongPassword) || errors.Is(err, utils.ErrActionCanceled) {
+			return newErrorResponse(msg, errorGetWallets, http.StatusUnauthorized)
+		}
 
-	// Sign the message using the wallet
-	signature := wlt.Sign(false, []byte(params.Body.Message))
+		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
+	}
+
+	password, _ := promptOutput.(*memguard.LockedBuffer)
+
+	signature, err := acc.Sign(password, []byte(params.Body.Message))
+	if err != nil {
+		return newErrorResponse(fmt.Sprintf("unable to sign message: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
+	}
+
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: true})
+
+	publicKeyBytes, err := acc.PublicKey.MarshalText()
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+	}
 
 	// Return the signature and public key as the response
 	return operations.NewSignMessageOK().WithPayload(
 		&models.SignResponse{
-			PublicKey: wlt.GetPupKey(),
+			PublicKey: string(publicKeyBytes),
 			Signature: signature,
 		})
 }
 
-func (s *walletSignMessage) prepareSignMessagePromptRequest(wlt *wallet.Wallet, body *models.SignMessageRequest) prompt.PromptRequest {
+func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessageRequest) (*prompt.PromptRequest, error) {
 	DisplayData := true
 	// Check if DisplayData is provided in the request, if not, use the default (true)
 	if body.DisplayData != nil {
 		DisplayData = *body.DisplayData
 	}
 
-	return prompt.PromptRequest{
+	address, err := acc.Address.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+
+	return &prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignMessageData{
 			Description:   body.Description,
 			OperationType: Message,
 			DisplayData:   DisplayData,
 			PlainText:     body.Message,
-			WalletAddress: wlt.Address,
+			WalletAddress: string(address),
 		},
-	}
+	}, nil
 }

@@ -16,6 +16,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,7 +50,17 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 
 	resultChannel := make(chan walletapp.EventData)
 
-	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(), resultChannel)
+	walletPath, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
+	if err != nil {
+		log.Fatalf("while creating temporary wallet directory: %s", err.Error())
+	}
+
+	wallet, err := wallet.New(walletPath)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	prompterApp := NewWalletPrompterMock(walletapp.NewWalletApp(wallet), resultChannel)
 
 	assetsJSONPath, err := assets.GetAssetsJSONPath()
 	if err != nil {
@@ -62,6 +73,7 @@ func MockAPI() (*operations.MassaWalletAPI, prompt.WalletPrompterInterface, *ass
 	}
 
 	massaNodeMock := NewNodeFetcherMock()
+
 	// Set wallet API endpoints
 	AppendEndpoints(massaWalletAPI, prompterApp, massaNodeMock, AssetsStore, gcache.New(20).LRU().Build())
 

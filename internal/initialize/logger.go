@@ -12,7 +12,7 @@ const (
 )
 
 func Logger() error {
-	logPath, err := wallet.AccountPath()
+	logPath, err := wallet.Path()
 	if err != nil {
 		return err
 	}

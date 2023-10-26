@@ -2,16 +2,17 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 
+	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
@@ -27,29 +28,21 @@ type tradeRolls struct {
 }
 
 func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(t.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(string(params.Body.Amount), 10, 64)
 	if err != nil {
-		return operations.NewTradeRollsBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during amount conversion",
-			})
+		return newErrorResponse("Error during amount conversion", errorTradeRoll, http.StatusBadRequest)
 	}
 
 	// convert fee to uint64
 	fee, err := strconv.ParseUint(string(params.Body.Fee), 10, 64)
 	if err != nil {
-		return operations.NewTradeRollsBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during fee conversion",
-			})
+		return newErrorResponse("Error during fee conversion", errorTradeRoll, http.StatusBadRequest)
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -57,7 +50,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		Msg:    fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
 	}
 
-	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
+	promptOutput, err := prompt.WakeUpPrompt(t.prompterApp, promptRequest, acc)
 	if err != nil {
 		return operations.NewTradeRollsUnauthorized().WithPayload(
 			&models.Error{
@@ -66,21 +59,20 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	operation, tradeRollError := doTradeRolls(wlt, amount, fee, *params.Body.Side, t.massaClient)
-	if tradeRollError != nil {
-		errStr := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, tradeRollError.Err.Error())
-		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: tradeRollError.CodeErr})
+	password, _ := promptOutput.(*memguard.LockedBuffer)
 
-		return operations.NewTradeRollsInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: errStr,
-			})
+	operation, err := doTradeRolls(acc, password, amount, fee, *params.Body.Side, t.massaClient)
+	if err != nil {
+		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
+
+		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false})
+
+		return newErrorResponse(msg, errorTransferCoin, http.StatusInternalServerError)
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgRollTradeSuccess})
+		walletapp.EventData{Success: true})
 
 	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{
@@ -88,7 +80,13 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		})
 }
 
-func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, *wallet.WalletError) {
+func doTradeRolls(
+	acc *account.Account,
+	password *memguard.LockedBuffer,
+	amount, fee uint64,
+	side string,
+	massaClient network.NodeFetcherInterface,
+) (*sendOperation.OperationResponse, error) {
 	var operation sendOperation.Operation
 	if side == "buy" {
 		operation = buyrolls.New(amount)
@@ -96,5 +94,5 @@ func doTradeRolls(wlt *wallet.Wallet, amount, fee uint64, side string, massaClie
 		operation = sellrolls.New(amount)
 	}
 
-	return network.SendOperation(wlt, massaClient, operation, fee)
+	return network.SendOperation(acc, password, massaClient, operation, fee)
 }

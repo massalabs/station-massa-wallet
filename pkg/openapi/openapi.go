@@ -38,24 +38,22 @@ func NewCustomResponder(body []byte, header map[string]string, statusCode int) *
 	return &CustomResponder{Body: body, Header: header, StatusCode: statusCode}
 }
 
-// NewNotFoundResponder creates a not found response.
-//
-// A CustomResponder with a "Page not found" body, a "Content-Type" header set to "text/html"
-// and a status code of 404 (Not Found) is instantiate.
-func NewNotFoundResponder() *CustomResponder {
-	return NewCustomResponder(
-		[]byte("Page not found"),
-		map[string]string{"Content-Type": "text/html"},
-		http.StatusNotFound)
+type PayloadResponder struct {
+	StatusCode int
+	Payload    interface{}
 }
 
-// NewInternalServerResponder creates an internal server error response.
-//
-// A CustomResponder with a body with the error content, a "Content-Type" header set to "text/html"
-// and a status code of 505 (Internal Server Error) is instantiate.
-func NewInternalServerErrorResponder(err error) *CustomResponder {
-	return NewCustomResponder(
-		[]byte(err.Error()),
-		map[string]string{"Content-Type": "text/html"},
-		http.StatusInternalServerError)
+func (p *PayloadResponder) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+	rw.WriteHeader(p.StatusCode)
+
+	if p.Payload != nil {
+		payload := p.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func NewPayloadResponder(statusCode int, payload interface{}) *PayloadResponder {
+	return &PayloadResponder{StatusCode: statusCode, Payload: payload}
 }

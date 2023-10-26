@@ -12,7 +12,6 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,8 +44,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	transactionData := fmt.Sprintf(`{"operation":"%s"}`, callSCString)
 	nickname := "walletToDelete"
 	password := "zePassword"
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := signTransaction(t, api, "Johnny", transactionData)
@@ -68,7 +66,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+		checkResultChannel(t, result, true, "")
 	})
 
 	t.Run("sign a plain text message", func(t *testing.T) {
@@ -81,7 +79,7 @@ func Test_walletSign_Handle(t *testing.T) {
 			res <- (<-resChan)
 		}(testResult)
 
-		message := "a message"
+		message := "Test"
 		requestBody := fmt.Sprintf(`{"message":"%s"}`, message)
 
 		resp := signMessage(t, api, nickname, requestBody)
@@ -89,7 +87,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+		checkResultChannel(t, result, true, "")
 	})
 
 	// The handler will not return until a the good password is sent or the action is canceled
@@ -117,7 +115,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountUnprotected)
+		checkResultChannel(t, result, true, "")
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
@@ -154,7 +152,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, "Unprotect Success")
+		checkResultChannel(t, result, true, "")
 
 		var body models.SignResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &body)
@@ -176,7 +174,4 @@ func Test_walletSign_Handle(t *testing.T) {
 		assert.NoError(t, err)
 		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
-
-	err = cleanupTestData([]string{nickname})
-	assert.NoError(t, err)
 }

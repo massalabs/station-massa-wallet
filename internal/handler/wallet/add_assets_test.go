@@ -8,10 +8,11 @@ import (
 	"os"
 	"testing"
 
+	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	utils "github.com/massalabs/station-massa-wallet/pkg/assets"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/logger"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -28,8 +29,8 @@ func TestAddAssetHandler(t *testing.T) {
 	nickname := "GoodNickname"
 	password := "zePassword"
 
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	_, err = account.Generate(memguard.NewBufferFromBytes([]byte(password)), nickname)
+	assert.Nil(t, err)
 
 	type testCase struct {
 		Name            string
@@ -104,9 +105,6 @@ func TestAddAssetHandler(t *testing.T) {
 		// Remove the json file created
 		err = RemoveJSONFile()
 		assert.NoError(t, err)
-
-		err = cleanupTestData([]string{nickname})
-		assert.NoError(t, err)
 	})
 
 	// Remove the json file created
@@ -124,7 +122,7 @@ func addAssetTest(t *testing.T, api *operations.MassaWalletAPI, nickname, assetA
 	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/assets?assetAddress=%s", nickname, assetAddress), "")
 	assert.NoError(t, err)
 
-	assert.Equal(t, http.StatusCreated, resp.Result().StatusCode)
+	assert.Equal(t, http.StatusCreated, resp.Result().StatusCode, "response is %s", resp.Body.String())
 
 	// Parse the response body to get the added asset
 	var addedAsset models.AssetInfo

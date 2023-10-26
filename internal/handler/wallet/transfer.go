@@ -2,8 +2,10 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 
+	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -11,7 +13,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
@@ -34,67 +36,54 @@ type transferCoin struct {
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(t.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
 	// convert amount to uint64
 	amount, err := strconv.ParseUint(string(params.Body.Amount), 10, 64)
 	if err != nil {
-		return operations.NewTransferCoinBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during amount conversion",
-			})
+		return newErrorResponse("Error during amount conversion", errorTransferCoin, http.StatusBadRequest)
 	}
 
 	// convert fee to uint64
 	fee, err := strconv.ParseUint(string(params.Body.Fee), 10, 64)
 	if err != nil {
-		return operations.NewTransferCoinBadRequest().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: "Error during fee conversion",
-			})
+		return newErrorResponse("Error during fee conversion", errorTransferCoin, http.StatusBadRequest)
 	}
 
 	promptRequest := prompt.PromptRequest{
 		Action:      walletapp.Transfer,
 		CodeMessage: utils.MsgTransferRequest,
 		Data: PromptRequestTransferData{
-			NicknameFrom:     wlt.Nickname,
+			NicknameFrom:     acc.Nickname,
 			Amount:           string(params.Body.Amount),
 			Fee:              string(params.Body.Fee),
 			RecipientAddress: *params.Body.RecipientAddress,
 		},
 	}
 
-	_, err = prompt.WakeUpPrompt(t.prompterApp, promptRequest, wlt)
+	promptOutput, err := prompt.WakeUpPrompt(t.prompterApp, promptRequest, acc)
 	if err != nil {
-		return operations.NewTransferCoinUnauthorized().WithPayload(
-			&models.Error{
-				Code:    errorCanceledAction,
-				Message: "Unable to unprotect wallet",
-			})
+		return newErrorResponse("Unable to unprotect wallet", errorCanceledAction, http.StatusUnauthorized)
 	}
 
-	// create the transaction and send it to the network
-	operation, transferError := doTransfer(wlt, amount, fee, *params.Body.RecipientAddress, t.massaClient)
-	if transferError != nil {
-		errStr := fmt.Sprintf("error transferring coin: %v", transferError.Err.Error())
-		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: transferError.CodeErr})
+	password, _ := promptOutput.(*memguard.LockedBuffer)
 
-		return operations.NewTransferCoinInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errorTransferCoin,
-				Message: errStr,
-			})
+	// create the transaction and send it to the network
+	operation, err := doTransfer(acc, password, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	if err != nil {
+		msg := fmt.Sprintf("error transferring coin: %v", err.Error())
+
+		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: errorTransferCoin})
+
+		return newErrorResponse(msg, errorTransferCoin, http.StatusInternalServerError)
 	}
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true, CodeMessage: utils.MsgTransferSuccess})
+		walletapp.EventData{Success: true})
 
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
@@ -102,11 +91,17 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		})
 }
 
-func doTransfer(wlt *wallet.Wallet, amount, fee uint64, recipientAddress string, massaClient network.NodeFetcherInterface) (*sendOperation.OperationResponse, *wallet.WalletError) {
+func doTransfer(
+	acc *account.Account,
+	password *memguard.LockedBuffer,
+	amount, fee uint64,
+	recipientAddress string,
+	massaClient network.NodeFetcherInterface,
+) (*sendOperation.OperationResponse, error) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
-		return nil, &wallet.WalletError{Err: fmt.Errorf("Error during transaction creation: %w", err), CodeErr: errorTransferCoin}
+		return nil, fmt.Errorf("Error during transaction creation: %w", err)
 	}
 
-	return network.SendOperation(wlt, massaClient, operation, fee)
+	return network.SendOperation(acc, password, massaClient, operation, fee)
 }

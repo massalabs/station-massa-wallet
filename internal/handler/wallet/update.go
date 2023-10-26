@@ -2,13 +2,13 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
@@ -28,24 +28,23 @@ type walletUpdateAccount struct {
 }
 
 // HandleDelete handles an update request
-func (m *walletUpdateAccount) Handle(params operations.UpdateAccountParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) middleware.Responder {
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
-	newWlt, errModify := m.handleUpdateAccount(wlt, params.Body.Nickname)
-	if errModify != nil {
-		return operations.NewGetAccountInternalServerError().WithPayload(
-			&models.Error{
-				Code:    errModify.CodeErr,
-				Message: errModify.Err.Error(),
-			})
+	newAcc, err := w.handleUpdateAccount(acc, params.Body.Nickname)
+	if err != nil {
+		return newErrorResponse(err.Error(), "", http.StatusInternalServerError)
 	}
 
-	modelWallet := createModelWallet(*newWlt)
+	modelWallet, err := newAccountModel(newAcc)
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+	}
 
-	infos, err := m.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -57,46 +56,40 @@ func (m *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))
 	modelWallet.Balance = models.Amount(fmt.Sprint(infos[0].Balance))
 
-	return operations.NewGetAccountOK().WithPayload(&modelWallet)
+	return operations.NewGetAccountOK().WithPayload(modelWallet)
 }
 
-func (m *walletUpdateAccount) handleUpdateAccount(wlt *wallet.Wallet, newNickname models.Nickname) (*wallet.Wallet, *wallet.WalletError) {
+func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickname models.Nickname) (*account.Account, error) {
 	// check if the nickname does not change
-	if wlt.Nickname == string(newNickname) {
-		return nil, &wallet.WalletError{Err: fmt.Errorf("nickname is the same"), CodeErr: utils.ErrSameNickname}
+	if acc.Nickname == string(newNickname) {
+		return nil, wallet.ErrNicknameNotUnique
 	}
 
-	// Validate nickname
-	if !account.NicknameIsValid(string(newNickname)) {
-		return nil, &wallet.WalletError{Err: fmt.Errorf("invalid nickname"), CodeErr: utils.ErrInvalidNickname}
-	}
+	// save the old nickname in a variable
+	oldNickname := acc.Nickname
 
-	// Validate nickname uniqueness
-	err := wallet.NicknameIsUnique(string(newNickname))
+	newAcc, err := account.New(
+		acc.Version,
+		string(newNickname),
+		acc.Address,
+		acc.Salt,
+		acc.Nonce,
+		acc.CipheredData,
+		acc.PublicKey,
+	)
 	if err != nil {
-		return nil, &wallet.WalletError{Err: err, CodeErr: utils.ErrDuplicateNickname}
+		return nil, fmt.Errorf("creating new account: %w", err)
 	}
 
-	oldNickname := wlt.Nickname
-
-	// persist new nickname before deleting old file
-	wlt.Nickname = string(newNickname)
-
-	err = wlt.Persist()
+	err = w.prompterApp.App().Wallet.DeleteAccount(string(oldNickname))
 	if err != nil {
-		return nil, &wallet.WalletError{
-			Err:     fmt.Errorf("persisting the modified account: %w", err),
-			CodeErr: utils.ErrAccountFile,
-		}
+		return nil, err
 	}
 
-	// delete old file
-	if wallet.DeleteAccount(oldNickname) != nil {
-		return nil, &wallet.WalletError{
-			Err:     fmt.Errorf("persisting the old account: %w", err),
-			CodeErr: utils.ErrAccountFile,
-		}
+	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true)
+	if err != nil {
+		return nil, err
 	}
 
-	return wlt, nil
+	return newAcc, nil
 }

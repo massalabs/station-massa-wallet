@@ -113,3 +113,10 @@ Wails is a native GUI library for Go. It allows us to build a native GUI app wit
 Folder: `wails-frontend`.
 
 This folder contains the source code of the wails frontend app. It is a React app.
+
+### Error handling
+
+* Use sentinel error
+* Functions don't return a middleware responder, but an error
+* for http error response, use as much as possible `internal/handler/wallet/newErrorResponse`
+* for wails error code: use `pkg/utils/WailsErrorCode`

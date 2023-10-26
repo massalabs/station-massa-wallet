@@ -73,12 +73,15 @@ export function Default() {
     save(e);
   }
 
+  const title =
+    req.CodeMessage === ''
+      ? 'password-prompt.title.unlock'
+      : `password-prompt.title.${req.CodeMessage}`;
+
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">
-          {Intl.t(`password-prompt.title.${req.CodeMessage}`)}
-        </h1>
+        <h1 className="mas-title">{Intl.t(title)}</h1>
         <div className="mas-body pt-4 break-words">
           {Intl.t('password-prompt.subtitle.default')}
         </div>

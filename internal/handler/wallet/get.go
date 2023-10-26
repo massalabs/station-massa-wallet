@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/awnumar/memguard"
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -11,7 +13,12 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+)
+
+const (
+	accountStatusOK        = "ok"
+	accountStatusCorrupted = "corrupted"
 )
 
 // NewGet instantiates a Get Handler
@@ -25,22 +32,25 @@ type walletGet struct {
 	massaClient network.NodeFetcherInterface
 }
 
-func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Responder {
+	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+	if errResp != nil || acc == nil {
+		return errResp
 	}
 
-	modelWallet := createModelWallet(*wlt)
+	modelWallet, err := newAccountModel(acc)
+	if err != nil {
+		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+	}
 
 	// if request not ciphered data, ask for password and unprotect the wallet
 	if params.Ciphered != nil && !*params.Ciphered {
 		promptRequest := prompt.PromptRequest{
 			Action: walletapp.Unprotect,
-			Msg:    fmt.Sprintf("Unprotect wallet %s", wlt.Nickname),
+			Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		}
 
-		_, err := prompt.WakeUpPrompt(g.prompterApp, promptRequest, wlt)
+		promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, acc)
 		if err != nil {
 			return operations.NewGetAccountUnauthorized().WithPayload(
 				&models.Error{
@@ -49,18 +59,29 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 				})
 		}
 
-		g.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: true, CodeMessage: utils.MsgAccountUnprotected})
+		password, _ := promptOutput.(*memguard.LockedBuffer)
 
-		modelWallet.KeyPair = models.KeyPair{
-			PrivateKey: wlt.GetPrivKey(),
-			PublicKey:  wlt.GetPupKey(),
-			Salt:       wlt.GetSalt(),
-			Nonce:      wlt.GetNonce(),
+		guardedPrivateKey, err := acc.PrivateKeyTextInClear(password)
+		if err != nil {
+			return operations.NewGetAccountInternalServerError().WithPayload(&models.Error{
+				Code:    errorGetWallets,
+				Message: err.Error(),
+			})
+		}
+
+		defer guardedPrivateKey.Destroy()
+		defer password.Destroy()
+
+		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: true})
+
+		modelWallet.KeyPair, err = newKeyPairModel(*acc, guardedPrivateKey)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
 	}
 
-	infos, err := g.massaClient.GetAccountsInfos([]wallet.Wallet{*wlt})
+	infos, err := w.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		return operations.NewGetAccountInternalServerError().WithPayload(
 			&models.Error{
@@ -72,14 +93,37 @@ func (g *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))
 	modelWallet.Balance = models.Amount(fmt.Sprint(infos[0].Balance))
 
-	return operations.NewGetAccountOK().WithPayload(&modelWallet)
+	return operations.NewGetAccountOK().WithPayload(modelWallet)
 }
 
-func createModelWallet(wlt wallet.Wallet) models.Account {
-	return models.Account{
-		Nickname: models.Nickname(wlt.Nickname),
-		Address:  models.Address(wlt.Address),
-		KeyPair:  models.KeyPair{},
-		Status:   wlt.Status,
+func newAccountModel(acc *account.Account) (*models.Account, error) {
+	address, err := acc.Address.MarshalText()
+	if err != nil {
+		return nil, err
 	}
+
+	return &models.Account{
+		Nickname: models.Nickname(acc.Nickname),
+		Address:  models.Address(address),
+		KeyPair:  models.KeyPair{},
+		Status:   accountStatusOK,
+	}, nil
+}
+
+func newKeyPairModel(acc account.Account, guardedPrivateKey *memguard.LockedBuffer) (models.KeyPair, error) {
+	publicKeyBytes, err := acc.PublicKey.MarshalText()
+	if err != nil {
+		return models.KeyPair{}, err
+	}
+
+	return models.KeyPair{
+		PrivateKey: string(guardedPrivateKey.Bytes()),
+		PublicKey:  string(publicKeyBytes),
+		Salt:       stringifyByteArray(acc.Salt[:]),
+		Nonce:      stringifyByteArray(acc.Nonce[:]),
+	}, nil
+}
+
+func stringifyByteArray(b []byte) string {
+	return base58.CheckEncode(b, 0x00)
 }

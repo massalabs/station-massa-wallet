@@ -7,9 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -17,6 +19,7 @@ type WalletApp struct {
 	Ctx         context.Context
 	CtrlChan    chan PromptCtrl
 	PromptInput chan interface{}
+	Wallet      *wallet.Wallet
 	Shutdown    bool
 	IsListening bool
 }
@@ -32,10 +35,11 @@ func (a *WalletApp) cleanExit() {
 	}
 }
 
-func NewWalletApp() *WalletApp {
+func NewWalletApp(wallet *wallet.Wallet) *WalletApp {
 	app := &WalletApp{
 		CtrlChan:    make(chan PromptCtrl),
 		PromptInput: make(chan interface{}),
+		Wallet:      wallet,
 		Shutdown:    false,
 		IsListening: false,
 	}
@@ -108,7 +112,7 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 		Filters: []runtime.FileFilter{{DisplayName: "Account File (*.yaml;*.yml)", Pattern: "*.yaml;*.yml"}},
 	})
 	if err != nil {
-		fmt.Printf("error while selecting a file: %v", err)
+		logger.Errorf("error while selecting a file: %v", err)
 		return selectFileResult{Err: err.Error(), CodeMessage: utils.ErrAccountFile}
 	}
 
@@ -116,27 +120,33 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 		return selectFileResult{Err: utils.ErrNoFile, CodeMessage: utils.ErrNoFile}
 	}
 
-	wallet, loadErr := wallet.LoadFile(filePath)
-	if loadErr != nil {
-		fmt.Printf("error while loading file: %v", loadErr.Err)
-		return selectFileResult{Err: loadErr.Err.Error(), CodeMessage: loadErr.CodeErr}
+	acc, err := a.Wallet.Load(filePath)
+	if err != nil {
+		logger.Errorf("error while loading file: %v", err)
+		return selectFileResult{Err: err.Error(), CodeMessage: utils.WailsErrorCode(err)}
 	}
 
-	return selectFileResult{FilePath: filePath, Nickname: wallet.Nickname}
+	return selectFileResult{FilePath: filePath, Nickname: acc.Nickname}
 }
 
 type ImportFromPKey struct {
-	PrivateKey string
-	Password   string
+	PrivateKey *memguard.LockedBuffer
+	Password   *memguard.LockedBuffer
 	Nickname   string
 }
 
-func (a *WalletApp) ImportPrivateKey(pkey string, nickname string, password string) {
-	a.PromptInput <- ImportFromPKey{PrivateKey: pkey, Nickname: nickname, Password: password}
+func (a *WalletApp) ImportPrivateKey(privateKeyText string, nickname string, password string) {
+	guardedPrivateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
+
+	a.PromptInput <- ImportFromPKey{
+		PrivateKey: guardedPrivateKey,
+		Nickname:   nickname,
+		Password:   memguard.NewBufferFromBytes([]byte(password)),
+	}
 }
 
 func (a *WalletApp) IsNicknameUnique(nickname string) bool {
-	return wallet.NicknameIsUnique(nickname) != nil
+	return a.Wallet.NicknameIsUnique(nickname) != nil
 }
 
 func (a *WalletApp) IsNicknameValid(nickname string) bool {

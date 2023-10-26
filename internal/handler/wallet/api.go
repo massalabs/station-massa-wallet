@@ -1,14 +1,21 @@
 package wallet
 
 import (
+	"errors"
+	"net/http"
+
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
+	"github.com/massalabs/station-massa-wallet/pkg/openapi"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	walletpkg "github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 // AppendEndpoints appends wallet endpoints to the API
@@ -17,35 +24,42 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.CreateAccountHandler = NewCreateAccount(prompterApp, massaClient)
 	api.DeleteAccountHandler = NewDelete(prompterApp, massaClient)
 	api.ImportAccountHandler = NewImport(prompterApp, massaClient)
-	api.AccountListHandler = NewGetAll(massaClient)
+	api.AccountListHandler = NewGetAll(prompterApp.App().Wallet, massaClient)
 	api.SignHandler = NewSign(prompterApp, gc)
 	api.SignMessageHandler = NewSignMessage(prompterApp, gc)
 	api.GetAccountHandler = NewGet(prompterApp, massaClient)
-	api.ExportAccountFileHandler = operations.ExportAccountFileHandlerFunc(HandleExportFile)
+	api.ExportAccountFileHandler = NewWalletExportFile(prompterApp.App().Wallet)
 	api.TransferCoinHandler = NewTransferCoin(prompterApp, massaClient)
 	api.TradeRollsHandler = NewTradeRolls(prompterApp, massaClient)
 	api.BackupAccountHandler = NewBackupAccount(prompterApp)
 	api.UpdateAccountHandler = NewUpdateAccount(prompterApp, massaClient)
 	api.AddAssetHandler = NewAddAsset(AssetsStore, massaClient)
-	api.GetAllAssetsHandler = NewGetAllAssets(AssetsStore, massaClient)
+	api.GetAllAssetsHandler = NewGetAllAssets(prompterApp.App().Wallet, AssetsStore, massaClient)
 	api.DeleteAssetHandler = NewDeleteAsset(AssetsStore)
 }
 
-// loadWallet loads a wallet from the file system or returns an error.
-func loadWallet(nickname string) (*wallet.Wallet, middleware.Responder) {
-	w, err := wallet.Load(nickname)
+// loadAccount loads a wallet from the file system or returns an error.
+// Here it is acceptable to return a middleware.Responder to simplify the code.
+func loadAccount(wallet *wallet.Wallet, nickname string) (*account.Account, middleware.Responder) {
+	acc, err := wallet.GetAccount(nickname)
 	if err == nil {
-		return w, nil
+		return acc, nil
 	}
 
-	errorObj := models.Error{
-		Code:    errorGetWallets,
-		Message: err.Error(),
-	}
-
-	if err.Error() == wallet.ErrorAccountNotFound(nickname).Error() {
-		return nil, operations.NewGetAccountNotFound().WithPayload(&errorObj)
+	if errors.Is(err, walletpkg.AccountNotFoundError) {
+		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusNotFound)
 	} else {
-		return nil, operations.NewGetAccountBadRequest().WithPayload(&errorObj)
+		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusBadRequest)
 	}
+}
+
+func newErrorResponse(message, code string, statusCode int) middleware.Responder {
+	logger.Error(message)
+
+	payload := &models.Error{
+		Code:    code,
+		Message: message,
+	}
+
+	return openapi.NewPayloadResponder(statusCode, payload)
 }

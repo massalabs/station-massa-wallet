@@ -6,19 +6,16 @@ import (
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddGetDeleteAsset(t *testing.T) {
-	api, _, _, _, err := MockAPI()
+	api, prompterApp, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
 	password := "zePassword"
-
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
 
 	// Create the test wallet first
 
@@ -64,9 +61,6 @@ func TestAddGetDeleteAsset(t *testing.T) {
 
 	// Remove the json file created
 	err = RemoveJSONFile()
-	assert.NoError(t, err)
-
-	err = cleanupTestData([]string{nickname})
 	assert.NoError(t, err)
 }
 

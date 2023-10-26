@@ -2,15 +2,15 @@ package wallet
 
 import (
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_exportFileWallet_handler(t *testing.T) {
-	api, _, _, _, err := MockAPI()
+	api, prompterApp, _, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}/exportFile")
@@ -20,26 +20,22 @@ func Test_exportFileWallet_handler(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/exportFile", "nobody"), "")
 		assert.NoError(t, err)
 
-		verifyStatusCode(t, resp, 404)
+		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 
 	// test with one wallet configuration.
 	t.Run("Export file of created wallet", func(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
-		_, errGenerate := wallet.Generate(nickname, password)
-		assert.Nil(t, errGenerate)
+		createAccount(password, nickname, t, prompterApp)
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/exportFile", nickname), "")
 		assert.NoError(t, err)
 
-		verifyStatusCode(t, resp, 200)
+		verifyStatusCode(t, resp, http.StatusOK)
 		verifyHeader(t, resp, "Content-Type", "application/octet-stream")
 		verifyHeader(t, resp, "Content-Disposition", fmt.Sprintf("attachment; filename=%q", "wallet_trololol.yaml"))
 		verifyBodyWalletBackup(t, resp, nickname)
-
-		err = cleanupTestData([]string{nickname})
-		assert.NoError(t, err)
 	})
 }
 

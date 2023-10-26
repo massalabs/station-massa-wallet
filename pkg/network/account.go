@@ -2,7 +2,7 @@ package network
 
 import (
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/logger"
 	"github.com/massalabs/station/pkg/node"
 )
@@ -24,15 +24,20 @@ type AccountInfos struct {
 	Balance          uint64
 }
 
-func (n *NodeFetcher) GetAccountsInfos(wlt []wallet.Wallet) ([]AccountInfos, error) {
+func (n *NodeFetcher) GetAccountsInfos(accounts []*account.Account) ([]AccountInfos, error) {
 	client, err := NewMassaClient()
 	if err != nil {
 		return nil, err
 	}
 
-	addresses := make([]string, len(wlt))
-	for i, addr := range wlt {
-		addresses[i] = addr.Address
+	addresses := make([]string, len(accounts))
+
+	for i, acc := range accounts {
+		textAddress, err := acc.Address.MarshalText()
+		if err != nil {
+			return nil, err
+		}
+		addresses[i] = string(textAddress)
 	}
 
 	infos, err := node.Addresses(client, addresses)

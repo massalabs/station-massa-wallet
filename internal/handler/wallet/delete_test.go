@@ -9,7 +9,6 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,8 +30,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 	nickname := "walletToDelete"
 	password := "zePassword"
-	_, errGenerate := wallet.Generate(nickname, password)
-	assert.Nil(t, errGenerate)
+	createAccount(password, nickname, t, prompterApp)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := deleteWallet(t, api, "toto")
@@ -73,7 +71,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 
-		_, err = wallet.Load(nickname)
+		_, err = prompterApp.App().Wallet.GetAccount(nickname)
 		assert.NoError(t, err)
 	})
 
@@ -91,9 +89,9 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, true, utils.MsgAccountDeleted)
+		checkResultChannel(t, result, true, "")
 
-		_, err = wallet.Load(nickname)
+		_, err = prompterApp.App().Wallet.GetAccount(nickname)
 		assert.Error(t, err, "Wallet should have been deleted")
 	})
 }

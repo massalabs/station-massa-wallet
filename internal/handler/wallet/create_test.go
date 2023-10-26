@@ -55,18 +55,11 @@ func Test_walletCreate_Handle(t *testing.T) {
 		if len(test.password) > 0 && test.statusCode == http.StatusOK {
 			result := <-testResult
 
-			checkResultChannel(t, result, true, "New password created")
+			checkResultChannel(t, result, true, "")
 
-			assertWallet(t, nickname)
-
-			defer clean(t, []string{nickname})
+			assertWallet(t, prompterApp.App().Wallet, nickname)
 		}
 	}
-}
-
-func clean(t *testing.T, nicknames []string) {
-	err := cleanupTestData(nicknames)
-	assert.NoError(t, err)
 }
 
 // createTestWallet tests the creation of a wallet.
@@ -92,13 +85,13 @@ func createTestWallet(t *testing.T, api *operations.MassaWalletAPI, testName str
 	})
 }
 
-func assertWallet(t *testing.T, nickname string) {
-	wallet, err := wallet.Load(nickname)
+func assertWallet(t *testing.T, wallet *wallet.Wallet, nickname string) {
+	acc, err := wallet.GetAccount(nickname)
 	assert.NoError(t, err)
 
-	assert.Equal(t, uint8(1), wallet.Version)
-	assert.Equal(t, nickname, wallet.Nickname)
+	assert.Equal(t, uint8(1), acc.Version)
+	assert.Equal(t, nickname, acc.Nickname)
 
-	minAddrLen := 51
-	assert.GreaterOrEqual(t, len(wallet.Address), minAddrLen)
+	addressByteLen := 32
+	assert.Len(t, acc.Address.Data, addressByteLen)
 }

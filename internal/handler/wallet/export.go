@@ -11,18 +11,27 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
-// HandleExportFile handles a export file request
+func NewWalletExportFile(wallet *wallet.Wallet) operations.ExportAccountFileHandler {
+	return &walletExportFile{wallet: wallet}
+}
+
+type walletExportFile struct {
+	wallet *wallet.Wallet
+}
+
+// Handle handles an export file request
 // It will serve the yaml file so that the client can download it.
-func HandleExportFile(params operations.ExportAccountFileParams) middleware.Responder {
+func (w *walletExportFile) Handle(params operations.ExportAccountFileParams) middleware.Responder {
 	// params.Nickname length is already checked by go swagger
-	wlt, resp := loadWallet(params.Nickname)
-	if resp != nil {
-		return resp
+	acc, errResp := loadAccount(w.wallet, params.Nickname)
+	if errResp != nil {
+		return errResp
 	}
 
-	pathToWallet, err := wlt.FilePath()
+	pathToAccount, err := w.wallet.AccountPath(acc.Nickname)
 	if err != nil {
 		return operations.NewExportAccountFileInternalServerError().WithPayload(
 			&models.Error{
@@ -32,7 +41,11 @@ func HandleExportFile(params operations.ExportAccountFileParams) middleware.Resp
 	}
 
 	responder := middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {
-		file, _ := os.Open(pathToWallet)
+		file, err := os.Open(pathToAccount)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filepath.Base(file.Name())))
 		if _, err := io.Copy(w, file); err != nil {
