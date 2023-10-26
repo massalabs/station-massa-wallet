@@ -56,11 +56,25 @@ Public:::: Open data with no repercussions if accessed. Examples: signed hashes,
 == Product Overview
 
 === Purpose and Objective
-Product aims to facilitate user-friendly communication between user wallet-accounts and Massa blockchain, either inside the module itself, or when requested upon by decentralized applications, via https://github.com/massalabs/wallet-provider[Wallet Provider] library. Massa Wallet module provides an intuitive interface for checking MAS balance, sending and receiving MAS coins, and importing fungible token assets, following a https://github.com/massalabs/massa-standards/tree/main/smart-contracts/assembly/contracts/FT[Fungible Token standard], Massa Labs' implementation of the ERC-20 standard.
 
+The primary goal of the Massa Wallet module is to provide a user-friendly and secure way for users to manage their wallet accounts on the Massa blockchain. 
+Its key objective is to enable users to securely sign operations when interacting with the Massa blockchain. 
+This functionality can be initiated within the module or in response to requests from decentralized applications through the https://github.com/massalabs/wallet-provider[Wallet Provider] library, or from other Massa Station modules. 
+Additionally, the module simplifies tasks like checking MAS coin balances, sending and receiving MAS coins, and handling fungible token assets, 
+following the https://github.com/massalabs/massa-standards/tree/main/smart-contracts/assembly/contracts/FT[Fungible Token standard].
 
 === Key Features
-List the main features of the Massa Station Wallet concisely.
+1. **Create an account**
+(key pairs, password, account name)
+2. **Import an account** 
+3. **Delete an account**
+4. **Back-up an account** (using the private key-pair or the .yaml wallet-account file)
+5. **Sign operations**
+6. **Sign messages**
+7. **Access MASSA balance**
+8. **Send and receive MASSA**
+9. **Import fungible tokens** 
+10. **Access fungible token balances**
 
 === Architecture Overview
 Highlight the main components (API, front-end...) and briefly describe how the end user will interact with the product.
@@ -722,7 +736,6 @@ during typical usage. During periods of inactivity or when the wallet is idle, r
 **1. Data Encryption:**
 All sensitive user data, such as private keys, are encrypted both at 
 rest, and during signing process of an operation or a message. See https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[the wallet file standard] for details.
-**describe the concept of a persisted wallet here**
 
 **2. Backup and Recovery:**
 Users have the ability to create backups of their wallet 
