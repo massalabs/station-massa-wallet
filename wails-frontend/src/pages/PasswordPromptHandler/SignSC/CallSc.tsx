@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { AccordionCategory, AccordionContent } from '@massalabs/react-ui-kit';
 import { WindowSetSize } from '@wailsjs/runtime/runtime';
 import {
@@ -28,6 +30,13 @@ export function CallSc(props: PromptRequestData) {
     Description,
     Nickname,
   } = props;
+
+  const [operationCost, setOperationCost] = React.useState(0n);
+
+  React.useEffect(() => {
+    const cost = Fees + Coins;
+    setOperationCost(BigInt(cost));
+  }, [Fees, Coins]);
 
   const toAddInHeigthDescription = Description ? 200 : 0;
 
@@ -102,6 +111,43 @@ export function CallSc(props: PromptRequestData) {
         </>
       )}
 
+      <div className="flex flex-col w-full h-fit">
+        <AccordionCategory
+          isChild={false}
+          iconOpen={<FiChevronDown />}
+          iconClose={<FiChevronUp />}
+          customClass="!p-0"
+          categoryTitle={
+            <div className="flex items-center w-full gap-4">
+              <p>{Intl.t('password-prompt.sign.operation-const')}</p>
+              <p>
+                {formatStandard(operationCost, Unit.NanoMAS)} {masToken}
+              </p>
+            </div>
+          }
+        >
+          <AccordionContent customClass="px-0 pt-4 pb-0">
+            <div className="flex justify-between w-full">
+              <div className="flex flex-col h-fit">
+                <p className="mas-caption">
+                  {Intl.t('password-prompt.sign.coins')}
+                </p>
+                <p className="mas-caption">
+                  {Intl.t('password-prompt.sign.fees')}
+                </p>
+              </div>
+              <div className="flex flex-col items-end h-fit">
+                <p className="mas-caption">
+                  {formatStandard(Coins, Unit.NanoMAS)} {masToken}
+                </p>
+                <p className="mas-caption">
+                  {formatStandard(Fees, Unit.NanoMAS)} {masToken}
+                </p>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionCategory>
+      </div>
       <div className="flex flex-col gap-2 w-full">
         <div className="flex w-full items-center justify-between">
           <p>{Intl.t('password-prompt.sign.coins')}</p>
