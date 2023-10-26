@@ -87,7 +87,7 @@ export function Delete() {
           )}
         </div>
         <div className="pt-4 flex gap-4">
-          <Button variant={'secondary'} onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel}>
             {Intl.t('password-prompt.buttons.cancel')}
           </Button>
           <Button preIcon={<FiTrash2 />} type="submit">

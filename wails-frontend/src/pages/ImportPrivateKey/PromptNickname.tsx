@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IMPORT_STEPS } from '@/const/stepper';
 import { promptRequest } from '@/events/events';
+import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { IErrorObject, parseForm, handleCancel } from '@/utils';
 
@@ -77,12 +78,12 @@ function PromptNickname() {
           <Input
             defaultValue=""
             name="nickname"
-            placeholder={'Account name'}
+            placeholder={Intl.t('import.steps.account')}
             error={error?.nickname}
           />
         </div>
         <div className="flex gap-4 pt-4">
-          <Button variant={'secondary'} onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
           <Button type="submit">Next</Button>

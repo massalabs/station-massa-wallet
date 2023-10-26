@@ -37,7 +37,7 @@ export function PlainText(props: PromptRequestData) {
               isChild={false}
               iconOpen={<FiChevronDown />}
               iconClose={<FiChevronUp />}
-              customClass={'px-0 py-0'}
+              customClass="px-0 py-0"
               categoryTitle={
                 <div className="flex items-center w-full gap-4">
                   <FiInfo size={18} />
@@ -45,7 +45,7 @@ export function PlainText(props: PromptRequestData) {
                 </div>
               }
             >
-              <AccordionContent customClass={'px-0 pt-4 pb-0'}>
+              <AccordionContent customClass="px-0 pt-4 pb-0">
                 <div className="max-w-full overflow-hidden">
                   <p>{Description}</p>
                 </div>
@@ -64,7 +64,7 @@ export function PlainText(props: PromptRequestData) {
               isChild={false}
               iconOpen={<FiChevronDown />}
               iconClose={<FiChevronUp />}
-              customClass={'!p-0'}
+              customClass="!p-0"
               categoryTitle={
                 <div className="flex items-center w-full gap-4">
                   <FiInfo size={18} />
@@ -72,7 +72,7 @@ export function PlainText(props: PromptRequestData) {
                 </div>
               }
             >
-              <AccordionContent customClass={'px-0 pt-4 pb-0'}>
+              <AccordionContent customClass="px-0 pt-4 pb-0">
                 <div className="max-w-full overflow-hidden">
                   <p>{PlainText}</p>
                 </div>

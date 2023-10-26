@@ -126,7 +126,7 @@ export function SendForm({ ...props }) {
         </div>
         <div className="pb-3.5">
           <Currency
-            placeholder={'Amount to send'}
+            placeholder={Intl.t('send-coins.amount-to-send')}
             name="amount"
             value={amount}
             onValueChange={(value) => setAmount(value)}
@@ -164,7 +164,7 @@ export function SendForm({ ...props }) {
         <p className="pb-3.5 mas-body2">{Intl.t('send-coins.recipient')}</p>
         <div className="pb-3.5">
           <Input
-            placeholder={'Recipient'}
+            placeholder={Intl.t('receive-coins.recipient')}
             value={recipient}
             name="recipient"
             onChange={(e) => setRecipient(e.target.value)}
@@ -186,7 +186,7 @@ export function SendForm({ ...props }) {
         <div className="flex flex-col w-full gap-3.5">
           <Button
             onClick={() => setAdvancedModal(!advancedModal)}
-            variant={'secondary'}
+            variant="secondary"
             posIcon={<FiPlus />}
           >
             {Intl.t('send-coins.advanced')}

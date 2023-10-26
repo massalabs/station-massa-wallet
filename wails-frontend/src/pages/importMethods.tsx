@@ -18,7 +18,7 @@ const ImportMethods = () => {
       <h1 className="mas-title">{req.Msg}</h1>
       <p className="mas-body pt-4">Choose an import method</p>
       <div className="pt-4">
-        <Button variant={'secondary'} onClick={handleYaml}>
+        <Button variant="secondary" onClick={handleYaml}>
           I have a .yaml file
         </Button>
       </div>
