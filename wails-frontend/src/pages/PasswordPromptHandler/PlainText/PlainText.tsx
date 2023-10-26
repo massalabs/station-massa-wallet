@@ -4,7 +4,7 @@ import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { maskAddress } from '@/utils';
+import { maskAddress, maskNickname } from '@/utils';
 
 export function PlainText(props: PromptRequestData) {
   const { PlainText, DisplayData, WalletAddress, Description, Nickname } =
@@ -23,7 +23,7 @@ export function PlainText(props: PromptRequestData) {
       <div className="flex w-full justify-between">
         <p>{Intl.t('password-prompt.sign.from')}</p>
         <div className="flex flex-col">
-          <p className="mas-menu-default">{Nickname}</p>
+          <p className="mas-menu-default">{maskNickname(Nickname)}</p>
           <p className="mas-caption">{maskAddress(WalletAddress)}</p>
         </div>
       </div>

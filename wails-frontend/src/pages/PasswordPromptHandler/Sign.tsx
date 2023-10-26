@@ -47,6 +47,7 @@ export interface PromptRequestData {
   Expiry: number;
   RollCount: number;
   RecipientAddress: string;
+  RecipientNickname: string;
   Amount: string;
   PlainText: string;
   DisplayData: boolean;

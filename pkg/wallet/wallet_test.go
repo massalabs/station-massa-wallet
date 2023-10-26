@@ -22,14 +22,21 @@ func TestWallet(t *testing.T) {
 	assert.NoError(t, err)
 
 	var w *Wallet
+	samplePassword := memguard.NewBufferFromBytes([]byte("password"))
 	sampleSalt := [16]byte{145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170}
 	sampleNonce := [12]byte{113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63}
 	sampleAddressData := []byte{0x77, 0x13, 0x86, 0x8f, 0xe5, 0x5a, 0xd1, 0xdb, 0x9c, 0x8, 0x30, 0x7c, 0x61, 0x5e, 0xdf, 0xc0, 0xc8, 0x3b, 0x5b, 0xd9, 0x88, 0xec, 0x2e, 0x3c, 0xe9, 0xe4, 0x1c, 0xf1, 0xf9, 0x4d, 0xc5, 0xd1}
+	sampleAddressText := "AU1uSeKuYRQkC8fHWoohBmq8WKYxGTXuzaTcGomAoLXTGdq8kEsR"
+	addressOnlyRequiredFields := "AU1AAQExqUbw2PvBjNdZgodNg9jUFwxAfPP8mASPbamK3unxmXtm"
 	samplePrivateKeyData := []byte{2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83, 35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40, 28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246, 2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104, 64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135}
 	samplePublicKeyData := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
 	sampleNickname := "bonjour"
 	sampleNickname2 := "unit-test"
 	sampleNickname3 := "version-0"
+	nicknameRequiredFieldMissing := "required-fields-missing"
+	nicknameOldLocation := "old-location-account"
+	nicknameOnlyRequiredFields := "only-required-fields"
+	nicknameNew := "new-account"
 
 	createAccount := func(nickname string) *account.Account {
 		acc, err := account.New(
@@ -92,7 +99,7 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run("Add Account: address not unique", func(t *testing.T) {
-		sampleAccount := createAccount("bonjour3")
+		sampleAccount := createAccount(nicknameNew)
 		err = w.AddAccount(sampleAccount, true)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrAddressNotUnique)
@@ -180,8 +187,7 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Invalid or unsupported version: missing required fields", func(t *testing.T) {
 		ClearAccounts(t, walletPath)
-		nickname := "required-fields-missing"
-		accountPath, err := w.AccountPath(nickname)
+		accountPath, err := w.AccountPath(nicknameRequiredFieldMissing)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_required-fields-missing.yaml", accountPath)
 		newWallet, err := New(walletPath)
@@ -193,8 +199,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
 		// prepare
 		ClearAccounts(t, walletPath)
-		nickname := "old-location-account"
-		accountPath, err := w.AccountPath(nickname)
+		accountPath, err := w.AccountPath(nicknameOldLocation)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
 		// execute
@@ -203,15 +208,14 @@ func TestWallet(t *testing.T) {
 
 		// assert
 		assert.Equal(t, 1, newWallet.GetAccountCount())
-		assertAccountIsPresent(t, newWallet, nickname)
+		assertAccountIsPresent(t, newWallet, nicknameOldLocation)
 		assert.Len(t, newWallet.InvalidAccountNicknames, 0)
 	})
 
 	t.Run("Load account with only required fields (no address, no nickname)", func(t *testing.T) {
 		// prepare
 		ClearAccounts(t, walletPath)
-		nickname := "only-required-fields"
-		accountPath, err := w.AccountPath(nickname)
+		accountPath, err := w.AccountPath(nicknameOnlyRequiredFields)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_only-required-fields.yaml", accountPath)
 
@@ -221,21 +225,36 @@ func TestWallet(t *testing.T) {
 
 		// assert
 		assert.Equal(t, 1, newWallet.GetAccountCount())
-		acc := assertAccountIsPresent(t, newWallet, nickname)
+		acc := assertAccountIsPresent(t, newWallet, nicknameOnlyRequiredFields)
 		textAddress, err := acc.Address.MarshalText()
 		assert.NoError(t, err)
-		assert.Equal(t, "AU1AAQExqUbw2PvBjNdZgodNg9jUFwxAfPP8mASPbamK3unxmXtm", string(textAddress))
+		assert.Equal(t, addressOnlyRequiredFields, string(textAddress))
 	})
 
 	t.Run("Generate new account", func(t *testing.T) {
-		nickname := "new-account"
-		samplePassword := memguard.NewBufferFromBytes([]byte("password"))
-
-		acc, err := w.GenerateAccount(samplePassword, nickname)
+		acc, err := w.GenerateAccount(samplePassword, nicknameNew)
 		assert.NoError(t, err)
 		assert.NotNil(t, acc)
 		assert.Equal(t, 2, w.GetAccountCount())
-		assertAccountIsPresent(t, w, nickname)
+		assertAccountIsPresent(t, w, nicknameNew)
+		assertAccountIsPresent(t, w, nicknameOnlyRequiredFields)
+	})
+
+	t.Run("account from address", func(t *testing.T) {
+		ClearAccounts(t, walletPath)
+		err := w.Discover()
+		assert.Equal(t, 0, w.GetAccountCount())
+		assert.NoError(t, err)
+		acc := createAccount(nicknameNew)
+		err = w.AddAccount(acc, true)
+		assert.NoError(t, err)
+		acc, err = w.GetAccountFromAddress("not an address")
+		assert.Error(t, err)
+		assert.Nil(t, acc)
+		acc, err = w.GetAccountFromAddress(sampleAddressText)
+		assert.NoError(t, err)
+		assert.NotNil(t, acc)
+		assert.Equal(t, nicknameNew, acc.Nickname)
 	})
 
 	ClearAccounts(t, walletPath)

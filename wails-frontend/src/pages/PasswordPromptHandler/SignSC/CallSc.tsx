@@ -9,7 +9,13 @@ import {
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, maskAddress, Unit } from '@/utils';
+import {
+  formatStandard,
+  masToken,
+  maskAddress,
+  Unit,
+  maskNickname,
+} from '@/utils';
 
 export function CallSc(props: PromptRequestData) {
   const {
@@ -40,7 +46,7 @@ export function CallSc(props: PromptRequestData) {
             <p className="mas-menu-active">
               {Intl.t('password-prompt.sign.from')}
             </p>
-            <p className="mas-menu-default">{Nickname}</p>
+            <p className="mas-menu-default">{maskNickname(Nickname)}</p>
           </div>
           <p className="mas-caption">{maskAddress(WalletAddress)}</p>
         </div>

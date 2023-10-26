@@ -92,3 +92,11 @@ export function maskAddress(str: string, length = 4, mask = '. . .'): string {
 
   return str ? str?.substring(0, start) + mask + str?.substring(end) : '';
 }
+
+export function maskNickname(str: string, length = 10): string {
+  if (!str) return '';
+
+  if (str.length <= length) return str;
+
+  return str?.substring(0, length) + '...';
+}

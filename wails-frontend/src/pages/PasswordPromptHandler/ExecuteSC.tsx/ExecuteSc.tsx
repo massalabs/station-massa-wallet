@@ -2,7 +2,13 @@ import { WindowSetSize } from '@wailsjs/runtime/runtime';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, maskAddress, Unit } from '@/utils';
+import {
+  formatStandard,
+  masToken,
+  maskAddress,
+  Unit,
+  maskNickname,
+} from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
   const {
@@ -22,7 +28,7 @@ export function ExecuteSC(props: PromptRequestData) {
       <div className="flex w-full justify-between">
         <p>{Intl.t('password-prompt.sign.from')}</p>
         <div className="flex flex-col">
-          <p className="mas-menu-default">{Nickname}</p>
+          <p className="mas-menu-default truncate">{maskNickname(Nickname)}</p>
           <p className="mas-caption">{maskAddress(WalletAddress)}</p>
         </div>
       </div>
