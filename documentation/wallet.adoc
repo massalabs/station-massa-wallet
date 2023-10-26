@@ -105,24 +105,27 @@ This diagram visually represents the interactions between the user and the Massa
 ----
 @startuml
 left to right direction
-skinparam backgroundColor #F5F5F5
-skinparam handwritten true
+
 skinparam actorStyle awesome
 
 skinparam usecase {
-    ArrowColor #6B5B95
-    BackgroundColor #D1C4E9
-    BorderColor #673AB7
+    ArrowColor #69679D
+    BackgroundColor #F5F5FF
+    BorderColor #BBBAD9
+    FontSize 12
+    FontName Poppins
 }
 
 skinparam actor {
-    BackgroundColor #AEDFF7
-    BorderColor #1E88E5
+    BackgroundColor #F5F5FF
+    BorderColor #BBBAD9
+    FontName Poppins
 }
 
 skinparam package {
-    BackgroundColor #EDE7F6
-    BorderColor #9C27B0
+    BackgroundColor #FFFFFF
+    BorderColor #BBBAD9
+    FontName Poppins
 }
 
 actor User as user
@@ -210,7 +213,20 @@ This sequence diagrams illustrates signing a Transaction operation. It applies t
 [plantuml, format="svg", id="sign-operation", width="100%", role="center-image", options="interactive"]
 ----
 @startuml
-skinparam handwritten true
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
 
 participant "User" as user
 participant "dApp or Wallet" as dapp
@@ -251,7 +267,20 @@ user's identity.
 [plantuml, format="svg", id="sign-message", width="100%", role="center-image", options="interactive"]
 ----
 @startuml
-skinparam handwritten true
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
 
 participant "User" as user
 participant "dApp" as dapp
@@ -286,6 +315,21 @@ The following diagram illustrates the sequence of events when backing up an acco
 [plantuml, format="svg", id="backup-account", width="100%", role="center-image", options="interactive"]
 ----
 @startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
 participant "User" as user
 participant "Massa Wallet Front" as wallet_front
 participant "Massa Wallet API" as wallet_api
@@ -501,6 +545,23 @@ The flow diagram visually represents how different components of Massa Station W
 [plantuml, format="svg", id="application-mapping-diagram", width="60%", role="center-image"]
 ----
 @startuml
+
+skinparam FontName Poppins
+
+skinparam usecase {
+    ArrowColor #69679D
+    BackgroundColor #F5F5FF
+    BorderColor #BBBAD9
+    FontSize 12
+    FontName Poppins
+}
+
+skinparam package {
+    BackgroundColor #FFFFFF
+    BorderColor #BBBAD9
+    FontName Poppins
+}
+
 package "Browser" {
     usecase "Wallet Web Pages" as walletWebPages
 }
