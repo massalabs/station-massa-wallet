@@ -47,7 +47,6 @@ type PromptRequestSignData struct {
 	Address           string
 	Function          string
 	MaxCoins          string
-	MaxGas            string
 	WalletAddress     string
 	Nickname          string
 	RollCount         uint64
@@ -276,7 +275,6 @@ func (w *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 			Description:   description,
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: "Call SC",
-			MaxGas:        strconv.FormatUint(msg.MaxGas, 10),
 			Coins:         strconv.FormatUint(msg.Coins, 10),
 			Address:       msg.Address,
 			Function:      msg.Function,
@@ -301,7 +299,6 @@ func (w *walletSign) prepareExecuteSCPromptRequest(
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: "Execute SC",
 			MaxCoins:      strconv.FormatUint(msg.MaxCoins, 10),
-			MaxGas:        strconv.FormatUint(msg.MaxGas, 10),
 			WalletAddress: address,
 			Nickname:      acc.Nickname,
 		},

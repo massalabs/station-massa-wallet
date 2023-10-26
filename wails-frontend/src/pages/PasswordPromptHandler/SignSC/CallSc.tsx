@@ -21,7 +21,6 @@ export function CallSc(props: PromptRequestData) {
   const {
     Coins,
     Fees,
-    MaxGas,
     Address,
     WalletAddress,
     Function: CalledFunction,
@@ -114,10 +113,6 @@ export function CallSc(props: PromptRequestData) {
           <p>
             {formatStandard(Fees, Unit.NanoMAS)} {masToken}
           </p>
-        </div>
-        <div className="flex w-full items-center justify-between">
-          <p>{Intl.t('password-prompt.sign.max-gas')} </p>
-          <p>{formatStandard(MaxGas)}</p>
         </div>
       </div>
 

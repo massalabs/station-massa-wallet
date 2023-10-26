@@ -11,14 +11,7 @@ import {
 } from '@/utils';
 
 export function ExecuteSC(props: PromptRequestData) {
-  const {
-    MaxCoins,
-    WalletAddress,
-    OperationType,
-    Fees,
-    MaxGas,
-    Nickname,
-  } = props;
+  const { MaxCoins, WalletAddress, OperationType, Fees, Nickname } = props;
 
   WindowSetSize(460, 560);
 
@@ -43,10 +36,6 @@ export function ExecuteSC(props: PromptRequestData) {
         <p>
           {formatStandard(MaxCoins, Unit.NanoMAS)} {masToken}
         </p>
-      </div>
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.max-gas')} </p>
-        <p>{formatStandard(MaxGas)}</p>
       </div>
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.fees')}</p>

@@ -42,7 +42,6 @@ export interface PromptRequestData {
   WalletAddress: string;
   OperationType?: string;
   MaxCoins: string;
-  MaxGas: string;
   RollCount: number;
   RecipientAddress: string;
   RecipientNickname: string;
