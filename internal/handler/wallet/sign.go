@@ -43,22 +43,23 @@ const (
 )
 
 type PromptRequestSignData struct {
-	Description      string
-	Fees             string
-	OperationType    string
-	OperationID      uint64
-	Coins            string
-	Address          string
-	Function         string
-	MaxCoins         string
-	MaxGas           string
-	Expiry           uint64
-	WalletAddress    string
-	Nickname         string
-	RollCount        uint64
-	RecipientAddress string
-	Amount           string
-	PlainText        string
+	Description       string
+	Fees              string
+	OperationType     string
+	OperationID       uint64
+	Coins             string
+	Address           string
+	Function          string
+	MaxCoins          string
+	MaxGas            string
+	Expiry            uint64
+	WalletAddress     string
+	Nickname          string
+	RollCount         uint64
+	RecipientAddress  string
+	RecipientNickname string
+	Amount            string
+	PlainText         string
 }
 
 // NewSign instantiates a sign Handler
@@ -260,8 +261,7 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode plainText message from b64")
 			}
-			promptRequest = w.prepareplainTextPromptRequest(string(decodedMsg), acc, address, description)
-
+			promptRequest = w.preparePlainTextPromptRequest(string(decodedMsg), acc, address, description)
 		}
 	}
 
@@ -358,23 +358,33 @@ func (w *walletSign) prepareTransactionPromptRequest(
 	fees uint64,
 	expiry uint64,
 ) prompt.PromptRequest {
+	var recipientNickname string
+
+	recipientAcc, err := w.prompterApp.App().Wallet.GetAccountFromAddress(msg.RecipientAddress)
+	if err != nil {
+		recipientNickname = ""
+	} else {
+		recipientNickname = recipientAcc.Nickname
+	}
+
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
-			Description:      description,
-			Fees:             strconv.FormatUint(fees, 10),
-			OperationType:    "Transaction",
-			RecipientAddress: msg.RecipientAddress,
-			Amount:           strconv.FormatUint(msg.Amount, 10),
-			Expiry:           expiry,
-			WalletAddress:    address,
-			Nickname:         acc.Nickname,
+			Description:       description,
+			Fees:              strconv.FormatUint(fees, 10),
+			OperationType:     "Transaction",
+			RecipientAddress:  msg.RecipientAddress,
+			RecipientNickname: recipientNickname,
+			Amount:            strconv.FormatUint(msg.Amount, 10),
+			Expiry:            expiry,
+			WalletAddress:     address,
+			Nickname:          acc.Nickname,
 		},
 	}
 }
 
-func (s *walletSign) prepareplainTextPromptRequest(
+func (s *walletSign) preparePlainTextPromptRequest(
 	plainText string,
 	acc *account.Account,
 	address string,

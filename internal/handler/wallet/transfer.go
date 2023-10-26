@@ -51,16 +51,26 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 	address := string(addressBytes)
 
+	var recipientNickname string
+
+	recipientAcc, err := t.prompterApp.App().Wallet.GetAccountFromAddress(*params.Body.RecipientAddress)
+	if err != nil {
+		recipientNickname = ""
+	} else {
+		recipientNickname = recipientAcc.Nickname
+	}
+
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
-			Fees:             string(params.Body.Fee),
-			OperationType:    "Transaction",
-			RecipientAddress: *params.Body.RecipientAddress,
-			Amount:           string(params.Body.Amount),
-			WalletAddress:    address,
-			Nickname:         acc.Nickname,
+			Fees:              string(params.Body.Fee),
+			OperationType:     "Transaction",
+			RecipientAddress:  *params.Body.RecipientAddress,
+			RecipientNickname: recipientNickname,
+			Amount:            string(params.Body.Amount),
+			WalletAddress:     address,
+			Nickname:          acc.Nickname,
 		},
 	}
 

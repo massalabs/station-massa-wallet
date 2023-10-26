@@ -59,6 +59,12 @@ func (w *Wallet) Discover() error {
 		return fmt.Errorf("reading accounts path: %w", err)
 	}
 
+	// Clear the accounts map
+	w.accounts.Range(func(key interface{}, value interface{}) bool {
+		w.accounts.Delete(key)
+		return true
+	})
+
 	for _, f := range files {
 		fileName := f.Name()
 		filePath := path.Join(w.WalletPath, fileName)
@@ -162,6 +168,38 @@ func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 	}
 
 	return acc, nil
+}
+
+func (w *Wallet) GetAccountFromAddress(needle string) (*account.Account, error) {
+	var errInRange error
+	var accFound *account.Account
+
+	w.accounts.Range(func(_, value interface{}) bool {
+		acc, ok := value.(*account.Account)
+		if ok {
+			address, err := acc.Address.MarshalText()
+			if err != nil {
+				errInRange = err
+				return false
+			}
+
+			if needle == string(address) {
+				accFound = acc
+				return false
+			}
+		}
+		return true
+	})
+
+	if errInRange != nil {
+		return nil, errInRange
+	}
+
+	if accFound == nil {
+		return nil, AccountNotFoundError
+	}
+
+	return accFound, nil
 }
 
 // Delete an account from the wallet

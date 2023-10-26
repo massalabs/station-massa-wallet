@@ -3,12 +3,19 @@ import { FiArrowRight } from 'react-icons/fi';
 
 import { PromptRequestData } from '../Sign';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, maskAddress, Unit } from '@/utils';
+import {
+  formatStandard,
+  masToken,
+  maskAddress,
+  Unit,
+  maskNickname,
+} from '@/utils';
 
 export function Transaction(props: PromptRequestData) {
   const {
     WalletAddress,
     RecipientAddress,
+    RecipientNickname,
     OperationType,
     Amount,
     Fees,
@@ -26,7 +33,7 @@ export function Transaction(props: PromptRequestData) {
             <p className="mas-menu-active">
               {Intl.t('password-prompt.sign.from')}
             </p>
-            <p className="mas-menu-default">{Nickname}</p>
+            <p className="mas-menu-default">{maskNickname(Nickname)}</p>
           </div>
           <p className="mas-caption">{maskAddress(WalletAddress)}</p>
         </div>
@@ -34,7 +41,16 @@ export function Transaction(props: PromptRequestData) {
           <FiArrowRight size={24} className="text-primary" />
         </div>
         <div className="flex flex-col">
-          <p className="mas-menu-active">{Intl.t('password-prompt.sign.to')}</p>
+          <div className="flex gap-2">
+            <p className="mas-menu-active">
+              {Intl.t('password-prompt.sign.to')}
+            </p>
+            {RecipientAddress ? (
+              <p className="mas-menu-default">
+                {maskNickname(RecipientNickname)}
+              </p>
+            ) : null}
+          </div>
           <p className="mas-caption">{maskAddress(RecipientAddress)}</p>
         </div>
       </div>
