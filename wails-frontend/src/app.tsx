@@ -12,7 +12,6 @@ export function App() {
     switch (req.Action) {
       case promptAction.deleteReq:
       case promptAction.signReq:
-      case promptAction.transferReq:
       case promptAction.tradeRollsReq:
       case promptAction.unprotectReq:
         navigate('/password', { state: { req } });

@@ -26,7 +26,6 @@ const (
 	Sign
 	Import
 	Backup
-	Transfer
 	TradeRolls
 	Unprotect
 )
