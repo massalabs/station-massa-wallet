@@ -1,7 +1,7 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
-import { Button, Password } from '@massalabs/react-ui-kit';
+import { Button, Password, Tag } from '@massalabs/react-ui-kit';
 import { SendSignPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
@@ -35,21 +35,21 @@ import {
 export interface SignBodyProps {
   Description: string;
   Fees: string; // in nanoMassa
-  GasLimit: string;
+  OperationType: number;
   Coins: string; // in nanoMassa
   Address: string;
   Function: string;
-  WalletAddress: string;
-  OperationType: number;
   MaxCoins: string;
+  WalletAddress: string;
+  Nickname: string;
   RollCount: number;
   RecipientAddress: string;
   RecipientNickname: string;
   Amount: string;
   PlainText: string;
-  DisplayData: boolean;
-  Nickname: string;
   AllowFeeEdition: boolean;
+  DisplayData: boolean;
+  Network: string;
   children?: React.ReactNode;
 }
 
@@ -79,6 +79,9 @@ export function Sign() {
   const [isEditing, setIsEditing] = useState(false);
 
   const signData = req.Data as SignBodyProps;
+
+  // mock network name
+  signData.Network = 'buildnet';
 
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
@@ -134,6 +137,7 @@ export function Sign() {
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
+        <Tag type="info" content={signData.Network} customClass="mb-4" />
         <h1 className="mas-title">{getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {
