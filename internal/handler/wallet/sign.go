@@ -47,8 +47,6 @@ type PromptRequestSignData struct {
 	Address           string
 	Function          string
 	MaxCoins          string
-	MaxGas            string
-	Expiry            uint64
 	WalletAddress     string
 	Nickname          string
 	RollCount         uint64
@@ -213,7 +211,7 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 	}
 	address := string(addressBytes)
 
-	decodedMsg, fees, expiry, err := sendoperation.DecodeMessage64(msgToSign)
+	decodedMsg, fees, _, err := sendoperation.DecodeMessage64(msgToSign)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to decode transaction message")
 	}
@@ -229,28 +227,28 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode transaction message")
 			}
-			promptRequest = w.prepareTransactionPromptRequest(msg, acc, address, description, fees, expiry)
+			promptRequest = w.prepareTransactionPromptRequest(msg, acc, address, description, fees)
 
 		case buyrolls.OpID, sellrolls.SellRollOpID:
 			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode roll message")
 			}
-			promptRequest = w.prepareRollPromptRequest(roll, acc, address, description, fees, expiry)
+			promptRequest = w.prepareRollPromptRequest(roll, acc, address, description, fees)
 
 		case executesc.ExecuteSCOpID:
 			executeSC, err := executesc.DecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode executeSC message")
 			}
-			promptRequest = w.prepareExecuteSCPromptRequest(executeSC, acc, address, description, fees, expiry)
+			promptRequest = w.prepareExecuteSCPromptRequest(executeSC, acc, address, description, fees)
 
 		case callsc.CallSCOpID:
 			callSC, err := callsc.DecodeMessage(decodedMsg)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to decode callSC message")
 			}
-			promptRequest = w.prepareCallSCPromptRequest(callSC, acc, address, description, fees, expiry)
+			promptRequest = w.prepareCallSCPromptRequest(callSC, acc, address, description, fees)
 
 		default:
 			decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
@@ -269,7 +267,6 @@ func (w *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 	address string,
 	description string,
 	fees uint64,
-	expiry uint64,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
@@ -278,11 +275,9 @@ func (w *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
 			Description:   description,
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: "Call SC",
-			MaxGas:        strconv.FormatUint(msg.MaxGas, 10),
 			Coins:         strconv.FormatUint(msg.Coins, 10),
 			Address:       msg.Address,
 			Function:      msg.Function,
-			Expiry:        expiry,
 			WalletAddress: address,
 			Nickname:      acc.Nickname,
 		},
@@ -295,7 +290,6 @@ func (w *walletSign) prepareExecuteSCPromptRequest(
 	address string,
 	description string,
 	fees uint64,
-	expiry uint64,
 ) prompt.PromptRequest {
 	return prompt.PromptRequest{
 		Action: walletapp.Sign,
@@ -305,8 +299,6 @@ func (w *walletSign) prepareExecuteSCPromptRequest(
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: "Execute SC",
 			MaxCoins:      strconv.FormatUint(msg.MaxCoins, 10),
-			MaxGas:        strconv.FormatUint(msg.MaxGas, 10),
-			Expiry:        expiry,
 			WalletAddress: address,
 			Nickname:      acc.Nickname,
 		},
@@ -319,7 +311,6 @@ func (w *walletSign) prepareRollPromptRequest(
 	address string,
 	description string,
 	fees uint64,
-	expiry uint64,
 ) prompt.PromptRequest {
 	operationType := ""
 
@@ -338,7 +329,6 @@ func (w *walletSign) prepareRollPromptRequest(
 			Fees:          strconv.FormatUint(fees, 10),
 			OperationType: operationType,
 			RollCount:     msg.RollCount,
-			Expiry:        expiry,
 			WalletAddress: address,
 			Nickname:      acc.Nickname,
 		},
@@ -351,7 +341,6 @@ func (w *walletSign) prepareTransactionPromptRequest(
 	address string,
 	description string,
 	fees uint64,
-	expiry uint64,
 ) prompt.PromptRequest {
 	var recipientNickname string
 
@@ -372,7 +361,6 @@ func (w *walletSign) prepareTransactionPromptRequest(
 			RecipientAddress:  msg.RecipientAddress,
 			RecipientNickname: recipientNickname,
 			Amount:            strconv.FormatUint(msg.Amount, 10),
-			Expiry:            expiry,
 			WalletAddress:     address,
 			Nickname:          acc.Nickname,
 		},

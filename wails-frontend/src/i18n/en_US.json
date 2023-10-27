@@ -52,8 +52,6 @@
       "coins": "Coins ",
       "sending-amount": "Sending amount ",
       "max-coins": "Max coins",
-      "max-gas": "Max gas",
-      "expiry": "Expiry",
       "roll-amount": "Roll amount"
     }
   },

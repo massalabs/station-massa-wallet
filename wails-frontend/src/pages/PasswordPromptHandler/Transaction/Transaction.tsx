@@ -19,7 +19,6 @@ export function Transaction(props: PromptRequestData) {
     OperationType,
     Amount,
     Fees,
-    Expiry,
     Nickname,
   } = props;
 
@@ -82,11 +81,6 @@ export function Transaction(props: PromptRequestData) {
         <p>
           {formatStandard(Fees, Unit.NanoMAS)} {masToken}
         </p>
-      </div>
-
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.expiry')} </p>
-        <p>{Expiry}</p>
       </div>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
