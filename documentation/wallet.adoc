@@ -1,10 +1,8 @@
 = Massa Station Wallet: Documentation
-firstname middlename lastname <email>; firstname2 middlename2 lastname2 <email2>
 :doctype: book
 :toc:
 :sectnums:
 :kroki-fetch-diagram:
-:center-image: style="display:block; margin: 0 auto;"
 
 
 == Introduction
@@ -50,7 +48,7 @@ Public:::: Open data with no repercussions if accessed. Examples: signed hashes,
 [%header,cols="1,1,1,3"]
 |===
 | Version | Date | Author | Description
-| 0.1 | 2023-10-12 | Grégory | Initial version
+| 0.1 | 2023-10-12 | Grégory, Ena, Nathan | Initial version
 |===
 
 == Product Overview
@@ -249,23 +247,22 @@ participant "Massa Wallet API" as wallet_api
 participant "Massa Wallet Core" as wallet_core
 participant "Massa Wallet Front" as wallet_embedded_front
 
-user -> dapp ++ : Click "Send Coins"
+user -> dapp ++ : Request //Send Coins Operation//
     dapp -> station ++: Request //Sign Operation//
         station -> wallet_api ++: Request //Sign Operation//
         wallet_api -> wallet_api: Execute //Validate Arguments//
             wallet_api -> wallet_core ++: Execute //Sign Operation//
             wallet_core -> wallet_core: Fetch //Account Data//
-                wallet_api -> wallet_front ++: Fetch //Operation details
-
-                wallet_core -> wallet_front ++: Fetch //Password Input//
-                wallet_front <-> user: Enter password
+                wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+                wallet_embedded_front <-> user: Enter password
                 return password
             wallet_core -> wallet_core: Execute //Unseal Private Key//
             wallet_core -> wallet_core: Execute //Generate operation signature//
             return operation signature
         return operation signature
     return operation signature
-    dapp -> dapp: Submit operation
+    dapp -> dapp: Execute //Submit Operation//
+return response
 @enduml
 ----
 
@@ -317,8 +314,8 @@ user -> dapp ++ : Click "Sign In"
             return message signature
         return message signature
     return message signature
-dapp -> dapp: Verify signature
-dapp -> dapp: Open user access
+dapp -> dapp: Execute //Verify signature//
+dapp -> dapp: Execute //Open user access//
 return logout
 @enduml
 ----
@@ -352,12 +349,13 @@ participant "Massa Wallet Embedded Front" as wallet_embedded_front
 
 user -> wallet_front ++ : Click "Backup Account"
     wallet_front -> wallet_api ++: Request //Backup Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
         wallet_api -> wallet_core ++: Execute //Backup Account//
             wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
             wallet_embedded_front <-> user: Enter password
             return password
         wallet_core -> wallet_core: Execute //Unseal Private Key//
-        wallet_core -> wallet_embedded_front: Execute //Display Private Key//
+        wallet_core -> wallet_embedded_front ++: Execute //Display Private Key//
         wallet_embedded_front <-> user: Read/Copy Private Key
         user -> wallet_embedded_front: Close
         return Success
@@ -397,6 +395,7 @@ participant "Massa Wallet Core" as wallet_core
 user -> wallet_front ++ : Click "Import Token"
 user -> wallet_front : Enter "Token Address"
     wallet_front -> wallet_api ++: Request //Add Asset//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
         wallet_api -> wallet_core ++: Execute //Add Asset//
             wallet_core -> wallet_core: Execute //Update Assets File//
         return Asset
@@ -438,6 +437,7 @@ user -> wallet_front : Click "Create an account"
 user -> wallet_front : Enter "Account Nickname"
 user -> wallet_front : Click "Define a password"
     wallet_front -> wallet_api ++: Request //Create Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
         wallet_api -> wallet_core ++: Execute //Create Account//
             wallet_core -> wallet_embedded_front ++: Fetch //New Password Input//
             wallet_embedded_front <-> user: Enter new password
@@ -485,6 +485,7 @@ participant "Massa Wallet Embedded Front" as wallet_embedded_front
 user -> wallet_front ++ : Click "Add an account"
 user -> wallet_front : Click "Import an existing account"
     wallet_front -> wallet_api ++: Request //Import Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
         wallet_api -> wallet_core ++: Execute //Import Account//
             wallet_core -> wallet_embedded_front ++: Fetch //Import Choice//
             wallet_embedded_front <-> user: Click: "I have a private key"
@@ -534,6 +535,7 @@ participant "Massa Wallet Embedded Front" as wallet_embedded_front
 user -> wallet_front ++ : Click "Add an account"
 user -> wallet_front : Click "Import an existing account"
     wallet_front -> wallet_api ++: Request //Import Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
         wallet_api -> wallet_core ++: Execute //Import Account//
             wallet_core -> wallet_embedded_front ++: Fetch //Import Choice//
             wallet_embedded_front <-> user: Click: "I have a .yaml file"
@@ -583,6 +585,7 @@ participant "Massa Wallet Embedded Front" as wallet_embedded_front
 user -> wallet_front ++ : Click "Settings"
 user -> wallet_front : Click "Delete account"
     wallet_front -> wallet_api ++: Request //Delete Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
         wallet_api -> wallet_core ++: Execute //Delete Account//
             wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
             wallet_embedded_front <-> user: Enter password
