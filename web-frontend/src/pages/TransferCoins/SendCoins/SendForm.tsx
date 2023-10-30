@@ -126,7 +126,7 @@ export function SendForm({ ...props }) {
         </div>
         <div className="pb-3.5">
           <Currency
-            placeholder={'Amount to send'}
+            placeholder="Amount to send"
             name="amount"
             value={amount}
             onValueChange={(value) => setAmount(value)}
@@ -164,7 +164,7 @@ export function SendForm({ ...props }) {
         <p className="pb-3.5 mas-body2">{Intl.t('send-coins.recipient')}</p>
         <div className="pb-3.5">
           <Input
-            placeholder={'Recipient'}
+            placeholder="Recipient"
             value={recipient}
             name="recipient"
             onChange={(e) => setRecipient(e.target.value)}
