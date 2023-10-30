@@ -10,6 +10,7 @@ import { AccountObject } from '@/models/AccountModel';
 
 export function mockServer(environment = ENV.DEV) {
   const server = createServer({
+    trackRequests: true,
     environment,
     models,
     factories,
