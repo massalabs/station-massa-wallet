@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+import { wait } from '@massalabs/massa-web3/dist/utils/time';
 import { Server } from 'miragejs';
 
 import { mockServer } from '../../../../src/mirage';
@@ -30,12 +31,14 @@ describe('E2E | Acceptance | Home | Send', () => {
       mockedAccounts.forEach((account) => {
         server.createList('asset', 3, { account });
       });
+
       const account = {
-        nickname: 'Mario',
+        nickname: 'MarioX',
+        candidateBalance: '1000000000000',
+        balance: '10000',
         address: 'AUHdadXyJZUeINwiUVMtXZXJRTFXtYdihRWitUcAJSBwAHgcKAjtxx',
       };
       mockedAccounts.push(server.create('account', { ...account }));
-
       return mockedAccounts;
     }
 
@@ -46,7 +49,6 @@ describe('E2E | Acceptance | Home | Send', () => {
     // util functions
     function navigateToHome() {
       cy.visit('/');
-
       cy.get('[data-testid="account-2"]').click();
     }
 
@@ -59,7 +61,6 @@ describe('E2E | Acceptance | Home | Send', () => {
     }
 
     function setAccountBalance(account) {
-      // same logic we use in SendForm.tsx where balance is rendered
       const balance = Number(account?.candidateBalance || 0);
       const formattedBalance = formatStandard(toMASS(balance));
       return formattedBalance;
@@ -77,32 +78,11 @@ describe('E2E | Acceptance | Home | Send', () => {
       }
     }
 
-    // standardize percent testing
-    function performPercentTest(percentValue, account, fees) {
-      const balance = Number(account?.candidateBalance);
-      cy.get(`[data-testid="send-percent-${percentValue * 100}"]`)
-        .should('exist')
-        .trigger('mouseover')
-        .click();
-
-      cy.get('[data-testid="currency-field"')
-        .should(
-          'have.value',
-          customFormatNumber(
-            handlePercent(
-              balance,
-              percentValue,
-              fees,
-              account?.candidateBalance,
-            ),
-          ),
-        )
-        .clear();
-    }
-
     it('should have loading state', () => {
       const account = mockedAccounts.at(2);
-      navigateToHome();
+
+      cy.visit('/');
+      cy.get('[data-testid="account-2"]').click();
 
       cy.url()
         .should('eq', `${baseUrl}/${account.nickname}/home`)
@@ -139,8 +119,9 @@ describe('E2E | Acceptance | Home | Send', () => {
 
       navigateToTransfercoins(2);
 
-      cy.get('[data-testid="balance-amount"]').should(
-        'contain',
+      cy.get('[data-testid="balance').should('exist');
+
+      cy.get('[data-testid="balance-amount"]').contains(
         setAccountBalance(account),
       );
     });
@@ -149,15 +130,14 @@ describe('E2E | Acceptance | Home | Send', () => {
       const account = mockedAccounts.at(2);
       const recipientAccount = mockedAccounts.at(1);
 
-      const amount = 1000.12311132;
+      const amount = 550.1234;
 
       const standardFees = '1000';
 
       navigateToTransfercoins(2);
       cy.get('[data-testid="currency-field"')
         .type(amount)
-        .should('have.value', customFormatNumber(amount));
-
+        .should('have.value', '550.1234 MAS');
       cy.get('[data-testid="input-field"').type(recipientAccount.address);
 
       cy.get('[data-testid="button"]').contains('Send').click();
@@ -182,16 +162,24 @@ describe('E2E | Acceptance | Home | Send', () => {
     });
 
     it('should process any % as input', () => {
-      const account = mockedAccounts.at(1);
-      const recipientAccount = mockedAccounts.at(2);
-      const standardFees = '1000';
+      navigateToTransfercoins(2);
 
-      navigateToTransfercoins(1).then(() => {
-        performPercentTest(0.25, account, standardFees);
-        performPercentTest(0.5, account, standardFees);
-        performPercentTest(0.75, account, standardFees);
-        performPercentTest(1, account, standardFees);
-      });
+      cy.wait(1000);
+
+      cy.get(`[data-testid="send-percent-25"]`).click();
+      cy.get('[data-testid="currency-field"').should('have.value', '250 MAS');
+
+      cy.get(`[data-testid="send-percent-50"]`).click();
+      cy.get('[data-testid="currency-field"').should('have.value', '500 MAS');
+
+      cy.get(`[data-testid="send-percent-75"]`).click();
+      cy.get('[data-testid="currency-field"').should('have.value', '750 MAS');
+
+      cy.get(`[data-testid="send-percent-100"]`).click();
+      cy.get('[data-testid="currency-field"').should(
+        'have.value',
+        '999.999999 MAS',
+      );
     });
 
     it('should transfer to accounts', () => {
@@ -273,7 +261,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const account = mockedAccounts.at(2);
       const wrongAddress = 'wrong address';
 
-      const amount = 1000.12311132;
+      const amount = 42;
 
       navigateToTransfercoins(2);
       cy.get('[data-testid="currency-field"')
