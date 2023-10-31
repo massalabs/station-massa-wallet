@@ -274,10 +274,7 @@ func init() {
         ],
         "responses": {
           "204": {
-            "description": "Account deleted successfully.",
-            "schema": {
-              "$ref": "#/definitions/Account"
-            }
+            "description": "Account deleted successfully."
           },
           "400": {
             "description": "Bad request.",
@@ -1400,10 +1397,7 @@ func init() {
         ],
         "responses": {
           "204": {
-            "description": "Account deleted successfully.",
-            "schema": {
-              "$ref": "#/definitions/Account"
-            }
+            "description": "Account deleted successfully."
           },
           "400": {
             "description": "Bad request.",

@@ -157,8 +157,6 @@ paths:
       responses:
         204:
           description: Account deleted successfully.
-          schema:
-            $ref: "#/definitions/Account"
         400:
           description: Bad request.
           schema:

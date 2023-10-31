@@ -1,0 +1,878 @@
+= Massa Station Wallet: Documentation
+:doctype: book
+:toc:
+:sectnums:
+:kroki-fetch-diagram:
+
+
+== Introduction
+
+Welcome to the Massa Station Wallet documentation. This document provides a comprehensive overview of the Massa Station Wallet, its functionalities, and its interactions within the Massa ecosystem.
+Before diving into the details, let's clarify the purpose, target audience, and some essential concepts.
+
+=== Scope of the Document
+
+This documentation covers the Massa Station Wallet's functionalities, architecture, and data interactions.
+It aims to provide a clear understanding of how the wallet operates, the data it handles, and the security measures in place.
+Whether you're a developer, a user, or someone interested in the Massa ecosystem, this document is designed to cater to your informational needs.
+
+=== Target Audience
+
+This document is intended for:
+
+- **Developers**: Individuals who are involved in the development, maintenance, or integration of the Massa Station Wallet.
+- **Users**: Individuals who use the Massa Station Wallet for their on-chain web browsing and dApp interactions.
+- **Stakeholders**: Anyone interested in the Massa ecosystem, including potential investors, partners, and enthusiasts.
+
+=== Concepts and Vocabulary
+
+To ensure clarity and a shared understanding, let's define some key terms and concepts:
+
+Request:: In sequence diagrams, this term describes an external call to an API endpoint.
+Execute:: In sequence diagrams, this term indicates an internal or "local" function call.
+Fetch:: In sequence diagrams, this term signifies a retrieval action, whether it's from a file system, database, or direct user input.
+
+Presence::
+Required:::: Must be provided in every request.
+Optional:::: Can be provided, but it's not mandatory.
+Conditional:::: Must be provided under specific conditions or scenarios.
+
+Data Sensitivity Levels::
+Confidential:::: Data that, if disclosed, could have a severe impact. Examples: private keys, passwords.
+Personal:::: Data related to individual identity. Examples: public keys, addresses, operations.
+Semi-public:::: Data with limited sensitivity. Examples: cryptographic data like nonces or salts.
+Public:::: Open data with no repercussions if accessed. Examples: signed hashes, public announcements.
+
+=== Revision History
+
+[%header,cols="1,1,1,3"]
+|===
+| Version | Date | Author | Description
+| 0.1 | 2023-10-12 | Grégory, Ena, Nathan | Initial version
+|===
+
+== Product Overview
+
+=== Purpose and Objective
+
+The primary goal of the Massa Wallet module is to provide a user-friendly and secure way for users to manage their wallet accounts on the Massa blockchain. 
+Its key objective is to enable users to securely sign operations when interacting with the Massa blockchain. 
+This functionality can be initiated within the module or in response to requests from decentralized applications through the https://github.com/massalabs/wallet-provider[Wallet Provider] library, or from other Massa Station modules. 
+Additionally, the module simplifies tasks like checking MAS coin balances, sending and receiving MAS coins, and handling fungible token assets, 
+following the https://github.com/massalabs/massa-standards/tree/main/smart-contracts/assembly/contracts/FT[Fungible Token standard].
+
+=== Key Features
+1. **Create an account**
+(key pairs, password, account name)
+2. **Import an account** 
+3. **Delete an account**
+4. **Back-up an account** (using the private key-pair or the .yaml wallet-account file)
+5. **Sign operations**
+6. **Sign messages**
+7. **Access MASSA balance**
+8. **Send and receive MASSA**
+9. **Import fungible tokens** 
+10. **Access fungible token balances**
+
+=== Architecture Overview
+Highlight the main components (API, front-end...) and briefly describe how the end user will interact with the product.
+
+=== User Base
+Identify the primary users of the Massa Station Wallet and mention the common use cases.
+
+== Actors
+
+=== User
+
+An individual using Massa Station for on-chain web browsing, dApp interactions, and wallet management. 
+They navigate .massa websites and execute Massa transactions.
+
+=== Browser
+
+The user interface that presents on-chain content and aids user interactions.
+It communicates with:
+
+- **Massa Station**: Lists websites, oversees modules, and facilitates dApp interactions.
+- **Massa Station Wallet**: Oversees wallet-related tasks, including account setup and token transactions.
+
+=== Massa Station
+
+Acts as the module manager. It enables the installation of the Massa Station Wallet module, manages its updates (including notifications and binary updates from the module store), routes its API calls, and serves its web-based GUI.
+
+=== Massa Station Wallet
+
+The primary module detailed in this document, consisting of:
+
+- **API**: Manages backend operations, including account handling and transaction signatures.
+- **Web Front**: Renders the wallet's user interface within the browser.
+- **Embedded Front**: Processes sensitive user inputs, such as password and private key interactions.
+
+== Diagrams
+
+=== Use Case Diagram
+
+This diagram visually represents the interactions between the user and the Massa Station system, focusing on the Wallet module:
+
+[plantuml, format="svg", id="use-case", width="80%", role="center-image"]
+----
+@startuml
+left to right direction
+
+skinparam actorStyle awesome
+
+skinparam usecase {
+    ArrowColor #69679D
+    BackgroundColor #F5F5FF
+    BorderColor #BBBAD9
+    FontSize 12
+    FontName Poppins
+}
+
+skinparam actor {
+    BackgroundColor #F5F5FF
+    BorderColor #BBBAD9
+    FontName Poppins
+}
+
+skinparam package {
+    BackgroundColor #FFFFFF
+    BorderColor #BBBAD9
+    FontName Poppins
+}
+
+actor User as user
+
+package "Browser" {
+    package "Station Front" {
+        usecase "List Websites" as stationFront_listWebSites
+        usecase "List Modules" as stationFront_listModules
+        usecase "Use dAPP" as stationFront_useDApp
+    }
+
+    package "Wallet Front" {
+        usecase "Create Account" as walletWebFront_createAccount
+        usecase "Import Account" as walletWebFront_importAccount
+        usecase "List Accounts" as walletWebFront_listAccounts
+        usecase "Send/Receive Massa" as walletWebFront_sendReceiveMassa
+        usecase "Check Massa Balance" as walletWebFront_checkMassaBalance
+        usecase "Import Token Address" as walletWebFront_importFungibleTokenAddress
+        usecase "Check Token Balance" as walletWebFront_checkTokenBalance
+        usecase "Backup Wallet" as walletWebFront_backupWallet
+    }
+}
+
+package "Massa Wallet" {
+    package "API" {
+        usecase "Serve Wallet Site" as walletAPI_serveWebSite
+        usecase "Manage (CRUD) Accounts" as walletAPI_cRUDAccount
+        usecase "Send Massa" as walletAPI_sendMassa
+        usecase "Buy/Sell Rolls" as walletAPI_buySellRolls
+        usecase "Sign Operation" as walletAPI_signOperation
+        usecase "Sign Message" as walletAPI_signMessage
+        usecase "Backup Account" as walletAPI_backupAccount
+        usecase "Manage (CRD) Token Addresses" as walletAPI_cRUDAsset
+    }
+
+    package "Front" {
+        usecase "Enter/Confirm Password" as walletFront_enterConfirmPassword
+        usecase "Manage Private Key" as walletFront_copyPastePrivateKey
+    }
+}
+
+user --> stationFront_listWebSites
+user --> stationFront_listModules
+user --> stationFront_useDApp
+user --> walletWebFront_createAccount
+user --> walletWebFront_importAccount
+user --> walletWebFront_listAccounts
+user --> walletWebFront_sendReceiveMassa
+user --> walletWebFront_checkMassaBalance
+user --> walletWebFront_importFungibleTokenAddress
+user --> walletWebFront_checkTokenBalance
+user --> walletWebFront_backupWallet
+user --> walletFront_enterConfirmPassword
+user --> walletFront_copyPastePrivateKey
+
+walletWebFront_createAccount                --> walletAPI_cRUDAccount
+walletWebFront_importAccount                --> walletAPI_cRUDAccount
+walletWebFront_listAccounts                 --> walletAPI_cRUDAccount
+walletWebFront_sendReceiveMassa             --> walletAPI_sendMassa
+walletWebFront_checkMassaBalance            --> walletAPI_cRUDAccount
+walletWebFront_importFungibleTokenAddress   --> walletAPI_cRUDAsset
+walletWebFront_checkTokenBalance            --> walletAPI_cRUDAsset
+walletWebFront_backupWallet                 --> walletAPI_backupAccount
+
+stationFront_useDApp --> walletAPI_serveWebSite
+stationFront_useDApp --> walletAPI_cRUDAccount
+stationFront_useDApp --> walletAPI_sendMassa
+stationFront_useDApp --> walletAPI_buySellRolls
+stationFront_useDApp --> walletAPI_signOperation
+stationFront_useDApp --> walletAPI_signMessage
+stationFront_useDApp --> walletAPI_backupAccount
+stationFront_useDApp --> walletAPI_cRUDAsset
+@enduml
+----
+
+=== Sequence Diagram
+
+This section provides sequence diagrams for main functionalities of each 
+Massa Wallet component.
+
+==== Sign Operation
+
+This sequence diagrams illustrates signing a Transaction operation. It applies to all other operation types: Roll buy and Roll sell, CallSC and ExecuteSC.
+
+[plantuml, format="svg", id="sign-operation", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+participant "User" as user
+participant "dApp or Wallet" as dapp
+participant "Massa Station" as station
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Front" as wallet_embedded_front
+
+user -> dapp ++ : Request //Send Coins Operation//
+    dapp -> station ++: Request //Sign Operation//
+        station -> wallet_api ++: Request //Sign Operation//
+        wallet_api -> wallet_api: Execute //Validate Arguments//
+            wallet_api -> wallet_core ++: Execute //Sign Operation//
+            wallet_core -> wallet_core: Fetch //Account Data//
+                wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+                wallet_embedded_front <-> user: Enter password
+                return password
+            wallet_core -> wallet_core: Execute //Unseal Private Key//
+            wallet_core -> wallet_core: Execute //Generate Operation Signature//
+            return Operation Signature
+        return Operation Signature
+    return Operation Signature
+    dapp -> dapp: Execute //Submit Operation//
+return Response
+@enduml
+----
+
+The submitting the operation is not part of the Massa Wallet scope.
+
+<<<
+
+===== Sign Message
+The following diagram illustrates the sequence of events when
+signing a message considering a fictive dApp needing to check the
+user's identity.
+
+[plantuml, format="svg", id="sign-message", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+participant "User" as user
+participant "dApp" as dapp
+participant "Massa Station" as station
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> dapp ++ : Request //Send Coins Operation//
+    dapp -> station ++: Request //Sign Message//
+        station -> wallet_api ++: Request //Sign Message//
+        wallet_api -> wallet_api: Execute //Validate Arguments//
+            wallet_api -> wallet_core ++: Execute //Sign Message//
+            wallet_core -> wallet_core: Fetch //Account Data//
+                wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+                wallet_embedded_front <-> user: Enter password
+                return password
+            wallet_core -> wallet_core: Execute //Unseal Private Key//
+            wallet_core -> wallet_core: Execute //Generate Message Signature//
+            return Message Signature
+        return Message Signature
+    return Message Signature
+dapp -> dapp: Execute //Verify Signature//
+dapp -> dapp: Execute //Open User Access//
+return logout
+@enduml
+----
+
+Open the user access to the dApp is not part of the Massa Wallet scope.
+
+===== Backup Account
+The following diagram illustrates the sequence of events when backing up an account.
+
+[plantuml, format="svg", id="backup-account", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Request //Backup Account//
+    wallet_front -> wallet_api ++: Request //Backup Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
+        wallet_api -> wallet_core ++: Execute //Backup Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+            wallet_embedded_front <-> user: Enter password
+            return password
+        wallet_core -> wallet_core: Execute //Unseal Private Key//
+        wallet_core -> wallet_embedded_front: Execute //Display Private Key//
+        return Success
+    return Success
+return Success
+@enduml
+----
+
+<<<
+
+===== Add asset
+The following diagram illustrates the sequence of events when adding an asset.
+
+[plantuml, format="svg", id="add-asset", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+
+user -> wallet_front ++ : Request //Add Asset//
+    wallet_front -> wallet_api ++: Request //Add Asset//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
+        wallet_api -> wallet_core ++: Execute //Add Asset//
+            wallet_core -> wallet_core: Execute //Update Assets File//
+        return Asset
+    return Asset
+return Success
+@enduml
+----
+
+===== Create New Account
+The following diagram illustrates the sequence of events when creating a new account (generate new key pair).
+
+[plantuml, format="svg", id="create-account", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Request //Create Account//
+    wallet_front -> wallet_api ++: Request //Create Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
+        wallet_api -> wallet_core ++: Execute //Create Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //New Password Input//
+            wallet_embedded_front <-> user: Enter new password
+            return new password
+        wallet_core -> wallet_core: Execute //Generate Private Key//
+        wallet_core -> wallet_core: Execute //Seal Private Key//
+        wallet_core -> wallet_core: Execute //Save Account File//
+        return Account
+    return Account
+return Success
+@enduml
+----
+
+<<<
+
+===== Import Account
+The following diagram illustrates the sequence of events when importing an account.
+
+[plantuml, format="svg", id="import-private-key", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++: ImpRequest //Import Account//
+    wallet_front -> wallet_api ++: Request //Import Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
+        wallet_api -> wallet_core ++: Execute //Import Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Minimal Account Data//
+            wallet_embedded_front <-> user: Enter Minimal Account Data
+            return Minimal Account Data
+        wallet_core -> wallet_core: Execute //Seal Private Key//
+        wallet_core -> wallet_core: Execute //Save Account File//
+        return Account
+    return Account
+return Success
+@enduml
+----
+
+Minimal Account Data is: private key, nickname, password.
+
+<<<
+
+===== Delete Account
+The following diagram illustrates the sequence of events when deleting an account.
+
+A confirmation step is prompted when the balance of the account being deleted is above 0.
+
+[plantuml, format="svg", id="delete-account", width="100%", role="center-image", options="interactive"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam sequence {
+    ArrowColor #69679D
+    LifeLineBorderColor #69679D
+    LifeLineBackgroundColor #F5F5FF
+
+    ParticipantBorderColor #69679D
+    ParticipantBackgroundColor #F5F5FF
+    ParticipantFontName Poppins
+    ParticipantFontSize 16
+    ParticipantFontColor #000000
+}
+
+
+participant "User" as user
+participant "Massa Wallet Front" as wallet_front
+participant "Massa Wallet API" as wallet_api
+participant "Massa Wallet Core" as wallet_core
+participant "Massa Wallet Embedded Front" as wallet_embedded_front
+
+user -> wallet_front ++ : Request //Delete Account//
+    wallet_front -> wallet_api ++: Request //Delete Account//
+    wallet_api -> wallet_api: Execute //Validate Arguments//
+        wallet_api -> wallet_core ++: Execute //Delete Account//
+            wallet_core -> wallet_embedded_front ++: Fetch //Password Input//
+            wallet_embedded_front <-> user: Enter password
+            alt balance is over 0
+                wallet_embedded_front <-> user: Confirm Deletion
+            end
+            return Password
+            wallet_core -> wallet_core: Execute //Verify Password//
+            wallet_core -> wallet_core: Execute //Delete Account//        
+        return Success
+    return Success
+return Success
+
+@enduml
+----
+
+== Data 
+
+In the Massa Station Wallet, various data elements play crucial roles in ensuring smooth operations and user interactions. This section provides a comprehensive overview of these data elements, their descriptions, and their sensitivity levels.
+
+=== Dictionary
+
+Understanding the types of data and their significance is essential. Here's a breakdown:
+
+.Crypto-related Data
+[%header,cols="1,3,1"]
+|===
+| Data | Description | Sensitivity
+| Private Key | Asymmetric private key used for operation signatures. | Confidential
+| Public Key | Asymmetric public key used for signature verification. | Personal
+| Address | Hexadecimal string identifying the account. | Personal
+| Nickname | String identifier for the account. | Personal
+| Password | String encrypting the private key. | Confidential
+| Other Cryptographic Data | Additional data (nonce, salt, etc.) for private key protection. | Semi-public
+| Signed Hash | Hash signed with the private key. | Public
+|===
+
+.Account-related Data
+[%header,cols="1,3,1"]
+|===
+| Data | Description | Sensitivity
+| Balance | Amount of Massa owned by the account. | Personal
+| Operation | Operation signed by the account. | Personal
+| Linked Asset | Asset associated with the account. | Personal
+|===
+
+<<<
+
+=== Flow Diagram
+
+The flow diagram visually represents how different components of Massa Station Wallet interact and communicate. This aids in understanding the data flow and relationships between various modules:
+
+[plantuml, format="svg", id="application-mapping-diagram", width="60%", role="center-image"]
+----
+@startuml
+
+skinparam FontName Poppins
+
+skinparam usecase {
+    ArrowColor #69679D
+    BackgroundColor #F5F5FF
+    BorderColor #BBBAD9
+    FontSize 12
+    FontName Poppins
+}
+
+skinparam package {
+    BackgroundColor #FFFFFF
+    BorderColor #BBBAD9
+    FontName Poppins
+}
+
+package "Browser" {
+    usecase "Wallet Web Pages" as walletWebPages
+}
+
+package "Massa Station" {
+    usecase "API" as massaStationAPI
+}
+
+package "Massa Wallet" {
+    usecase "API" as massaWalletAPI
+    usecase "Front" as massaWalletFront
+    usecase "Core" as massaWalletCore
+}
+
+package "OS" {
+    usecase "File System" as fileSystem
+}
+
+walletWebPages --> massaStationAPI: [1] - HTTPS
+massaStationAPI --> massaWalletAPI: [2] - HTTP
+massaWalletAPI --> massaWalletCore: [3] - Interprocess Communication
+massaWalletFront --> massaWalletCore: [4] - Interprocess Communication
+massaWalletCore --> fileSystem: [5] - System Calls
+@enduml
+----
+
+<<<
+
+=== Circulation
+
+Data circulation refers to the movement and interaction of data elements across the system. Here's a step-by-step breakdown:
+
+.Data Circulation
+[%header,cols="1,3,3"]
+|===
+| Step | Description | Data Involved
+| 1 | User interaction with a wallet web page. | Address, Balance, Linked Asset
+| 2 | Massa Station serves wallet web pages and API. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash, Balance, Operation, Linked Asset
+| 3 | Massa Wallet API communicates data to/from the core process. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash, Balance, Operation, Linked Asset
+| 4 | Massa Wallet Front communicates data to/from the core process. | Password, Private Key
+| 5 | Massa Wallet Core interacts with the file system. | Public Key, Address, Nickname, Other Cryptographic Data, Signed Hash
+|===
+
+.Data Usage (Beyond Circulation)
+
+Apart from the regular data flow, certain data elements are used in specific scenarios or by specific components:
+
+[%header,cols="1,3,1"]
+|===
+| Element | Description | Data Involved
+| Core | Processes various requests. | Private Key, Password
+|===
+
+== Functional Requirements
+
+=== API
+
+The API will adhere to the HTML REST JSON standard, utilizing classic HTTP responses to indicate the status and nature of each response.
+
+NOTE: For hands-on testing and examples, refer to the provided Swagger documentation and consider using tools like Postman.
+
+==== Sign Operation
+
+The 'sign' endpoint serves the purpose of signing all five operation 
+types, including Transaction, Roll buy/sell, CallSC, and 
+ExecuteSC. It provides the capability to batch operation requests by 
+utilizing the correlationID parameter. No user interaction is required once first operation processing is underway. 
+Batching operation requests in Massa Wallet does not entail processing the operations as a group. 
+Instead, it enhances the user experience by allowing users to, sequentially, sign multiple operations 
+after being prompted to provide a password once.
+
+===== Parameters
+
+[%header,cols="1,3,1,1"]
+|===
+| Name | Description | Presence | Format
+| `nickname` | Identifier for the account. | Required | String
+| `description` | Text describing the signing intent. | Optional | String (Default: "", Max: 280 characters)
+| `operation` | Serialized attributes for signing. | Required | Byte array
+| `batch` | Specifies if the operation is part of a batch. | Optional | Boolean (Default: `false`)
+| `correlationId` | Identifier for correlating multiple requests. | Optional | String (Default: "")
+|===
+
+
+IMPORTANT: To ensure security, the `correlationId` should be sent in the request body, not in the query string.
+
+===== Response
+
+The correlationId will be included if the batch parameter is set to true.
+
+[%header,cols="1,3,1"]
+|===
+| Name | Description  | Format
+| `signature` | The signature of the signed message | String
+| `publicKey` | The public key of the account | String
+| `correlationId` | Correlation id of the operation batch | String
+|===
+
+
+==== Sign Message
+
+This endpoint facilitates the signing of a message using a 
+specific account resource, identified by its unique nickname. It's 
+important to note that this endpoint is not idempotent: identical 
+calls with the same data will initiate separate executions.
+
+===== Parameters
+
+[%header,cols="1,3,1,1"]
+|===
+| Name | Description | Presence | Format
+| `nickname` | Identifier for the account. | Required | String
+| `description` | Text describing the signing intent. | Optional | String (Default: "", Max: 280 characters)
+| `message` | The message to sign | Required | String
+| `displayData` | Whether to display data in the prompt | Optional | Boolean
+|===
+
+
+===== Response
+
+[%header,cols="1,3,1"]
+|===
+| Name | Description  | Format
+| `signature` | The signature of the signed message | String
+| `publicKey` | The public key of the account | String
+| `correlationId` | Correlation id of the operation batch | String
+|===
+
+==== Create Account
+
+**tbd**, cf https://github.com/massalabs/station-massa-wallet/blob/v0.2.8/api/walletApi-V0.yml
+
+==== Import Account
+
+**tbd**
+
+==== Delete Account
+
+**tbd**
+
+==== Backup Account
+
+**tbd**
+
+=== Functions
+
+==== Validate Arguments
+
+This function ensures that arguments provided to any endpoint are correct and conform to the expected format. It checks for the presence of required parameters, validates data types, and ensures compliance with any constraints or limits.
+
+==== Account Data
+
+Account data is persistently stored on the file system. The structure and format of this data must strictly adhere to the standards outlined in the Massa Labs documentation, specifically the wallet file format standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
+
+==== Password Input
+
+This function captures the user's password input. It is designed with flexibility in mind, accommodating both manual user entry and automated input for testing purposes. This ensures that automated tests can simulate user interactions seamlessly.
+
+IMPORTANT: The password input is neither stored nor cached. It is utilized only for the duration of the function call. Implementing memory safety mechanisms, such as zeroing out the memory or ensuring the content isn't swapped to disk, is essential.
+
+==== Create Account
+
+This function allows the user to create a new account. It generates a new key pair (private key and public key),
+encrypts the private key with the user inputted password,
+and stores it in a file on the file system.
+
+==== Import Account
+
+This function allows the user to import an account from a private key or from a .yaml file.
+
+The file must follow the Massa Labs standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
+
+==== Seal Private Key
+
+Encrypt the private key with the user inputted password, following the process and algorithms described in the Massa Labs standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
+
+==== Unseal Private Key
+
+For certain operations, the encrypted and stored private key must be decrypted or "unsealed". This function manages the decryption process, ensuring compliance with the cryptographic constraints specified in the Massa Labs standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
+
+IMPORTANT: The unsealed private key is neither stored nor cached. It is utilized only for the duration of the function call. Implementing memory safety mechanisms, such as zeroing out the memory or ensuring the content isn't swapped to disk, is essential.
+
+==== Save Account File
+
+This function saves the account file to the file system. It ensures that the file is stored in the correct location and adheres to the Massa Labs standard available https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[here].
+
+==== Generate Message Signature
+
+To sign a message, the content undergoes hashing using the Blake3 algorithm. The hashed value is subsequently signed using the ED25519 signature scheme. This function ensures the message signature process aligns with the Massa Labs cryptography standard.
+
+==== Verify Signature
+
+This function verifies the validity of a signature. It ensures that the signature was generated using the private key associated with the public key provided in the request.
+
+==== Backup Account
+
+This function allows the user to see its private key in clear.
+
+User is prompted it's password to authenticate.
+
+==== Add Asset
+
+This function add an asset. Assets are fungible tokens. Address of the fungible token smart contract is stored in a JSON file.
+
+==== Update Assets File
+
+This low level function updates the assets file.
+
+==== Generate Private Key
+
+This function generates a new key pair (private key and public key).
+
+==== Delete Account
+
+This function allows the user to delete an account. It delete the account file from the file system.
+
+User is prompted it's password to authenticate.
+
+== Non-Functional Requirements
+
+=== Performance Requirements:
+**1. Response Time:**
+The Massa Wallet module has a responsive user interface, with an
+ average response time for most user actions (e.g., sending funds, 
+checking balances), not exceeding 1 second.
+
+**2. Scalability:**
+The module is able to handle a growing number of transactions and users by design. 
+All wallet components, including the API, run locally on the user's computer, so each user have API instance.
+
+**3. Resource Utilization:**
+The module is resource-efficient, consuming no more than 100 MB of RAM and 1% of CPU utilization 
+during typical usage. During periods of inactivity or when the wallet is idle, resource utilization is near 0%.
+
+=== Security Requirements:
+
+**1. Data Encryption:**
+All sensitive user data, such as private keys, are encrypted both at 
+rest, and during signing process of an operation or a message. See https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md[the wallet file standard] for details.
+
+**2. Backup and Recovery:**
+Users have the ability to create backups of their wallet 
+data, including private keys. In case of data loss, the module  
+provides a secure and user-friendly recovery process. 
+
+1. By providing previously exported and stored private key of the wallet. 
+
+2. By attaching .yaml file of the wallet. 
+**describe where are they stored per OS**
+
+IMPORTANT: After a successful uninstallation, the user's computer must retain the Wallet .yaml files.
+
+<<<
+
+=== Other Requirements:
+
+**1. Cross-Platform Compatibility:** 
+Massa Wallet is compatible with major desktop operating systems, including Windows, macOS, and Linux:
+
+- Windows 10
+- Windows 11
+- MacOs ARM
+- MacOs AMD
+- Ubuntu 20.4
+
+Massa Wallet runs on Chromium-based and Firefox browsers.
+Supported browser versions:
+
+1. Chromium version -> **Identify Chromium version supported, list browser versions for main chromium-based browsers**
+
+2. Firefox version 114 and higher.
+
+== User Interface & User Experience Design
+
+Design Principles and link to the design document (mockups, screenshots, user flow diagrams, etc.)
