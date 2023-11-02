@@ -42,3 +42,41 @@ Cypress.on('window:before:load', (win) => {
     });
   };
 });
+
+// we are intercepting miragejs calls
+// https://github.com/miragejs/miragejs/issues/999#issuecomment-1495410040
+
+import 'cypress-wait-until';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+Cypress.Commands.add('waitForRequest', (server, urlPattern, method = '') => {
+  const wildcardRegex = /\*/g;
+  const questionMarkRegex = /\?/g;
+
+  const replacedWildCard = urlPattern
+    .replace(wildcardRegex, '[^ ]*')
+    .replace(questionMarkRegex, '\\?');
+  const regexUrl = new RegExp(replacedWildCard, 'g');
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const checkMatches = (r) => {
+    let isMatched = r.url.match(regexUrl);
+    if (method) {
+      isMatched = isMatched && r.method.toLowerCase() === method.toLowerCase();
+    }
+
+    return isMatched;
+  };
+
+  const requestFound = () =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    server.pretender.handledRequests.some(checkMatches);
+  const errorMsg = `[Request [${method}] to ${urlPattern} didn't happen`;
+
+  return cy
+    .waitUntil(requestFound, { errorMsg })
+    .should('be.true')
+    .log(`Request [${method}] to ${urlPattern} has been finished`);
+});

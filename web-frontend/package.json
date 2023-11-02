@@ -63,6 +63,7 @@
     "babel-jest": "^29.5.0",
     "cypress": "^13.3.1",
     "cypress-image-diff-js": "^1.31.0",
+    "cypress-wait-until": "^2.0.1",
     "eslint": "^8.38.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-import": "^2.28.0",

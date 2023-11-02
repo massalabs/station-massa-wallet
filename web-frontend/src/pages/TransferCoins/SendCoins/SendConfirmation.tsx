@@ -55,13 +55,16 @@ export function SendConfirmation({ ...props }) {
         <p>{Intl.t('send-coins.back-to-sending')}</p>
       </div>
       <p className="mb-6">{Intl.t('send-coins.send-message')}</p>
-      <div className="flex flex-col p-10 bg-secondary rounded-lg mb-6">
+      <div
+        data-testid="send-confirmation"
+        className="flex flex-col p-10 bg-secondary rounded-lg mb-6"
+      >
         <div className="flex flex-row items-center pb-3 ">
-          <div className="pr-2 text-info">
+          <div data-testid="send-confirmation-info" className="pr-2 text-info">
             {Intl.t('send-coins.send-confirmation', { amount, fees })}
           </div>
           <div
-            className="flex flex-row relative items-center gap-1 "
+            className="flex flex-row relative items-center gap-1"
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
@@ -74,7 +77,9 @@ export function SendConfirmation({ ...props }) {
         />
         <div className="text-info flex items-center gap-2">
           {Intl.t('send-coins.recipient')}
-          <p>{formattedRecipientAddress}</p>
+          <p data-testid="send-confirmation-recipient">
+            {formattedRecipientAddress}
+          </p>
         </div>
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
