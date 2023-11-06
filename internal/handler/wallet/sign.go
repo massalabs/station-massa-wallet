@@ -95,7 +95,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		privateKey = pk
 	} else {
-		password, err := w.PromptPassword(acc, promptRequest)
+		output, err := w.PromptPassword(acc, promptRequest)
 		if err != nil {
 			msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
 			if errors.Is(err, utils.ErrWrongPassword) || errors.Is(err, utils.ErrActionCanceled) {
@@ -105,7 +105,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 		}
 
-		pk, err := acc.PrivateKeyBytesInClear(password)
+		pk, err := acc.PrivateKeyBytesInClear(output.Password)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorWrongPassword, http.StatusInternalServerError)
 		}
@@ -133,18 +133,21 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	return w.Success(acc, signature, correlationID)
 }
 
-func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.PromptRequest) (*memguard.LockedBuffer, error) {
+func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.PromptRequest) (*walletapp.SignPromptOutput, error) {
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
 	if err != nil {
 		return nil, fmt.Errorf("prompting password: %w", err)
 	}
 
-	password, _ := promptOutput.(*memguard.LockedBuffer)
+	output, ok := promptOutput.(*walletapp.SignPromptOutput)
+	if !ok {
+		return nil, fmt.Errorf("prompting password for sign: %s", utils.ErrPromptInputType)
+	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true})
 
-	return password, nil
+	return output, nil
 }
 
 func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {

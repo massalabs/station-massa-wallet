@@ -178,7 +178,8 @@
     "gas-low": "Low",
     "gas-high": "High",
     "gas-custom": "Custom",
-    "send-confirmation": "Amount ({amount}) + fees ({fees} nMAS)"
+    "send-confirmation": "Amount ({amount}) + fees ({fees} nMAS)",
+    "amount-to-send": "Amount to send"
   },
   "receive-coins": {
     "generate-link": "Generate link",

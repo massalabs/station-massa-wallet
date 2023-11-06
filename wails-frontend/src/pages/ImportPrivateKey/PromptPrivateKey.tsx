@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IMPORT_STEPS } from '@/const/stepper';
 import { promptRequest } from '@/events/events';
+import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { IErrorObject, parseForm, handleCancel } from '@/utils';
 
@@ -65,12 +66,12 @@ function PromptPrivateKey() {
           <Password
             defaultValue=""
             name="privateKey"
-            placeholder={'Private key'}
+            placeholder={Intl.t('import.steps.private)')}
             error={error?.privateKey}
           />
         </div>
         <div className="flex gap-4 pt-4">
-          <Button variant={'secondary'} onClick={handleCancel}>
+          <Button variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
           <Button type="submit">Next</Button>

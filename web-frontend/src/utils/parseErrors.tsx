@@ -22,7 +22,6 @@ const backendErrorsCode: BackendErrors = {
   'DuplicateKey-0001': Intl.t('errors.duplicate-key'),
   'DuplicateNickname-001': Intl.t('errors.duplicate-nickname'),
   'Timeout-0001': Intl.t('errors.timeout'),
-  'InvalidPromptInput-0001': Intl.t('errors.invalid-prompt-input'),
   'ActionCanceled-0001': Intl.t('errors.action-canceled'),
   PasswordRequired: Intl.t('errors.password-required'),
 };

@@ -77,9 +77,14 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	return true
 }
 
-// SendPromptInput is binded to the frontend
+// SendPromptInput is bound to the frontend
 func (a *WalletApp) SendPromptInput(input string) {
 	a.PromptInput <- input
+}
+
+// SendSignPromptInput is bound to the frontend
+func (a *WalletApp) SendSignPromptInput(password string, fees string) {
+	a.PromptInput <- SignPromptInput{Password: password, Fees: fees}
 }
 
 // AbortAction is bound to the frontend

@@ -30,6 +30,10 @@ export function SendPromptInput(arg1) {
   return window['go']['walletapp']['WalletApp']['SendPromptInput'](arg1);
 }
 
+export function SendSignPromptInput(arg1, arg2) {
+  return window['go']['walletapp']['WalletApp']['SendSignPromptInput'](arg1, arg2);
+}
+
 export function Show() {
   return window['go']['walletapp']['WalletApp']['Show']();
 }

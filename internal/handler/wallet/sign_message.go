@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/awnumar/memguard"
 	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -56,7 +55,11 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 	}
 
-	password, _ := promptOutput.(*memguard.LockedBuffer)
+	output, ok := promptOutput.(*walletapp.SignPromptOutput)
+	if !ok {
+		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrPromptInputType), utils.ErrPromptInputType, http.StatusInternalServerError)
+	}
+	password := output.Password
 
 	signature, err := acc.Sign(password, []byte(params.Body.Message))
 	if err != nil {

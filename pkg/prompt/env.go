@@ -16,7 +16,9 @@ func (e *envPrompter) PromptRequest(req PromptRequest) {
 		password := os.Getenv("WALLET_PASSWORD")
 
 		switch req.Action {
-		case walletapp.Delete, walletapp.Sign, walletapp.TradeRolls, walletapp.NewPassword, walletapp.Unprotect:
+		case walletapp.Sign, walletapp.TradeRolls:
+			e.PromptApp.PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "500"}
+		case walletapp.Delete, walletapp.NewPassword, walletapp.Unprotect:
 			e.PromptApp.PromptInput <- password
 		}
 	}()

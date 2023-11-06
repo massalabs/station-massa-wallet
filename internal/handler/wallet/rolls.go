@@ -12,6 +12,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/buyrolls"
@@ -59,7 +60,12 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			})
 	}
 
-	password, _ := promptOutput.(*memguard.LockedBuffer)
+	output, ok := promptOutput.(*walletapp.SignPromptOutput)
+	if !ok {
+		return newErrorResponse(fmt.Sprintf("prompting password for roll: %v", utils.ErrPromptInputType), utils.ErrPromptInputType, http.StatusInternalServerError)
+	}
+
+	password := output.Password
 
 	operation, err := doTradeRolls(acc, password, amount, fee, *params.Body.Side, t.massaClient)
 	if err != nil {

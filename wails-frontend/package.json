@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "jest",
     "lint": "eslint .",
@@ -19,11 +19,14 @@
   "dependencies": {
     "@massalabs/massa-web3": "^1.17.1",
     "@massalabs/react-ui-kit": "^0.0.4-dev",
+    "bignumber": "^1.1.0",
     "dot-object": "^2.1.4",
     "esbuild": "^0.17.19",
     "react": "^18.2.0",
+    "react-currency-input-field": "^3.6.11",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
+    "react-number-format": "^5.3.1",
     "react-router-dom": "^6.11.1",
     "zustand": "^4.3.8"
   },
