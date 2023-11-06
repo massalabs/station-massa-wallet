@@ -2,7 +2,7 @@ import { useState, FormEvent } from 'react';
 
 import {
   Button,
-  Currency,
+  Money,
   PopupModal,
   PopupModalContent,
   PopupModalHeader,
@@ -150,13 +150,13 @@ function Advanced({ ...props }) {
                 {Intl.t('send-coins.custom-fees')}:
               </p>
             </div>
-            <Currency
+            <Money
               placeholder={Intl.t('send-coins.custom-fees')}
               name="fees"
               variant="nMAS"
               value={fees === 0 ? '' : fees}
               disabled={!customFees}
-              onValueChange={(value) => setFees(value)}
+              onValueChange={(event) => setFees(event.value)}
               error={error?.fees}
             />
 

@@ -159,7 +159,7 @@ describe('E2E | Acceptance | Home | Receive', () => {
 
       cy.visit(generatedLink);
 
-      cy.get('[data-testid="currency-field"').should(
+      cy.get('[data-testid="money-field"').should(
         'have.value',
         customFormatNumber(amount),
       );
