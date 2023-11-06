@@ -84,7 +84,7 @@ func Test_traderolls_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -107,7 +107,7 @@ func Test_traderolls_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)

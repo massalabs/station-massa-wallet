@@ -130,7 +130,7 @@ function NewPassword() {
         </div>
         <div className="pt-4 flex gap-4">
           <div className="max-w-min">
-            <Button variant={'secondary'} onClick={handleCancel}>
+            <Button variant="secondary" onClick={handleCancel}>
               Cancel
             </Button>
           </div>

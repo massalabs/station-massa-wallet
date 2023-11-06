@@ -32,7 +32,7 @@ function ConfirmDelete() {
         </p>
       </div>
       <div className="pt-4 flex gap-4">
-        <Button variant={'secondary'} onClick={handleCancel}>
+        <Button variant="secondary" onClick={handleCancel}>
           Cancel
         </Button>
         <Button preIcon={<FiTrash2 />} onClick={handleConfirm}>

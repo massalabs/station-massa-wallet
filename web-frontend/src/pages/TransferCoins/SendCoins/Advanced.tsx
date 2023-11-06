@@ -31,7 +31,7 @@ function Advanced({ ...props }) {
 
   const isOneOfPressedFees = Object.values(presetFees).includes(currentFees);
   const initialFees = !isOneOfPressedFees ? currentFees : 0;
-  const initialPressetFees = !isOneOfPressedFees
+  const initialPresetFees = !isOneOfPressedFees
     ? '0'
     : currentFees || PRESET_STANDARD;
   const initialCustomFees = !isOneOfPressedFees || false;
@@ -39,7 +39,7 @@ function Advanced({ ...props }) {
   const [error, setError] = useState<InputsErrors | null>(null);
   const [fees, setFees] = useState<number | string | undefined>(initialFees);
   const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
-  const [presetFee, setPresetFee] = useState<string>(initialPressetFees);
+  const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
   function handleGasFeesOption(isCustomFees: boolean) {
     setCustomFees(isCustomFees);

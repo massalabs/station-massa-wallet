@@ -56,7 +56,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "14400"}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -74,7 +74,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -97,14 +97,14 @@ func Test_walletSign_Handle(t *testing.T) {
 		//nolint:staticcheck
 		go func(res chan walletapp.EventData) {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- "this is not the password"
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: "this is not the password", Fees: "1000"}
 			// forward test result to test goroutine
 			failRes := <-resChan
 
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send password to prompter app to unlock the handler
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
 
 			// forward test result to test goroutine
 			res <- (<-resChan)
@@ -122,7 +122,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		//nolint:staticcheck
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- "this is not the password"
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: "this is not the password", Fees: "1000"}
 			// forward test result to test goroutine
 			failRes := <-resChan
 
@@ -142,7 +142,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)

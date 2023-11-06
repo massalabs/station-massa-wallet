@@ -59,7 +59,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 		return operations.NewDeleteAccountUnauthorized().WithPayload(
 			&models.Error{
 				Code:    fmt.Sprint(http.StatusUnauthorized),
-				Message: "Unable to unprotect account",
+				Message: fmt.Sprintf("error validating password: %v", err.Error()),
 			})
 	}
 

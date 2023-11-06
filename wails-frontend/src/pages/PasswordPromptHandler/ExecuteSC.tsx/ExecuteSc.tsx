@@ -1,48 +1,42 @@
-import { WindowSetSize } from '@wailsjs/runtime/runtime';
-
-import { PromptRequestData } from '../Sign';
+import { Description } from '../Description';
+import { From } from '../From';
+import { SignBodyProps } from '../Sign';
 import Intl from '@/i18n/i18n';
-import {
-  formatStandard,
-  masToken,
-  maskAddress,
-  Unit,
-  maskNickname,
-} from '@/utils';
+import { formatStandard, masToken, Unit } from '@/utils';
 
-export function ExecuteSC(props: PromptRequestData) {
-  const { MaxCoins, WalletAddress, OperationType, Fees, Nickname } = props;
-
-  WindowSetSize(460, 560);
+export function ExecuteSC(props: SignBodyProps) {
+  const {
+    MaxCoins,
+    WalletAddress,
+    OperationType,
+    Nickname,
+    Description: description,
+    children,
+  } = props;
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default">
-      <div className="flex w-full justify-between">
-        <p>{Intl.t('password-prompt.sign.from')}</p>
-        <div className="flex flex-col">
-          <p className="mas-menu-default truncate">{maskNickname(Nickname)}</p>
-          <p className="mas-caption">{maskAddress(WalletAddress)}</p>
-        </div>
-      </div>
+      <From nickname={Nickname} walletAddress={WalletAddress} />
+
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.operation-type')}</p>
         <p>{OperationType}</p>
       </div>
-      <hr className="h-0.25 bg-neutral opacity-40 w-full" />
+
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.max-coins')} </p>
         <p>
           {formatStandard(MaxCoins, Unit.NanoMAS)} {masToken}
         </p>
       </div>
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.fees')}</p>
-        <p>
-          {formatStandard(Fees, Unit.NanoMAS)} {masToken}
-        </p>
-      </div>
+
+      <hr className="h-0.25 bg-neutral opacity-40 w-full" />
+
+      <Description description={description} />
+
+      {children}
     </div>
   );
 }
