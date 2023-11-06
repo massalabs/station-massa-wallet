@@ -3,7 +3,7 @@ import { useState, FormEvent } from 'react';
 import {
   Button,
   Identicon,
-  Currency,
+  Money,
   MassaLogo,
   PopupModal,
   PopupModalContent,
@@ -90,12 +90,12 @@ function GenerateLink(props: GenerateLinkProps) {
               <p className="mas-body2">
                 {Intl.t('receive-coins.receive-amount')}
               </p>
-              <Currency
+              <Money
                 data-testid="amount-to-send"
                 placeholder={Intl.t('receive-coins.amount-to-ask')}
                 name="amount"
                 value={amount}
-                onValueChange={(value) => setAmount(value)}
+                onValueChange={(event) => setAmount(event.value)}
                 error={error?.amount}
               />
             </div>

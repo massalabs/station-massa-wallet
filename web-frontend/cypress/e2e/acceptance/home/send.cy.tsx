@@ -120,7 +120,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const standardFees = '1000';
 
       navigateToTransfercoinsOfAccountIndex(2);
-      cy.get('[data-testid="currency-field"')
+      cy.get('[data-testid="money-field"')
         .type(amount)
         .should('have.value', '550.1234 MAS');
       cy.get('[data-testid="input-field"').type(recipientAccount.address);
@@ -166,25 +166,25 @@ describe('E2E | Acceptance | Home | Send', () => {
                   `${baseUrl}/${account.nickname}/transfer-coins`,
                 );
                 cy.get(`[data-testid="send-percent-25"]`).click();
-                cy.get('[data-testid="currency-field"').should(
+                cy.get('[data-testid="money-field"').should(
                   'have.value',
                   '250 MAS',
                 );
 
                 cy.get(`[data-testid="send-percent-50"]`).click();
-                cy.get('[data-testid="currency-field"').should(
+                cy.get('[data-testid="money-field"').should(
                   'have.value',
                   '500 MAS',
                 );
 
                 cy.get(`[data-testid="send-percent-75"]`).click();
-                cy.get('[data-testid="currency-field"').should(
+                cy.get('[data-testid="money-field"').should(
                   'have.value',
                   '750 MAS',
                 );
 
                 cy.get(`[data-testid="send-percent-100"]`).click();
-                cy.get('[data-testid="currency-field"').should(
+                cy.get('[data-testid="money-field"').should(
                   'have.value',
                   '999.999999 MAS',
                 );
@@ -228,9 +228,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const standardFees = '1000';
       navigateToTransfercoinsOfAccountIndex(2);
 
-      cy.get('[data-testid="currency-field"')
-        .should('exist')
-        .type(invalidAmount);
+      cy.get('[data-testid="money-field"').should('exist').type(invalidAmount);
 
       cy.get('[data-testid="input-field"').type(recipientAccount.address);
       cy.get('[data-testid="button"]').contains('Send').click();
@@ -240,7 +238,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Invalid amount',
       );
 
-      cy.get('[data-testid="currency-field"').clear().type(tooMuch);
+      cy.get('[data-testid="money-field"').clear().type(tooMuch);
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -248,7 +246,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Insufficient funds',
       );
 
-      cy.get('[data-testid="currency-field"').clear().type(tooLow);
+      cy.get('[data-testid="money-field"').clear().type(tooLow);
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -256,7 +254,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Amount must be greater than zero',
       );
 
-      cy.get('[data-testid="currency-field"').clear().type(notEnoughForFees);
+      cy.get('[data-testid="money-field"').clear().type(notEnoughForFees);
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -271,7 +269,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const amount = 42;
 
       navigateToTransfercoinsOfAccountIndex(2);
-      cy.get('[data-testid="currency-field"')
+      cy.get('[data-testid="money-field"')
         .type(amount)
         .should('have.value', '42 MAS');
 

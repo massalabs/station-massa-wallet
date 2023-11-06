@@ -1,6 +1,6 @@
 import { useState, FormEvent, useEffect } from 'react';
 
-import { Balance, Button, Currency, Input } from '@massalabs/react-ui-kit';
+import { Balance, Button, Money, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import Advanced from './Advanced';
@@ -116,11 +116,11 @@ export function SendForm({ ...props }) {
           </p>
         </div>
         <div className="pb-3.5">
-          <Currency
+          <Money
             placeholder="Amount to send"
             name="amount"
             value={amount}
-            onValueChange={(value) => setAmount(value)}
+            onValueChange={(event) => setAmount(event.value)}
             error={error?.amount}
           />
         </div>
