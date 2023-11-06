@@ -849,7 +849,6 @@ provides a secure and user-friendly recovery process.
 1. By providing previously exported and stored private key of the wallet. 
 
 2. By attaching .yaml file of the wallet. 
-**describe where are they stored per OS**
 
 IMPORTANT: After a successful uninstallation, the user's computer must retain the Wallet .yaml files.
 
@@ -866,12 +865,7 @@ Massa Wallet is compatible with major desktop operating systems, including Windo
 - MacOs AMD
 - Ubuntu 20.4
 
-Massa Wallet runs on Chromium-based and Firefox browsers.
-Supported browser versions:
-
-1. Chromium version -> **Identify Chromium version supported, list browser versions for main chromium-based browsers**
-
-2. Firefox version 114 and higher.
+Massa Wallet runs on Chromium-based browsers, and Firefox (version 114 and higher).
 
 == User Interface & User Experience Design
 
