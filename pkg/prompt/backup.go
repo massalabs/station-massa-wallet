@@ -32,7 +32,7 @@ func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) 
 
 	default:
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrPromptInputType})
+			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputType.Error()})
 		return nil, false, fmt.Errorf("invalid backup method: %s", method)
 	}
 }

@@ -57,7 +57,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 
 	output, ok := promptOutput.(*walletapp.SignPromptOutput)
 	if !ok {
-		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrPromptInputType), utils.ErrPromptInputType, http.StatusInternalServerError)
+		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrInvalidInputType.Error()), utils.ErrInvalidInputType.Error(), http.StatusInternalServerError)
 	}
 	password := output.Password
 

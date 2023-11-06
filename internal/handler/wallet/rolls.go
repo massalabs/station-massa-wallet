@@ -47,7 +47,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	}
 
 	promptRequest := prompt.PromptRequest{
-		Action: walletapp.TradeRolls,
+		Action: walletapp.Sign,
 		Msg:    fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
 	}
 
@@ -62,7 +62,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	output, ok := promptOutput.(*walletapp.SignPromptOutput)
 	if !ok {
-		return newErrorResponse(fmt.Sprintf("prompting password for roll: %v", utils.ErrPromptInputType), utils.ErrPromptInputType, http.StatusInternalServerError)
+		return newErrorResponse(fmt.Sprintf("prompting password for roll: %v", utils.ErrInvalidInputType.Error()), utils.ErrInvalidInputType.Error(), http.StatusInternalServerError)
 	}
 
 	password := output.Password

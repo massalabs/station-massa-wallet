@@ -24,6 +24,14 @@ type WalletPrompter struct {
 	PromptLocker
 }
 
+func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
+	return &WalletPrompter{
+		PromptLocker: PromptLocker{
+			PromptApp: app,
+		},
+	}
+}
+
 func (w *WalletPrompter) PromptRequest(req PromptRequest) {
 	runtime.EventsEmit(w.PromptApp.Ctx, walletapp.PromptRequestEvent, req)
 	w.PromptApp.Show()
@@ -39,14 +47,6 @@ func (w *WalletPrompter) SelectBackupFilepath(nickname string) (string, error) {
 		DefaultFilename: wallet.Filename(nickname),
 		Filters:         []runtime.FileFilter{{DisplayName: "Account File (*.yaml)", Pattern: "*.yaml"}},
 	})
-}
-
-func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
-	return &WalletPrompter{
-		PromptLocker: PromptLocker{
-			PromptApp: app,
-		},
-	}
 }
 
 // Verifies at compilation time that WalletPrompter implements WalletPrompterInterface interface.
@@ -81,7 +81,7 @@ func WakeUpPrompt(
 			switch req.Action {
 			case walletapp.Delete, walletapp.Unprotect:
 				output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)
-			case walletapp.Sign, walletapp.TradeRolls:
+			case walletapp.Sign:
 				output, keepListening, err = handleSignPrompt(prompterApp, input, acc)
 			case walletapp.NewPassword:
 				output, keepListening, err = handleNewPasswordPrompt(prompterApp, input)
@@ -126,9 +126,9 @@ func WakeUpPrompt(
 }
 
 func InputTypeError(prompterApp WalletPrompterInterface) error {
-	logger.Error(InputTypeErr)
+	logger.Error(utils.ErrInvalidInputType.Error())
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: utils.ErrPromptInputType})
+		walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputType.Error()})
 
-	return fmt.Errorf(InputTypeErr)
+	return utils.ErrInvalidInputType
 }

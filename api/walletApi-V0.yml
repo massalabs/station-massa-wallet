@@ -642,6 +642,12 @@ definitions:
         format: byte
         x-nullable: false
         readOnly: true
+      operation:
+        description: The modified operation (usr can change the fees).
+        type: string
+        format: byte
+        x-nullable: false
+        readOnly: true
       correlationId:
         $ref: "#/definitions/CorrelationId"
   CorrelationId:

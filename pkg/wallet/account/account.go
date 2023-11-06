@@ -12,6 +12,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/types"
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 	"gopkg.in/yaml.v2"
+	"lukechampine.com/blake3"
 )
 
 const (
@@ -221,6 +222,12 @@ func (a *Account) Sign(password *memguard.LockedBuffer, data []byte) ([]byte, er
 // SignWithPrivateKey signs the data with the private key and destroys the private key.
 func (a *Account) SignWithPrivateKey(privateKey *memguard.LockedBuffer, data []byte) []byte {
 	return a.CipheredData.SignWithPrivateKey(privateKey, data)
+}
+
+func (a *Account) VerifySignature(data, signature []byte) bool {
+	digest := blake3.Sum256(data)
+
+	return a.PublicKey.VerifySignature(digest[:], signature[1:])
 }
 
 func (a *Account) Marshal() ([]byte, error) {

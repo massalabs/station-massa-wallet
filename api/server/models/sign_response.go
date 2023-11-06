@@ -23,6 +23,11 @@ type SignResponse struct {
 	// Format: byte
 	CorrelationID CorrelationID `json:"correlationId,omitempty"`
 
+	// The modified operation (usr can change the fees).
+	// Read Only: true
+	// Format: byte
+	Operation strfmt.Base64 `json:"operation,omitempty"`
+
 	// Public part of the key pair used to sign the operation.
 	// Read Only: true
 	PublicKey string `json:"publicKey,omitempty"`
@@ -72,6 +77,10 @@ func (m *SignResponse) ContextValidate(ctx context.Context, formats strfmt.Regis
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateOperation(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidatePublicKey(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -98,6 +107,15 @@ func (m *SignResponse) contextValidateCorrelationID(ctx context.Context, formats
 		} else if ce, ok := err.(*errors.CompositeError); ok {
 			return ce.ValidateName("correlationId")
 		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *SignResponse) contextValidateOperation(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "operation", "body", strfmt.Base64(m.Operation)); err != nil {
 		return err
 	}
 

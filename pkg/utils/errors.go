@@ -18,7 +18,6 @@ const (
 	ErrDuplicateNickname = "DuplicateNickname-001"
 	ErrTimeoutMsg        = "Timeout-0001"
 	ErrNetwork           = "Network-0001"
-	ErrPromptInputType   = "InvalidPromptInput-0001"
 )
 
 // Message codes
@@ -38,6 +37,7 @@ var (
 	ErrCache                 = errors.New("Error loading cache")
 	ErrWrongPassword         = errors.New("wrong password")
 	ErrActionCanceled        = errors.New("Action canceled by user")
+	ErrInvalidInputType      = errors.New("invalid prompt input type")
 	ErrTimeout               = errors.New("Password prompt reached timeout")
 )
 
