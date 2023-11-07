@@ -195,20 +195,19 @@ describe('E2E | Acceptance | Home | Send', () => {
     });
 
     it('should transfer to accounts', () => {
-      const randomIndex = Math.floor(Math.random() * mockedAccounts.length);
-      const selectedAccount = mockedAccounts.at(randomIndex);
+      const selectedAccount = mockedAccounts.at(0);
 
       navigateToTransfercoinsOfAccountIndex(2);
 
       cy.get('[data-testid="transfer-between-accounts"]').click();
 
-      cy.get('[data-testid="popup-modal-content"').should('be.visible');
+      cy.get('[data-testid="popup-modal-content"]').should('be.visible');
 
       for (let i = 0; i < mockedAccounts.length; i++) {
         cy.get(`[data-testid="selector-account-${i}"]`).should('be.visible');
       }
 
-      cy.get(`[data-testid="selector-account-${randomIndex}"]`).click();
+      cy.get(`[data-testid="selector-account-0"]`).click();
       cy.get(`[data-testid="input-field"]`).should(
         'have.value',
         selectedAccount.address,
