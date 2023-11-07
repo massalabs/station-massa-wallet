@@ -60,7 +60,7 @@
       "confirm-fees": "confirm change",
       "reset-fees": "reset to default",
       "sending-amount": "Sending amount ",
-      "max-coins": "Max coins",
+      "max-coins": "Max. spendable MAS",
       "roll-amount": "Roll amount",
       "amount-to-send": "Amount to send",
       "spend-amount": "Spend amount",
