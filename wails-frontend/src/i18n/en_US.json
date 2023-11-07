@@ -62,7 +62,16 @@
       "sending-amount": "Sending amount ",
       "max-coins": "Max coins",
       "roll-amount": "Roll amount",
-      "amount-to-send": "Amount to send"
+      "amount-to-send": "Amount to send",
+      "spend-amount": "Spend amount",
+      "receive-amount": "Receive amount",
+      "operation-types": {
+        "0": "Transaction",
+        "1": "Roll buy",
+        "2": "Roll sell",
+        "3": "Execute SC",
+        "4": "Call SC"
+      }
     }
   },
   "backup": {

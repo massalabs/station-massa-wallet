@@ -22,7 +22,7 @@ export function ExecuteSC(props: SignBodyProps) {
 
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t('password-prompt.sign.operation-type')}</p>
-        <p>{OperationType}</p>
+        <p>{Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}</p>
       </div>
 
       <div className="flex w-full items-center justify-between">

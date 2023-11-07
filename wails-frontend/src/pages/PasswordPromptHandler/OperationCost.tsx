@@ -85,8 +85,8 @@ export function OperationCost(props: OperationCostProps) {
         >
           <AccordionContent customClass="px-0 py-0">
             <div className="flex flex-col gap-1 text-f-disabled-1">
-              <div className="flex flex-row justify-between">
-                <p className="flex flex-row mas-caption">
+              <div className="flex justify-between">
+                <p className="flex mas-caption">
                   <Tooltip
                     className="mr-1"
                     icon={<FiInfo size={16} />}
@@ -110,8 +110,8 @@ export function OperationCost(props: OperationCostProps) {
                 />
               </div>
               {!hideCoins && (
-                <div className="flex flex-row justify-between pb-2">
-                  <p className="flex flex-row mas-caption">
+                <div className="flex justify-between pb-2">
+                  <p className="flex mas-caption">
                     <Tooltip
                       className="mr-1"
                       icon={<FiInfo size={16} />}
@@ -132,11 +132,11 @@ export function OperationCost(props: OperationCostProps) {
                   />
                 </div>
               )}
-              <div className="flex flex-row justify-end gap-1">
+              <div className="flex justify-end gap-1">
                 {isEditing ? (
                   <>
                     <button
-                      className="flex flex-row hover:cursor-pointer"
+                      className="flex hover:cursor-pointer"
                       onClick={handleConfirm}
                     >
                       <FiCheck size={16} className="mr-1" />
@@ -144,7 +144,7 @@ export function OperationCost(props: OperationCostProps) {
                     </button>
                     <p className="px-1 hover:cursor-default">|</p>
                     <button
-                      className="flex flex-row hover:cursor-pointer"
+                      className="flex hover:cursor-pointer"
                       onClick={handleReset}
                     >
                       <FiRotateCcw size={16} className="mr-1" />
@@ -153,7 +153,7 @@ export function OperationCost(props: OperationCostProps) {
                   </>
                 ) : (
                   <button
-                    className="flex flex-row hover:cursor-pointer"
+                    className="flex hover:cursor-pointer"
                     onClick={handleEdit}
                   >
                     <FiEdit2 size={16} className="mr-1" />

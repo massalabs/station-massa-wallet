@@ -42,7 +42,7 @@ export interface SignBodyProps {
   Address: string;
   Function: string;
   WalletAddress: string;
-  OperationType?: string;
+  OperationType: number;
   MaxCoins: string;
   RollCount: number;
   RecipientAddress: string;
@@ -97,7 +97,7 @@ export function Sign() {
     save(e);
   }
 
-  function _getTitle(operation: string | undefined) {
+  function _getTitle(operation: number | undefined) {
     if (operation === OPER_PLAIN_TEXT)
       return Intl.t('password-prompt.title.sign-message');
 

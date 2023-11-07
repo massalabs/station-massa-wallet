@@ -49,7 +49,9 @@ export function CallSc(props: SignBodyProps) {
           </p>
         </div>
         <div className="flex flex-col items-end h-fit">
-          <p>{OperationType}</p>
+          <p>
+            {Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}
+          </p>
           <p className="mas-caption">{CalledFunction}</p>
         </div>
       </div>

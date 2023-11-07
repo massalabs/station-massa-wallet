@@ -17,7 +17,7 @@ import (
 
 type PromptRequestSignMessageData struct {
 	Description   string
-	OperationType string
+	OperationType int
 	WalletAddress string
 	PlainText     string
 	DisplayData   bool
