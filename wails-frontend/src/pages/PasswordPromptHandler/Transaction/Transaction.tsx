@@ -1,7 +1,7 @@
-import { SignBodyProps } from '../Sign';
-import { Description } from '../SignComponentUtils/Description';
-import { FromTo } from '../SignComponentUtils/FromTo';
 import Intl from '@/i18n/i18n';
+import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
+import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
+import { FromTo } from '@/pages/PasswordPromptHandler/SignComponentUtils/FromTo';
 import { formatStandard, masToken, Unit } from '@/utils';
 
 export function Transaction(props: SignBodyProps) {

@@ -1,8 +1,8 @@
-import { SignBodyProps } from '../Sign';
-import { Description } from '../SignComponentUtils/Description';
-import { From } from '../SignComponentUtils/From';
 import { OPER_BUY_ROLL } from '@/const/operations';
 import Intl from '@/i18n/i18n';
+import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
+import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
+import { From } from '@/pages/PasswordPromptHandler/SignComponentUtils/From';
 import { formatStandard, masToken } from '@/utils';
 
 export function BuySellRoll(props: SignBodyProps) {

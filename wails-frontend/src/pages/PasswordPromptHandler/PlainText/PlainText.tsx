@@ -2,9 +2,9 @@ import { AccordionCategory, AccordionContent } from '@massalabs/react-ui-kit';
 import { WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 
-import { SignBodyProps } from '../Sign';
-import { From } from '../SignComponentUtils/From';
 import Intl from '@/i18n/i18n';
+import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
+import { From } from '@/pages/PasswordPromptHandler/SignComponentUtils/From';
 
 export function PlainText(props: SignBodyProps) {
   const { PlainText, DisplayData, WalletAddress, Description, Nickname } =
