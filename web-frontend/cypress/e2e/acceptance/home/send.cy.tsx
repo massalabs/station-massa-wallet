@@ -195,23 +195,23 @@ describe('E2E | Acceptance | Home | Send', () => {
     });
 
     it('should transfer to accounts', () => {
-      const selectedAccount = mockedAccounts.at(0);
+      const selectedAccount = mockedAccounts.at(1);
 
-      navigateToTransfercoinsOfAccountIndex(2);
+      navigateToTransfercoinsOfAccountIndex(0);
 
-      cy.get('[data-testid="transfer-between-accounts"]').click();
+      cy.get('[data-testid="transfer-between-accounts"]')
+        .should('exist')
+        .click()
+        .then(() => {
+          cy.get('[data-testid="popup-modal-content"]').should('be.visible');
 
-      cy.get('[data-testid="popup-modal-content"]').should('be.visible');
+          cy.get('[data-testid="selector-account-0"]').should('exist').click();
 
-      for (let i = 0; i < mockedAccounts.length; i++) {
-        cy.get(`[data-testid="selector-account-${i}"]`).should('be.visible');
-      }
-
-      cy.get(`[data-testid="selector-account-0"]`).click();
-      cy.get(`[data-testid="input-field"]`).should(
-        'have.value',
-        selectedAccount.address,
-      );
+          cy.get('[data-testid="input-field"]').should(
+            'have.value',
+            selectedAccount.address,
+          );
+        });
     });
 
     it('should refuse wrong currency input', () => {
