@@ -25,16 +25,17 @@ export interface OperationCostProps {
   fees: string; // in MAS
   defaultFees: string; // in MAS
   setFees: (fees: string) => void;
+  isEditing?: boolean;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export function OperationCost(props: OperationCostProps) {
   const hideCoins = props.coins === undefined;
 
   const coins = toMAS(props.coins || 0).toFixed(9);
-  const { fees, setFees, defaultFees } = props;
+  const { fees, setFees, defaultFees, isEditing, setIsEditing } = props;
 
   const [operationCost, setOperationCost] = useState(computeCost());
-  const [isEditing, setIsEditing] = useState(false);
 
   if (fees === '') setFees(defaultFees);
 
@@ -85,8 +86,8 @@ export function OperationCost(props: OperationCostProps) {
         >
           <AccordionContent customClass="px-0 py-0">
             <div className="flex flex-col gap-1 text-f-disabled-1">
-              <div className="flex flex-row justify-between">
-                <p className="flex flex-row mas-caption">
+              <div className="flex justify-between">
+                <p className="flex mas-caption">
                   <Tooltip
                     className="mr-1"
                     icon={<FiInfo size={16} />}
@@ -106,12 +107,12 @@ export function OperationCost(props: OperationCostProps) {
                   customClass="mas-caption"
                   disabled={!isEditing}
                   value={fees}
-                  onValueChange={(event) => setFees(event.value)}
+                  onValueChange={(event: any) => setFees(event.value)}
                 />
               </div>
               {!hideCoins && (
-                <div className="flex flex-row justify-between pb-2">
-                  <p className="flex flex-row mas-caption">
+                <div className="flex justify-between pb-2">
+                  <p className="flex mas-caption">
                     <Tooltip
                       className="mr-1"
                       icon={<FiInfo size={16} />}
@@ -132,11 +133,11 @@ export function OperationCost(props: OperationCostProps) {
                   />
                 </div>
               )}
-              <div className="flex flex-row justify-end gap-1">
+              <div className="flex justify-end gap-1">
                 {isEditing ? (
                   <>
                     <button
-                      className="flex flex-row hover:cursor-pointer"
+                      className="flex hover:cursor-pointer"
                       onClick={handleConfirm}
                     >
                       <FiCheck size={16} className="mr-1" />
@@ -153,7 +154,7 @@ export function OperationCost(props: OperationCostProps) {
                   </>
                 ) : (
                   <button
-                    className="flex flex-row hover:cursor-pointer"
+                    className="flex hover:cursor-pointer"
                     onClick={handleEdit}
                   >
                     <FiEdit2 size={16} className="mr-1" />

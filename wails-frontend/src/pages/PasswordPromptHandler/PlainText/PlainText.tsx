@@ -2,7 +2,7 @@ import { AccordionCategory, AccordionContent } from '@massalabs/react-ui-kit';
 import { WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 
-import { From } from '../From';
+import { From } from '../SignComponentUtils/From';
 import { SignBodyProps } from '../Sign';
 import Intl from '@/i18n/i18n';
 
