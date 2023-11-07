@@ -13,16 +13,24 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 )
 
 // NewSignParams creates a new SignParams object
-//
-// There are no default values defined in the spec.
+// with the default values initialized.
 func NewSignParams() SignParams {
 
-	return SignParams{}
+	var (
+		// initialize parameters with default values
+
+		allowFeeEditionDefault = bool(false)
+	)
+
+	return SignParams{
+		AllowFeeEdition: &allowFeeEditionDefault,
+	}
 }
 
 // SignParams contains all the bound params for the sign operation
@@ -34,6 +42,11 @@ type SignParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
+	/*Whether to allow user to edit the fee value in the sign prompt.
+	  In: query
+	  Default: false
+	*/
+	AllowFeeEdition *bool
 	/*
 	  Required: true
 	  In: body
@@ -54,6 +67,13 @@ func (o *SignParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 	var res []error
 
 	o.HTTPRequest = r
+
+	qs := runtime.Values(r.URL.Query())
+
+	qAllowFeeEdition, qhkAllowFeeEdition, _ := qs.GetOK("allow-fee-edition")
+	if err := o.bindAllowFeeEdition(qAllowFeeEdition, qhkAllowFeeEdition, route.Formats); err != nil {
+		res = append(res, err)
+	}
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
@@ -90,6 +110,30 @@ func (o *SignParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindAllowFeeEdition binds and validates parameter AllowFeeEdition from query.
+func (o *SignParams) bindAllowFeeEdition(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSignParams()
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("allow-fee-edition", "query", "bool", raw)
+	}
+	o.AllowFeeEdition = &value
+
 	return nil
 }
 

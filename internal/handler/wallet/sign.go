@@ -53,6 +53,7 @@ type PromptRequestSignData struct {
 	RecipientNickname string
 	Amount            string
 	PlainText         string
+	AllowFeeEdition   bool
 }
 
 // NewSign instantiates a sign Handler
@@ -72,7 +73,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return errResp
 	}
 
-	promptRequest, fees, err := w.getPromptRequest(params.Body.Operation.String(), acc, params.Body.Description)
+	promptRequest, fees, err := w.getPromptRequest(params, acc, params.Body.Description)
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorSignDecodeMessage, http.StatusBadRequest)
 	}
@@ -221,22 +222,15 @@ func prepareOperation(acc *account.Account, fees uint64, operationB64 string, op
 	return operation, msgToSign, nil
 }
 
-func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, description string) (*prompt.PromptRequest, uint64, error) {
-	var opType uint64
-	var err error
-
-	addressBytes, err := acc.Address.MarshalText()
-	if err != nil {
-		return nil, 0, fmt.Errorf("failed to marshal address: %w", err)
-	}
-	address := string(addressBytes)
+func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account.Account, description string) (*prompt.PromptRequest, uint64, error) {
+	msgToSign := params.Body.Operation.String()
 
 	decodedMsg, fees, _, err := sendoperation.DecodeMessage64(msgToSign)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to decode transaction message: %w", err)
 	}
 
-	opType, err = sendoperation.DecodeOperationType(decodedMsg)
+	opType, err := sendoperation.DecodeOperationType(decodedMsg)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to decode operation ID: %w", err)
 	}
@@ -264,11 +258,17 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 		return nil, 0, fmt.Errorf("failed to decode message of operation type: %d: %w", opType, err)
 	}
 
+	addressBytes, err := acc.Address.MarshalText()
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to marshal address: %w", err)
+	}
+
 	data.Description = description
 	data.Fees = strconv.FormatUint(fees, 10)
-	data.WalletAddress = address
+	data.WalletAddress = string(addressBytes)
 	data.Nickname = acc.Nickname
 	data.OperationType = int(opType)
+	data.AllowFeeEdition = *params.AllowFeeEdition
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,

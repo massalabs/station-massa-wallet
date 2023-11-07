@@ -51,6 +51,7 @@ export interface SignBodyProps {
   PlainText: string;
   DisplayData: boolean;
   Nickname: string;
+  AllowFeeEdition: boolean;
   children?: React.ReactNode;
 }
 
@@ -118,6 +119,7 @@ export function Sign() {
     setFees,
     isEditing,
     setIsEditing,
+    allowFeeEdition: signData.AllowFeeEdition,
   };
 
   return (

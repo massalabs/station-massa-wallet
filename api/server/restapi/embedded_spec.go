@@ -607,6 +607,14 @@ func init() {
             "schema": {
               "$ref": "#/definitions/SignRequest"
             }
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "x-nullable": true,
+            "description": "Whether to allow user to edit the fee value in the sign prompt.",
+            "name": "allow-fee-edition",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1757,6 +1765,14 @@ func init() {
             "schema": {
               "$ref": "#/definitions/SignRequest"
             }
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "x-nullable": true,
+            "description": "Whether to allow user to edit the fee value in the sign prompt.",
+            "name": "allow-fee-edition",
+            "in": "query"
           }
         ],
         "responses": {

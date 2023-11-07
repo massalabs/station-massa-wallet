@@ -244,6 +244,13 @@ paths:
           x-nullable: false
           schema:
             $ref: "#/definitions/SignRequest"
+        - in: query
+          name: allow-fee-edition
+          type: boolean
+          required: false
+          default: false
+          description: Whether to allow user to edit the fee value in the sign prompt.
+          x-nullable: true
       produces:
         - application/json
       responses:
