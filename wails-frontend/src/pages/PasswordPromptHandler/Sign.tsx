@@ -8,11 +8,11 @@ import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
+import { CallSc } from './CallSC/CallSc';
 import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
-import { CallSc } from './SignSC/CallSc';
 import { Transaction } from './Transaction/Transaction';
 import {
   OPER_BUY_ROLL,
