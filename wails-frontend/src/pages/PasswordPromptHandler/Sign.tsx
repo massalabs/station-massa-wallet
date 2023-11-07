@@ -10,8 +10,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
-import { OperationCost } from './OperationCost';
 import { PlainText } from './PlainText/PlainText';
+import { OperationCost } from './SignComponentUtils/OperationCost';
 import { CallSc } from './SignSC/CallSc';
 import { Transaction } from './Transaction/Transaction';
 import {
@@ -62,6 +62,7 @@ export function Sign() {
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [fees, setFees] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
 
   const signData = req.Data as SignBodyProps;
 
@@ -111,6 +112,14 @@ export function Sign() {
 
   WindowSetSize(winWidth, winHeight);
 
+  const operationCostsArgs = {
+    fees,
+    defaultFees: defaultFeesMAS,
+    setFees,
+    isEditing,
+    setIsEditing,
+  };
+
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
@@ -123,41 +132,27 @@ export function Sign() {
                   <CallSc {...signData}>
                     <OperationCost
                       coins={signData.Coins}
-                      fees={fees}
-                      defaultFees={defaultFeesMAS}
-                      setFees={setFees}
+                      {...operationCostsArgs}
                     />
                   </CallSc>
                 );
               case OPER_EXECUTE_SC:
                 return (
                   <ExecuteSC {...signData}>
-                    <OperationCost
-                      fees={fees}
-                      defaultFees={defaultFeesMAS}
-                      setFees={setFees}
-                    />
+                    <OperationCost {...operationCostsArgs} />
                   </ExecuteSC>
                 );
               case OPER_BUY_ROLL:
               case OPER_SELL_ROLL:
                 return (
                   <BuySellRoll {...signData}>
-                    <OperationCost
-                      fees={fees}
-                      defaultFees={defaultFeesMAS}
-                      setFees={setFees}
-                    />
+                    <OperationCost {...operationCostsArgs} />
                   </BuySellRoll>
                 );
               case OPER_TRANSACTION:
                 return (
                   <Transaction {...signData}>
-                    <OperationCost
-                      fees={fees}
-                      defaultFees={defaultFeesMAS}
-                      setFees={setFees}
-                    />
+                    <OperationCost {...operationCostsArgs} />
                   </Transaction>
                 );
               case OPER_PLAIN_TEXT:
@@ -184,10 +179,10 @@ export function Sign() {
           )}
         </div>
         <div className="pt-4 flex gap-4">
-          <Button variant="secondary" onClick={handleCancel}>
+          <Button variant={'secondary'} onClick={handleCancel}>
             {Intl.t('password-prompt.buttons.cancel')}
           </Button>
-          <Button preIcon={<FiLock />} type="submit">
+          <Button preIcon={<FiLock />} disabled={isEditing} type="submit">
             {Intl.t('password-prompt.buttons.sign')}
           </Button>
         </div>

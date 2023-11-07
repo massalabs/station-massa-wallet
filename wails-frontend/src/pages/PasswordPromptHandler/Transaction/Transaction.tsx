@@ -1,7 +1,7 @@
 import { FiArrowRight } from 'react-icons/fi';
 
-import { Description } from '../Description';
 import { SignBodyProps } from '../Sign';
+import { Description } from '../SignComponentUtils/Description';
 import Intl from '@/i18n/i18n';
 import {
   formatStandard,

@@ -1,6 +1,6 @@
-import { Description } from '../Description';
-import { From } from '../From';
 import { SignBodyProps } from '../Sign';
+import { Description } from '../SignComponentUtils/Description';
+import { From } from '../SignComponentUtils/From';
 import Intl from '@/i18n/i18n';
 import { formatStandard, masToken, Unit } from '@/utils';
 

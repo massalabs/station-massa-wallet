@@ -25,16 +25,17 @@ export interface OperationCostProps {
   fees: string; // in MAS
   defaultFees: string; // in MAS
   setFees: (fees: string) => void;
+  isEditing?: boolean;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export function OperationCost(props: OperationCostProps) {
   const hideCoins = props.coins === undefined;
 
   const coins = toMAS(props.coins || 0).toFixed(9);
-  const { fees, setFees, defaultFees } = props;
+  const { fees, setFees, defaultFees, isEditing, setIsEditing } = props;
 
   const [operationCost, setOperationCost] = useState(computeCost());
-  const [isEditing, setIsEditing] = useState(false);
 
   if (fees === '') setFees(defaultFees);
 
@@ -106,7 +107,7 @@ export function OperationCost(props: OperationCostProps) {
                   customClass="mas-caption"
                   disabled={!isEditing}
                   value={fees}
-                  onValueChange={(event) => setFees(event.value)}
+                  onValueChange={(event: any) => setFees(event.value)}
                 />
               </div>
               {!hideCoins && (
