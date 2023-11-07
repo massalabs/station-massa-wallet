@@ -1,9 +1,7 @@
-import { FiArrowRight } from 'react-icons/fi';
-
 import { Description } from '../SignComponentUtils/Description';
+import { FromTo } from '../SignComponentUtils/FromTo';
 import Intl from '@/i18n/i18n';
 import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
-import { maskAddress, maskNickname } from '@/utils';
 
 export function CallSc(props: SignBodyProps) {
   const {
@@ -18,26 +16,12 @@ export function CallSc(props: SignBodyProps) {
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default w-[326px]">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex flex-col">
-          <div className="flex gap-2">
-            <p className="mas-menu-active">
-              {Intl.t('password-prompt.sign.from')}
-            </p>
-            <p className="mas-menu-default">{maskNickname(Nickname)}</p>
-          </div>
-          <p className="mas-caption">{maskAddress(WalletAddress)}</p>
-        </div>
-        <div className="h-8 w-8 rounded-full flex items-center justify-center bg-neutral">
-          <FiArrowRight size={24} className="text-primary" />
-        </div>
-        <div className="flex flex-col">
-          <p className="mas-menu-active">
-            {Intl.t('password-prompt.sign.contract')}
-          </p>
-          <p className="mas-caption">{maskAddress(Address)}</p>
-        </div>
-      </div>
+      <FromTo
+        fromNickname={Nickname}
+        fromAddress={WalletAddress}
+        toAddress={Address}
+        label="password-prompt.sign.contract"
+      />
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
