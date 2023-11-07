@@ -118,7 +118,7 @@ function Advanced({ ...props }) {
       <PopupModalContent>
         <div className="pb-10">
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-row items-center mas-buttons mb-3">
+            <div className="flex items-center mas-buttons mb-3">
               <RadioButton
                 checked={!customFees}
                 onChange={() => handleGasFeesOption(false)}
@@ -131,13 +131,13 @@ function Advanced({ ...props }) {
                 {Intl.t('send-coins.preset')}
               </p>
             </div>
-            <div className="flex flex-row items-center w-full gap-4 mb-6">
+            <div className="flex items-center w-full gap-4 mb-6">
               {Object.keys(presetFees).map((type) => (
                 <FeesSelector key={type} name={type} />
               ))}
             </div>
 
-            <div className="flex flex-row items-center mas-buttons mb-3">
+            <div className="flex items-center mas-buttons mb-3">
               <RadioButton
                 checked={customFees}
                 onChange={() => handleGasFeesOption(true)}

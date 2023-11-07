@@ -49,7 +49,7 @@ export function SendConfirmation({ ...props }) {
     <>
       <div
         onClick={() => handleConfirm(false)}
-        className="flex flex-row just items-center hover:cursor-pointer mb-5 gap-2"
+        className="flex just items-center hover:cursor-pointer mb-5 gap-2"
       >
         <FiChevronLeft />
         <p>{Intl.t('send-coins.back-to-sending')}</p>
@@ -59,12 +59,12 @@ export function SendConfirmation({ ...props }) {
         data-testid="send-confirmation"
         className="flex flex-col p-10 bg-secondary rounded-lg mb-6"
       >
-        <div className="flex flex-row items-center pb-3 ">
+        <div className="flex items-center pb-3 ">
           <div data-testid="send-confirmation-info" className="pr-2 text-info">
             {Intl.t('send-coins.send-confirmation', { amount, fees })}
           </div>
           <div
-            className="flex flex-row relative items-center gap-1"
+            className="flex relative items-center gap-1"
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >

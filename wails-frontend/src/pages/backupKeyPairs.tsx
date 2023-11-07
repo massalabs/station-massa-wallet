@@ -146,7 +146,7 @@ function BackupKeyPairs() {
             />
           )}
         </div>
-        <div className="flex flex-row gap-4 pt-4">
+        <div className="flex gap-4 pt-4">
           {privateKey ? <CopyKey privateKey={privateKey} /> : <EnterKey />}
         </div>
       </form>

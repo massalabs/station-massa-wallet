@@ -109,7 +109,7 @@ export function SendForm({ ...props }) {
           {Intl.t('send-coins.account-balance')}
         </p>
         <Balance customClass="mb-5" amount={formattedBalance} />
-        <div className="flex flex-row justify-between w-full pb-3.5 ">
+        <div className="flex justify-between w-full pb-3.5 ">
           <p className="mas-body2"> {Intl.t('send-coins.send-action')} </p>
           <p className="mas-body2">
             {Intl.t('send-coins.available-balance')} <u>{formattedBalance}</u>
@@ -124,8 +124,8 @@ export function SendForm({ ...props }) {
             error={error?.amount}
           />
         </div>
-        <div className="flex flex-row-reverse">
-          <ul className="flex flex-row mas-body2">
+        <div className="flex-reverse">
+          <ul className="flex mas-body2">
             <li
               data-testid="send-percent-25"
               onClick={() =>
@@ -175,7 +175,7 @@ export function SendForm({ ...props }) {
           />
         </div>
         {filteredAccounts.length > 0 && (
-          <div className="flex flex-row-reverse pb-3.5">
+          <div className="flex-reverse pb-3.5">
             <p className="hover:cursor-pointer">
               <u
                 data-testid="transfer-between-accounts"

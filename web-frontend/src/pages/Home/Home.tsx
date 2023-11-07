@@ -80,7 +80,7 @@ export default function Home() {
               displayedContent={address}
               rawContent={address}
               error={Intl.t('errors.no-content-to-copy')}
-              className="flex flex-row items-center mas-body2 justify-between
+              className="flex items-center mas-body2 justify-between
               w-full h-12 px-3 rounded bg-primary cursor-pointer"
             />
           </div>

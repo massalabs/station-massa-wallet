@@ -62,7 +62,7 @@ const ImportFile = () => {
       <p className={account ? accountStyleSuccess : accountStyleNormal}>
         {baselineStr()}
       </p>
-      <div className="flex flex-row gap-4 pb-4 w-full">
+      <div className="flex gap-4 pb-4 w-full">
         <Button variant={'secondary'} onClick={handleCancel}>
           Cancel
         </Button>

@@ -21,7 +21,7 @@ export function Loading() {
         <div className="h-2 w-20 bg-c-disabled-1 rounded-lg animate-pulse mb-6"></div>
         <div
           data-testid="clipboard-field"
-          className="flex flex-row items-center mas-body2 justify-between
+          className="flex items-center mas-body2 justify-between
               w-full h-12 px-3 rounded bg-primary cursor-pointer"
         >
           <div className="h-2 w-16 bg-c-disabled-1 rounded-lg animate-pulse"></div>
