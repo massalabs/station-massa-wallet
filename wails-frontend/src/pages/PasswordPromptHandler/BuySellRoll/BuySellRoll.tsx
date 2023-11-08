@@ -1,19 +1,33 @@
-import { WindowSetSize } from '@wailsjs/runtime/runtime';
-
-import { PromptRequestData } from '../Sign';
+import { SignBodyProps } from '../Sign';
+import { Description } from '../SignComponentUtils/Description';
+import { From } from '../SignComponentUtils/From';
+import { OPER_BUY_ROLL } from '@/const/operations';
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken, Unit } from '@/utils';
+import { formatStandard, masToken } from '@/utils';
 
-export function BuySellRoll(props: PromptRequestData) {
-  const { RollCount, OperationType, Coins, Fees } = props;
+export function BuySellRoll(props: SignBodyProps) {
+  const {
+    Nickname,
+    WalletAddress,
+    RollCount,
+    OperationType,
+    Coins,
+    children,
+    Description: description,
+  } = props;
 
-  WindowSetSize(460, 460);
+  const label =
+    OperationType === OPER_BUY_ROLL
+      ? 'password-prompt.sign.spend-amount'
+      : 'password-prompt.sign.receive-amount';
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default">
+      <From nickname={Nickname} walletAddress={WalletAddress} />
+
       <div className="flex justify-between w-full">
         <p>{Intl.t('password-prompt.sign.operation-type')}</p>
-        <p>{OperationType}</p>
+        <p>{Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}</p>
       </div>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
@@ -23,20 +37,18 @@ export function BuySellRoll(props: PromptRequestData) {
         <p className="mas-menu-default">{RollCount}</p>
       </div>
 
+      <div className="flex w-full items-center justify-between">
+        <p>{Intl.t(label)}</p>
+        <p>
+          {formatStandard(Coins)} {masToken}
+        </p>
+      </div>
+
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.coins')}</p>
-        <p>
-          {formatStandard(Coins, Unit.NanoMAS)} {masToken}
-        </p>
-      </div>
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.fees')}</p>
-        <p>
-          {formatStandard(Fees, Unit.NanoMAS)} {masToken}
-        </p>
-      </div>
+      <Description description={description} />
+
+      {children}
     </div>
   );
 }

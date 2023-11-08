@@ -63,7 +63,7 @@ const ImportFile = () => {
         {baselineStr()}
       </p>
       <div className="flex flex-row gap-4 pb-4 w-full">
-        <Button variant={'secondary'} onClick={handleCancel}>
+        <Button variant="secondary" onClick={handleCancel}>
           Cancel
         </Button>
         <Button onClick={handleApply}>{getImportLabel()}</Button>

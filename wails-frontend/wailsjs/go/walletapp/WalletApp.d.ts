@@ -16,4 +16,6 @@ export function SelectAccountFile():Promise<walletapp.selectFileResult>;
 
 export function SendPromptInput(arg1:string):Promise<void>;
 
+export function SendSignPromptInput(arg1:string,arg2:string):Promise<void>;
+
 export function Show():Promise<void>;

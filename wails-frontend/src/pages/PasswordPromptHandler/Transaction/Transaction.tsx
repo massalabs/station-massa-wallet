@@ -1,7 +1,7 @@
-import { WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiArrowRight } from 'react-icons/fi';
 
-import { PromptRequestData } from '../Sign';
+import { SignBodyProps } from '../Sign';
+import { Description } from '../SignComponentUtils/Description';
 import Intl from '@/i18n/i18n';
 import {
   formatStandard,
@@ -11,18 +11,17 @@ import {
   maskNickname,
 } from '@/utils';
 
-export function Transaction(props: PromptRequestData) {
+export function Transaction(props: SignBodyProps) {
   const {
     WalletAddress,
     RecipientAddress,
     RecipientNickname,
     OperationType,
     Amount,
-    Fees,
+    Description: description,
     Nickname,
+    children,
   } = props;
-
-  WindowSetSize(460, 500);
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default">
@@ -61,11 +60,11 @@ export function Transaction(props: PromptRequestData) {
           <p>{Intl.t('password-prompt.sign.operation-type')}</p>
         </div>
         <div className="flex flex-col items-end h-fit">
-          <p>{OperationType}</p>
+          <p>
+            {Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}
+          </p>
         </div>
       </div>
-
-      <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
       <div className="flex flex-col gap-2 w-full">
         <div className="flex w-full items-center justify-between">
@@ -76,14 +75,11 @@ export function Transaction(props: PromptRequestData) {
         </div>
       </div>
 
-      <div className="flex w-full items-center justify-between">
-        <p>{Intl.t('password-prompt.sign.fees')}</p>
-        <p>
-          {formatStandard(Fees, Unit.NanoMAS)} {masToken}
-        </p>
-      </div>
-
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
+
+      <Description description={description} />
+
+      {children}
     </div>
   );
 }

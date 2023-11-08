@@ -42,17 +42,36 @@
     "sign": {
       "from": "From ",
       "to": "To ",
-      "contract": "Contract ",
+      "contract": "Contract",
+      "operation-type": "Operation type",
+      "operation-const": "Operation cost",
       "description": "Description",
       "message": "Message",
-      "operation-type": "Operation Type",
+      "view-details": "View details",
       "message-format": "Message format: ",
       "function-called": "Function called",
       "fees": "Fees ",
+      "fees-tooltip": "The compensation paid to",
+      "fees-tooltip-2": "validators for computational work.",
       "coins": "Coins ",
+      "coins-tooltip": "The amount of coins locked for",
+      "coins-tooltip-2": "storage space on the ledger.",
+      "edit-fees": "edit fees",
+      "confirm-fees": "confirm change",
+      "reset-fees": "reset to default",
       "sending-amount": "Sending amount ",
       "max-coins": "Max coins",
-      "roll-amount": "Roll amount"
+      "roll-amount": "Roll amount",
+      "amount-to-send": "Amount to send",
+      "spend-amount": "Spend amount",
+      "receive-amount": "Receive amount",
+      "operation-types": {
+        "0": "Transaction",
+        "1": "Roll buy",
+        "2": "Roll sell",
+        "3": "Execute SC",
+        "4": "Call SC"
+      }
     }
   },
   "backup": {
@@ -91,7 +110,6 @@
     "DuplicateNickname-001": "This account name already exists",
     "Timeout-0001": "Timeout error",
     "WrongPassword-0001": "Wrong password",
-    "InvalidPromptInput-0001": "Invalid user input",
     "ActionCanceled-0001": "Action canceled",
     "PasswordRequired": "Password is required",
     "Wallet-0011": "Failed to sign: operation is not base 64 valid",

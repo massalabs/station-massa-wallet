@@ -34,15 +34,14 @@ import (
 
 const (
 	defaultExpirationTime = time.Second * 60 * 10
-	BuyRoll               = "Buy Roll"
-	SellRoll              = "Sell Roll"
-	Message               = "Plain Text"
+	Message               = int(-1)
+	RollPrice             = 100
 )
 
 type PromptRequestSignData struct {
 	Description       string
 	Fees              string
-	OperationType     string
+	OperationType     int
 	Coins             string
 	Address           string
 	Function          string
@@ -95,7 +94,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		privateKey = pk
 	} else {
-		password, err := w.PromptPassword(acc, promptRequest)
+		output, err := w.PromptPassword(acc, promptRequest)
 		if err != nil {
 			msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
 			if errors.Is(err, utils.ErrWrongPassword) || errors.Is(err, utils.ErrActionCanceled) {
@@ -105,7 +104,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 		}
 
-		pk, err := acc.PrivateKeyBytesInClear(password)
+		pk, err := acc.PrivateKeyBytesInClear(output.Password)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorWrongPassword, http.StatusInternalServerError)
 		}
@@ -123,7 +122,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 	}
 
-	operation, err := w.prepareOperation(acc, params, promptRequest)
+	operation, err := prepareOperation(acc, params, promptRequest)
 	if err != nil {
 		return newErrorResponse(err.Error(), errorSignDecodeOperation, http.StatusBadRequest)
 	}
@@ -133,18 +132,21 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	return w.Success(acc, signature, correlationID)
 }
 
-func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.PromptRequest) (*memguard.LockedBuffer, error) {
+func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.PromptRequest) (*walletapp.SignPromptOutput, error) {
 	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
 	if err != nil {
 		return nil, fmt.Errorf("prompting password: %w", err)
 	}
 
-	password, _ := promptOutput.(*memguard.LockedBuffer)
+	output, ok := promptOutput.(*walletapp.SignPromptOutput)
+	if !ok {
+		return nil, fmt.Errorf("prompting password for sign: %s", utils.ErrPromptInputType)
+	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true})
 
-	return password, nil
+	return output, nil
 }
 
 func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
@@ -182,7 +184,7 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, correlation
 		})
 }
 
-func (w *walletSign) prepareOperation(acc *account.Account, params operations.SignParams, promptRequest *prompt.PromptRequest) ([]byte, error) {
+func prepareOperation(acc *account.Account, params operations.SignParams, promptRequest *prompt.PromptRequest) ([]byte, error) {
 	operation, err := base64.StdEncoding.DecodeString(params.Body.Operation.String())
 	if err != nil {
 		return nil, fmt.Errorf("Unable to decode operation: %w", err)
@@ -201,7 +203,6 @@ func (w *walletSign) prepareOperation(acc *account.Account, params operations.Si
 }
 
 func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, description string) (*prompt.PromptRequest, error) {
-	var promptRequest prompt.PromptRequest
 	var opType uint64
 	var err error
 
@@ -216,132 +217,104 @@ func (w *walletSign) getPromptRequest(msgToSign string, acc *account.Account, de
 		return nil, errors.Wrap(err, "failed to decode transaction message")
 	}
 
-	if opType, err = sendoperation.DecodeOperationType(decodedMsg); err != nil {
+	opType, err = sendoperation.DecodeOperationType(decodedMsg)
+	if err != nil {
 		wrappedErr := errors.Wrap(err, "failed to decode operation ID")
 
 		return nil, wrappedErr
-	} else {
-		switch opType {
-		case transaction.TransactionOpType:
-			msg, err := transaction.DecodeMessage(decodedMsg)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to decode transaction message")
-			}
-			promptRequest = w.prepareTransactionPromptRequest(msg, acc, address, description, fees)
+	}
 
-		case buyrolls.OpID, sellrolls.SellRollOpID:
-			roll, err := sendoperation.RollDecodeMessage(decodedMsg)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to decode roll message")
-			}
-			promptRequest = w.prepareRollPromptRequest(roll, acc, address, description, fees)
+	var data PromptRequestSignData
 
-		case executesc.ExecuteSCOpID:
-			executeSC, err := executesc.DecodeMessage(decodedMsg)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to decode executeSC message")
-			}
-			promptRequest = w.prepareExecuteSCPromptRequest(executeSC, acc, address, description, fees)
+	switch opType {
+	case transaction.TransactionOpType:
+		data, err = w.getTransactionPromptData(decodedMsg, acc)
 
-		case callsc.CallSCOpID:
-			callSC, err := callsc.DecodeMessage(decodedMsg)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to decode callSC message")
-			}
-			promptRequest = w.prepareCallSCPromptRequest(callSC, acc, address, description, fees)
+	case buyrolls.OpID, sellrolls.SellRollOpID:
+		data, err = getRollPromptData(decodedMsg, acc)
 
-		default:
-			decodedMsg, err := base64.StdEncoding.DecodeString(msgToSign)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to decode plainText message from b64")
-			}
-			promptRequest = w.preparePlainTextPromptRequest(string(decodedMsg), acc, address, description)
-		}
+	case executesc.ExecuteSCOpID:
+		data, err = getExecuteSCPromptData(decodedMsg, acc)
+
+	case callsc.CallSCOpID:
+		data, err = getCallSCPromptData(decodedMsg, acc)
+
+	default:
+		data, err = getPlainTextPromptData(msgToSign, acc)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode message of operation type: %d: %w", opType, err)
+	}
+
+	data.Description = description
+	data.Fees = strconv.FormatUint(fees, 10)
+	data.WalletAddress = address
+	data.Nickname = acc.Nickname
+	data.OperationType = int(opType)
+
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.Sign,
+		Data:   data,
 	}
 
 	return &promptRequest, nil
 }
 
-func (w *walletSign) prepareCallSCPromptRequest(msg *callsc.MessageContent,
+func getCallSCPromptData(
+	decodedMsg []byte,
 	acc *account.Account,
-	address string,
-	description string,
-	fees uint64,
-) prompt.PromptRequest {
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			Fees:          strconv.FormatUint(fees, 10),
-			OperationType: "Call SC",
-			Coins:         strconv.FormatUint(msg.Coins, 10),
-			Address:       msg.Address,
-			Function:      msg.Function,
-			WalletAddress: address,
-			Nickname:      acc.Nickname,
-		},
+) (PromptRequestSignData, error) {
+	msg, err := callsc.DecodeMessage(decodedMsg)
+	if err != nil {
+		return PromptRequestSignData{}, err
 	}
+
+	return PromptRequestSignData{
+		Coins:    strconv.FormatUint(msg.Coins, 10),
+		Address:  msg.Address,
+		Function: msg.Function,
+	}, nil
 }
 
-func (w *walletSign) prepareExecuteSCPromptRequest(
-	msg *executesc.MessageContent,
+func getExecuteSCPromptData(
+	decodedMsg []byte,
 	acc *account.Account,
-	address string,
-	description string,
-	fees uint64,
-) prompt.PromptRequest {
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			Fees:          strconv.FormatUint(fees, 10),
-			OperationType: "Execute SC",
-			MaxCoins:      strconv.FormatUint(msg.MaxCoins, 10),
-			WalletAddress: address,
-			Nickname:      acc.Nickname,
-		},
+) (PromptRequestSignData, error) {
+	msg, err := executesc.DecodeMessage(decodedMsg)
+	if err != nil {
+		return PromptRequestSignData{}, err
 	}
+
+	return PromptRequestSignData{
+		MaxCoins: strconv.FormatUint(msg.MaxCoins, 10),
+	}, nil
 }
 
-func (w *walletSign) prepareRollPromptRequest(
-	msg *sendoperation.RollMessageContent,
+func getRollPromptData(
+	decodedMsg []byte,
 	acc *account.Account,
-	address string,
-	description string,
-	fees uint64,
-) prompt.PromptRequest {
-	operationType := ""
-
-	switch msg.OperationType {
-	case buyrolls.OpID:
-		operationType = BuyRoll
-	case sellrolls.SellRollOpID:
-		operationType = SellRoll
+) (PromptRequestSignData, error) {
+	msg, err := sendoperation.RollDecodeMessage(decodedMsg)
+	if err != nil {
+		return PromptRequestSignData{}, err
 	}
 
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			Fees:          strconv.FormatUint(fees, 10),
-			OperationType: operationType,
-			RollCount:     msg.RollCount,
-			WalletAddress: address,
-			Nickname:      acc.Nickname,
-		},
-	}
+	return PromptRequestSignData{
+		RollCount: msg.RollCount,
+		Coins:     strconv.FormatUint(msg.RollCount*RollPrice, 10),
+	}, nil
 }
 
-func (w *walletSign) prepareTransactionPromptRequest(
-	msg *transaction.MessageContent,
+func (w *walletSign) getTransactionPromptData(
+	decodedMsg []byte,
 	acc *account.Account,
-	address string,
-	description string,
-	fees uint64,
-) prompt.PromptRequest {
+) (PromptRequestSignData, error) {
+	msg, err := transaction.DecodeMessage(decodedMsg)
+	if err != nil {
+		return PromptRequestSignData{}, err
+	}
+
 	var recipientNickname string
 
 	recipientAcc, err := w.prompterApp.App().Wallet.GetAccountFromAddress(msg.RecipientAddress)
@@ -351,39 +324,25 @@ func (w *walletSign) prepareTransactionPromptRequest(
 		recipientNickname = recipientAcc.Nickname
 	}
 
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
-		Data: PromptRequestSignData{
-			Description:       description,
-			Fees:              strconv.FormatUint(fees, 10),
-			OperationType:     "Transaction",
-			RecipientAddress:  msg.RecipientAddress,
-			RecipientNickname: recipientNickname,
-			Amount:            strconv.FormatUint(msg.Amount, 10),
-			WalletAddress:     address,
-			Nickname:          acc.Nickname,
-		},
-	}
+	return PromptRequestSignData{
+		RecipientAddress:  msg.RecipientAddress,
+		RecipientNickname: recipientNickname,
+		Amount:            strconv.FormatUint(msg.Amount, 10),
+	}, nil
 }
 
-func (s *walletSign) preparePlainTextPromptRequest(
-	plainText string,
+func getPlainTextPromptData(
+	msgToSign string,
 	acc *account.Account,
-	address string,
-	description string,
-) prompt.PromptRequest {
-	return prompt.PromptRequest{
-		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
-		Data: PromptRequestSignData{
-			Description:   description,
-			OperationType: Message,
-			PlainText:     plainText,
-			Nickname:      acc.Nickname,
-			WalletAddress: address,
-		},
+) (PromptRequestSignData, error) {
+	plainText, err := base64.StdEncoding.DecodeString(msgToSign)
+	if err != nil {
+		return PromptRequestSignData{}, err
 	}
+
+	return PromptRequestSignData{
+		PlainText: string(plainText),
+	}, nil
 }
 
 // privateKeyFromCache return the private key from the cache or an error.

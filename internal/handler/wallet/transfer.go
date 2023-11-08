@@ -12,6 +12,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
@@ -65,7 +66,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Fees:              string(params.Body.Fee),
-			OperationType:     "Transaction",
+			OperationType:     0,
 			RecipientAddress:  *params.Body.RecipientAddress,
 			RecipientNickname: recipientNickname,
 			Amount:            string(params.Body.Amount),
@@ -79,7 +80,11 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		return newErrorResponse("Unable to unprotect wallet", errorCanceledAction, http.StatusUnauthorized)
 	}
 
-	password, _ := promptOutput.(*memguard.LockedBuffer)
+	output, ok := promptOutput.(*walletapp.SignPromptOutput)
+	if !ok {
+		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrPromptInputType), utils.ErrPromptInputType, http.StatusInternalServerError)
+	}
+	password := output.Password
 
 	// create the transaction and send it to the network
 	operation, err := doTransfer(acc, password, amount, fee, *params.Body.RecipientAddress, t.massaClient)

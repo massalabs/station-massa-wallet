@@ -1,8 +1,9 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
+import { fromMAS, toMAS } from '@massalabs/massa-web3';
 import { Button, Password } from '@massalabs/react-ui-kit';
-import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
-import { EventsOnce } from '@wailsjs/runtime/runtime';
+import { SendSignPromptInput } from '@wailsjs/go/walletapp/WalletApp';
+import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
+import { OperationCost } from './SignComponentUtils/OperationCost';
 import { CallSc } from './SignSC/CallSc';
 import { Transaction } from './Transaction/Transaction';
 import {
@@ -32,15 +34,15 @@ import {
   parseForm,
 } from '@/utils';
 
-export interface PromptRequestData {
+export interface SignBodyProps {
   Description: string;
-  Fees: string;
+  Fees: string; // in nanoMassa
   GasLimit: string;
-  Coins: string;
+  Coins: string; // in nanoMassa
   Address: string;
   Function: string;
   WalletAddress: string;
-  OperationType?: string;
+  OperationType: number;
   MaxCoins: string;
   RollCount: number;
   RecipientAddress: string;
@@ -49,6 +51,7 @@ export interface PromptRequestData {
   PlainText: string;
   DisplayData: boolean;
   Nickname: string;
+  children?: React.ReactNode;
 }
 
 export function Sign() {
@@ -58,7 +61,12 @@ export function Sign() {
   const req: promptRequest = state.req;
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const signData = req.Data as PromptRequestData;
+  const [fees, setFees] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const signData = req.Data as SignBodyProps;
+
+  const defaultFeesMAS = toMAS(signData.Fees).toFixed(9);
 
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
@@ -66,7 +74,7 @@ export function Sign() {
 
     EventsOnce(events.promptResult, handleResult);
 
-    SendPromptInput(password);
+    SendSignPromptInput(password, fromMAS(fees).toString());
   }
 
   function handleResult(result: promptResult) {
@@ -90,12 +98,27 @@ export function Sign() {
     save(e);
   }
 
-  function _getTitle(operation: string | undefined) {
+  function _getTitle(operation: number | undefined) {
     if (operation === OPER_PLAIN_TEXT)
       return Intl.t('password-prompt.title.sign-message');
 
     return Intl.t('password-prompt.title.sign');
   }
+
+  const toAddInHeightDescription = signData.Description ? 200 : 0;
+
+  const winWidth = 460;
+  const winHeight = 460 + toAddInHeightDescription;
+
+  WindowSetSize(winWidth, winHeight);
+
+  const operationCostsArgs = {
+    fees,
+    defaultFees: defaultFeesMAS,
+    setFees,
+    isEditing,
+    setIsEditing,
+  };
 
   return (
     <SignLayout>
@@ -105,14 +128,33 @@ export function Sign() {
           {(() => {
             switch (signData.OperationType) {
               case OPER_CALL_SC:
-                return <CallSc {...signData} />;
+                return (
+                  <CallSc {...signData}>
+                    <OperationCost
+                      coins={signData.Coins}
+                      {...operationCostsArgs}
+                    />
+                  </CallSc>
+                );
               case OPER_EXECUTE_SC:
-                return <ExecuteSC {...signData} />;
+                return (
+                  <ExecuteSC {...signData}>
+                    <OperationCost {...operationCostsArgs} />
+                  </ExecuteSC>
+                );
               case OPER_BUY_ROLL:
               case OPER_SELL_ROLL:
-                return <BuySellRoll {...signData} />;
+                return (
+                  <BuySellRoll {...signData}>
+                    <OperationCost {...operationCostsArgs} />
+                  </BuySellRoll>
+                );
               case OPER_TRANSACTION:
-                return <Transaction {...signData} />;
+                return (
+                  <Transaction {...signData}>
+                    <OperationCost {...operationCostsArgs} />
+                  </Transaction>
+                );
               case OPER_PLAIN_TEXT:
                 return <PlainText {...signData} />;
               default:
@@ -140,7 +182,7 @@ export function Sign() {
           <Button variant={'secondary'} onClick={handleCancel}>
             {Intl.t('password-prompt.buttons.cancel')}
           </Button>
-          <Button preIcon={<FiLock />} type="submit">
+          <Button preIcon={<FiLock />} disabled={isEditing} type="submit">
             {Intl.t('password-prompt.buttons.sign')}
           </Button>
         </div>
