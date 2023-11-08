@@ -51,8 +51,10 @@
       "message-format": "Message format: ",
       "function-called": "Function called",
       "fees": "Fees ",
-      "fees-tooltip": "The compensation paid to",
-      "fees-tooltip-2": "validators for computational work.",
+      "fees-tooltip": {
+        "1": "The compensation paid to",
+        "2": "validators for computational work."
+      },
       "coins": "Coins ",
       "coins-tooltip": "The amount of coins locked for",
       "coins-tooltip-2": "storage space on the ledger.",
@@ -60,7 +62,7 @@
       "confirm-fees": "confirm change",
       "reset-fees": "reset to default",
       "sending-amount": "Sending amount ",
-      "max-coins": "Max coins",
+      "max-coins": "Max. spendable MAS",
       "roll-amount": "Roll amount",
       "amount-to-send": "Amount to send",
       "spend-amount": "Spend amount",
@@ -71,6 +73,19 @@
         "2": "Roll sell",
         "3": "Execute SC",
         "4": "Call SC"
+      },
+      "execute-sc-tooltip": {
+        "1": "ExecuteSC operation is a powerful functionality on Massa. It enables the execution of smart contracts directly, instead of storing them on-chain.",
+        "2": "As it is a smart contract which is executing certain functions, coins and tokens can be spent from your account.",
+        "3": "Proceed only if it originates from a trusted source."
+      },
+      "execute-sc-warning": {
+        "1": "Proceed only if it originates from a trusted source.",
+        "2": "This operation is like a smart contract and can spend coins and tokens from your account."
+      },
+      "execute-sc-max-coins-tooltip": {
+        "1": "Most similar concept is Giving Allowance on EVM chains.",
+        "2": "In ExecuteSC sense, it is the maximal amount of MAS that can be spent in this operation."
       }
     }
   },

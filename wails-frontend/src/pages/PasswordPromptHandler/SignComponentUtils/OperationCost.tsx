@@ -125,9 +125,9 @@ export function OperationCost(props: OperationCostProps) {
                     icon={<FiInfo size={16} />}
                     content={
                       <>
-                        {Intl.t('password-prompt.sign.fees-tooltip')}
+                        {Intl.t('password-prompt.sign.fees-tooltip.1')}
                         <br />
-                        {Intl.t('password-prompt.sign.fees-tooltip-2')}
+                        {Intl.t('password-prompt.sign.fees-tooltip.2')}
                       </>
                     }
                   />
