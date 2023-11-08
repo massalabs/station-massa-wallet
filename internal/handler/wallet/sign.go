@@ -201,16 +201,8 @@ func prepareOperation(acc *account.Account, fees uint64, operationB64 string, op
 	}
 
 	operation := make([]byte, 0)
-	buf := make([]byte, binary.MaxVarintLen64)
-	// fee
-	nbBytes := binary.PutUvarint(buf, fees)
-	operation = append(operation, buf[:nbBytes]...)
-
-	// expiration
-	nbBytes = binary.PutUvarint(buf, expiry)
-	operation = append(operation, buf[:nbBytes]...)
-
-	// operation
+	operation = binary.AppendUvarint(operation, fees)
+	operation = binary.AppendUvarint(operation, expiry)
 	operation = append(operation, decodedMsg...)
 
 	// operation to be signed
