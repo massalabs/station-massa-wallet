@@ -148,74 +148,59 @@ describe('E2E | Acceptance | Home | Send', () => {
       cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
     });
 
-    it('should process any % as input', async () => {
+    it('should process any % as input', () => {
       server.trackRequest = true;
       const account = mockedAccounts.at(2);
 
       cy.visit('/');
 
-      cy.get('[data-testid="account-2"]')
-        .click()
-        .then(() => {
-          cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
-          cy.waitForRequest(server, '/accounts/MarioX', 'GET').then(() => {
-            cy.get('[data-testid="send-button"]')
-              .click()
-              .then(() => {
-                cy.waitForRequest(server, '/accounts/MarioX', 'GET');
-                cy.url().should(
-                  'eq',
-                  `${baseUrl}/${account.nickname}/transfer-coins`,
-                );
-                cy.get(`[data-testid="send-percent-25"]`).click();
-                cy.get('[data-testid="money-field"').should(
-                  'have.value',
-                  '250 MAS',
-                );
+      cy.get('[data-testid="account-2"]').click();
 
-                cy.get(`[data-testid="send-percent-50"]`).click();
-                cy.get('[data-testid="money-field"').should(
-                  'have.value',
-                  '500 MAS',
-                );
+      cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
 
-                cy.get(`[data-testid="send-percent-75"]`).click();
-                cy.get('[data-testid="money-field"').should(
-                  'have.value',
-                  '750 MAS',
-                );
+      cy.waitForRequest(server, '/accounts/MarioX', 'GET').then(() => {
+        cy.get('[data-testid="send-button"]').click();
+        cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
-                cy.get(`[data-testid="send-percent-100"]`).click();
-                cy.get('[data-testid="money-field"').should(
-                  'have.value',
-                  '999.999999 MAS',
-                );
-              });
-          });
-        });
+        // cy.waitForRequest(server, '/accounts/MarioX', 'GET');
+
+        cy.get(`[data-testid="send-percent-25"]`).click();
+        cy.get('[data-testid="money-field"').should('have.value', '250 MAS');
+
+        cy.get(`[data-testid="send-percent-50"]`).click();
+        cy.get('[data-testid="money-field"').should('have.value', '500 MAS');
+
+        cy.get(`[data-testid="send-percent-75"]`).click();
+        cy.get('[data-testid="money-field"').should('have.value', '750 MAS');
+
+        cy.get(`[data-testid="send-percent-100"]`).click();
+        cy.get('[data-testid="money-field"').should(
+          'have.value',
+          '999.999999 MAS',
+        );
+      });
       server.trackRequest = false;
     });
 
-    // TODO: commented out because failing, needs to be fixed
-    // it('should transfer to accounts', () => {
-    //   const selectedAccount = mockedAccounts.at(1);
+    it('should transfer to accounts', () => {
+      const selectedAccount = mockedAccounts.at(1);
 
-    //   navigateToTransferCoinsOfAccountIndex(0);
+      navigateToTransferCoinsOfAccountIndex(0);
 
-    //   cy.get('[data-testid="transfer-between-accounts"]')
-    //     .should('exist')
-    //     .click()
-    //     .then(() => {
-    //       cy.get('[data-testid="popup-modal-content"]').should('be.visible');
+      cy.get('[data-testid="transfer-between-accounts"]')
+        .should('exist')
+        .click()
+        .then(() => {
+          cy.get('[data-testid="popup-modal-content"]').should('be.visible');
 
-    //       cy.get('[data-testid="selector-account-0"]').should('exist').click();
+          cy.get('[data-testid="selector-account-0"]').should('exist').click();
 
-    //       cy.get('[data-testid="input-field"]').should(
-    //         'have.value',
-    //         selectedAccount.address,
-    //       );
-    //     });
-    // });
+          cy.get('[data-testid="input-field"]').should(
+            'have.value',
+            selectedAccount.address,
+          );
+        });
+    });
 
     it('should refuse wrong currency input', () => {
       const account = mockedAccounts.at(2);
