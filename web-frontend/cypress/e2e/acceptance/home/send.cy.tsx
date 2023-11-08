@@ -162,8 +162,6 @@ describe('E2E | Acceptance | Home | Send', () => {
         cy.get('[data-testid="send-button"]').click();
         cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
-        // cy.waitForRequest(server, '/accounts/MarioX', 'GET');
-
         cy.get(`[data-testid="send-percent-25"]`).click();
         cy.get('[data-testid="money-field"').should('have.value', '250 MAS');
 
@@ -202,79 +200,79 @@ describe('E2E | Acceptance | Home | Send', () => {
         });
     });
 
-    // it('should refuse wrong currency input', () => {
-    //   const account = mockedAccounts.at(2);
-    //   const recipientAccount = mockedAccounts.at(1);
+    it('should refuse wrong currency input', () => {
+      const account = mockedAccounts.at(2);
+      const recipientAccount = mockedAccounts.at(1);
 
-    //   const amount = 1000.12311132;
-    //   const invalidAmount = 'things';
-    //   const tooMuch = Number(account.candidateBalance) + 1000;
-    //   const tooLow = 0;
-    //   const notEnoughForFees = Number(account.candidateBalance);
+      const amount = 1000.12311132;
+      const invalidAmount = 'things';
+      const tooMuch = Number(account.candidateBalance) + 1000;
+      const tooLow = 0;
+      const notEnoughForFees = Number(account.candidateBalance);
 
-    //   const standardFees = '1000';
-    //   navigateToTransferCoinsOfAccountIndex(2);
+      const standardFees = '1000';
+      navigateToTransferCoinsOfAccountIndex(2);
 
-    //   cy.get('[data-testid="money-field"').should('exist').type(invalidAmount);
+      cy.get('[data-testid="money-field"').should('exist').type(invalidAmount);
 
-    //   cy.get('[data-testid="input-field"').type(recipientAccount.address);
-    //   cy.get('[data-testid="button"]').contains('Send').click();
+      cy.get('[data-testid="input-field"').type(recipientAccount.address);
+      cy.get('[data-testid="button"]').contains('Send').click();
 
-    //   cy.get('[data-testid="input-field-message"]').should(
-    //     'contain.text',
-    //     'Invalid amount',
-    //   );
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Invalid amount',
+      );
 
-    //   cy.get('[data-testid="money-field"').clear().type(tooMuch);
-    //   cy.get('[data-testid="button"]').contains('Send').click();
+      cy.get('[data-testid="money-field"').clear().type(tooMuch);
+      cy.get('[data-testid="button"]').contains('Send').click();
 
-    //   cy.get('[data-testid="input-field-message"]').should(
-    //     'contain.text',
-    //     'Insufficient funds',
-    //   );
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Insufficient funds',
+      );
 
-    //   cy.get('[data-testid="money-field"').clear().type(tooLow);
-    //   cy.get('[data-testid="button"]').contains('Send').click();
+      cy.get('[data-testid="money-field"').clear().type(tooLow);
+      cy.get('[data-testid="button"]').contains('Send').click();
 
-    //   cy.get('[data-testid="input-field-message"]').should(
-    //     'contain.text',
-    //     'Amount must be greater than zero',
-    //   );
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Amount must be greater than zero',
+      );
 
-    //   cy.get('[data-testid="money-field"').clear().type(notEnoughForFees);
-    //   cy.get('[data-testid="button"]').contains('Send').click();
+      cy.get('[data-testid="money-field"').clear().type(notEnoughForFees);
+      cy.get('[data-testid="button"]').contains('Send').click();
 
-    //   cy.get('[data-testid="input-field-message"]').should(
-    //     'contain.text',
-    //     'Insufficient funds',
-    //   );
-    // });
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Insufficient funds',
+      );
+    });
 
-    // it('should refuse wrong address input', () => {
-    //   const account = mockedAccounts.at(2);
-    //   const wrongAddress = 'wrong address';
-    //   const amount = 42;
+    it('should refuse wrong address input', () => {
+      const account = mockedAccounts.at(2);
+      const wrongAddress = 'wrong address';
+      const amount = 42;
 
-    //   navigateToTransferCoinsOfAccountIndex(2);
-    //   cy.get('[data-testid="money-field"')
-    //     .type(amount)
-    //     .should('have.value', '42 MAS');
+      navigateToTransferCoinsOfAccountIndex(2);
+      cy.get('[data-testid="money-field"')
+        .type(amount)
+        .should('have.value', '42 MAS');
 
-    //   cy.get('[data-testid="input-field"').type(wrongAddress);
-    //   cy.get('[data-testid="button"]').contains('Send').click();
+      cy.get('[data-testid="input-field"').type(wrongAddress);
+      cy.get('[data-testid="button"]').contains('Send').click();
 
-    //   cy.get('[data-testid="input-field-message"]').should(
-    //     'contain.text',
-    //     'Recipient address is not a valid Massa address',
-    //   );
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Recipient address is not a valid Massa address',
+      );
 
-    //   cy.get('[data-testid="input-field"').clear();
-    //   cy.get('[data-testid="button"]').contains('Send').click();
+      cy.get('[data-testid="input-field"').clear();
+      cy.get('[data-testid="button"]').contains('Send').click();
 
-    //   cy.get('[data-testid="input-field-message"]').should(
-    //     'contain.text',
-    //     'Recipient is required',
-    //   );
-    // });
+      cy.get('[data-testid="input-field-message"]').should(
+        'contain.text',
+        'Recipient is required',
+      );
+    });
   });
 });
