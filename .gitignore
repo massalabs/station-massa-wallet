@@ -18,6 +18,7 @@ web-frontend/cypress-visual-report
 web-frontend/cypress/screenshots
 web-frontend/cypress-visual-screenshots/comparison
 web-frontend/cypress-visual-screenshots/diff
+web-frontend/cypress/downloads
 documentation/node_modules
 documentation/diag*.svg
 documentation/*.html
