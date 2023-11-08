@@ -9,8 +9,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { events, promptRequest, promptResult } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
-import { validate } from '@/pages/PasswordPromptHandler/Default';
 import { PromptRequestDeleteData } from '@/pages/PasswordPromptHandler/PasswordPromptHandler';
+import { validate } from '@/pages/PasswordPromptHandler/Sign';
 import {
   ErrorCode,
   IErrorObject,

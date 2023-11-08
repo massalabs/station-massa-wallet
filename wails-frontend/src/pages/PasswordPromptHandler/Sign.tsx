@@ -9,7 +9,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { CallSc } from './CallSC/CallSc';
-import { validate } from './Default';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
@@ -30,7 +29,6 @@ import {
   IErrorObject,
   handleApplyResult,
   handleCancel,
-  maskAddress,
   parseForm,
 } from '@/utils';
 
@@ -53,6 +51,21 @@ export interface SignBodyProps {
   Nickname: string;
   AllowFeeEdition: boolean;
   children?: React.ReactNode;
+}
+
+export function validate(
+  e: SyntheticEvent,
+  setError: (error: IErrorObject) => void,
+) {
+  const formObject = parseForm(e);
+  const { password } = formObject;
+
+  if (!password.length) {
+    setError({ password: Intl.t('errors.PasswordRequired') });
+    return false;
+  }
+
+  return true;
 }
 
 export function Sign() {
@@ -159,13 +172,6 @@ export function Sign() {
                 );
               case OPER_PLAIN_TEXT:
                 return <PlainText {...signData} />;
-              default:
-                return (
-                  <>
-                    <div>Description: {signData.Description}</div>
-                    <div>From: {maskAddress(signData.WalletAddress)}</div>
-                  </>
-                );
             }
           })()}
         </div>

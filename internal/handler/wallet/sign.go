@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/ed25519"
 	cryptorand "crypto/rand"
-	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"io"
@@ -34,7 +33,6 @@ import (
 
 const (
 	defaultExpirationTime = time.Second * 60 * 10
-	Message               = int(-1)
 	RollPrice             = 100
 )
 
@@ -56,8 +54,6 @@ type PromptRequestSignData struct {
 	AllowFeeEdition   bool
 }
 
-// NewSign instantiates a sign Handler
-// The "classical" way is not possible because we need to pass to the handler a password.PasswordAsker.
 func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignHandler {
 	return &walletSign{gc: gc, prompterApp: prompterApp}
 }
@@ -251,7 +247,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 		data, err = getCallSCPromptData(decodedMsg, acc)
 
 	default:
-		data, err = getPlainTextPromptData(msgToSign, acc)
+		return nil, 0, fmt.Errorf("unhandled operation type: %d", opType)
 	}
 
 	if err != nil {
@@ -345,20 +341,6 @@ func (w *walletSign) getTransactionPromptData(
 		RecipientAddress:  msg.RecipientAddress,
 		RecipientNickname: recipientNickname,
 		Amount:            strconv.FormatUint(msg.Amount, 10),
-	}, nil
-}
-
-func getPlainTextPromptData(
-	msgToSign string,
-	acc *account.Account,
-) (PromptRequestSignData, error) {
-	plainText, err := base64.StdEncoding.DecodeString(msgToSign)
-	if err != nil {
-		return PromptRequestSignData{}, err
-	}
-
-	return PromptRequestSignData{
-		PlainText: string(plainText),
 	}, nil
 }
 

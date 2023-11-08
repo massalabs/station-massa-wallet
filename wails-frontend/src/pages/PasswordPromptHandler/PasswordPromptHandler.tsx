@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom';
 
-import { Default } from './Default';
 import { Delete } from './Delete';
 import { Sign } from './Sign';
 import { promptAction, promptRequest } from '@/events/events';
@@ -10,7 +9,7 @@ export interface PromptRequestDeleteData {
   Balance: string;
 }
 
-function PasswordPromptHandler() {
+export default function PasswordPromptHandler() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
   const { deleteReq, signReq } = promptAction;
@@ -23,11 +22,8 @@ function PasswordPromptHandler() {
             return <Delete />;
           case signReq:
             return <Sign />;
-          default:
-            return <Default />;
         }
       })()}
     </>
   );
 }
-export default PasswordPromptHandler;
