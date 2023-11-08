@@ -63,15 +63,15 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignData{
 			Fees:              string(params.Body.Fee),
-			OperationType:     0,
+			WalletAddress:     address,
+			Nickname:          acc.Nickname,
+			OperationType:     int(transaction.OpType),
+			AllowFeeEdition:   true,
 			RecipientAddress:  *params.Body.RecipientAddress,
 			RecipientNickname: recipientNickname,
 			Amount:            string(params.Body.Amount),
-			WalletAddress:     address,
-			Nickname:          acc.Nickname,
 		},
 	}
 
