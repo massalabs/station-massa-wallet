@@ -15,6 +15,10 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
+const (
+	Message = int(-1)
+)
+
 type PromptRequestSignMessageData struct {
 	Description   string
 	OperationType int
