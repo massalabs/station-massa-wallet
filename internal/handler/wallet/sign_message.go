@@ -23,6 +23,7 @@ type PromptRequestSignMessageData struct {
 	Description   string
 	OperationType int
 	WalletAddress string
+	Nickname      string
 	PlainText     string
 	DisplayData   bool
 }
@@ -45,7 +46,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	// Create a promptRequest for signing the message
 	promptRequest, err := prepareSignMessagePromptRequest(*acc, params.Body)
 	if err != nil {
-		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+		return newErrorResponse(err.Error(), errorSignDecodeMessage, http.StatusBadRequest)
 	}
 
 	// Use the prompt-based logic to sign the message
@@ -63,15 +64,16 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	if !ok {
 		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrInvalidInputType.Error()), utils.ErrInvalidInputType.Error(), http.StatusInternalServerError)
 	}
+
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: true})
+
 	password := output.Password
 
 	signature, err := acc.Sign(password, []byte(params.Body.Message))
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("unable to sign message: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}
-
-	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true})
 
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
@@ -93,20 +95,20 @@ func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessa
 		DisplayData = *body.DisplayData
 	}
 
-	address, err := acc.Address.MarshalText()
+	addressBytes, err := acc.Address.MarshalText()
 	if err != nil {
 		return nil, err
 	}
 
 	return &prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("Unprotect wallet %s", acc.Nickname),
 		Data: PromptRequestSignMessageData{
 			Description:   body.Description,
 			OperationType: Message,
 			DisplayData:   DisplayData,
 			PlainText:     body.Message,
-			WalletAddress: string(address),
+			WalletAddress: string(addressBytes),
+			Nickname:      acc.Nickname,
 		},
 	}, nil
 }

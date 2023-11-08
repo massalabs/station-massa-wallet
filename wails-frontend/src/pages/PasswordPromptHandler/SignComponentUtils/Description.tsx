@@ -4,13 +4,14 @@ import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 import Intl from '@/i18n/i18n';
 
 export interface DescriptionProps {
-  description?: string;
+  text?: string;
+  label?: string;
 }
 
 export function Description(props: DescriptionProps) {
-  const { description } = props;
+  const { text, label = 'password-prompt.sign.description' } = props;
 
-  if (!description) return null;
+  if (!text) return null;
 
   return (
     <>
@@ -23,13 +24,13 @@ export function Description(props: DescriptionProps) {
           categoryTitle={
             <div className="flex items-center w-full gap-4">
               <FiInfo size={18} />
-              <p>{Intl.t('password-prompt.sign.description')}</p>
+              <p>{Intl.t(label)}</p>
             </div>
           }
         >
           <AccordionContent customClass="px-0 pt-4 pb-0">
             <div className="max-w-full overflow-hidden">
-              <p>{description}</p>
+              <p>{text}</p>
             </div>
           </AccordionContent>
         </AccordionCategory>

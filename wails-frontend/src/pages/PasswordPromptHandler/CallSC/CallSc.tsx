@@ -42,7 +42,7 @@ export function CallSc(props: SignBodyProps) {
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
-      <Description description={description} />
+      <Description text={description} />
 
       {children}
     </div>

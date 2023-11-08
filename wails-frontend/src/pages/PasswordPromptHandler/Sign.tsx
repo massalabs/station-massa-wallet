@@ -80,15 +80,13 @@ export function Sign() {
 
   const signData = req.Data as SignBodyProps;
 
-  const defaultFeesMAS = toMAS(signData.Fees).toFixed(9);
-
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
     const { password } = form;
 
     EventsOnce(events.promptResult, handleResult);
 
-    SendSignPromptInput(password, fromMAS(fees).toString());
+    SendSignPromptInput(password, fromMAS(fees || '0').toString());
   }
 
   function handleResult(result: promptResult) {
@@ -112,7 +110,7 @@ export function Sign() {
     save(e);
   }
 
-  function _getTitle(operation: number | undefined) {
+  function getTitle(operation: number | undefined) {
     if (operation === OPER_PLAIN_TEXT)
       return Intl.t('password-prompt.title.sign-message');
 
@@ -128,7 +126,7 @@ export function Sign() {
 
   const operationCostsArgs = {
     fees,
-    defaultFees: defaultFeesMAS,
+    defaultFees: toMAS(signData.Fees || 0).toFixed(9),
     setFees,
     isEditing,
     setIsEditing,
@@ -138,7 +136,7 @@ export function Sign() {
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
-        <h1 className="mas-title">{_getTitle(signData.OperationType)}</h1>
+        <h1 className="mas-title">{getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {
             switch (signData.OperationType) {
