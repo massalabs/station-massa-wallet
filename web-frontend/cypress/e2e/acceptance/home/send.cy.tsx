@@ -48,15 +48,17 @@ describe('E2E | Acceptance | Home | Send', () => {
 
     function navigateToHome() {
       cy.visit('/');
-      cy.get('[data-testid="account-2"]').click();
+      cy.get('[data-testid="account-2"]').should('exist').click();
     }
 
-    function navigateToTransfercoinsOfAccountIndex(index) {
+    function navigateToTransferCoinsOfAccountIndex(index) {
       cy.visit('/');
 
-      cy.get(`[data-testid="account-${index}"]`).click();
-      cy.get('[data-testid="side-menu"]').click();
-      cy.get('[data-testid="side-menu-sendreceive-icon"]').click();
+      cy.get(`[data-testid="account-${index}"]`).should('exist').click();
+      cy.get('[data-testid="side-menu"]').should('exist').click();
+      cy.get('[data-testid="side-menu-sendreceive-icon"]')
+        .should('exist')
+        .click();
     }
 
     function setAccountBalance(account) {
@@ -104,7 +106,7 @@ describe('E2E | Acceptance | Home | Send', () => {
     it('should render balance and amount should equal account balance', () => {
       const account = mockedAccounts.at(2);
 
-      navigateToTransfercoinsOfAccountIndex(2);
+      navigateToTransferCoinsOfAccountIndex(2);
 
       cy.get('[data-testid="balance').should('exist');
 
@@ -119,7 +121,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const amount = 550.1234;
       const standardFees = '1000';
 
-      navigateToTransfercoinsOfAccountIndex(2);
+      navigateToTransferCoinsOfAccountIndex(2);
       cy.get('[data-testid="money-field"')
         .type(amount)
         .should('have.value', '550.1234 MAS');
@@ -197,7 +199,7 @@ describe('E2E | Acceptance | Home | Send', () => {
     it('should transfer to accounts', () => {
       const selectedAccount = mockedAccounts.at(1);
 
-      navigateToTransfercoinsOfAccountIndex(0);
+      navigateToTransferCoinsOfAccountIndex(0);
 
       cy.get('[data-testid="transfer-between-accounts"]')
         .should('exist')
@@ -225,7 +227,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const notEnoughForFees = Number(account.candidateBalance);
 
       const standardFees = '1000';
-      navigateToTransfercoinsOfAccountIndex(2);
+      navigateToTransferCoinsOfAccountIndex(2);
 
       cy.get('[data-testid="money-field"').should('exist').type(invalidAmount);
 
@@ -267,7 +269,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       const wrongAddress = 'wrong address';
       const amount = 42;
 
-      navigateToTransfercoinsOfAccountIndex(2);
+      navigateToTransferCoinsOfAccountIndex(2);
       cy.get('[data-testid="money-field"')
         .type(amount)
         .should('have.value', '42 MAS');
