@@ -46,9 +46,30 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		return newErrorResponse("Error during fee conversion", errorTradeRoll, http.StatusBadRequest)
 	}
 
+	addressBytes, err := acc.Address.MarshalText()
+	if err != nil {
+		return newErrorResponse("failed to marshal address", errorGetAccount, http.StatusInternalServerError)
+	}
+
+	var opType int
+
+	if *params.Body.Side == "buy" {
+		opType = buyrolls.OpType
+	} else {
+		opType = sellrolls.OpType
+	}
+
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Msg:    fmt.Sprintf("%s %s rolls , with fee %s nonaMassa", *params.Body.Side, string(params.Body.Amount), string(params.Body.Fee)),
+		Data: PromptRequestSignData{
+			Fees:            strconv.FormatUint(fee, 10),
+			WalletAddress:   string(addressBytes),
+			Nickname:        acc.Nickname,
+			OperationType:   int(opType),
+			AllowFeeEdition: true,
+			RollCount:       amount,
+			Coins:           strconv.FormatUint(amount*RollPrice, 10),
+		},
 	}
 
 	promptOutput, err := prompt.WakeUpPrompt(t.prompterApp, promptRequest, acc)
@@ -67,7 +88,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	password := output.Password
 
-	operation, err := doTradeRolls(acc, password, amount, fee, *params.Body.Side, t.massaClient)
+	operation, err := doTradeRolls(acc, password, amount, fee, opType, t.massaClient)
 	if err != nil {
 		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 
@@ -90,11 +111,11 @@ func doTradeRolls(
 	acc *account.Account,
 	password *memguard.LockedBuffer,
 	amount, fee uint64,
-	side string,
+	opType int,
 	massaClient network.NodeFetcherInterface,
 ) (*sendOperation.OperationResponse, error) {
 	var operation sendOperation.Operation
-	if side == "buy" {
+	if opType == sellrolls.OpType {
 		operation = buyrolls.New(amount)
 	} else {
 		operation = sellrolls.New(amount)
