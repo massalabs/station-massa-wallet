@@ -60,7 +60,7 @@ export function ExecuteSC(props: SignBodyProps) {
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
-      <Description description={description} />
+      <Description text={description} />
 
       <div className="flex w-full items-center justify-between pb-2">
         <div className="flex items-center">
