@@ -1,13 +1,15 @@
 package types
 
 import (
+	"crypto/ed25519"
+	"crypto/rand"
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAddress_MarshalText(t *testing.T) {
+func TestPublicKey_MarshalText(t *testing.T) {
 	data := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
 	text := "P1M5WJVWdjSWZ5xndJKXAnKFU9E8CUSbdXJRiuAexBpuDsc4QPK"
 
@@ -83,5 +85,20 @@ func TestAddress_MarshalText(t *testing.T) {
 		err := ad.UnmarshalBinary(append([]byte{0x00}, data...))
 		assert.NoError(t, err)
 		assert.Equal(t, data, ad.Object.Data)
+	})
+
+	t.Run("VerifySignature", func(t *testing.T) {
+		sampleData := []byte("Test")
+		publicKeyBytes, privateKeyBytes, err := ed25519.GenerateKey(rand.Reader)
+		assert.NoError(t, err)
+		signature := ed25519.Sign(privateKeyBytes, sampleData)
+		publicKey := PublicKey{
+			Object: &object.Object{
+				Kind:    object.PublicKey,
+				Version: 0x00,
+				Data:    publicKeyBytes,
+			},
+		}
+		assert.True(t, publicKey.VerifySignature(sampleData, signature))
 	})
 }

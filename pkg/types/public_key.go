@@ -1,6 +1,8 @@
 package types
 
 import (
+	"crypto/ed25519"
+
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 )
 
@@ -79,4 +81,8 @@ func (p *PublicKey) UnmarshalBinary(data []byte) error {
 	}
 
 	return p.validate()
+}
+
+func (p *PublicKey) VerifySignature(data, signature []byte) bool {
+	return ed25519.Verify(ed25519.PublicKey(p.Object.Data), data, signature)
 }

@@ -82,7 +82,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	output, ok := promptOutput.(*walletapp.SignPromptOutput)
 	if !ok {
-		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrPromptInputType), utils.ErrPromptInputType, http.StatusInternalServerError)
+		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrInvalidInputType.Error()), utils.ErrInvalidInputType.Error(), http.StatusInternalServerError)
 	}
 	password := output.Password
 

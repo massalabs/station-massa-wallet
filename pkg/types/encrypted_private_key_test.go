@@ -1,12 +1,14 @@
 package types
 
 import (
+	"crypto/ed25519"
 	"testing"
 
 	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/pkg/crypto"
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 	"github.com/stretchr/testify/assert"
+	"lukechampine.com/blake3"
 )
 
 func TestEncryptedPrivateKey_Marshal(t *testing.T) {
@@ -123,6 +125,14 @@ func TestEncryptedPrivateKey(t *testing.T) {
 		assert.Equal(t, byte(EncryptedPrivateKeyLastVersion), signature[0])
 		expectedSignature := []byte{0x0, 0xe7, 0xeb, 0xd0, 0x39, 0xd3, 0xa3, 0x70, 0x70, 0xee, 0x38, 0xee, 0x95, 0x78, 0xd7, 0x3d, 0x7d, 0x74, 0xc4, 0x1a, 0x3, 0x1c, 0xfa, 0x3, 0xd4, 0x34, 0x1d, 0x67, 0x81, 0x64, 0x2c, 0xb7, 0xb0, 0x7c, 0xab, 0x30, 0xf1, 0x1d, 0x22, 0x39, 0x27, 0x7c, 0x9d, 0x5b, 0x4c, 0x9e, 0xcb, 0xa4, 0xe9, 0x8a, 0x5, 0x42, 0x20, 0xbb, 0x97, 0x7, 0x5e, 0x71, 0x87, 0x10, 0x40, 0xec, 0x8e, 0x62, 0x7}
 		assert.Equal(t, expectedSignature, signature)
+
+		// Get the public key and verify signature
+		samplePassword = memguard.NewBufferFromBytes([]byte("bonjour")) // recreate a memguard buffer from the password
+		publicKey, err := sampleEncryptedPrivateKey.PublicKey(samplePassword, sampleSalt, sampleNonce)
+		assert.NoError(t, err)
+
+		digest := blake3.Sum256(sampleData)
+		assert.True(t, ed25519.Verify(publicKey.Data, digest[:], expectedSignature[1:]))
 	})
 
 	t.Run("PublicKey", func(t *testing.T) {
@@ -132,8 +142,8 @@ func TestEncryptedPrivateKey(t *testing.T) {
 		publicKey, err := sampleEncryptedPrivateKey.PublicKey(samplePassword, sampleSalt, sampleNonce)
 		assert.NoError(t, err)
 
-		expectedSignature := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
-		assert.Equal(t, expectedSignature, publicKey.Data)
+		expectedPublicKey := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
+		assert.Equal(t, expectedPublicKey, publicKey.Data)
 	})
 
 	t.Run("PrivateKeyBytesInClear", func(t *testing.T) {

@@ -1037,6 +1037,13 @@ func init() {
         "correlationId": {
           "$ref": "#/definitions/CorrelationId"
         },
+        "operation": {
+          "description": "The modified operation (usr can change the fees).",
+          "type": "string",
+          "format": "byte",
+          "x-nullable": false,
+          "readOnly": true
+        },
         "publicKey": {
           "description": "Public part of the key pair used to sign the operation.",
           "type": "string",
@@ -2190,6 +2197,13 @@ func init() {
       "properties": {
         "correlationId": {
           "$ref": "#/definitions/CorrelationId"
+        },
+        "operation": {
+          "description": "The modified operation (usr can change the fees).",
+          "type": "string",
+          "format": "byte",
+          "x-nullable": false,
+          "readOnly": true
         },
         "publicKey": {
           "description": "Public part of the key pair used to sign the operation.",

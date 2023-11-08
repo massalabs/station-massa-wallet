@@ -6,7 +6,7 @@ require (
 	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/massalabs/station v0.3.9-0.20231026134307-06ae6cb71371
+	github.com/massalabs/station v0.3.9-0.20231102130013-1ab9b613fc1f
 	github.com/massalabs/station-massa-hello-world v0.0.10
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3

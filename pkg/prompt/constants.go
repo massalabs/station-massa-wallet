@@ -5,7 +5,6 @@ import (
 )
 
 const (
-	InputTypeErr        = "invalid prompt input type"
 	AlreadyListeningErr = "prompter is already listening"
 )
 
