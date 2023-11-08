@@ -10,11 +10,15 @@ import (
 	"net/url"
 	golangswaggerpaths "path"
 	"strings"
+
+	"github.com/go-openapi/swag"
 )
 
 // SignURL generates an URL for the sign operation
 type SignURL struct {
 	Nickname string
+
+	AllowFeeEdition *bool
 
 	_basePath string
 	// avoid unkeyed usage
@@ -51,6 +55,18 @@ func (o *SignURL) Build() (*url.URL, error) {
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	var allowFeeEditionQ string
+	if o.AllowFeeEdition != nil {
+		allowFeeEditionQ = swag.FormatBool(*o.AllowFeeEdition)
+	}
+	if allowFeeEditionQ != "" {
+		qs.Set("allow-fee-edition", allowFeeEditionQ)
+	}
+
+	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }
