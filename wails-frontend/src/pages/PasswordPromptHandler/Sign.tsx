@@ -106,10 +106,8 @@ export function Sign() {
     return Intl.t('password-prompt.title.sign');
   }
 
-  const toAddInHeightDescription = signData.Description ? 200 : 0;
-
   const winWidth = 460;
-  const winHeight = 460 + toAddInHeightDescription;
+  const winHeight = 660;
 
   WindowSetSize(winWidth, winHeight);
 
