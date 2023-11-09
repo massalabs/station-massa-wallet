@@ -46,6 +46,7 @@
       "operation-type": "Operation type",
       "operation-const": "Operation cost",
       "description": "Description",
+      "description-tooltip": "Description provided by a dApp",
       "message": "Message",
       "view-details": "View details",
       "message-format": "Message format: ",

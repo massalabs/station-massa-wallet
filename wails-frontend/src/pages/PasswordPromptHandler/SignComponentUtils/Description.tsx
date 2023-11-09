@@ -1,4 +1,8 @@
-import { AccordionCategory, AccordionContent } from '@massalabs/react-ui-kit';
+import {
+  AccordionCategory,
+  AccordionContent,
+  Tooltip,
+} from '@massalabs/react-ui-kit';
 import { FiChevronDown, FiChevronUp, FiInfo } from 'react-icons/fi';
 
 import Intl from '@/i18n/i18n';
@@ -22,8 +26,12 @@ export function Description(props: DescriptionProps) {
           iconClose={<FiChevronUp />}
           customClass="px-0 py-0"
           categoryTitle={
-            <div className="flex items-center w-full gap-4">
-              <FiInfo size={18} />
+            <div className="flex items-center w-full">
+              <Tooltip
+                icon={<FiInfo size={18} />}
+                className="mas-caption pl-0 pr-2"
+                content={Intl.t('password-prompt.sign.description-tooltip')}
+              />
               <p>{Intl.t(label)}</p>
             </div>
           }
