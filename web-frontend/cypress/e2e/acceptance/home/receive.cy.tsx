@@ -46,7 +46,7 @@ describe('E2E | Acceptance | Home | Receive', () => {
     function generateLink(amount) {
       cy.get('[data-testid="button"]')
         .should('exist')
-        .contains('Generate link')
+        .contains('Generate a link')
         .click();
 
       cy.get('[data-testid="amount-to-send"]').type(amount);
@@ -118,7 +118,7 @@ describe('E2E | Acceptance | Home | Receive', () => {
       const generatedLink = `http://localhost:8080/send-redirect/?to=${account.address}&amount=${amount}`;
 
       navigateToReceivePage();
-      cy.get('[data-testid="button"]').contains('Generate link').click();
+      cy.get('[data-testid="button"]').contains('Generate a link').click();
 
       cy.get('[data-testid="popup-modal"]').should('be.visible');
 
