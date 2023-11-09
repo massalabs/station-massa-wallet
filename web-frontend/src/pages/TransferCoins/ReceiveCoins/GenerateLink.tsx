@@ -80,7 +80,7 @@ function GenerateLink(props: GenerateLinkProps) {
     >
       <PopupModalHeader>
         <h1 className="mas-banner mb-6">
-          {Intl.t('receive-coins.receive-account')}
+          {Intl.t('receive-coins.generate-link')}
         </h1>
       </PopupModalHeader>
       <PopupModalContent>

@@ -182,7 +182,7 @@
     "amount-to-send": "Amount to send"
   },
   "receive-coins": {
-    "generate-link": "Generate link",
+    "generate-link": "Generate a link",
     "receive-amount": "Amount",
     "account-address": "Account address: ",
     "amount-to-ask": "Amount to ask",
