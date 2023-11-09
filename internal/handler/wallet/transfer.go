@@ -64,7 +64,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Data: PromptRequestSignData{
-			Fees:              string(params.Body.Fee),
+			Fees:              strconv.FormatUint(fee, 10),
 			WalletAddress:     address,
 			Nickname:          acc.Nickname,
 			OperationType:     int(transaction.OpType),
@@ -87,7 +87,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	password := output.Password
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(acc, password, amount, fee, *params.Body.RecipientAddress, t.massaClient)
+	operation, err := doTransfer(acc, password, amount, output.Fees, *params.Body.RecipientAddress, t.massaClient)
 	if err != nil {
 		msg := fmt.Sprintf("error transferring coin: %v", err.Error())
 

@@ -36,6 +36,17 @@ func Test_transfer_handler(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, resp.Result().StatusCode)
 	})
 
+	t.Run("Transfer with invalid fee", func(t *testing.T) {
+		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/transfer", nickname), `{
+			"fee": "none",
+			"amount": "5",
+			"recipientAddress": "AU1eQkRhZZBa5VNc24fCejxgFDpe1FHChpwiUksQB9StNb3rWm6i"
+		}`)
+
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusBadRequest, resp.Result().StatusCode)
+	})
+
 	t.Run("Transfer with invalid amount", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/transfer", nickname), `{
 			"fee": "1",

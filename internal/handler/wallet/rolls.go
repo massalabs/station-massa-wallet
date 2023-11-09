@@ -88,7 +88,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	password := output.Password
 
-	operation, err := doTradeRolls(acc, password, amount, fee, opType, t.massaClient)
+	operation, err := doTradeRolls(acc, password, amount, output.Fees, opType, t.massaClient)
 	if err != nil {
 		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 
@@ -115,7 +115,7 @@ func doTradeRolls(
 	massaClient network.NodeFetcherInterface,
 ) (*sendOperation.OperationResponse, error) {
 	var operation sendOperation.Operation
-	if opType == sellrolls.OpType {
+	if opType == buyrolls.OpType {
 		operation = buyrolls.New(amount)
 	} else {
 		operation = sellrolls.New(amount)
