@@ -48,3 +48,4 @@ jobs:
       draft: ${{ github.event.inputs.draft }}
       prerelease: ${{ github.event.inputs.prerelease }}
       generate_release_notes: ${{ github.event.inputs.generate_release_notes }}
+    secrets: inherit
