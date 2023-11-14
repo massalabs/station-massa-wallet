@@ -1,7 +1,6 @@
 package wallet
 
 import (
-	"bytes"
 	"crypto/ed25519"
 	cryptorand "crypto/rand"
 	"encoding/binary"
@@ -160,12 +159,16 @@ func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.Loc
 
 	key := CacheKey(correlationID.Bytes())
 
-	cacheValue, err := Xor(privateKey, correlationID)
+	cipheredPrivateKey, err := Xor(privateKey, correlationID)
 	if err != nil {
 		return nil, fmt.Errorf("Error cannot XOR correlation id: %w", err)
 	}
 
-	err = w.gc.SetWithExpire(key, cacheValue.Bytes(), expirationDuration())
+	cacheValue := make([]byte, ed25519.PrivateKeySize)
+	copy(cacheValue, cipheredPrivateKey.Bytes())
+	cipheredPrivateKey.Destroy()
+
+	err = w.gc.SetWithExpire(key, cacheValue, expirationDuration())
 	if err != nil {
 		return nil, fmt.Errorf("Error set correlation id in cache: %w", err)
 	}
@@ -360,20 +363,27 @@ func (w *walletSign) privateKeyFromCache(
 		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
 	}
 
-	// convert interface{} into byte[]
-	buf := new(bytes.Buffer)
-
-	err = binary.Write(buf, binary.LittleEndian, value)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
+	if value == nil {
+		return nil, fmt.Errorf("%w: %s", utils.ErrCache, "value is nil")
 	}
 
-	cipheredPrivateKey := memguard.NewBufferFromBytes(buf.Bytes())
+	byteValue, ok := value.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("%w: %s", utils.ErrCache, "value is not a byte array")
+	}
+
+	cacheValue := make([]byte, ed25519.PrivateKeySize)
+	copy(cacheValue, byteValue)
+
+	cipheredPrivateKey := memguard.NewBufferFromBytes(cacheValue)
 
 	privateKey, err := Xor(cipheredPrivateKey, correlationID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
 	}
+
+	cipheredPrivateKey.Destroy()
+	correlationID.Destroy()
 
 	return privateKey, nil
 }
