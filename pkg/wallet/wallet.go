@@ -80,7 +80,7 @@ func (w *Wallet) Discover() error {
 			acc, err := w.Load(filePath)
 			if err != nil {
 				logger.Warnf("invalid account found: %s", nickname)
-				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
+				w.appendToInvalidAccounts(nickname)
 
 				continue
 			}
@@ -88,7 +88,7 @@ func (w *Wallet) Discover() error {
 			err = w.AddAccount(acc, false)
 			if err != nil {
 				logger.Warnf("failed to add account: %s, %v", nickname, err)
-				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
+				w.appendToInvalidAccounts(nickname)
 
 				continue
 			}
@@ -96,6 +96,17 @@ func (w *Wallet) Discover() error {
 	}
 
 	return nil
+}
+
+// appendToInvalidAccounts appends the nickname to the list of invalid accounts if it's not already there
+func (w *Wallet) appendToInvalidAccounts(nickname string) {
+	for _, n := range w.InvalidAccountNicknames {
+		if n == nickname {
+			return
+		}
+	}
+
+	w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
 }
 
 // Add an account into the wallet
