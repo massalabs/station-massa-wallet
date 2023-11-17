@@ -65,6 +65,9 @@ func (w *Wallet) Discover() error {
 		return true
 	})
 
+	// Clear invalid accounts
+	w.InvalidAccountNicknames = []string{}
+
 	for _, f := range files {
 		fileName := f.Name()
 		filePath := path.Join(w.WalletPath, fileName)
