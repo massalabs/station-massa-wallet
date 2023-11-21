@@ -23,6 +23,7 @@ type Wallet struct {
 	accounts                *sync.Map // Mapping from nickname to account
 	InvalidAccountNicknames []string  // List of invalid account nicknames
 	WalletPath              string
+	mutex                   sync.Mutex
 }
 
 func New(walletPath string) (*Wallet, error) {
@@ -65,6 +66,10 @@ func (w *Wallet) Discover() error {
 		return true
 	})
 
+	// Clear invalid accounts
+	w.InvalidAccountNicknames = []string{}
+
+	w.mutex.Lock()
 	for _, f := range files {
 		fileName := f.Name()
 		filePath := path.Join(w.WalletPath, fileName)
@@ -94,6 +99,8 @@ func (w *Wallet) Discover() error {
 			}
 		}
 	}
+
+	w.mutex.Unlock()
 
 	return nil
 }
