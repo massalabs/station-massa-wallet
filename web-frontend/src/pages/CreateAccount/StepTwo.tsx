@@ -47,12 +47,14 @@ export default function StepTwo() {
           <p className="mas-body text-f-primary w-full pb-4">
             {Intl.t('account.create.step2.description')}
           </p>
-          <Button
-            preIcon={<FiLock />}
-            onClick={() => mutate({} as AccountObject)}
-          >
-            {Intl.t('account.create.buttons.define_password')}
-          </Button>
+          <div className="w-full">
+            <Button
+              preIcon={<FiLock />}
+              onClick={() => mutate({} as AccountObject)}
+            >
+              {Intl.t('account.create.buttons.define_password')}
+            </Button>
+          </div>
         </div>
       </div>
     </LandingPage>
