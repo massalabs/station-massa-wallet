@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/bluele/gcache"
@@ -47,7 +48,7 @@ func loadAccount(wallet *wallet.Wallet, nickname string) (*account.Account, midd
 	}
 
 	if errors.Is(err, walletpkg.AccountNotFoundError) {
-		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusNotFound)
+		return nil, newErrorResponse(fmt.Sprintf("%v: %s", err.Error(), nickname), errorGetAccount, http.StatusNotFound)
 	} else {
 		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusBadRequest)
 	}
