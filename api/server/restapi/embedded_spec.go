@@ -1016,12 +1016,17 @@ func init() {
     "SignRequest": {
       "type": "object",
       "required": [
-        "operation"
+        "operation",
+        "chainId"
       ],
       "properties": {
         "batch": {
           "description": "A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.",
           "type": "boolean"
+        },
+        "chainId": {
+          "description": "The chain id of the network to which the operation will be sent.",
+          "type": "integer"
         },
         "correlationId": {
           "$ref": "#/definitions/CorrelationId"
@@ -2185,12 +2190,17 @@ func init() {
     "SignRequest": {
       "type": "object",
       "required": [
-        "operation"
+        "operation",
+        "chainId"
       ],
       "properties": {
         "batch": {
           "description": "A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.",
           "type": "boolean"
+        },
+        "chainId": {
+          "description": "The chain id of the network to which the operation will be sent.",
+          "type": "integer"
         },
         "correlationId": {
           "$ref": "#/definitions/CorrelationId"

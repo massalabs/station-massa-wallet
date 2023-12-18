@@ -55,7 +55,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	api, prompterApp, _, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
-	transactionData := fmt.Sprintf(`{"operation":"%s"}`, callSCString)
+	transactionData := fmt.Sprintf(`{"chainId": 1, "operation":"%s"}`, callSCString)
 	nickname := "walletToDelete"
 	password := "zePassword"
 	createAccount(password, nickname, t, prompterApp)
@@ -151,7 +151,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("sign transaction batch", func(t *testing.T) {
-		transactionDataBatch := fmt.Sprintf(`{"operation":"%s","batch":true}`, callSCString)
+		transactionDataBatch := fmt.Sprintf(`{"chainId": 1, "operation":"%s","batch":true}`, callSCString)
 		testResult := make(chan walletapp.EventData)
 
 		// Send password to prompter app and wait for result
@@ -174,14 +174,14 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
 
-		transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
+		transactionDataBatch = fmt.Sprintf(`{"chainId": 1, "operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
 		// Send new transaction without password prompt
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		// Send new transaction with incorrect correlation id
 		correlationId = base64.StdEncoding.EncodeToString([]byte("wrong correlation id"))
-		transactionDataBatch = fmt.Sprintf(`{"operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
+		transactionDataBatch = fmt.Sprintf(`{"chainId": 1, "operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
 		var bodyError operations.SignInternalServerError
 		err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
