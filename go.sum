@@ -145,6 +145,8 @@ github.com/markbates/oncer v0.0.0-20181203154359-bf2de49a0be2/go.mod h1:Ld9puTsI
 github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kNSCBdG0=
 github.com/massalabs/station v0.3.9-0.20231102130013-1ab9b613fc1f h1:1A42aImAmu3FGl8MWY9EQ5CeXhViWRtqF8rzxIdhniw=
 github.com/massalabs/station v0.3.9-0.20231102130013-1ab9b613fc1f/go.mod h1:6VNh9PRA4uGwF6H+YGNRkbMY2pMAPK+ZFloDWHeRtJ0=
+github.com/massalabs/station v0.5.1-0.20231218175551-3429dc53fea2 h1:mdOJT1dRkah27ZzdDVKDb4lu5ZoM8s2GxVoDfeQDwWM=
+github.com/massalabs/station v0.5.1-0.20231218175551-3429dc53fea2/go.mod h1:6VNh9PRA4uGwF6H+YGNRkbMY2pMAPK+ZFloDWHeRtJ0=
 github.com/massalabs/station-massa-hello-world v0.0.10 h1:gzsPRD8PmFsGmd1UFG/xpOFut0zm4JKEUmjGo/g/fAA=
 github.com/massalabs/station-massa-hello-world v0.0.10/go.mod h1:K1mf69YpRPPZziE53KHXE5IKlTMqU3r1wuLL0MWM21k=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
