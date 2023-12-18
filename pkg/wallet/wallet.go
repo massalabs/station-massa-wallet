@@ -70,6 +70,8 @@ func (w *Wallet) Discover() error {
 	w.InvalidAccountNicknames = []string{}
 
 	w.mutex.Lock()
+	defer w.mutex.Unlock()
+
 	for _, f := range files {
 		fileName := f.Name()
 		filePath := path.Join(w.WalletPath, fileName)
@@ -99,8 +101,6 @@ func (w *Wallet) Discover() error {
 			}
 		}
 	}
-
-	w.mutex.Unlock()
 
 	return nil
 }
@@ -146,7 +146,7 @@ func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname strin
 
 	err = w.AddAccount(acc, true)
 	if err != nil {
-		return nil, fmt.Errorf("adding account: %w", err)
+		return nil, fmt.Errorf("adding account in GenerateAccount: %w", err)
 	}
 
 	return acc, nil
@@ -154,6 +154,9 @@ func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname strin
 
 // Get an account from the wallet by nickname
 func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+
 	if acc, found := w.accounts.Load(nickname); found {
 		return acc.(*account.Account), nil
 	}
@@ -171,7 +174,7 @@ func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 
 	err = w.AddAccount(acc, false)
 	if err != nil {
-		return nil, fmt.Errorf("adding account: %w", err)
+		return nil, fmt.Errorf("adding account in GetAccount: %w", err)
 	}
 
 	return acc, nil
