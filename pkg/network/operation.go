@@ -30,6 +30,7 @@ func SendOperation(
 	massaClient NodeFetcherInterface,
 	operation sendOperation.Operation,
 	fee uint64,
+	chainID uint64,
 ) (*sendOperation.OperationResponse, error) {
 	operationData, err := massaClient.MakeOperation(fee, operation)
 	if err != nil {
@@ -39,11 +40,6 @@ func SendOperation(
 	publicKey, err := acc.PublicKey.MarshalBinary()
 	if err != nil {
 		return nil, fmt.Errorf("unable to marshal public key: %w", err)
-	}
-
-	chainID, err := getChainID()
-	if err != nil {
-		return nil, fmt.Errorf("unable to get chain id: %w", err)
 	}
 
 	operationDataToSign := utils.PrepareSignData(uint64(chainID), append(publicKey, operationData...))

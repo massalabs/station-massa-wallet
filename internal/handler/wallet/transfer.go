@@ -61,6 +61,11 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		recipientNickname = recipientAcc.Nickname
 	}
 
+	chainID, err := network.GetChainID()
+	if err != nil {
+		return newErrorResponse("failed to get chain id", errorGetAccount, http.StatusInternalServerError)
+	}
+
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Data: PromptRequestSignData{
@@ -72,6 +77,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 			RecipientAddress:  *params.Body.RecipientAddress,
 			RecipientNickname: recipientNickname,
 			Amount:            string(params.Body.Amount),
+			ChainID:           int64(chainID),
 		},
 	}
 
@@ -87,7 +93,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	password := output.Password
 
 	// create the transaction and send it to the network
-	operation, err := doTransfer(acc, password, amount, output.Fees, *params.Body.RecipientAddress, t.massaClient)
+	operation, err := doTransfer(acc, password, amount, output.Fees, *params.Body.RecipientAddress, t.massaClient, chainID)
 	if err != nil {
 		msg := fmt.Sprintf("error transferring coin: %v", err.Error())
 
@@ -112,11 +118,12 @@ func doTransfer(
 	amount, fee uint64,
 	recipientAddress string,
 	massaClient network.NodeFetcherInterface,
+	chainID uint64,
 ) (*sendOperation.OperationResponse, error) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
 		return nil, fmt.Errorf("Error during transaction creation: %w", err)
 	}
 
-	return network.SendOperation(acc, password, massaClient, operation, fee)
+	return network.SendOperation(acc, password, massaClient, operation, fee, chainID)
 }

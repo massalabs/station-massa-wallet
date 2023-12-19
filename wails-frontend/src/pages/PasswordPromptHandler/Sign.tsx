@@ -13,6 +13,7 @@ import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
 import { Transaction } from './Transaction/Transaction';
+import { CHAIN_ID_TO_NETWORK_NAME, ChainId } from '@/const/networks';
 import {
   OPER_BUY_ROLL,
   OPER_CALL_SC,
@@ -49,7 +50,7 @@ export interface SignBodyProps {
   PlainText: string;
   AllowFeeEdition: boolean;
   DisplayData: boolean;
-  Network: string;
+  ChainID: number;
   children?: React.ReactNode;
 }
 
@@ -79,9 +80,6 @@ export function Sign() {
   const [isEditing, setIsEditing] = useState(false);
 
   const signData = req.Data as SignBodyProps;
-
-  // mock network name
-  signData.Network = 'buildnet';
 
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
@@ -134,10 +132,18 @@ export function Sign() {
     allowFeeEdition: signData.AllowFeeEdition,
   };
 
+  let networkName: string;
+
+  if (signData.ChainID in CHAIN_ID_TO_NETWORK_NAME ) {
+    networkName = CHAIN_ID_TO_NETWORK_NAME[signData.ChainID as ChainId];
+  } else {
+    networkName = `${Intl.t('password-prompt.sign.unknown-network-name')} (${signData.ChainID})`;
+  }
+
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
-        <Tag type="info" content={signData.Network} customClass="mb-4" />
+        <Tag type="info" content={networkName} customClass="mb-4" />
         <h1 className="mas-title">{getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {

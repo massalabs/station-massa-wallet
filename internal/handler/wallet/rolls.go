@@ -59,6 +59,11 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		opType = sellrolls.OpType
 	}
 
+	chainID, err := network.GetChainID()
+	if err != nil {
+		return newErrorResponse("failed to get chain id", errorGetAccount, http.StatusInternalServerError)
+	}
+
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
 		Data: PromptRequestSignData{
@@ -69,6 +74,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			AllowFeeEdition: true,
 			RollCount:       amount,
 			Coins:           strconv.FormatUint(amount*RollPrice, 10),
+			ChainID:         int64(chainID),
 		},
 	}
 
@@ -88,7 +94,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	password := output.Password
 
-	operation, err := doTradeRolls(acc, password, amount, output.Fees, opType, t.massaClient)
+	operation, err := doTradeRolls(acc, password, amount, output.Fees, opType, t.massaClient, chainID)
 	if err != nil {
 		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 
@@ -113,6 +119,7 @@ func doTradeRolls(
 	amount, fee uint64,
 	opType int,
 	massaClient network.NodeFetcherInterface,
+	chainID uint64,
 ) (*sendOperation.OperationResponse, error) {
 	var operation sendOperation.Operation
 	if opType == buyrolls.OpType {
@@ -121,5 +128,5 @@ func doTradeRolls(
 		operation = sellrolls.New(amount)
 	}
 
-	return network.SendOperation(acc, password, massaClient, operation, fee)
+	return network.SendOperation(acc, password, massaClient, operation, fee, chainID)
 }
