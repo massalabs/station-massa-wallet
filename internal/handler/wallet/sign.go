@@ -214,8 +214,8 @@ func prepareOperation(acc *account.Account, fees uint64, operationB64 string, op
 		return nil, nil, fmt.Errorf("Unable to marshal public key: %w", err)
 	}
 
-	buf := make([]byte, binary.MaxVarintLen64)
-	binary.PutUvarint(buf, uint64(chainID))
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(chainID))
 	msgToSign = append(buf, append(publicKeyBytes, msgToSign...)...)
 
 	return operation, msgToSign, nil

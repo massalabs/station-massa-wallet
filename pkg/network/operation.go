@@ -46,8 +46,8 @@ func SendOperation(
 		return nil, fmt.Errorf("unable to get chain id: %w", err)
 	}
 
-	buf := make([]byte, binary.MaxVarintLen64)
-	binary.PutUvarint(buf, uint64(chainID))
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(chainID))
 	operationDataToSign := append(buf, append(publicKey, operationData...)...)
 
 	// TODO: we do not implement the handling of the correlation id for now
