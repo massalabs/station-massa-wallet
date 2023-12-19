@@ -19,7 +19,7 @@ const (
 type NetworkInfo struct {
 	Network string `json:"network"`
 	URL     string `json:"url"`
-	DNS     string `json:"dns"`
+	ChainID int    `json:"chainId"`
 }
 
 func logFallback(action string, err error) {
@@ -31,7 +31,8 @@ func GetNetworkInfo() (*NetworkInfo, error) {
 	resp, err := http.Get(massaStationNodeEndpoint)
 	if err != nil {
 		logFallback("GET massa station node endpoint", err)
-		return &NetworkInfo{Network: defaultNetwork, URL: defaultNodeUrl}, nil
+
+		return fallbackNetworkInfo(), nil
 	}
 
 	defer resp.Body.Close()
@@ -39,7 +40,7 @@ func GetNetworkInfo() (*NetworkInfo, error) {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logFallback("read response body", err)
-		return &NetworkInfo{Network: defaultNetwork, URL: defaultNodeUrl}, nil
+		return fallbackNetworkInfo(), nil
 	}
 
 	var data NetworkInfo
@@ -47,8 +48,16 @@ func GetNetworkInfo() (*NetworkInfo, error) {
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		logFallback("parse JSON", err)
-		return &NetworkInfo{Network: defaultNetwork, URL: defaultNodeUrl}, nil
+		return fallbackNetworkInfo(), nil
 	}
 
 	return &data, nil
+}
+
+func fallbackNetworkInfo() *NetworkInfo {
+	return &NetworkInfo{
+		Network: defaultNetwork,
+		URL:     defaultNodeUrl,
+		ChainID: chainId,
+	}
 }
