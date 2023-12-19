@@ -1,7 +1,7 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
-import { Button, Password, Tag } from '@massalabs/react-ui-kit';
+import { Button, Password } from '@massalabs/react-ui-kit';
 import { SendSignPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { CallSc } from './CallSC/CallSc';
+import { NetworkName } from './components/NetworkName';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
@@ -143,7 +144,7 @@ export function Sign() {
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
-        <Tag type="info" content={networkName} customClass="mb-4" />
+        <NetworkName networkName={networkName} />
         <h1 className="mas-title">{getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {
