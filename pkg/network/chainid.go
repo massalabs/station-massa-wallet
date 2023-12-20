@@ -1,6 +1,14 @@
 package network
 
-import "github.com/massalabs/station/pkg/node"
+import (
+	"errors"
+
+	"github.com/massalabs/station/pkg/node"
+)
+
+var (
+	ErrChainIDNotInStatus = errors.New("chain id not in status")
+)
 
 func getChainID() (uint64, error) {
 	client, err := NewMassaClient()
@@ -14,6 +22,10 @@ func getChainID() (uint64, error) {
 	}
 
 	chainID := status.ChainID
+
+	if chainID == nil {
+		return 0, ErrChainIDNotInStatus
+	}
 
 	return uint64(*chainID), nil
 }
