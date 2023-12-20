@@ -1,22 +1,34 @@
-import { MassaLogo } from '@massalabs/react-ui-kit';
+import { InterrogationPoint, MassaLogo } from '@massalabs/react-ui-kit';
 
-import { MAINNET } from '@/const/networks';
+import { CHAIN_ID_TO_NETWORK_NAME, ChainId, MAINNET } from '@/const/networks';
+import Intl from '@/i18n/i18n';
 
 export interface NetworkNameProps {
-  networkName: string;
+  chainId: number;
 }
 
-export function NetworkName({ networkName }: NetworkNameProps) {
+export function NetworkName({ chainId }: NetworkNameProps) {
+  let networkName: string;
+  let networkIsKnown = false;
+
   let secondaryColor = undefined;
   let primaryColor = undefined;
 
-  if (networkName === MAINNET) {
-    primaryColor = '#FF0000';
-    secondaryColor = '#FFFFFF';
+  if (chainId in CHAIN_ID_TO_NETWORK_NAME) {
+    networkName = CHAIN_ID_TO_NETWORK_NAME[chainId as ChainId];
+    networkIsKnown = true;
+    if (networkName === MAINNET) {
+      primaryColor = '#FF0000';
+      secondaryColor = '#FFFFFF';
+    } else {
+      // colors from the design on figma labelled as Buildnet
+      primaryColor = '#FFFFFF';
+      secondaryColor = '#151A26';
+    }
   } else {
-    // colors from the design on figma labelled as Buildnet
-    primaryColor = '#FFFFFF';
-    secondaryColor = '#151A26';
+    networkName = `${Intl.t(
+      'password-prompt.sign.unknown-network-name',
+    )} (${chainId})`;
   }
 
   return (
@@ -25,11 +37,15 @@ export function NetworkName({ networkName }: NetworkNameProps) {
       className="flex justify-between items-center bg-tertiary mas-caption
         rounded-full w-fit px-3 py-1 text-f-primary mb-4"
     >
-      <MassaLogo
-        size={16}
-        primaryColor={primaryColor}
-        secondaryColor={secondaryColor}
-      />
+      {networkIsKnown ? (
+        <MassaLogo
+          size={16}
+          primaryColor={primaryColor}
+          secondaryColor={secondaryColor}
+        />
+      ) : (
+        <InterrogationPoint size={16} />
+      )}
       <span className="ml-2">{networkName}</span>
     </div>
   );
