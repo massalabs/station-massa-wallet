@@ -1,10 +1,10 @@
 package network
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/awnumar/memguard"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	sendOperation "github.com/massalabs/station/pkg/node/sendoperation"
 )
@@ -46,9 +46,7 @@ func SendOperation(
 		return nil, fmt.Errorf("unable to get chain id: %w", err)
 	}
 
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, uint64(chainID))
-	operationDataToSign := append(buf, append(publicKey, operationData...)...)
+	operationDataToSign := utils.PrepareSignData(uint64(chainID), append(publicKey, operationData...))
 
 	// TODO: we do not implement the handling of the correlation id for now
 	signature, err := acc.Sign(password, operationDataToSign)

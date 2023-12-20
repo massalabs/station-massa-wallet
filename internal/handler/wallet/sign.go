@@ -209,14 +209,12 @@ func prepareOperation(acc *account.Account, fees uint64, operationB64 string, op
 	msgToSign := make([]byte, len(operation))
 	copy(msgToSign, operation)
 
-	publicKeyBytes, err := acc.PublicKey.MarshalBinary()
+	publicKey, err := acc.PublicKey.MarshalBinary()
 	if err != nil {
 		return nil, nil, fmt.Errorf("Unable to marshal public key: %w", err)
 	}
 
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, uint64(chainID))
-	msgToSign = append(buf, append(publicKeyBytes, msgToSign...)...)
+	msgToSign = utils.PrepareSignData(uint64(chainID), append(publicKey, msgToSign...))
 
 	return operation, msgToSign, nil
 }
