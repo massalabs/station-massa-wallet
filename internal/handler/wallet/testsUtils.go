@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const ChainID = 77658366 // Buildnet
+const ChainIDUnitTests = 77658366 // Buildnet
 
 func createAccount(password, nickname string, t *testing.T, prompterApp prompt.WalletPrompterInterface) *account.Account {
 	acc, err := account.Generate(memguard.NewBufferFromBytes([]byte(password)), nickname)
