@@ -6,7 +6,9 @@ import (
 	"github.com/massalabs/station/pkg/node"
 )
 
-var ErrChainIDNotInStatus = errors.New("chain id not in status")
+var (
+	ErrChainIDNotInStatus = errors.New("chain id not in status")
+)
 
 func getChainID() (uint64, error) {
 	client, err := NewMassaClient()
