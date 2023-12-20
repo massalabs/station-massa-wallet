@@ -13,7 +13,7 @@ const (
 	massaStationNodeEndpoint = plugin.MassaStationBaseURL + "/massa/node"
 	defaultNetwork           = "buildnet"
 	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
-	defaultChainId                  = 77658366
+	defaultChainId           = 77658366
 )
 
 type NetworkInfo struct {
