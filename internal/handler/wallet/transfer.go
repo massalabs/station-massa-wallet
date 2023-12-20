@@ -63,7 +63,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	chainID, err := network.GetChainID()
 	if err != nil {
-		return newErrorResponse("failed to get chain id", errorGetAccount, http.StatusInternalServerError)
+		return newErrorResponse("failed to get chain id", errorTransferCoin, http.StatusInternalServerError)
 	}
 
 	promptRequest := prompt.PromptRequest{

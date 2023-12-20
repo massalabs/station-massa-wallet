@@ -61,7 +61,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	chainID, err := network.GetChainID()
 	if err != nil {
-		return newErrorResponse("failed to get chain id", errorGetAccount, http.StatusInternalServerError)
+		return newErrorResponse("failed to get chain id", errorTradeRoll, http.StatusInternalServerError)
 	}
 
 	promptRequest := prompt.PromptRequest{
