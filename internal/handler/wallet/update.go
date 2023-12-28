@@ -69,7 +69,7 @@ func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickn
 	oldNickname := acc.Nickname
 
 	newAcc, err := account.New(
-		acc.Version,
+		*acc.Version,
 		string(newNickname),
 		acc.Address,
 		acc.Salt,

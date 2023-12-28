@@ -113,7 +113,7 @@ func TestWallet(t *testing.T) {
 		acc, err := w.GetAccount(sampleNickname)
 		assert.NoError(t, err)
 		assert.NotNil(t, acc)
-		assert.Equal(t, uint8(1), acc.Version)
+		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, sampleNickname, acc.Nickname)
 		assert.Equal(t, sampleSalt, acc.Salt)
 		assert.Equal(t, sampleNonce, acc.Nonce)
@@ -145,7 +145,7 @@ func TestWallet(t *testing.T) {
 
 		assertAccountIsPresent(t, w, sampleNickname)
 		acc := assertAccountIsPresent(t, w, sampleNickname2)
-		assert.Equal(t, uint8(1), acc.Version)
+		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, 2, w.GetAccountCount())
 	})
 

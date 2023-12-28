@@ -89,7 +89,7 @@ func assertWallet(t *testing.T, wallet *wallet.Wallet, nickname string) {
 	acc, err := wallet.GetAccount(nickname)
 	assert.NoError(t, err)
 
-	assert.Equal(t, uint8(1), acc.Version)
+	assert.Equal(t, uint8(1), *acc.Version)
 	assert.Equal(t, nickname, acc.Nickname)
 
 	addressByteLen := 32

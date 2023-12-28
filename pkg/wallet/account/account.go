@@ -27,7 +27,7 @@ var (
 )
 
 type Account struct {
-	Version      uint8                      `yaml:"Version"`
+	Version      *uint8                     `yaml:"Version"`
 	Nickname     string                     `yaml:"Nickname,omitempty"`
 	Address      *types.Address             `yaml:"Address,omitempty"`
 	Salt         [16]byte                   `yaml:"Salt,flow"`
@@ -66,7 +66,7 @@ func New(
 	}
 
 	return &Account{
-		Version:      version,
+		Version:      &version,
 		Nickname:     nickname,
 		Address:      address,
 		Salt:         salt,
@@ -261,7 +261,7 @@ func (a *Account) Unmarshal(data []byte) error {
 		return fmt.Errorf("missing public key")
 	}
 
-	if a.Version == UnknownVersion {
+	if a.Version == nil || (*a.Version != UnknownVersion && *a.Version != LastVersion) {
 		return fmt.Errorf("invalid or missing version")
 	}
 
