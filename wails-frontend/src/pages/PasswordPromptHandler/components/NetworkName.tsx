@@ -21,7 +21,6 @@ export function NetworkName({ chainId }: NetworkNameProps) {
       primaryColor = '#FF0000';
       secondaryColor = '#FFFFFF';
     } else {
-      // colors from the design on figma labelled as Buildnet
       primaryColor = '#FFFFFF';
       secondaryColor = '#151A26';
     }
