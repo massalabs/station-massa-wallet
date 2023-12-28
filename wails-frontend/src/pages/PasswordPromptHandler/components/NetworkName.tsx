@@ -1,7 +1,9 @@
+import { CHAIN_ID_TO_NETWORK_NAME, MAINNET } from '@massalabs/massa-web3';
 import { InterrogationPoint, MassaLogo } from '@massalabs/react-ui-kit';
 
-import { CHAIN_ID_TO_NETWORK_NAME, ChainId, MAINNET } from '@/const/networks';
 import Intl from '@/i18n/i18n';
+
+type ChainId = keyof typeof CHAIN_ID_TO_NETWORK_NAME;
 
 export interface NetworkNameProps {
   chainId: number;
