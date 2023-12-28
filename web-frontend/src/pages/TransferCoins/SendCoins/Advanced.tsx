@@ -9,11 +9,16 @@ import {
   RadioButton,
 } from '@massalabs/react-ui-kit';
 
+import { AmountValue } from '../ReceiveCoins/GenerateLink';
 import Intl from '@/i18n/i18n';
 import { parseForm } from '@/utils/parseForm';
 
 interface InputsErrors {
   fees?: string;
+}
+
+interface FeesForm {
+  fees: number;
 }
 
 const PRESET_LOW = '1';
@@ -37,7 +42,7 @@ function Advanced({ ...props }) {
   const initialCustomFees = !isOneOfPressedFees || false;
 
   const [error, setError] = useState<InputsErrors | null>(null);
-  const [fees, setFees] = useState<number | string | undefined>(initialFees);
+  const [fees, setFees] = useState<AmountValue>(initialFees);
   const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
   const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
@@ -49,7 +54,7 @@ function Advanced({ ...props }) {
     isCustomFees ? setPresetFee('0') : setPresetFee(PRESET_STANDARD);
   }
 
-  function validate(formObject: any) {
+  function validate(formObject: FeesForm) {
     const { fees } = formObject;
     setError(null);
     if (customFees && !fees) {
@@ -67,7 +72,7 @@ function Advanced({ ...props }) {
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formObject = parseForm(e);
+    const formObject = parseForm(e) as FeesForm;
 
     if (!validate(formObject)) return;
 

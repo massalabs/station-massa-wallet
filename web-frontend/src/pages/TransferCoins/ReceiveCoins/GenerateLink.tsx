@@ -18,6 +18,12 @@ import { AccountObject } from '@/models/AccountModel';
 import { parseForm, formatStandard } from '@/utils/';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
+export type AmountValue = number | string | undefined;
+
+interface MoneyForm {
+  amount: AmountValue;
+}
+
 interface GenerateLinkProps {
   account: AccountObject;
   presetURL: string;
@@ -37,7 +43,7 @@ function GenerateLink(props: GenerateLinkProps) {
   const [link, setLink] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
 
-  function validate(formObject: any) {
+  function validate(formObject: MoneyForm) {
     const { amount } = formObject;
 
     setError(null);
@@ -52,7 +58,7 @@ function GenerateLink(props: GenerateLinkProps) {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formObject = parseForm(e);
+    const formObject = parseForm(e) as MoneyForm;
 
     if (!validate(formObject)) return;
 
