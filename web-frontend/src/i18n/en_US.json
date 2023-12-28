@@ -129,10 +129,6 @@
       "invalid-address": "Recipient address is not a valid Massa address",
       "sent": "Oops! Something went wrong in your transfer. Please, try again later..."
     },
-    "send-redirect": {
-      "account-not-found": "Account not found - redirecting to account creation page. You can import this account with its private key",
-      "no-account": "No account found - redirecting to account creation page"
-    },
     "receive-coins": {
       "no-link": "there's no link to copy. Please, generate one!"
     },
@@ -196,8 +192,5 @@
     "teaser-banner": "Our new feature is coming soon",
     "teaser-transaction-page": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll be able to consult them in a few months!",
     "teaser-contacts-page": "Managing your contact list for a smoother transaction management."
-  },
-  "send-redirect": {
-    "redirecting": "Hey {nickname}! We're transferring you to the send coin page"
   }
 }

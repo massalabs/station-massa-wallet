@@ -17,7 +17,6 @@ const backendErrorsCode: BackendErrors = {
   'PrivateKey-0001': Intl.t('errors.invalid-private-key'),
   'NoFile-0001': Intl.t('errors.no-file'),
   'AccountFile-0001': Intl.t('errors.invalid-file'),
-  'InvalidFileFormat-0001': Intl.t('errors.invalid-file-format'),
   'Unknown-0001': Intl.t('errors.unknown'),
   'DuplicateKey-0001': Intl.t('errors.duplicate-key'),
   'DuplicateNickname-001': Intl.t('errors.duplicate-nickname'),
