@@ -2,7 +2,6 @@ package walletapp
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -68,7 +67,7 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 
 	// Send a cancel message to the prompt and do NOT shutdown
 	if a.IsListening {
-		fmt.Println("canceling prompt before closing")
+		logger.Warn("canceling prompt before closing")
 		a.CtrlChan <- Cancel
 	}
 
@@ -91,7 +90,7 @@ func (a *WalletApp) SendSignPromptInput(password string, fees string) {
 // It sends a cancel message to the prompt
 func (a *WalletApp) AbortAction() {
 	if a.IsListening {
-		fmt.Println("Abort action")
+		logger.Warn("Abort action")
 		a.CtrlChan <- Cancel
 	}
 }

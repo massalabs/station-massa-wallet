@@ -12,6 +12,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 type PromptRequestDeleteData struct {
@@ -66,7 +67,7 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 	err = w.prompterApp.App().Wallet.DeleteAccount(acc.Nickname)
 	if err != nil {
 		errStr := fmt.Sprintf("error deleting wallet: %v", err.Error())
-		fmt.Println(errStr)
+		logger.Error(errStr)
 		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.ErrAccountFile})
 
