@@ -131,6 +131,7 @@
     "PasswordRequired": "Password is required",
     "Wallet-0011": "Failed to sign: operation is not base 64 valid",
     "Wallet-0012": "Failed to sign: invalid operation",
+    "Wallet-0021": "Failed to sign",
     "transaction": "Failed to process transaction",
     "delete": "Failed to process delete operation",
     "default": "Failed to process operation"
