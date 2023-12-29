@@ -91,7 +91,7 @@ func (w *Wallet) Load(filePath string) (*account.Account, error) {
 		acc.Nickname = w.nicknameFromFilePath(filePath)
 	}
 
-	if !account.NicknameIsValid(acc.Nickname) {
+	if !account.NicknameIsValidForLoading(acc.Nickname) {
 		return nil, fmt.Errorf("%w: the provided nickname is invalid: %s", account.ErrInvalidNickname, acc.Nickname) // TODO: add unit test
 	}
 
