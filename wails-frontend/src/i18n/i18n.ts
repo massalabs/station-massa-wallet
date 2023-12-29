@@ -26,7 +26,7 @@ class I18n {
     const result = dot.pick(key, copy);
 
     if (!result) {
-      console.warn(`I18n::t:: No translation found for key ${key}`);
+      LogPrint(`I18n::t:: No translation found for ${key}`);
     }
 
     return interpolations
