@@ -16,6 +16,10 @@ type PublicKey struct {
 
 // validate ensures the Object.Kind is an PublicKey type and the version is supported.
 func (p *PublicKey) validate() error {
+	if len(p.Data) != ed25519.PublicKeySize {
+		return object.ErrUnsupportedVersion
+	}
+
 	err := p.Object.Validate(PublicKeyLastVersion, object.PublicKey)
 	if err != nil {
 		return err
