@@ -39,6 +39,8 @@ func TestWallet(t *testing.T) {
 	nickname33Bytes := "version-1-ciphered-data-33-bytes"
 	nicknameVersionOThatIsVersion1 := "version-0-that-is-version1"
 	nicknameNew := "new-account"
+	nickname52Chars := "AAU1AVvtqkzk6NqCn6ifDyBnXT5FskX5aujSCCCfz7LHUkQhr8DpH"
+	nicknameTooLong := "AAAU1AVvtqkzk6NqCn6ifDyBnXT5FskX5aujSCCCfz7LHUkQhr8DpH"
 
 	createAccount := func(nickname string) *account.Account {
 		acc, err := account.New(
@@ -208,6 +210,25 @@ func TestWallet(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 0, newWallet.GetAccountCount())
 		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
+	})
+
+	t.Run("Nickname 52 chars", func(t *testing.T) {
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nickname52Chars)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_AAU1AVvtqkzk6NqCn6ifDyBnXT5FskX5aujSCCCfz7LHUkQhr8DpH.yaml", accountPath)
+		newWallet, err := New(walletPath)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, newWallet.GetAccountCount())
+		assertAccountIsPresent(t, newWallet, nickname52Chars)
+		assert.Len(t, newWallet.InvalidAccountNicknames, 0)
+	})
+
+	t.Run("Nickname too long", func(t *testing.T) {
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nicknameTooLong)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_AAAU1AVvtqkzk6NqCn6ifDyBnXT5FskX5aujSCCCfz7LHUkQhr8DpH.yaml", accountPath)
 	})
 
 	t.Run("Load account with plaintext size 33 bytes, and sign", func(t *testing.T) {
