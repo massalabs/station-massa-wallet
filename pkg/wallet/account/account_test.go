@@ -152,6 +152,82 @@ PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 2
 		assert.Equal(t, sampleAccount.PublicKey.Object.Kind, account.PublicKey.Object.Kind)
 	})
 
+	t.Run("Unmarshal version 0 that is version 1", func(t *testing.T) {
+		accountText := `Version: 0
+Nickname: version-1-ciphered-data-33-bytes
+Address: AU12BeBmNYbEUfNhENDnJDiePbzK6qF1mJ4ZvK9XNibFFEsFWa4h8
+Salt: [10, 75, 178, 165, 27, 168, 203, 230, 98, 5, 213, 203, 59, 42, 184, 26]
+Nonce: [248, 82, 45, 216, 167, 134, 29, 195, 46, 221, 124, 187]
+CipheredData: [179, 2, 252, 61, 13, 108, 249, 203, 150, 105, 209, 120, 151, 234, 37,
+	112, 18, 251, 245, 79, 171, 211, 178, 72, 97, 47, 69, 224, 250, 251, 190, 29, 238,
+	69, 58, 180, 240, 253, 240, 143, 43, 94, 0, 15, 185, 209, 186, 75, 22, 166, 71,
+	155, 138, 212, 116, 184, 207, 111, 103, 141, 154, 41, 210, 131, 42, 90, 159, 90,
+	118, 174, 198, 45, 164, 206, 22, 147, 35, 68, 66, 122, 201]
+PublicKey: [0, 127, 88, 3, 157, 242, 146, 101, 144, 65, 175, 178, 138, 245, 13, 34,
+	212, 185, 28, 47, 222, 87, 91, 20, 89, 7, 4, 86, 102, 76, 249, 85, 0]
+`
+		account := Account{}
+		err := account.Unmarshal([]byte(accountText))
+		assert.NoError(t, err)
+	})
+
+	t.Run("Unmarshal version 1, ciphered data 33 bytes", func(t *testing.T) {
+		accountText := `Version: 1
+Nickname: version-1-ciphered-data-33-bytes
+Address: AU12BeBmNYbEUfNhENDnJDiePbzK6qF1mJ4ZvK9XNibFFEsFWa4h8
+Salt: [10, 75, 178, 165, 27, 168, 203, 230, 98, 5, 213, 203, 59, 42, 184, 26]
+Nonce: [248, 82, 45, 216, 167, 134, 29, 195, 46, 221, 124, 187]
+CipheredData: [179, 2, 252, 61, 13, 108, 249, 203, 150, 105, 209, 120, 151, 234, 37,
+	112, 18, 251, 245, 79, 171, 211, 178, 72, 97, 47, 69, 224, 250, 251, 190, 29, 238,
+	69, 58, 180, 240, 253, 240, 143, 43, 94, 0, 15, 185, 209, 186, 75, 22, 166, 71,
+	155, 138, 212, 116, 184, 207, 111, 103, 141, 154, 41, 210, 131, 42, 90, 159, 90,
+	118, 174, 198, 45, 164, 206, 22, 147, 35, 68, 66, 122, 201]
+PublicKey: [0, 127, 88, 3, 157, 242, 146, 101, 144, 65, 175, 178, 138, 245, 13, 34,
+	212, 185, 28, 47, 222, 87, 91, 20, 89, 7, 4, 86, 102, 76, 249, 85, 0]
+`
+		account := Account{}
+		err := account.Unmarshal([]byte(accountText))
+		assert.NoError(t, err)
+	})
+
+	t.Run("Unmarshal version 1, ciphered data 65 bytes", func(t *testing.T) {
+		accountText := `Version: 1
+Nickname: bonjour
+Address: AU1uSeKuYRQkC8fHWoohBmq8WKYxGTXuzaTcGomAoLXTGdq8kEsR
+Salt: [145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170]
+Nonce: [113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63]
+CipheredData: [2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83,
+	35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40,
+	28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246,
+	2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104,
+	64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135]
+PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25,
+	108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147]
+`
+		account := Account{}
+		err := account.Unmarshal([]byte(accountText))
+		assert.NoError(t, err)
+	})
+
+	t.Run("Unmarshal with version not handled", func(t *testing.T) {
+		accountText := `Version: 2
+Nickname: bonjour
+Address: AU1uSeKuYRQkC8fHWoohBmq8WKYxGTXuzaTcGomAoLXTGdq8kEsR
+Salt: [145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170]
+Nonce: [113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63]
+CipheredData: [2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83,
+	35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40,
+	28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246,
+	2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104,
+	64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135]
+PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25,
+	108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147]
+`
+		account := Account{}
+		err := account.Unmarshal([]byte(accountText))
+		assert.ErrorContains(t, err, "missing version")
+	})
+
 	t.Run("Unmarshal with missing field: version", func(t *testing.T) {
 		accountText := `Nickname: bonjour
 Address: AU1uSeKuYRQkC8fHWoohBmq8WKYxGTXuzaTcGomAoLXTGdq8kEsR
