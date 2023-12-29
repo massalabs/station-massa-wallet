@@ -99,7 +99,7 @@ func Generate(password *memguard.LockedBuffer, nickname string) (*Account, error
 		return nil, fmt.Errorf("generating random nonce: %w", err)
 	}
 
-	privateKeyBytes = append([]byte{types.EncryptedPrivateKeyLastVersion}, []byte(privateKeyBytes)...)
+	privateKeyBytes = append([]byte{types.EncryptedPrivateKeyLastVersion}, []byte(privateKeyBytes[:ed25519.SeedSize])...)
 	privateKey := memguard.NewBufferFromBytes(privateKeyBytes)
 
 	encryptedSecret, err := seal(privateKey, password, salt[:], nonce[:])
@@ -154,11 +154,8 @@ func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, private
 	}
 
 	seedBuffer := memguard.NewBufferFromBytes(seed)
-
-	privateKeyBytes := ed25519.NewKeyFromSeed(seedBuffer.Bytes())
+	privateKeyBytes := append([]byte{privateKeyVersion}, seedBuffer.Bytes()...)
 	seedBuffer.Destroy()
-
-	privateKeyBytes = append([]byte{privateKeyVersion}, privateKeyBytes...)
 	privateKey := memguard.NewBufferFromBytes(privateKeyBytes)
 
 	encryptedSecret, err := seal(privateKey, password, salt[:], nonce[:])
