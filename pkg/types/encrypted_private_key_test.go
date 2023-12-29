@@ -12,9 +12,9 @@ import (
 )
 
 func TestEncryptedPrivateKey_Marshal(t *testing.T) {
-	data := []byte{2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83, 35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40, 28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246, 2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104, 64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135}
+	data := []byte{0x2, 0x56, 0x85, 0x92, 0x52, 0xb8, 0xc1, 0xa0, 0x78, 0x2c, 0xc6, 0xd1, 0x45, 0xe6, 0x53, 0x23, 0x24, 0xeb, 0x12, 0x69, 0x4a, 0x75, 0xe4, 0xed, 0x70, 0x41, 0x20, 0x0, 0xfa, 0xb4, 0xc7, 0x1a}
 	// Functionally, this text below does not mean anything.
-	text := "S1jgLNMTYLuaKMUVZVLVRfp9nMDvjCx8ov2FtyGQSf87oQej21kMDTi1tbzUmtFgFWMPhyepn2mXF9SMQqaAsN2PV8wB72eArCtCCeYCMupxNrM2yT78r"
+	text := "S122inbQk89WNigayDBb2PhuNN2rmhdr5BUVN4tzVoN3kkZePQn"
 
 	t.Run("Marshal Text", func(t *testing.T) {
 		tests := []struct {

@@ -31,11 +31,13 @@ func TestWallet(t *testing.T) {
 	samplePrivateKeyData := []byte{2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83, 35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40, 28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246, 2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104, 64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135}
 	samplePublicKeyData := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
 	sampleNickname := "bonjour"
-	sampleNickname2 := "unit-test"
-	sampleNickname3 := "version-0"
+	sampleNicknameUnitTest := "unit-test"
+	sampleNicknameVersion0 := "version-0"
 	nicknameRequiredFieldMissing := "required-fields-missing"
 	nicknameOldLocation := "old-location-account"
 	nicknameOnlyRequiredFields := "only-required-fields"
+	nicknameVersion2NotCompatible := "version-2-not-compatible"
+	nickname33Bytes := "version-1-ciphered-data-33-bytes"
 	nicknameNew := "new-account"
 
 	createAccount := func(nickname string) *account.Account {
@@ -138,25 +140,25 @@ func TestWallet(t *testing.T) {
 		// User can add an account file in the account folder by its own,
 		// we want to wallet to be able to manage this account.
 
-		accountPath, err := w.AccountPath(sampleNickname2)
+		accountPath, err := w.AccountPath(sampleNicknameUnitTest)
 		assert.NoError(t, err)
 
-		copy(t, "../../tests/wallet_unit-test.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+sampleNicknameUnitTest+".yaml", accountPath)
 
 		assertAccountIsPresent(t, w, sampleNickname)
-		acc := assertAccountIsPresent(t, w, sampleNickname2)
+		acc := assertAccountIsPresent(t, w, sampleNicknameUnitTest)
 		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, 2, w.GetAccountCount())
 	})
 
 	t.Run("Invalid or unsupported version", func(t *testing.T) {
-		accountPath, err := w.AccountPath(sampleNickname3)
+		accountPath, err := w.AccountPath(sampleNicknameVersion0)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_version-0.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+sampleNicknameVersion0+".yaml", accountPath)
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assertAccountIsPresent(t, w, sampleNickname)
-		assertAccountIsPresent(t, newWallet, sampleNickname2)
+		assertAccountIsPresent(t, newWallet, sampleNicknameUnitTest)
 		assert.Equal(t, 2, newWallet.GetAccountCount())
 		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
 	})
@@ -189,11 +191,39 @@ func TestWallet(t *testing.T) {
 		ClearAccounts(t, walletPath)
 		accountPath, err := w.AccountPath(nicknameRequiredFieldMissing)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_required-fields-missing.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+nicknameRequiredFieldMissing+".yaml", accountPath)
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.Equal(t, 0, newWallet.GetAccountCount())
 		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
+	})
+
+	t.Run("Invalid or unsupported version: 2", func(t *testing.T) {
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nicknameVersion2NotCompatible)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_"+nicknameVersion2NotCompatible+".yaml", accountPath)
+		newWallet, err := New(walletPath)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, newWallet.GetAccountCount())
+		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
+	})
+
+	t.Run("Load account with plaintext size 33 bytes", func(t *testing.T) {
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nickname33Bytes)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_"+nickname33Bytes+".yaml", accountPath)
+		newWallet, err := New(walletPath)
+		assert.NoError(t, err)
+		assertAccountIsPresent(t, newWallet, nickname33Bytes)
+		assert.Equal(t, 1, newWallet.GetAccountCount())
+		assert.Len(t, newWallet.InvalidAccountNicknames, 0)
+		account, err := newWallet.GetAccount(nickname33Bytes)
+		assert.NoError(t, err)
+		signature, err := account.Sign(samplePassword, []byte("hello"))
+		assert.NotNil(t, signature)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
@@ -201,7 +231,7 @@ func TestWallet(t *testing.T) {
 		ClearAccounts(t, walletPath)
 		accountPath, err := w.AccountPath(nicknameOldLocation)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+nicknameOldLocation+".yaml", accountPath)
 		// execute
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
@@ -217,7 +247,7 @@ func TestWallet(t *testing.T) {
 		ClearAccounts(t, walletPath)
 		accountPath, err := w.AccountPath(nicknameOnlyRequiredFields)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_only-required-fields.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+nicknameOnlyRequiredFields+".yaml", accountPath)
 
 		// execute
 		newWallet, err := New(walletPath)
