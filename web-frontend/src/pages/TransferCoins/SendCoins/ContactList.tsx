@@ -8,7 +8,7 @@ import {
 } from '@massalabs/react-ui-kit';
 
 import { AccountObject } from '@/models/AccountModel';
-import { formatStandard } from '@/utils/massaFormat';
+import { formatStandard, maskNickname } from '@/utils/massaFormat';
 
 interface ContactListProps {
   setRecipient: React.Dispatch<string>;
@@ -47,7 +47,7 @@ function AccountSelect(props: ContactListProps) {
               data-testid={`selector-account-${index}`}
               preIcon={<Identicon username={filteredAccount.nickname} />}
               posIcon={<MassaLogo size={24} />}
-              content={filteredAccount.nickname}
+              content={maskNickname(filteredAccount.nickname)}
               variant="secondary"
               amount={formatStandard(
                 +filteredAccount.candidateBalance / 10 ** 9,

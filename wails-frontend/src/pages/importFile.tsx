@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { events, promptRequest } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
-import { handleApplyResult, handleCancel } from '@/utils';
+import { handleApplyResult, handleCancel, maskNickname } from '@/utils';
 
 const ImportFile = () => {
   const nav = useNavigate();
@@ -30,7 +30,7 @@ const ImportFile = () => {
 
   const baselineStr = () =>
     account
-      ? `Selected ${account.nickname}'s account`
+      ? `Selected ${maskNickname(account.nickname)}'s account`
       : 'Select an account file to import';
 
   const getImportLabel = () => (account ? 'Import' : 'Select a file');
