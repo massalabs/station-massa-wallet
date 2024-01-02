@@ -120,7 +120,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 	}
 
-	operation, msgToSign, err := prepareOperation(acc, fees, params.Body.Operation.String(), promptRequest.Data.(PromptRequestSignData).OperationType)
+	operation, msgToSign, err := prepareOperation(acc, fees, params.Body.Operation.String(), promptRequest.Data.(PromptRequestSignData).OperationType, *params.Body.ChainID)
 	if err != nil {
 		return newErrorResponse(err.Error(), errorSignDecodeOperation, http.StatusBadRequest)
 	}
@@ -194,7 +194,7 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, correlation
 // prepareOperation prepares the operation to be signed.
 // Returns the modified operation (fees change) and the operation to be signed (with public key).
 // Returns an error if the operation cannot be decoded.
-func prepareOperation(acc *account.Account, fees uint64, operationB64 string, operationType int) ([]byte, []byte, error) {
+func prepareOperation(acc *account.Account, fees uint64, operationB64 string, operationType int, chainID int64) ([]byte, []byte, error) {
 	decodedMsg, _, expiry, err := sendoperation.DecodeMessage64(operationB64)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to decode operation for preparing before signing: %w", err)
@@ -209,14 +209,12 @@ func prepareOperation(acc *account.Account, fees uint64, operationB64 string, op
 	msgToSign := make([]byte, len(operation))
 	copy(msgToSign, operation)
 
-	if operationType != Message {
-		publicKeyBytes, err := acc.PublicKey.MarshalBinary()
-		if err != nil {
-			return nil, nil, fmt.Errorf("Unable to marshal public key: %w", err)
-		}
-
-		msgToSign = append(publicKeyBytes, msgToSign...)
+	publicKey, err := acc.PublicKey.MarshalBinary()
+	if err != nil {
+		return nil, nil, fmt.Errorf("Unable to marshal public key: %w", err)
 	}
+
+	msgToSign = utils.PrepareSignData(uint64(chainID), append(publicKey, msgToSign...))
 
 	return operation, msgToSign, nil
 }

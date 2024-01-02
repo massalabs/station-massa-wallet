@@ -13,7 +13,7 @@ func NewMassaClient() (*node.Client, error) {
 		return nil, err
 	}
 
-	logger.Debugf("Connected to node URL: %s", networkInfo.URL)
+	logger.Debugf("Connected to node URL: %s, chain id: %d", networkInfo.URL, networkInfo.ChainID)
 
 	return node.NewClient(networkInfo.URL), nil
 }

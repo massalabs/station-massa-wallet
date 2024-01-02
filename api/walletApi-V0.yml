@@ -555,6 +555,7 @@ definitions:
     type: object
     required:
       - operation
+      - chainId
     properties:
       description:
         type: string
@@ -569,6 +570,9 @@ definitions:
         type: boolean
       correlationId:
         $ref: "#/definitions/CorrelationId"
+      chainId:
+        type: integer
+        description: The chain id of the network to which the operation will be sent.
 
   SignMessageRequest:
     type: object
