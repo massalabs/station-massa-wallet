@@ -135,7 +135,9 @@ export function Sign() {
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
-        <NetworkName chainId={signData.ChainID} />
+        {signData.OperationType !== OPER_PLAIN_TEXT && (
+          <NetworkName chainId={signData.ChainID} />
+        )}
         <h1 className="mas-title">{getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {
