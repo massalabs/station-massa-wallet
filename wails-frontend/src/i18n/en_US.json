@@ -116,10 +116,11 @@
   },
   "errors": {
     "Nickname-0001": "Invalid nickname",
+    "account-invalid-format": "The account name can't contain any special characters",
+    "nickname-required": "Nickname is required",
     "PrivateKey-0001": "Invalid private key",
     "NoFile-0001": "No file selected",
     "AccountFile-0001": "Unsupported file format. Please, try another file or import the account by providing private keys.",
-    "InvalidFileFormat-0001": "Invalid account file format",
     "DuplicateKey-0001": "Private key already exists",
     "Unknown-0001": "Unknown error, try again",
     "Network-0001": "Network error, try again",
@@ -130,6 +131,7 @@
     "PasswordRequired": "Password is required",
     "Wallet-0011": "Failed to sign: operation is not base 64 valid",
     "Wallet-0012": "Failed to sign: invalid operation",
+    "Wallet-0021": "Failed to sign",
     "transaction": "Failed to process transaction",
     "delete": "Failed to process delete operation",
     "default": "Failed to process operation"

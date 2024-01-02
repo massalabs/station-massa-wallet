@@ -13,18 +13,6 @@ import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { IErrorObject, parseForm, handleCancel } from '@/utils';
 
-// TODO: create i18n and move this to translation file
-const t = (key: string): string => {
-  const errors: Record<string, string> = {
-    'nickname-required': 'The account name is required',
-    'nickname-already-exists': 'This account name already exists',
-    'account-invalid-format':
-      "The account name can't contain any special characters",
-  };
-
-  return errors[key] || key;
-};
-
 function PromptNickname() {
   const navigate = useNavigate();
   const form = useRef(null);
@@ -39,18 +27,18 @@ function PromptNickname() {
     const { nickname } = formObject;
 
     if (!nickname) {
-      setError({ nickname: t('nickname-required') });
+      setError({ nickname: Intl.t('errors.nickname-required') });
       return false;
     }
 
     if (await IsNicknameUnique(nickname)) {
-      setError({ nickname: t('nickname-already-exists') });
+      setError({ nickname: Intl.t('errors.DuplicateNickname-001') });
       return false;
     }
 
     const nicknameIsValid = await IsNicknameValid(nickname);
     if (!nicknameIsValid) {
-      setError({ nickname: t('account-invalid-format') });
+      setError({ nickname: Intl.t('errors.account-invalid-format') });
       return false;
     }
 
