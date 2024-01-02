@@ -49,7 +49,7 @@ export default function AccountSelect() {
             </label>
             <div
               id="account-select"
-              className="pb-4 w-full"
+              className="pb-4 w-full overflow-scroll"
               data-testid="accounts-list"
             >
               {accounts.map((account: AccountObject, index: number) => (
