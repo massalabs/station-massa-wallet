@@ -225,7 +225,7 @@ PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 2
 `
 		account := Account{}
 		err := account.Unmarshal([]byte(accountText))
-		assert.ErrorContains(t, err, "missing version")
+		assert.ErrorContains(t, err, "invalid or missing version")
 	})
 
 	t.Run("Unmarshal with missing field: version", func(t *testing.T) {
@@ -243,7 +243,7 @@ PublicKey: [0, 45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 2
 `
 		account := Account{}
 		err := account.Unmarshal([]byte(accountText))
-		assert.ErrorContains(t, err, "missing version")
+		assert.ErrorContains(t, err, "invalid or missing version")
 	})
 
 	t.Run("Unmarshal with missing field: public key", func(t *testing.T) {

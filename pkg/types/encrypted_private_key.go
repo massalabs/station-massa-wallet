@@ -178,7 +178,7 @@ func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byt
 	defer secretKey.Destroy()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("creating secret cipher: %w", err)
 	}
 
 	secret, err := crypto.UnsealSecret(aeadCipher, nonce[:], encryptedKey)
@@ -192,13 +192,13 @@ func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byt
 
 	if len(data) == ed25519.SeedSize {
 		// the plain text is the seed
-		result := memguard.NewBuffer(64)
+		result := memguard.NewBuffer(ed25519.PrivateKeySize)
 		copy(result.Bytes(), ed25519.NewKeyFromSeed(data))
 
 		return result, nil
 	} else if len(data) == ed25519.PrivateKeySize {
 		// the plain text is the private key
-		result := memguard.NewBuffer(64)
+		result := memguard.NewBuffer(ed25519.PrivateKeySize)
 		copy(result.Bytes(), data)
 
 		return result, nil
