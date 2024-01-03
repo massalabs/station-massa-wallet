@@ -178,18 +178,31 @@ func privateKey(password *memguard.LockedBuffer, salt, nonce, encryptedKey []byt
 	defer secretKey.Destroy()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("creating secret cipher: %w", err)
 	}
 
 	secret, err := crypto.UnsealSecret(aeadCipher, nonce[:], encryptedKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unsealing secret: %w", err)
 	}
 
-	data := secret.Bytes()
-	result := memguard.NewBuffer(64)
-	result.Copy(data[1:])
-	secret.Destroy()
+	defer secret.Destroy()
 
-	return result, nil
+	data := secret.Bytes()[1:] // remove the version byte
+
+	if len(data) == ed25519.SeedSize {
+		// the plain text is the seed
+		result := memguard.NewBuffer(ed25519.PrivateKeySize)
+		copy(result.Bytes(), ed25519.NewKeyFromSeed(data))
+
+		return result, nil
+	} else if len(data) == ed25519.PrivateKeySize {
+		// the plain text is the private key
+		result := memguard.NewBuffer(ed25519.PrivateKeySize)
+		copy(result.Bytes(), data)
+
+		return result, nil
+	} else {
+		return nil, fmt.Errorf("invalid private key size: %d", len(data))
+	}
 }

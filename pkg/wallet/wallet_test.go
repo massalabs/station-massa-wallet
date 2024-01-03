@@ -22,7 +22,6 @@ func TestWallet(t *testing.T) {
 	assert.NoError(t, err)
 
 	var w *Wallet
-	samplePassword := memguard.NewBufferFromBytes([]byte("password"))
 	sampleSalt := [16]byte{145, 114, 211, 33, 247, 163, 215, 171, 90, 186, 97, 47, 43, 252, 68, 170}
 	sampleNonce := [12]byte{113, 122, 168, 123, 48, 187, 178, 12, 209, 91, 243, 63}
 	sampleAddressData := []byte{0x77, 0x13, 0x86, 0x8f, 0xe5, 0x5a, 0xd1, 0xdb, 0x9c, 0x8, 0x30, 0x7c, 0x61, 0x5e, 0xdf, 0xc0, 0xc8, 0x3b, 0x5b, 0xd9, 0x88, 0xec, 0x2e, 0x3c, 0xe9, 0xe4, 0x1c, 0xf1, 0xf9, 0x4d, 0xc5, 0xd1}
@@ -31,11 +30,14 @@ func TestWallet(t *testing.T) {
 	samplePrivateKeyData := []byte{2, 86, 133, 146, 82, 184, 193, 160, 120, 44, 198, 209, 69, 230, 83, 35, 36, 235, 18, 105, 74, 117, 228, 237, 112, 65, 32, 0, 250, 180, 199, 26, 40, 28, 76, 116, 162, 95, 0, 103, 172, 8, 41, 11, 240, 185, 188, 215, 56, 170, 246, 2, 14, 16, 27, 214, 137, 103, 89, 111, 85, 149, 191, 38, 2, 43, 8, 183, 149, 104, 64, 149, 10, 106, 102, 156, 242, 178, 254, 189, 135}
 	samplePublicKeyData := []byte{45, 150, 188, 218, 203, 190, 65, 56, 44, 162, 62, 82, 227, 210, 25, 108, 186, 101, 231, 161, 172, 210, 9, 223, 201, 92, 107, 50, 182, 161, 138, 147}
 	sampleNickname := "bonjour"
-	sampleNickname2 := "unit-test"
-	sampleNickname3 := "version-0"
+	sampleNicknameUnitTest := "unit-test"
+	sampleNicknameVersion0 := "version-0"
 	nicknameRequiredFieldMissing := "required-fields-missing"
 	nicknameOldLocation := "old-location-account"
-	nicknameOnlyRequiredFields := "only-required-fields"
+	nicknameOnlyRequiredFields := "only-required-fields" // and ciphered data contains version, private key (32 bytes) and public key (32 bytes)
+	nicknameVersion2NotCompatible := "version-2-not-compatible"
+	nickname33Bytes := "version-1-ciphered-data-33-bytes"
+	nicknameVersionOThatIsVersion1 := "version-0-that-is-version1"
 	nicknameNew := "new-account"
 
 	createAccount := func(nickname string) *account.Account {
@@ -113,7 +115,7 @@ func TestWallet(t *testing.T) {
 		acc, err := w.GetAccount(sampleNickname)
 		assert.NoError(t, err)
 		assert.NotNil(t, acc)
-		assert.Equal(t, uint8(1), acc.Version)
+		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, sampleNickname, acc.Nickname)
 		assert.Equal(t, sampleSalt, acc.Salt)
 		assert.Equal(t, sampleNonce, acc.Nonce)
@@ -138,25 +140,26 @@ func TestWallet(t *testing.T) {
 		// User can add an account file in the account folder by its own,
 		// we want to wallet to be able to manage this account.
 
-		accountPath, err := w.AccountPath(sampleNickname2)
+		accountPath, err := w.AccountPath(sampleNicknameUnitTest)
 		assert.NoError(t, err)
 
-		copy(t, "../../tests/wallet_unit-test.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+sampleNicknameUnitTest+".yaml", accountPath)
 
 		assertAccountIsPresent(t, w, sampleNickname)
-		acc := assertAccountIsPresent(t, w, sampleNickname2)
-		assert.Equal(t, uint8(1), acc.Version)
+		acc := assertAccountIsPresent(t, w, sampleNicknameUnitTest)
+		assert.Equal(t, uint8(1), *acc.Version)
 		assert.Equal(t, 2, w.GetAccountCount())
+		assert.Len(t, w.InvalidAccountNicknames, 0)
 	})
 
 	t.Run("Invalid or unsupported version", func(t *testing.T) {
-		accountPath, err := w.AccountPath(sampleNickname3)
+		accountPath, err := w.AccountPath(sampleNicknameVersion0)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_version-0.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+sampleNicknameVersion0+".yaml", accountPath)
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assertAccountIsPresent(t, w, sampleNickname)
-		assertAccountIsPresent(t, newWallet, sampleNickname2)
+		assertAccountIsPresent(t, newWallet, sampleNicknameUnitTest)
 		assert.Equal(t, 2, newWallet.GetAccountCount())
 		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
 	})
@@ -189,11 +192,63 @@ func TestWallet(t *testing.T) {
 		ClearAccounts(t, walletPath)
 		accountPath, err := w.AccountPath(nicknameRequiredFieldMissing)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_required-fields-missing.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+nicknameRequiredFieldMissing+".yaml", accountPath)
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.Equal(t, 0, newWallet.GetAccountCount())
 		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
+	})
+
+	t.Run("Invalid or unsupported version: 2", func(t *testing.T) {
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nicknameVersion2NotCompatible)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_"+nicknameVersion2NotCompatible+".yaml", accountPath)
+		newWallet, err := New(walletPath)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, newWallet.GetAccountCount())
+		assert.Len(t, newWallet.InvalidAccountNicknames, 1)
+	})
+
+	t.Run("Load account with plaintext size 33 bytes, and sign", func(t *testing.T) {
+		// prepare
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nickname33Bytes)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_"+nickname33Bytes+".yaml", accountPath)
+
+		// execute
+		newWallet, err := New(walletPath)
+		assert.NoError(t, err)
+		acc := assertAccountIsPresent(t, newWallet, nickname33Bytes)
+		assert.Equal(t, 1, newWallet.GetAccountCount())
+		assert.Len(t, newWallet.InvalidAccountNicknames, 0)
+
+		// sign
+		signature, err := acc.Sign(memguard.NewBufferFromBytes([]byte("password")), []byte("hello"))
+		assert.NotNil(t, signature)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Load account version 0 that is a version 1, and sign", func(t *testing.T) {
+		// prepare
+		ClearAccounts(t, walletPath)
+		accountPath, err := w.AccountPath(nicknameVersionOThatIsVersion1)
+		assert.NoError(t, err)
+		copy(t, "../../tests/wallet_"+nicknameVersionOThatIsVersion1+".yaml", accountPath)
+
+		// execute
+		newWallet, err := New(walletPath)
+		assert.NoError(t, err)
+		acc := assertAccountIsPresent(t, newWallet, nicknameVersionOThatIsVersion1)
+		assert.Equal(t, 1, newWallet.GetAccountCount())
+		assert.Len(t, newWallet.InvalidAccountNicknames, 0)
+		assert.Equal(t, nicknameVersionOThatIsVersion1, acc.Nickname)
+
+		// sign
+		signature, err := acc.Sign(memguard.NewBufferFromBytes([]byte("password")), []byte("hello"))
+		assert.NotNil(t, signature)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
@@ -201,7 +256,7 @@ func TestWallet(t *testing.T) {
 		ClearAccounts(t, walletPath)
 		accountPath, err := w.AccountPath(nicknameOldLocation)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_old-location-account.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+nicknameOldLocation+".yaml", accountPath)
 		// execute
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
@@ -217,7 +272,7 @@ func TestWallet(t *testing.T) {
 		ClearAccounts(t, walletPath)
 		accountPath, err := w.AccountPath(nicknameOnlyRequiredFields)
 		assert.NoError(t, err)
-		copy(t, "../../tests/wallet_only-required-fields.yaml", accountPath)
+		copy(t, "../../tests/wallet_"+nicknameOnlyRequiredFields+".yaml", accountPath)
 
 		// execute
 		newWallet, err := New(walletPath)
@@ -229,10 +284,16 @@ func TestWallet(t *testing.T) {
 		textAddress, err := acc.Address.MarshalText()
 		assert.NoError(t, err)
 		assert.Equal(t, addressOnlyRequiredFields, string(textAddress))
+
+		// sign
+		assert.NoError(t, err)
+		signature, err := acc.Sign(memguard.NewBufferFromBytes([]byte("abcde")), []byte("hello"))
+		assert.NotNil(t, signature)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Generate new account", func(t *testing.T) {
-		acc, err := w.GenerateAccount(samplePassword, nicknameNew)
+		acc, err := w.GenerateAccount(memguard.NewBufferFromBytes([]byte("password")), nicknameNew)
 		assert.NoError(t, err)
 		assert.NotNil(t, acc)
 		assert.Equal(t, 2, w.GetAccountCount())
