@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
@@ -36,7 +37,7 @@ func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 
 	newAcc, err := w.handleUpdateAccount(acc, params.Body.Nickname)
 	if err != nil {
-		return newErrorResponse(err.Error(), "", http.StatusInternalServerError)
+		return newErrorResponse(err.Error(), utils.ErrDuplicateNickname, http.StatusBadRequest)
 	}
 
 	modelWallet, err := newAccountModel(newAcc)
@@ -81,12 +82,12 @@ func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickn
 		return nil, fmt.Errorf("creating new account: %w", err)
 	}
 
-	err = w.prompterApp.App().Wallet.DeleteAccount(string(oldNickname))
+	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true)
 	if err != nil {
 		return nil, err
 	}
 
-	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true)
+	err = w.prompterApp.App().Wallet.DeleteAccount(string(oldNickname))
 	if err != nil {
 		return nil, err
 	}
