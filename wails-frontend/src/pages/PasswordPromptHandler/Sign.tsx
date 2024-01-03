@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { BuySellRoll } from './BuySellRoll/BuySellRoll';
 import { CallSc } from './CallSC/CallSc';
+import { NetworkName } from './components/NetworkName';
 import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
@@ -35,21 +36,21 @@ import {
 export interface SignBodyProps {
   Description: string;
   Fees: string; // in nanoMassa
-  GasLimit: string;
+  OperationType: number;
   Coins: string; // in nanoMassa
   Address: string;
   Function: string;
-  WalletAddress: string;
-  OperationType: number;
   MaxCoins: string;
+  WalletAddress: string;
+  Nickname: string;
   RollCount: number;
   RecipientAddress: string;
   RecipientNickname: string;
   Amount: string;
   PlainText: string;
-  DisplayData: boolean;
-  Nickname: string;
   AllowFeeEdition: boolean;
+  DisplayData: boolean;
+  ChainID: number;
   children?: React.ReactNode;
 }
 
@@ -134,6 +135,9 @@ export function Sign() {
   return (
     <SignLayout>
       <form ref={form} onSubmit={handleSubmit}>
+        {signData.OperationType !== OPER_PLAIN_TEXT && (
+          <NetworkName chainId={signData.ChainID} />
+        )}
         <h1 className="mas-title">{getTitle(signData.OperationType)}</h1>
         <div className="mas-body pt-4 break-words">
           {(() => {

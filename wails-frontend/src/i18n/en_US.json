@@ -87,7 +87,8 @@
       "execute-sc-max-coins-tooltip": {
         "1": "Most similar concept is Giving Allowance on EVM chains.",
         "2": "In ExecuteSC sense, it is the maximal amount of MAS that can be spent in this operation."
-      }
+      },
+      "unknown-network-name": "Unknown"
     }
   },
   "backup": {

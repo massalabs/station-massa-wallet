@@ -8,7 +8,7 @@ import (
 
 var ErrChainIDNotInStatus = errors.New("chain id not in status")
 
-func getChainID() (uint64, error) {
+func GetChainID() (uint64, error) {
 	client, err := NewMassaClient()
 	if err != nil {
 		return 0, err

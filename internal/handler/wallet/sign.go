@@ -51,6 +51,7 @@ type PromptRequestSignData struct {
 	Amount            string
 	PlainText         string
 	AllowFeeEdition   bool
+	ChainID           int64
 }
 
 func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignHandler {
@@ -68,7 +69,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return errResp
 	}
 
-	promptRequest, fees, err := w.getPromptRequest(params, acc, params.Body.Description)
+	promptRequest, fees, err := w.getPromptRequest(params, acc, params.Body.Description, *params.Body.ChainID)
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorSignDecodeMessage, http.StatusBadRequest)
 	}
@@ -219,7 +220,7 @@ func prepareOperation(acc *account.Account, fees uint64, operationB64 string, op
 	return operation, msgToSign, nil
 }
 
-func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account.Account, description string) (*prompt.PromptRequest, uint64, error) {
+func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account.Account, description string, chainID int64) (*prompt.PromptRequest, uint64, error) {
 	msgToSign := params.Body.Operation.String()
 
 	decodedMsg, fees, _, err := sendoperation.DecodeMessage64(msgToSign)
@@ -266,6 +267,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.Nickname = acc.Nickname
 	data.OperationType = int(opType)
 	data.AllowFeeEdition = *params.AllowFeeEdition
+	data.ChainID = chainID
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
