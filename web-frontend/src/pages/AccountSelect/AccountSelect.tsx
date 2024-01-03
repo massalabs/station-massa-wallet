@@ -14,7 +14,7 @@ import { Loading } from './Loading';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
-import { routeFor, formatStandard, fetchAccounts } from '@/utils';
+import { routeFor, formatStandard, fetchAccounts, maskNickname } from '@/utils';
 
 export default function AccountSelect() {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ export default function AccountSelect() {
                         <Identicon username={account.nickname} size={32} />
                       }
                       posIcon={<MassaLogo size={24} />}
-                      content={account.nickname}
+                      content={maskNickname(account.nickname)}
                       amount={getFormattedBalance(account)}
                     />
                   </div>

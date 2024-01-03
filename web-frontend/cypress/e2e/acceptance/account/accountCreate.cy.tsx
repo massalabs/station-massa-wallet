@@ -63,7 +63,9 @@ describe('E2E | Acceptance | Account | Create', () => {
 
       cy.get('[data-testid="input-field-message"]')
         .should('exist')
-        .contains("The account name can't contain any special characters");
+        .contains(
+          "The account name can't contain any special characters, and 32 characters max.",
+        );
       cy.get('[data-testid="button"]').contains('Next').click();
       cy.url().should('eq', `${baseUrl}/account-create-step-one`);
 

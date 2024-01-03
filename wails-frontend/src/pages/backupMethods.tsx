@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { backupMethods, events, promptRequest } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
-import { handleApplyResult } from '@/utils';
+import { handleApplyResult, maskNickname } from '@/utils';
 
 function BackupMethods() {
   const { state } = useLocation();
@@ -39,7 +39,7 @@ function BackupMethods() {
       <div className="flex items-end gap-3">
         <h1 className="mas-title">{Intl.t('backup.title')}</h1>
         <span>/</span>
-        <h2 className="mas-h2">{walletName}</h2>
+        <h2 className="mas-h2">{maskNickname(walletName)}</h2>
       </div>
       <p className="mas-body pt-4">{Intl.t('backup.subtitle.choose-method')}</p>
       <div className="flex flex-col gap-4 pt-4">
