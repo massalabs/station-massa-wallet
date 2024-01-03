@@ -85,7 +85,7 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run("Add Account", func(t *testing.T) {
-		err := w.AddAccount(sampleAccount, true)
+		err := w.AddAccount(sampleAccount, true, false)
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, w.GetAccountCount())
@@ -95,7 +95,7 @@ func TestWallet(t *testing.T) {
 	})
 
 	t.Run("Add Account: nickname not unique", func(t *testing.T) {
-		err := w.AddAccount(sampleAccount, true)
+		err := w.AddAccount(sampleAccount, true, false)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrNicknameNotUnique)
 
@@ -104,7 +104,7 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Add Account: address not unique", func(t *testing.T) {
 		sampleAccount := createAccount(nicknameNew)
-		err = w.AddAccount(sampleAccount, true)
+		err = w.AddAccount(sampleAccount, true, false)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, ErrAddressNotUnique)
 		assertAccountIsPresent(t, w, sampleNickname)
@@ -328,7 +328,7 @@ func TestWallet(t *testing.T) {
 		assert.Equal(t, 0, w.GetAccountCount())
 		assert.NoError(t, err)
 		acc := createAccount(nicknameNew)
-		err = w.AddAccount(acc, true)
+		err = w.AddAccount(acc, true, false)
 		assert.NoError(t, err)
 		acc, err = w.GetAccountFromAddress("not an address")
 		assert.Error(t, err)

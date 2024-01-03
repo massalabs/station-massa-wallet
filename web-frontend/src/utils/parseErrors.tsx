@@ -23,10 +23,13 @@ const backendErrorsCode: BackendErrors = {
   'Timeout-0001': Intl.t('errors.timeout'),
   'ActionCanceled-0001': Intl.t('errors.action-canceled'),
   PasswordRequired: Intl.t('errors.password-required'),
+  'Wallet-0002': Intl.t('errors.unknown'),
 };
 
 export function parseErrors(err: AxiosError) {
   const data: IBackendErrorObject = err.response?.data as IBackendErrorObject;
 
-  return backendErrorsCode[data.code || 'Unknown-0001'];
+  return (
+    backendErrorsCode[data.code || 'Unknown-0001'] || Intl.t('errors.unknown')
+  );
 }
