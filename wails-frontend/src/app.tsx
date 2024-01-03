@@ -1,8 +1,8 @@
+import { EventsOn } from '@wailsjs/runtime/runtime';
 import { useNavigate } from 'react-router-dom';
 
 import { events, promptAction, promptRequest } from './events/events';
 import { useConfigStore } from './store/store';
-import { EventsOn } from '../wailsjs/runtime';
 
 export function App() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function App() {
 
   EventsOn(events.promptRequest, handlePromptRequest);
 
-  return <></>;
+  return <>Loading...</>;
 }
 
 export default App;
