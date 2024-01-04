@@ -117,7 +117,7 @@
   },
   "errors": {
     "Nickname-0001": "Invalid nickname",
-    "account-invalid-format": "The account name can't contain any special characters",
+    "account-invalid-format": "The account name can't contain any special characters, and 32 characters max.",
     "nickname-required": "Nickname is required",
     "PrivateKey-0001": "Invalid private key",
     "NoFile-0001": "No file selected",
