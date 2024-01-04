@@ -1,4 +1,12 @@
 {
+  "menu": {
+    "home": "Home",
+    "transactions": "Transactions",
+    "send-receive": "Send/Receive",
+    "contacts": "Contacts",
+    "assets": "Assets",
+    "settings": "Settings"
+  },
   "index": {
     "title-first-part": "Welcome on",
     "title-second-part": "Massa",
