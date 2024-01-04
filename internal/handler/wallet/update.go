@@ -67,7 +67,8 @@ func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 
 func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickname models.Nickname) (*account.Account, error) {
 	// check if the nickname does not change
-	if acc.Nickname == string(newNickname) {
+	nickname := string(newNickname)
+	if acc.Nickname == nickname {
 		return nil, wallet.ErrNicknameNotUnique
 	}
 
@@ -76,7 +77,7 @@ func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickn
 
 	newAcc, err := account.New(
 		*acc.Version,
-		string(newNickname),
+		nickname,
 		acc.Address,
 		acc.Salt,
 		acc.Nonce,
@@ -87,11 +88,19 @@ func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickn
 		return nil, fmt.Errorf("creating new account: %w", err)
 	}
 
+	// check if the new nickname is unique
+	err = w.prompterApp.App().Wallet.NicknameIsUnique(nickname)
+	if err != nil {
+		return nil, fmt.Errorf("checking nickname uniqueness: %w", err)
+	}
+
+	// force the account creation to bypass the address uniqueness check
 	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true, true)
 	if err != nil {
 		return nil, fmt.Errorf("adding account: %w", err)
 	}
 
+	// delete the old account after the new one has been created to avoid losing the account
 	err = w.prompterApp.App().Wallet.DeleteAccount(string(oldNickname))
 	if err != nil {
 		return nil, fmt.Errorf("deleting account: %w", err)
