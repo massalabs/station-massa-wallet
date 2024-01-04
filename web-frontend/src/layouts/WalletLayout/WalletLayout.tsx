@@ -81,14 +81,14 @@ export function WalletLayout(props: IWalletLayoutProps) {
 
   let menuItems = [
     {
-      label: 'Home',
+      label: Intl.t('menu.home'),
       icon: <FiHome data-testid="side-menu-wallet-icon" />,
       active: isActive(MenuItem.Home),
       footer: false,
       onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Home}`)),
     },
     {
-      label: 'Transactions',
+      label: Intl.t('menu.transactions'),
       icon: <FiList data-testid="side-menu-transactions-icon" />,
       active: isActive(MenuItem.Transactions),
       footer: false,
@@ -96,7 +96,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
         navigate(routeFor(`${nickname}/${MenuItem.Transactions}`)),
     },
     {
-      label: 'Send/Receive',
+      label: Intl.t('menu.send-receive'),
       icon: <FiArrowUpRight data-testid="side-menu-sendreceive-icon" />,
       active: isActive(MenuItem.TransferCoins),
       footer: false,
@@ -104,21 +104,21 @@ export function WalletLayout(props: IWalletLayoutProps) {
         navigate(routeFor(`${nickname}/${MenuItem.TransferCoins}`)),
     },
     {
-      label: 'Contacts',
+      label: Intl.t('menu.contacts'),
       icon: <FiUsers data-testid="side-menu-contacts-icon" />,
       active: isActive(MenuItem.Contacts),
       footer: false,
       onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Contacts}`)),
     },
     {
-      label: 'Assets',
+      label: Intl.t('menu.assets'),
       icon: <FiDisc data-testid="side-menu-assets-icon" />,
       active: isActive(MenuItem.Assets),
       footer: false,
       onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Assets}`)),
     },
     {
-      label: 'Settings',
+      label: Intl.t('menu.settings'),
       icon: <FiSettings data-testid="side-menu-settings-icon" />,
       active: isActive(MenuItem.Settings),
       footer: true,
