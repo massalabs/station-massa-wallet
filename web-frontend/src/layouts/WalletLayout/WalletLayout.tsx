@@ -168,7 +168,11 @@ export function WalletLayout(props: IWalletLayoutProps) {
     // remove ${theme}
     // this needs to be removed as soon we fix the steps to create an account
     <div className={`${theme} bg-primary`}>
-      <SideMenu conf={menuConf} items={menuItems} />
+      <SideMenu
+        conf={menuConf}
+        items={menuItems}
+        onClickLogo={() => navigate(routeFor('/'))}
+      />
       <div className="flex justify-center items-center h-screen text-f-primary">
         {props?.children}
       </div>
