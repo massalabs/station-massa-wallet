@@ -81,7 +81,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
 
   let menuItems = [
     {
-      label: 'Wallet',
+      label: 'Home',
       icon: <FiHome data-testid="side-menu-wallet-icon" />,
       active: isActive(MenuItem.Home),
       footer: false,
