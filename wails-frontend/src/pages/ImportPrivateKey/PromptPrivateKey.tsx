@@ -66,7 +66,7 @@ function PromptPrivateKey() {
           <Password
             defaultValue=""
             name="privateKey"
-            placeholder={Intl.t('import.steps.private)')}
+            placeholder={Intl.t('import.steps.private')}
             error={error?.privateKey}
           />
         </div>
