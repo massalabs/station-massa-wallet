@@ -33,7 +33,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*ac
 		return nil, false, fmt.Errorf("unable to load account file: %w", err)
 	}
 
-	err = wallet.AddAccount(acc, true)
+	err = wallet.AddAccount(acc, true, false)
 	if err != nil {
 		msg := fmt.Sprintf("failed to add account: %v", err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
@@ -56,7 +56,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 
 	wallet := prompterApp.App().Wallet
 
-	err = wallet.AddAccount(acc, true)
+	err = wallet.AddAccount(acc, true, false)
 	if err != nil {
 		msg := fmt.Sprintf("failed to add account: %v", err)
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,

@@ -17,7 +17,7 @@ const ChainIDUnitTests = 77658366 // Buildnet
 func createAccount(password, nickname string, t *testing.T, prompterApp prompt.WalletPrompterInterface) *account.Account {
 	acc, err := account.Generate(memguard.NewBufferFromBytes([]byte(password)), nickname)
 	assert.NoError(t, err)
-	err = prompterApp.App().Wallet.AddAccount(acc, true)
+	err = prompterApp.App().Wallet.AddAccount(acc, true, false)
 	assert.NoError(t, err)
 
 	return acc

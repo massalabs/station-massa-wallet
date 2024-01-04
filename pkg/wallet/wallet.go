@@ -92,7 +92,7 @@ func (w *Wallet) Discover() error {
 				continue
 			}
 
-			err = w.AddAccount(acc, false)
+			err = w.AddAccount(acc, false, false)
 			if err != nil {
 				logger.Warnf("failed to add account: %s, %v", nickname, err)
 				w.InvalidAccountNicknames = append(w.InvalidAccountNicknames, nickname)
@@ -106,20 +106,20 @@ func (w *Wallet) Discover() error {
 }
 
 // Add an account into the wallet
-func (w *Wallet) AddAccount(acc *account.Account, persist bool) error {
+func (w *Wallet) AddAccount(acc *account.Account, persist bool, force bool) error {
 	if acc == nil {
 		return fmt.Errorf("account is nil")
 	}
 
 	// Validate nickname uniqueness
 	err := w.NicknameIsUnique(acc.Nickname)
-	if err != nil {
+	if err != nil && !force {
 		return err
 	}
 
 	// Validate unique private key
 	err = w.AddressIsUnique(acc.Address)
-	if err != nil {
+	if err != nil && !force {
 		return err
 	}
 
@@ -144,7 +144,7 @@ func (w *Wallet) GenerateAccount(password *memguard.LockedBuffer, nickname strin
 		return nil, fmt.Errorf("generating account: %w", err)
 	}
 
-	err = w.AddAccount(acc, true)
+	err = w.AddAccount(acc, true, false)
 	if err != nil {
 		return nil, fmt.Errorf("adding account in GenerateAccount: %w", err)
 	}
@@ -172,7 +172,7 @@ func (w *Wallet) GetAccount(nickname string) (*account.Account, error) {
 		return nil, AccountNotFoundError
 	}
 
-	err = w.AddAccount(acc, false)
+	err = w.AddAccount(acc, false, false)
 	if err != nil {
 		return nil, fmt.Errorf("adding account in GetAccount: %w", err)
 	}

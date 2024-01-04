@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -37,7 +38,11 @@ func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 
 	newAcc, err := w.handleUpdateAccount(acc, params.Body.Nickname)
 	if err != nil {
-		return newErrorResponse(err.Error(), utils.ErrDuplicateNickname, http.StatusBadRequest)
+		if errors.Is(err, wallet.ErrNicknameNotUnique) {
+			return newErrorResponse(err.Error(), utils.ErrDuplicateNickname, http.StatusBadRequest)
+		} else {
+			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+		}
 	}
 
 	modelWallet, err := newAccountModel(newAcc)
@@ -82,14 +87,14 @@ func (w *walletUpdateAccount) handleUpdateAccount(acc *account.Account, newNickn
 		return nil, fmt.Errorf("creating new account: %w", err)
 	}
 
-	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true)
+	err = w.prompterApp.App().Wallet.AddAccount(newAcc, true, true)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("adding account: %w", err)
 	}
 
 	err = w.prompterApp.App().Wallet.DeleteAccount(string(oldNickname))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("deleting account: %w", err)
 	}
 
 	return newAcc, nil
