@@ -12,14 +12,14 @@ import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
 import { routeFor } from '@/utils';
 
-function TransferCoins() {
+export default function TransferCoins() {
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
 
   const redirect = {
-    to: searchParams.get('to'),
-    amount: searchParams.get('amount'),
+    to: searchParams.get('to') || '',
+    amount: searchParams.get('amount') || '',
   };
   const tabName = searchParams.get('tab') || TAB_SEND;
   const tabIndex = tabName === TAB_RECEIVE ? 1 : 0;
@@ -38,6 +38,11 @@ function TransferCoins() {
       navigate(routeFor(`${nickname}/home`));
     }
   }, [account, error, navigate]);
+
+  if (!account) {
+    navigate(routeFor(`${nickname}/home`));
+    return null;
+  }
 
   const tabsConfig = [
     {
@@ -58,5 +63,3 @@ function TransferCoins() {
     </WalletLayout>
   );
 }
-
-export default TransferCoins;
