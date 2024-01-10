@@ -1,16 +1,20 @@
 import { toMASS } from './massaFormat';
 
 export function handlePercent(
-  amount = 0,
-  percent: number,
-  fees: string,
-  balance: number,
-) {
-  let newAmount = amount * percent;
-  const feesAsNumber = Number(fees);
+  amount = 0n,
+  percent: bigint,
+  fees: bigint,
+  balance: bigint,
+): number {
+  let newAmount = (amount * percent) / 100n;
 
-  if (newAmount > balance - feesAsNumber)
-    newAmount = Math.max(balance - feesAsNumber, 0);
+  if (newAmount > balance - fees) {
+    if (balance - fees < 0) {
+      newAmount = 0n;
+    } else {
+      newAmount = balance - fees;
+    }
+  }
 
   return toMASS(newAmount);
 }

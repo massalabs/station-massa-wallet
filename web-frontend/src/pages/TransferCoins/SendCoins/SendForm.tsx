@@ -5,6 +5,7 @@ import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import Advanced from './Advanced';
 import ContactList from './ContactList';
+import { SendConfirmationData } from './SendConfirmation';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import {
@@ -23,7 +24,17 @@ interface InputsErrors {
   recipient?: string;
 }
 
-export function SendForm({ ...props }) {
+interface SendFormProps {
+  handleSubmit: (confirmed: SendConfirmationData) => void;
+  account: AccountObject;
+  data: SendConfirmationData;
+  redirect: {
+    amount: string;
+    to: string;
+  };
+}
+
+export function SendForm(props: SendFormProps) {
   const {
     handleSubmit: sendCoinsHandleSubmit,
     account: currentAccount,
@@ -32,16 +43,16 @@ export function SendForm({ ...props }) {
   } = props;
   const { amount: redirectAmount, to } = redirect;
 
-  const balance = Number(currentAccount?.candidateBalance || 0);
+  const balance = BigInt(currentAccount.candidateBalance) || 0n;
   const formattedBalance = formatStandard(toMASS(balance));
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
-  const [amount, setAmount] = useState<number | string | undefined>(
-    data?.amount ? toMASS(toNanoMASS(data.amount)) : '',
+  const [amount, setAmount] = useState<string>(
+    data.amount ? toMASS(toNanoMASS(data.amount)).toString() : '',
   );
-  const [fees, setFees] = useState<string>(data?.fees ?? '1000');
+  const [fees, setFees] = useState<bigint>(1000n);
   const [recipient, setRecipient] = useState<string>(data?.recipient ?? '');
   const { okAccounts: accounts } = fetchAccounts();
   const filteredAccounts = accounts?.filter(
@@ -72,7 +83,7 @@ export function SendForm({ ...props }) {
       return false;
     }
 
-    if (toNanoMASS(amount) + Number(fees) > balance) {
+    if (toNanoMASS(amount) + fees > balance) {
       setError({
         amount: Intl.t('errors.send-coins.amount-plus-fees-to-high'),
       });
@@ -99,7 +110,10 @@ export function SendForm({ ...props }) {
 
     if (!validate(formObject)) return;
 
-    sendCoinsHandleSubmit?.({ ...formObject, fees });
+    sendCoinsHandleSubmit({
+      ...(formObject as SendConfirmationData),
+      fees: fees.toString(),
+    });
   }
 
   return (
@@ -129,7 +143,7 @@ export function SendForm({ ...props }) {
             <li
               data-testid="send-percent-25"
               onClick={() =>
-                setAmount(handlePercent(balance, 0.25, fees, balance))
+                setAmount(handlePercent(balance, 25n, fees, balance).toString())
               }
               className="mr-3.5 hover:cursor-pointer"
             >
@@ -138,7 +152,7 @@ export function SendForm({ ...props }) {
             <li
               data-testid="send-percent-50"
               onClick={() =>
-                setAmount(handlePercent(balance, 0.5, fees, balance))
+                setAmount(handlePercent(balance, 50n, fees, balance).toString())
               }
               className="mr-3.5 hover:cursor-pointer"
             >
@@ -147,7 +161,7 @@ export function SendForm({ ...props }) {
             <li
               data-testid="send-percent-75"
               onClick={() =>
-                setAmount(handlePercent(balance, 0.75, fees, balance))
+                setAmount(handlePercent(balance, 75n, fees, balance).toString())
               }
               className="mr-3.5 hover:cursor-pointer"
             >
@@ -156,7 +170,9 @@ export function SendForm({ ...props }) {
             <li
               data-testid="send-percent-100"
               onClick={() =>
-                setAmount(handlePercent(balance, 1, fees, balance))
+                setAmount(
+                  handlePercent(balance, 100n, fees, balance).toString(),
+                )
               }
               className="mr-3.5 hover:cursor-pointer"
             >

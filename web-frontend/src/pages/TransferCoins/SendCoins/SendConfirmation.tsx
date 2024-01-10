@@ -7,17 +7,29 @@ import ToolTip from './ToolTip';
 import Intl from '@/i18n/i18n';
 import { maskAddress, formatStandard, toNanoMASS, toMASS } from '@/utils';
 
-export function SendConfirmation({ ...props }) {
+export interface SendConfirmationData {
+  amount: string;
+  fees: string;
+  recipient: string;
+}
+
+interface SendConfirmationProps {
+  data: SendConfirmationData;
+  handleConfirm: (confirm: boolean) => void;
+  isLoading: boolean;
+}
+
+export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
   const { amount, fees, recipient } = data;
 
-  const GAS_STANDARD = `${Intl.t('send-coins.gas-standard')}`;
-  const GAS_LOW = `${Intl.t('send-coins.gas-low')}`;
-  const GAS_HIGH = `${Intl.t('send-coins.gas-high')}`;
-  const GAS_CUSTOM = `${Intl.t('send-coins.gas-custom')}`;
+  const GAS_STANDARD = `${Intl.t('send-coins.fee-standard')}`;
+  const GAS_LOW = `${Intl.t('send-coins.fee-low')}`;
+  const GAS_HIGH = `${Intl.t('send-coins.fee-high')}`;
+  const GAS_CUSTOM = `${Intl.t('send-coins.fee-custom')}`;
 
   const formattedRecipientAddress = maskAddress(recipient);
-  const total = toNanoMASS(amount) + parseInt(fees);
+  const total = toNanoMASS(amount) + BigInt(fees);
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
@@ -38,12 +50,12 @@ export function SendConfirmation({ ...props }) {
       break;
   }
 
-  const gasInfo = `${Intl.t('send-coins.gas-info', {
-    gasType: selectedFees,
-    gasFees: fees,
+  const feeInfo = `${Intl.t('send-coins.fee-info', {
+    feeType: selectedFees,
+    fees: fees,
   })}`;
-  const gasAlert = `  \u26A0  ${Intl.t('send-coins.gas-alert')}`;
-  let content = selectedFees == GAS_STANDARD ? gasInfo + gasAlert : gasAlert;
+  const gasAlert = `  \u26A0  ${Intl.t('send-coins.fee-alert')}`;
+  let content = selectedFees == GAS_STANDARD ? feeInfo + gasAlert : gasAlert;
 
   return (
     <>

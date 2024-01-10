@@ -14,16 +14,16 @@ export const presetFees: { [key: string]: string } = {
   high: '5000',
 };
 
-export function toMASS(num: string | number): number {
-  return Number(toMAS(num));
+export function toMASS(num: string | number | bigint): number {
+  return toMAS(num).toNumber();
 }
 
-export function toNanoMASS(str: string): number {
+export function toNanoMASS(str: string): bigint {
   const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
 
   // fromMAS -> MassaToNano
-  // toMASS -> NanotoMASSsa
-  return Number(fromMAS(formattedString));
+  // toMASS -> NanoToMAS
+  return fromMAS(formattedString);
 }
 
 /**
