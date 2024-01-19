@@ -16,6 +16,7 @@ import {
   formatStandard,
   reverseFormatStandard,
   fetchAccounts,
+  checkAddressFormat,
 } from '@/utils';
 import { handlePercent } from '@/utils/math';
 
@@ -96,7 +97,7 @@ export function SendForm(props: SendFormProps) {
     }
 
     // It needs starts with AU and after AU have at least 4 chars
-    if (!/^AU.{4,}$/.test(recipient)) {
+    if (!checkAddressFormat(recipient)) {
       setError({ recipient: Intl.t('errors.send-coins.invalid-address') });
       return false;
     }

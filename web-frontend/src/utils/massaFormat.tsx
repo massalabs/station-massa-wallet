@@ -1,4 +1,5 @@
 import { fromMAS, toMAS } from '@massalabs/massa-web3';
+import { Address } from '@massalabs/massa-web3/';
 
 /**
  * Enumeration for unit options.
@@ -65,7 +66,14 @@ export function reverseFormatStandard(str: string): number {
  */
 
 export function checkAddressFormat(recipient: string): boolean {
-  return /^AU[a-zA-Z0-9]{4,}$/.test(recipient);
+  try {
+    // eslint-disable-next-line no-new
+    new Address(recipient);
+  } catch (error) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
