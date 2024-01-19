@@ -36,7 +36,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         nickname: 'MarioX',
         candidateBalance: '1000000000000',
         balance: '10000',
-        address: 'AUHdadXyJZUeINwiUVMtXZXJRTFXtYdihRWitUcAJSBwAHgcKAjtxx',
+        address: 'AU1ZMBZeARHYMFfV4uvbyCB85DAUPr2BJXzU1kSYdwCKKrY5crWY',
       };
       mockedAccounts.push(server.create('account', { ...account }));
       return mockedAccounts;
