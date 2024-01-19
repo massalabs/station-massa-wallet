@@ -96,7 +96,6 @@ export function SendForm(props: SendFormProps) {
       return false;
     }
 
-    // It needs starts with AU and after AU have at least 4 chars
     if (!checkAddressFormat(recipient)) {
       setError({ recipient: Intl.t('errors.send-coins.invalid-address') });
       return false;
