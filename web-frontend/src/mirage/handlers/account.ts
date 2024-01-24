@@ -8,7 +8,8 @@ function accountObject(nickname: string) {
     nickname,
     candidateBalance: faker.number.int().toString(),
     balance: faker.number.int().toString(),
-    address: 'AU' + faker.string.alpha({ length: { min: 50, max: 53 } }),
+    // TODO: Generate valid address
+    address: 'AU1ZMBZeARHYMFfV4uvbyCB85DAUPr2BJXzU1kSYdwCKKrY5crWY',
     keyPair: {
       // Standard info: https://github.com/massalabs/massa-standards/blob/main/wallet/file-format.md
       publicKey: 'P' + faker.string.alpha({ length: 50 }),

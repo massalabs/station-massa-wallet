@@ -27,7 +27,7 @@ describe('E2E | Acceptance | Home', () => {
       });
       const account = {
         nickname: 'Mario',
-        address: 'AUHdadXyJZUeINwiUVMtXZXJRTFXtYdihRWitUcAJSBwAHgcKAjtxx',
+        address: 'AU1ZMBZeARHYMFfV4uvbyCB85DAUPr2BJXzU1kSYdwCKKrY5crWY',
       };
       mockedAccounts.push(server.create('account', { ...account }));
 

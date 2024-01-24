@@ -6,7 +6,8 @@ export const accountFactory = Factory.extend<any>({
   candidateBalance: (i: number) =>
     Math.trunc(faker.number.int() * (i > 0 ? i / 10 : 0)).toString(),
   balance: faker.number.int().toString(),
-  address: 'AU' + faker.string.alpha({ length: { min: 50, max: 53 } }),
+  // TODO: Generate valid address
+  address: 'AU1ZMBZeARHYMFfV4uvbyCB85DAUPr2BJXzU1kSYdwCKKrY5crWY',
   keyPair() {
     return {
       publicKey: 'P' + faker.string.alpha({ length: 50 }),
