@@ -27,10 +27,9 @@ export default function SendCoins(props: SendCoinsProps) {
   const [submit, setSubmit] = useState<boolean>(false);
   const [data, setData] = useState<SendConfirmationData>({
     amount: '',
-    fees: '',
-    recipient: '',
+    fee: '',
+    recipientAddress: '',
   });
-  const [payloadData, setPayloadData] = useState<object>();
 
   const { mutate, isSuccess, isLoading, error } =
     usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
@@ -39,11 +38,11 @@ export default function SendCoins(props: SendCoinsProps) {
     if (error) {
       toast.error(Intl.t(`errors.send-coins.sent`));
     } else if (isSuccess) {
-      let { amount, recipient } = data;
+      let { amount, recipientAddress } = data;
       toast.success(
-        Intl.t(`success.send-coins.sent`, {
+        Intl.t('success.send-coins.sent', {
           amount,
-          recipient: maskAddress(recipient),
+          recipient: maskAddress(recipientAddress),
         }),
       );
 
@@ -54,12 +53,6 @@ export default function SendCoins(props: SendCoinsProps) {
   function handleSubmit(data: SendConfirmationData) {
     setData(data);
 
-    setPayloadData({
-      fee: data.fees,
-      recipientAddress: data.recipient,
-      amount: toNanoMASS(data.amount).toString(),
-    });
-
     setSubmit(true);
   }
 
@@ -67,7 +60,11 @@ export default function SendCoins(props: SendCoinsProps) {
     if (!confirmed) {
       setSubmit(false);
     } else {
-      mutate(payloadData as SendTransactionObject);
+      mutate({
+        fee: data.fee,
+        recipientAddress: data.recipientAddress,
+        amount: toNanoMASS(data.amount).toString(),
+      });
     }
   }
 

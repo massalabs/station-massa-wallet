@@ -48,7 +48,9 @@ export default function Advanced(props: AdvancedProps) {
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [fees, setFees] = useState<bigint>(initialFees);
-  const [feesField, setFeesField] = useState<string>('');
+  const [feesField, setFeesField] = useState<string>(
+    initialFees ? initialFees.toString() : '',
+  );
   const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
   const [presetFee, setPresetFee] = useState<bigint>(initialPresetFees);
 
@@ -104,7 +106,7 @@ export default function Advanced(props: AdvancedProps) {
       >
         {name}
         <label className="text-tertiary text-xs flex pl-1 items-center cursor-pointer">
-          ({presetFees[name].toString()}. nMAS)
+          ({presetFees[name].toString()} nMAS)
         </label>
       </Button>
     );

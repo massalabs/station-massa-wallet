@@ -9,8 +9,8 @@ import { maskAddress, formatStandard, toNanoMASS, toMASS } from '@/utils';
 
 export interface SendConfirmationData {
   amount: string;
-  fees: string;
-  recipient: string;
+  fee: string;
+  recipientAddress: string;
 }
 
 interface SendConfirmationProps {
@@ -21,21 +21,21 @@ interface SendConfirmationProps {
 
 export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
-  const { amount, fees, recipient } = data;
+  const { amount, fee, recipientAddress } = data;
 
-  const GAS_STANDARD = `${Intl.t('send-coins.fee-standard')}`;
-  const GAS_LOW = `${Intl.t('send-coins.fee-low')}`;
-  const GAS_HIGH = `${Intl.t('send-coins.fee-high')}`;
-  const GAS_CUSTOM = `${Intl.t('send-coins.fee-custom')}`;
+  const GAS_STANDARD = Intl.t('send-coins.fee-standard');
+  const GAS_LOW = Intl.t('send-coins.fee-low');
+  const GAS_HIGH = Intl.t('send-coins.fee-high');
+  const GAS_CUSTOM = Intl.t('send-coins.fee-custom');
 
-  const formattedRecipientAddress = maskAddress(recipient);
-  const total = toNanoMASS(amount) + BigInt(fees);
+  const formattedRecipientAddress = maskAddress(recipientAddress);
+  const total = toNanoMASS(amount) + BigInt(fee);
 
   const formattedTotal = formatStandard(toMASS(total));
   const [showTooltip, setShowTooltip] = useState(false);
   let selectedFees;
 
-  switch (fees) {
+  switch (fee) {
     case '1000':
       selectedFees = GAS_STANDARD;
       break;
@@ -50,10 +50,10 @@ export function SendConfirmation(props: SendConfirmationProps) {
       break;
   }
 
-  const feeInfo = `${Intl.t('send-coins.fee-info', {
+  const feeInfo = Intl.t('send-coins.fee-info', {
     feeType: selectedFees,
-    fees: fees,
-  })}`;
+    fee,
+  });
   const gasAlert = `  \u26A0  ${Intl.t('send-coins.fee-alert')}`;
   let content = selectedFees == GAS_STANDARD ? feeInfo + gasAlert : gasAlert;
 
@@ -73,7 +73,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
       >
         <div className="flex flex-row items-center pb-3 ">
           <div data-testid="send-confirmation-info" className="pr-2 text-info">
-            {Intl.t('send-coins.send-confirmation', { amount, fees })}
+            {Intl.t('send-coins.send-confirmation', { amount, fee })}
           </div>
           <div
             className="flex flex-row relative items-center gap-1"
