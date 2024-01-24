@@ -48,6 +48,7 @@ export default function Advanced(props: AdvancedProps) {
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [fees, setFees] = useState<bigint>(initialFees);
+  const [feesField, setFeesField] = useState<string>('');
   const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
   const [presetFee, setPresetFee] = useState<bigint>(initialPresetFees);
 
@@ -109,6 +110,11 @@ export default function Advanced(props: AdvancedProps) {
     );
   }
 
+  function onFeeChange(event: { value: string }) {
+    setFees(BigInt(event.value));
+    setFeesField(event.value);
+  }
+
   return (
     <PopupModal
       fullMode={true}
@@ -164,9 +170,9 @@ export default function Advanced(props: AdvancedProps) {
               placeholder={Intl.t('send-coins.custom-fees')}
               name="fees"
               variant="nMAS"
-              value={fees.toString()}
+              value={feesField}
               disabled={!customFees}
-              onValueChange={(event) => setFees(BigInt(event.value))}
+              onValueChange={(event) => onFeeChange(event)}
               error={error?.fees}
             />
 
