@@ -42,7 +42,7 @@ export function SendForm(props: SendFormProps) {
     data,
     redirect,
   } = props;
-  const { amount: redirectAmount, to } = redirect;
+  const { amount: redirectAmount, to: redirectedTo } = redirect;
 
   const balance = BigInt(currentAccount.candidateBalance) || 0n;
   const formattedBalance = formatStandard(toMASS(balance));
@@ -54,18 +54,20 @@ export function SendForm(props: SendFormProps) {
     data.amount ? toMASS(toNanoMASS(data.amount)).toString() : '',
   );
   const [fees, setFees] = useState<bigint>(1000n);
-  const [recipient, setRecipient] = useState<string>(data?.recipient ?? '');
+  const [recipient, setRecipient] = useState<string>(data.recipientAddress);
   const { okAccounts: accounts } = fetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );
+
   useEffect(() => {
-    setAmount(redirectAmount);
-    setRecipient(to);
-  }, []);
+    setAmount(redirectAmount || data.amount);
+    setRecipient(redirectedTo || data.recipientAddress);
+    setFees(BigInt(data.fee || 1000n));
+  }, [data]);
 
   function validate(formObject: IForm) {
-    const { amount, recipient } = formObject;
+    const { amount, recipientAddress } = formObject;
 
     setError(null);
 
@@ -91,12 +93,12 @@ export function SendForm(props: SendFormProps) {
       return false;
     }
 
-    if (!recipient) {
+    if (!recipientAddress) {
       setError({ recipient: Intl.t('errors.send-coins.no-address') });
       return false;
     }
 
-    if (!checkAddressFormat(recipient)) {
+    if (!checkAddressFormat(recipientAddress)) {
       setError({ recipient: Intl.t('errors.send-coins.invalid-address') });
       return false;
     }
@@ -112,7 +114,7 @@ export function SendForm(props: SendFormProps) {
 
     sendCoinsHandleSubmit({
       ...(formObject as SendConfirmationData),
-      fees: fees.toString(),
+      fee: fees.toString(),
     });
   }
 
@@ -185,7 +187,7 @@ export function SendForm(props: SendFormProps) {
           <Input
             placeholder={Intl.t('receive-coins.recipient')}
             value={recipient}
-            name="recipient"
+            name="recipientAddress"
             onChange={(e) => setRecipient(e.target.value)}
             error={error?.recipient}
           />
