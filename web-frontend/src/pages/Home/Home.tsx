@@ -27,7 +27,7 @@ export default function Home() {
     } else if (!account && !isLoading) {
       navigate(routeFor('account-select'));
     }
-  }, [account, navigate]);
+  }, [account, navigate, error, isLoading]);
 
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);

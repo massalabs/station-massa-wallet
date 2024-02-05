@@ -26,7 +26,7 @@ export default function StepThree() {
     } else if (isSuccess) {
       navigate(routeFor(`${nickname}/home`));
     }
-  }, [isSuccess]);
+  }, [isSuccess, error, navigate, nickname]);
 
   return (
     <LandingPage>

@@ -25,7 +25,7 @@ export default function StepTwo() {
     } else if (isSuccess) {
       navigate(routeFor('account-create-step-three'), { state: { nickname } });
     }
-  }, [isSuccess]);
+  }, [isSuccess, error, navigate, nickname]);
 
   return (
     <LandingPage>

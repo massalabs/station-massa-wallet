@@ -48,11 +48,19 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
 
   useEffect(() => {
     if (isSuccessDelete) {
-      handleDeleteSuccess();
+      toast.success(Intl.t('assets.delete.success'));
+      closeModal();
+      refetchAssets();
     } else if (isErrorDelete) {
       displayErrors(deleteErrorStatus);
     }
-  }, [isSuccessDelete, isErrorDelete]);
+  }, [
+    isSuccessDelete,
+    isErrorDelete,
+    deleteErrorStatus,
+    closeModal,
+    refetchAssets,
+  ]);
 
   function displayErrors(postStatus: number | undefined) {
     switch (postStatus) {
@@ -68,12 +76,6 @@ export function DeleteAssetModal({ ...props }: DeleteAssetModal) {
       default:
         toast.error(Intl.t('assets.delete.unknown-error'));
     }
-  }
-
-  function handleDeleteSuccess() {
-    toast.success(Intl.t('assets.delete.success'));
-    closeModal();
-    refetchAssets();
   }
 
   function validate(phrase: string) {

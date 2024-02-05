@@ -64,7 +64,7 @@ export function SendForm(props: SendFormProps) {
     setAmount(redirectAmount || data.amount);
     setRecipient(redirectedTo || data.recipientAddress);
     setFees(BigInt(data.fee || 1000n));
-  }, [data]);
+  }, [data, redirectAmount, redirectedTo]);
 
   function validate(formObject: IForm) {
     const { amount, recipientAddress } = formObject;
