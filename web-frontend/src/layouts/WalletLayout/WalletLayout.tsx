@@ -171,7 +171,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
       <SideMenu
         conf={menuConf}
         items={menuItems}
-        onClickLogo={() => navigate(routeFor('/'))}
+        onClickLogo={() => navigate(routeFor(''))}
       />
       <div className="flex justify-center items-center h-screen text-f-primary">
         {props?.children}
