@@ -1,11 +1,11 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { fetchAccounts, routeFor } from '@/utils';
+import { useFetchAccounts, routeFor } from '@/utils';
 
 export default function Redirect() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { okAccounts: accounts, isLoading } = fetchAccounts();
+  const { okAccounts: accounts, isLoading } = useFetchAccounts();
 
   if (isLoading === false) {
     const nickname = accounts?.shift()?.nickname;

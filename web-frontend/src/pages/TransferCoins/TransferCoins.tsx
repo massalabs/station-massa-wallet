@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Tabs } from '@massalabs/react-ui-kit';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -17,10 +17,13 @@ export default function TransferCoins() {
 
   const [searchParams] = useSearchParams();
 
-  const redirect = {
-    to: searchParams.get('to') || '',
-    amount: searchParams.get('amount') || '',
-  };
+  const redirect = useMemo(() => {
+    return {
+      to: searchParams.get('to') || '',
+      amount: searchParams.get('amount') || '',
+    };
+  }, [searchParams]);
+
   const tabName = searchParams.get('tab') || TAB_SEND;
   const tabIndex = tabName === TAB_RECEIVE ? 1 : 0;
 
@@ -37,7 +40,7 @@ export default function TransferCoins() {
     } else if (!account && !redirect) {
       navigate(routeFor(`${nickname}/home`));
     }
-  }, [account, error, navigate]);
+  }, [account, error, navigate, nickname, redirect]);
 
   if (!account) {
     navigate(routeFor(`${nickname}/home`));

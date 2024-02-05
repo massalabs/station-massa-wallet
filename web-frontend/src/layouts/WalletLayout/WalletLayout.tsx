@@ -24,7 +24,7 @@ import {
 } from 'react-router-dom';
 
 import Intl from '../../i18n/i18n';
-import { fetchAccounts, routeFor } from '../../utils';
+import { useFetchAccounts, routeFor } from '../../utils';
 
 export enum MenuItem {
   Home = 'home',
@@ -57,7 +57,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
   const { themeIcon, themeLabel, theme, handleSetTheme } =
     useOutletContext<IOutletContextType>();
 
-  const { okAccounts: accounts = [], isLoading, error } = fetchAccounts();
+  const { okAccounts: accounts = [], isLoading, error } = useFetchAccounts();
 
   const hasAccounts = !isLoading && accounts;
 
@@ -67,7 +67,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
     } else if (!hasAccounts) {
       navigate(routeFor('index'));
     }
-  }, [accounts, error, navigate]);
+  }, [accounts, error, navigate, hasAccounts]);
 
   function isActive(item: MenuItem) {
     return item === menuItem;

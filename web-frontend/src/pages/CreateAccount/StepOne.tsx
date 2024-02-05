@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
-import { routeFor, parseForm, fetchAccounts } from '@/utils';
+import { routeFor, parseForm, useFetchAccounts } from '@/utils';
 import { isAlreadyExists, isNicknameValid } from '@/validation/nickname';
 
 interface IErrorObject {
@@ -16,7 +16,7 @@ interface IErrorObject {
 export default function StepOne() {
   const navigate = useNavigate();
 
-  const { okAccounts: accounts } = fetchAccounts();
+  const { okAccounts: accounts } = useFetchAccounts();
 
   const form = useRef(null);
 

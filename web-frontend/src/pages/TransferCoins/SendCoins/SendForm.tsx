@@ -15,7 +15,7 @@ import {
   toMASS,
   formatStandard,
   reverseFormatStandard,
-  fetchAccounts,
+  useFetchAccounts,
   checkAddressFormat,
 } from '@/utils';
 import { handlePercent } from '@/utils/math';
@@ -55,7 +55,7 @@ export function SendForm(props: SendFormProps) {
   );
   const [fees, setFees] = useState<bigint>(1000n);
   const [recipient, setRecipient] = useState<string>(data.recipientAddress);
-  const { okAccounts: accounts } = fetchAccounts();
+  const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );

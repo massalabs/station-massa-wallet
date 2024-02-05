@@ -9,10 +9,11 @@ import { usePut } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
-import { fetchAccounts, routeFor } from '@/utils';
+import { useFetchAccounts, routeFor } from '@/utils';
 
 export default function Index() {
-  const { error, okAccounts, corruptedAccounts, isLoading } = fetchAccounts();
+  const { error, okAccounts, corruptedAccounts, isLoading } =
+    useFetchAccounts();
   const corruptedAccountsNames = corruptedAccounts?.map(
     (account: AccountObject) => account.nickname,
   );
