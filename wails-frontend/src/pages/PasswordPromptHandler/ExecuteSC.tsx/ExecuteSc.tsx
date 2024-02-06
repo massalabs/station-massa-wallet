@@ -29,9 +29,8 @@ export function ExecuteSC(props: SignBodyProps) {
             {Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}
           </p>
           <Tooltip
-            icon={<FiInfo size={16} />}
             customClass="mas-caption !w-7/12 left-0  !ml-28"
-            content={
+            body={
               <>
                 {Intl.t('password-prompt.sign.execute-sc-tooltip.1')}
                 <br />
@@ -41,7 +40,9 @@ export function ExecuteSC(props: SignBodyProps) {
                 {Intl.t('password-prompt.sign.execute-sc-tooltip.3')}
               </>
             }
-          />
+          >
+            <FiInfo size={16} />
+          </Tooltip>
         </div>
       </div>
 
@@ -65,17 +66,18 @@ export function ExecuteSC(props: SignBodyProps) {
       <div className="flex w-full items-center justify-between pb-2">
         <div className="flex items-center">
           <Tooltip
-            icon={<FiInfo size={18} />}
             className="w-fit pl-0 pr-2 hover:cursor-pointer"
             customClass="mas-caption !w-7/12"
-            content={
+            body={
               <>
                 {Intl.t('password-prompt.sign.execute-sc-max-coins-tooltip.1')}
                 <br />
                 {Intl.t('password-prompt.sign.execute-sc-max-coins-tooltip.2')}
               </>
             }
-          />
+          >
+            <FiInfo size={18} />
+          </Tooltip>
           <p>{Intl.t('password-prompt.sign.max-coins')}</p>
         </div>
         <p>

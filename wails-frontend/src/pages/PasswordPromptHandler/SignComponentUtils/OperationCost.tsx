@@ -122,15 +122,16 @@ export function OperationCost(props: OperationCostProps) {
                 <p className="flex mas-caption">
                   <Tooltip
                     className="mr-1"
-                    icon={<FiInfo size={16} />}
-                    content={
+                    body={
                       <>
                         {Intl.t('password-prompt.sign.fees-tooltip.1')}
                         <br />
                         {Intl.t('password-prompt.sign.fees-tooltip.2')}
                       </>
                     }
-                  />
+                  >
+                    <FiInfo size={16} />
+                  </Tooltip>
                   <label className="mas-caption">
                     {Intl.t('password-prompt.sign.fees')}
                   </label>
@@ -149,15 +150,16 @@ export function OperationCost(props: OperationCostProps) {
                   <p className="flex mas-caption">
                     <Tooltip
                       className="mr-1"
-                      icon={<FiInfo size={16} />}
-                      content={
+                      body={
                         <>
                           {Intl.t('password-prompt.sign.coins-tooltip')}
                           <br />
                           {Intl.t('password-prompt.sign.coins-tooltip-2')}
                         </>
                       }
-                    />
+                    >
+                      <FiInfo size={16} />
+                    </Tooltip>
                     {Intl.t('password-prompt.sign.coins')}
                   </p>
                   <InlineMoney
