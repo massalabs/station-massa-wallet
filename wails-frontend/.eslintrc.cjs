@@ -1,5 +1,9 @@
 module.exports = {
-  extends: ['@massalabs'],
+  extends: [
+    '@massalabs',
+    'plugin:@tanstack/eslint-plugin-query/recommended',
+    'plugin:react-hooks/recommended',
+  ],
   plugins: ['html', 'import'],
   rules: {
     'new-cap': 'off',

@@ -44,12 +44,14 @@ export function OperationCost(props: OperationCostProps) {
     allowFeeEdition,
   } = props;
 
-  const [operationCost, setOperationCost] = useState(computeCost());
+  const [operationCost, setOperationCost] = useState(
+    new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9),
+  );
 
   if (fees === '') setFees(defaultFees);
 
   useEffect(() => {
-    setOperationCost(computeCost());
+    setOperationCost(new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9));
   }, [fees, coins]);
 
   function handleEdit(e: SyntheticEvent) {
@@ -66,10 +68,6 @@ export function OperationCost(props: OperationCostProps) {
     e.preventDefault();
     setIsEditing(false);
     setFees(defaultFees);
-  }
-
-  function computeCost() {
-    return new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9);
   }
 
   const feeEditionButtonsRow = allowFeeEdition ? (
