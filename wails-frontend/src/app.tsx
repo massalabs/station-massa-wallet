@@ -1,14 +1,21 @@
 import { EventsOn } from '@wailsjs/runtime/runtime';
 import { useNavigate } from 'react-router-dom';
 
-import { events, promptAction, promptRequest } from './events/events';
+import {
+  events,
+  promptAction,
+  promptRequest,
+  promptResult,
+} from './events/events';
 import { useConfigStore } from './store/store';
+import { hideAndReload } from './utils';
 
 export function App() {
   const navigate = useNavigate();
 
   const handlePromptRequest = (req: promptRequest) => {
     clearTimeout(useConfigStore.getState().timeoutId);
+
     switch (req.Action) {
       case promptAction.deleteReq:
       case promptAction.signReq:
@@ -28,6 +35,12 @@ export function App() {
       default:
     }
   };
+
+  EventsOn(events.promptResult, (result: promptResult) => {
+    if (!result.Success && result.CodeMessage === 'Timeout-0001') {
+      hideAndReload();
+    }
+  });
 
   EventsOn(events.promptRequest, handlePromptRequest);
 
