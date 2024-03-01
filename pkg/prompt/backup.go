@@ -1,12 +1,5 @@
 package prompt
 
-import (
-	"fmt"
-
-	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
-	"github.com/massalabs/station-massa-wallet/pkg/utils"
-)
-
 type BackupMethod string
 
 const (
@@ -31,8 +24,6 @@ func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) 
 		return &res, true, nil
 
 	default:
-		prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputType.Error()})
-		return nil, false, fmt.Errorf("invalid backup method: %s", method)
+		return nil, false, InputTypeError(prompterApp)
 	}
 }
