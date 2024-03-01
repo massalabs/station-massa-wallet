@@ -125,6 +125,7 @@
     "DuplicateKey-0001": "Private key already exists",
     "Unknown-0001": "Unknown error, try again",
     "Network-0001": "Network error, try again",
+    "InvalidFees-0001": "Invalid fees",
     "DuplicateNickname-001": "This account name already exists",
     "Timeout-0001": "Timeout error",
     "WrongPassword-0001": "Wrong password",

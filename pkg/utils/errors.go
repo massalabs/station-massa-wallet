@@ -24,6 +24,7 @@ const (
 const (
 	WrongPassword  = "WrongPassword-0001"
 	ActionCanceled = "ActionCanceled-0001"
+	InvalidFees    = "InvalidFees-0001"
 )
 
 // Messages

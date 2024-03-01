@@ -19,7 +19,10 @@ func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, ac
 
 	fees, err := strconv.ParseUint(inputObject.Fees, 10, 64)
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to parse fees: %w", err)
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: utils.InvalidFees})
+
+		return nil, true, fmt.Errorf("failed to parse fees: %w", err)
 	}
 
 	inputString := inputObject.Password
