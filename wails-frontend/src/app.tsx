@@ -37,13 +37,24 @@ export function App() {
   };
 
   EventsOn(events.promptResult, (result: promptResult) => {
+    // TODO: redirect to a page that display the error
     if (!result.Success && result.CodeMessage === 'Timeout-0001') {
+      hideAndReload();
+    }
+    // TODO: move the string into constant, use proper error code
+    if (
+      !result.Success &&
+      ['invalid prompt input type', 'Wrong prompt correlation ID'].includes(
+        result.CodeMessage,
+      )
+    ) {
       hideAndReload();
     }
   });
 
   EventsOn(events.promptRequest, handlePromptRequest);
 
+  // TODO: display a prettier loading screen
   return <>Loading...</>;
 }
 
