@@ -58,7 +58,10 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- filePath
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     filePath,
+			}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -91,7 +94,10 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			// Send invalid file to prompter app and wait for result
-			prompterApp.App().PromptInput <- filePath
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     filePath,
+			}
 			failRes := <-resChan
 
 			checkResultChannel(t, failRes, false, utils.ErrAccountFile)
@@ -132,7 +138,10 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			// Send invalid filename to prompter app and wait for result
-			prompterApp.App().PromptInput <- filePath
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     filePath,
+			}
 			failRes := <-resChan
 
 			checkResultChannel(t, failRes, false, utils.ErrInvalidNickname)
@@ -190,10 +199,11 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			testResult := make(chan walletapp.EventData)
 
 			go func(res chan walletapp.EventData) {
-				prompterApp.App().PromptInput <- walletapp.ImportFromPKey{
-					PrivateKey: tt.privateKey,
-					Nickname:   tt.nickname,
-					Password:   tt.password,
+				prompterApp.App().PromptInput <- &walletapp.ImportPKeyPromptInput{
+					BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+					PrivateKey:  tt.privateKey,
+					Nickname:    tt.nickname,
+					Password:    tt.password,
 				}
 				res <- (<-resChan)
 			}(testResult)

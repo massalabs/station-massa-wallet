@@ -40,7 +40,10 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("invalid password", func(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- "invalid password"
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     "invalid password",
+			}
 			// forward test result to test goroutine
 			failRes := <-resChan
 
@@ -57,7 +60,10 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("canceled by user", func(t *testing.T) {
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- "this is not the password"
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     "this is not the password",
+			}
 			// forward test result to test goroutine
 			failRes := <-resChan
 
@@ -78,7 +84,10 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("delete success", func(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     password,
+			}
 			// forward test result to test goroutine
 			testResult <- (<-resChan)
 		}()

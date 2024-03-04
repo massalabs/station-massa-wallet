@@ -87,7 +87,11 @@ export function Sign() {
 
     EventsOnce(events.promptResult, handleResult);
 
-    SendSignPromptInput(password, fromMAS(fees || '0').toString());
+    SendSignPromptInput(
+      password,
+      fromMAS(fees || '0').toString(),
+      req.CorrelationID,
+    );
   }
 
   function handleResult(result: promptResult) {

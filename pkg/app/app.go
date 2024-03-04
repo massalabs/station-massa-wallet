@@ -17,7 +17,7 @@ import (
 type WalletApp struct {
 	Ctx         context.Context
 	CtrlChan    chan PromptCtrl
-	PromptInput chan interface{}
+	PromptInput chan CorrelationIdentifier
 	Wallet      *wallet.Wallet
 	Shutdown    bool
 	IsListening bool
@@ -37,7 +37,7 @@ func (a *WalletApp) cleanExit() {
 func NewWalletApp(wallet *wallet.Wallet) *WalletApp {
 	app := &WalletApp{
 		CtrlChan:    make(chan PromptCtrl),
-		PromptInput: make(chan interface{}),
+		PromptInput: make(chan CorrelationIdentifier),
 		Wallet:      wallet,
 		Shutdown:    false,
 		IsListening: false,
@@ -76,18 +76,30 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	return true
 }
 
-// SendPromptInput is bound to the frontend
-func (a *WalletApp) SendPromptInput(input string) {
-	a.PromptInput <- input
+// Functions to send user input to the backend from the wails frontend
+
+func (a *WalletApp) SendPromptInput(input string, correlationID string) {
+	a.PromptInput <- &StringPromptInput{BaseMessage: BaseMessage{CorrelationID: correlationID}, Message: input}
 }
 
-// SendSignPromptInput is bound to the frontend
-func (a *WalletApp) SendSignPromptInput(password string, fees string) {
-	a.PromptInput <- SignPromptInput{Password: password, Fees: fees}
+func (a *WalletApp) SendSignPromptInput(password string, fees string, correlationID string) {
+	a.PromptInput <- &SignPromptInput{BaseMessage: BaseMessage{CorrelationID: correlationID}, Password: password, Fees: fees}
 }
 
-// AbortAction is bound to the frontend
-// It sends a cancel message to the prompt
+func (a *WalletApp) SendPKeyPromptInput(privateKeyText string, nickname string, password string, correlationID string) {
+	guardedPrivateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
+
+	a.PromptInput <- &ImportPKeyPromptInput{
+		BaseMessage: BaseMessage{CorrelationID: correlationID},
+		PrivateKey:  guardedPrivateKey,
+		Nickname:    nickname,
+		Password:    memguard.NewBufferFromBytes([]byte(password)),
+	}
+}
+
+// Function called by the wails frontend
+
+// AbortAction sends a cancel message to the prompt
 func (a *WalletApp) AbortAction() {
 	if a.IsListening {
 		logger.Warn("Abort action")
@@ -104,10 +116,10 @@ func (a *WalletApp) Hide() {
 }
 
 type selectFileResult struct {
-	Err         string `json:"err"`
-	CodeMessage string `json:"codeMessage"`
-	FilePath    string `json:"filePath"`
-	Nickname    string `json:"nickname"`
+	Err         string
+	CodeMessage string
+	FilePath    string
+	Nickname    string
 }
 
 func (a *WalletApp) SelectAccountFile() selectFileResult {
@@ -131,22 +143,6 @@ func (a *WalletApp) SelectAccountFile() selectFileResult {
 	}
 
 	return selectFileResult{FilePath: filePath, Nickname: acc.Nickname}
-}
-
-type ImportFromPKey struct {
-	PrivateKey *memguard.LockedBuffer
-	Password   *memguard.LockedBuffer
-	Nickname   string
-}
-
-func (a *WalletApp) ImportPrivateKey(privateKeyText string, nickname string, password string) {
-	guardedPrivateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
-
-	a.PromptInput <- ImportFromPKey{
-		PrivateKey: guardedPrivateKey,
-		Nickname:   nickname,
-		Password:   memguard.NewBufferFromBytes([]byte(password)),
-	}
 }
 
 func (a *WalletApp) IsNicknameUnique(nickname string) bool {

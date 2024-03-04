@@ -17,7 +17,7 @@ function ConfirmDelete() {
   function handleConfirm() {
     EventsOnce(events.promptResult, handleApplyResult(navigate, req));
 
-    SendPromptInput(password);
+    SendPromptInput(password, req.CorrelationID);
   }
 
   return (

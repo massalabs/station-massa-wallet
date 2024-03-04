@@ -41,7 +41,10 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
 		go func() {
-			prompterApp.App().PromptInput <- "unknown method"
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     "unknown method",
+			}
 			testResult <- (<-resChan)
 		}()
 
@@ -66,7 +69,10 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
 		go func() {
-			prompterApp.App().PromptInput <- string(prompt.YamlFileBackup)
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     string(prompt.YamlFileBackup),
+			}
 			testResult <- (<-resChan)
 		}()
 
@@ -81,7 +87,10 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 	t.Run("chose private backup then cancel", func(t *testing.T) {
 		go func() {
 			// send backup method
-			prompterApp.App().PromptInput <- string(prompt.PrivateKeyBackup)
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     string(prompt.PrivateKeyBackup),
+			}
 			prompterApp.App().CtrlChan <- walletapp.Cancel
 		}()
 
@@ -92,9 +101,15 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 	t.Run("backup private key, wrong password and cancel", func(t *testing.T) {
 		go func() {
 			// send backup method
-			prompterApp.App().PromptInput <- string(prompt.PrivateKeyBackup)
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     string(prompt.PrivateKeyBackup),
+			}
 			// send password
-			prompterApp.App().PromptInput <- "wrong password"
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     "wrong password",
+			}
 
 			result := <-resChan
 
@@ -112,9 +127,15 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		go func() {
 			// send backup method
-			prompterApp.App().PromptInput <- string(prompt.PrivateKeyBackup)
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     string(prompt.PrivateKeyBackup),
+			}
 			// send password
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Message:     password,
+			}
 
 			testResult <- (<-resChan)
 		}()

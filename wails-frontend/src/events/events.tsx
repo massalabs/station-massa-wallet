@@ -20,6 +20,7 @@ export type promptRequest = {
   Msg: string;
   Data: any;
   CodeMessage: string;
+  CorrelationID: string;
 };
 
 export const events = {

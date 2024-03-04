@@ -12,7 +12,7 @@ import (
 
 // handleSignPrompt returns the password as a LockedBuffer, or an error if the input is not a string.
 func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*walletapp.SignPromptOutput, bool, error) {
-	inputObject, ok := input.(walletapp.SignPromptInput)
+	inputObject, ok := input.(*walletapp.SignPromptInput)
 	if !ok {
 		return nil, false, InputTypeError(prompterApp)
 	}

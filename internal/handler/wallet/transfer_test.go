@@ -63,7 +63,11 @@ func Test_transfer_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				Password:    password,
+				Fees:        "1000",
+			}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)

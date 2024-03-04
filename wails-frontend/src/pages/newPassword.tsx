@@ -2,7 +2,7 @@ import { useState, useRef, SyntheticEvent } from 'react';
 
 import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
 import {
-  ImportPrivateKey,
+  SendPKeyPromptInput,
   SendPromptInput,
 } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime';
@@ -88,8 +88,13 @@ function NewPassword() {
     );
 
     return isImportAction
-      ? ImportPrivateKey(state.privateKey, state.nickname, password)
-      : SendPromptInput(password);
+      ? SendPKeyPromptInput(
+          state.privateKey,
+          state.nickname,
+          password,
+          req.CorrelationID,
+        )
+      : SendPromptInput(password, req.CorrelationID);
   }
 
   async function handleSubmit(e: SyntheticEvent) {

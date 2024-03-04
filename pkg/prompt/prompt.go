@@ -2,7 +2,9 @@ package prompt
 
 import (
 	"context"
+	cryptorand "crypto/rand"
 	"fmt"
+	"io"
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -13,15 +15,29 @@ import (
 )
 
 type PromptRequest struct {
-	Action      walletapp.PromptRequestAction
-	Msg         string
-	Data        interface{}
-	CodeMessage string
+	Action        walletapp.PromptRequestAction
+	Msg           string
+	Data          interface{}
+	CodeMessage   string
+	CorrelationId string
 }
 
 // WalletPrompter is a struct that wraps a Fyne GUI application and implements the delete.Confirmer interface.
 type WalletPrompter struct {
 	PromptLocker
+}
+
+const CORRELATION_ID_SIZE = 32
+
+func generateCorrelationID() (string, error) {
+	rand := cryptorand.Reader
+
+	correlationId := make([]byte, CORRELATION_ID_SIZE)
+	if _, err := io.ReadFull(rand, correlationId); err != nil {
+		return "", err
+	}
+
+	return string(correlationId), nil
 }
 
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
@@ -65,6 +81,12 @@ func WakeUpPrompt(
 	prompterApp.Lock()
 	defer prompterApp.Unlock()
 
+	correlationId, err := generateCorrelationID()
+	if err != nil {
+		logger.Error(err)
+		return nil, err
+	}
+	req.CorrelationId = correlationId
 	prompterApp.PromptRequest(req)
 
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
@@ -75,6 +97,14 @@ func WakeUpPrompt(
 	for {
 		select {
 		case input := <-prompterApp.App().PromptInput:
+			receivedCorrelationId := input.GetCorrelationID()
+			// TODO: in test environnement we don't provide the correlation id for now
+			// so here we accept to have an empty correlation id
+			if receivedCorrelationId != "" && receivedCorrelationId != correlationId {
+				logger.Warnf("received input with wrong correlation id")
+				return nil, WrongCorrelationIdError(prompterApp)
+			}
+
 			var keepListening bool
 			var err error
 
@@ -99,6 +129,7 @@ func WakeUpPrompt(
 			if err != nil {
 				logger.Error(err)
 
+				// continue
 				if !keepListening {
 					return nil, err
 				}
@@ -131,4 +162,12 @@ func InputTypeError(prompterApp WalletPrompterInterface) error {
 		walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputType.Error()})
 
 	return utils.ErrInvalidInputType
+}
+
+func WrongCorrelationIdError(prompterApp WalletPrompterInterface) error {
+	logger.Error(utils.ErrWrongPromptCorrelationId.Error())
+	prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: false, CodeMessage: utils.ErrWrongPromptCorrelationId.Error()})
+
+	return utils.ErrWrongPromptCorrelationId
 }

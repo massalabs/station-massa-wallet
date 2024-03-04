@@ -1,5 +1,7 @@
 package prompt
 
+import walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+
 type BackupMethod string
 
 const (
@@ -9,10 +11,12 @@ const (
 
 // Returns output, keepListening, error
 func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) (*BackupMethod, bool, error) {
-	method, ok := input.(string)
+	inputObject, ok := input.(*walletapp.StringPromptInput)
 	if !ok {
 		return nil, false, InputTypeError(prompterApp)
 	}
+
+	method := inputObject.Message
 
 	switch method {
 	case string(YamlFileBackup):

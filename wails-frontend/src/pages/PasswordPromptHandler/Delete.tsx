@@ -35,7 +35,7 @@ export function Delete() {
 
     EventsOnce(events.promptResult, handleResult);
 
-    SendPromptInput(password);
+    SendPromptInput(password, req.CorrelationID);
   }
 
   function handleResult(result: promptResult) {
