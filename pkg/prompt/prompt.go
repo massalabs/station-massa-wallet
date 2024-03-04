@@ -113,7 +113,6 @@ func WakeUpPrompt(
 			if err != nil {
 				logger.Error(err)
 
-				// continue
 				if !keepListening {
 					return nil, err
 				}
