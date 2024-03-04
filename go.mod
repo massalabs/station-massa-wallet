@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/bluele/gcache v0.0.2
 	github.com/go-openapi/runtime v0.25.0
-	github.com/google/uuid v1.3.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/massalabs/station v0.6.0
 	github.com/massalabs/station-massa-hello-world v0.0.10
@@ -24,6 +23,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jchv/go-winloader v0.0.0-20210711035445-715c2860da7e // indirect
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
 	github.com/labstack/echo/v4 v4.10.2 // indirect

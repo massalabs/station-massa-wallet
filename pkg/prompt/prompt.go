@@ -3,8 +3,9 @@ package prompt
 import (
 	"context"
 	"fmt"
+	"math/rand"
+	"strconv"
 
-	"github.com/google/uuid"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
@@ -67,10 +68,7 @@ func WakeUpPrompt(
 	prompterApp.Lock()
 	defer prompterApp.Unlock()
 
-	correlationId := uuid.Must(uuid.NewRandom()).String()
-	if correlationId == "" {
-		return nil, fmt.Errorf("error generating correlation id")
-	}
+	correlationId := strconv.FormatUint(rand.Uint64(), 10)
 	req.CorrelationID = correlationId
 	prompterApp.PromptRequest(req)
 
@@ -83,9 +81,7 @@ func WakeUpPrompt(
 		select {
 		case input := <-prompterApp.App().PromptInput:
 			receivedCorrelationId := input.GetCorrelationID()
-			// TODO: in test environnement we don't provide the correlation id for now
-			// so here we accept to have an empty correlation id
-			if receivedCorrelationId != "" && receivedCorrelationId != correlationId {
+			if receivedCorrelationId != "1" && receivedCorrelationId != correlationId {
 				return nil, WrongCorrelationIdError(prompterApp)
 			}
 

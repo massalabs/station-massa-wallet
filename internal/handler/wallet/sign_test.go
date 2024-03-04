@@ -72,7 +72,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Password:    password,
 				Fees:        "14400",
 			}
@@ -94,7 +94,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Password:    password,
 				Fees:        "1000",
 			}
@@ -121,7 +121,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		go func(res chan walletapp.EventData) {
 			// Send wrong password to prompter app and wait for result
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Password:    "this is not the password",
 				Fees:        "1000",
 			}
@@ -132,7 +132,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 			// Send password to prompter app to unlock the handler
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Password:    password,
 				Fees:        "1000",
 			}
@@ -154,7 +154,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		go func() {
 			// Send wrong password to prompter app and wait for result
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Password:    "this is not the password",
 				Fees:        "1000",
 			}
@@ -178,7 +178,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: ""},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Password:    password,
 				Fees:        "1000",
 			}
