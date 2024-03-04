@@ -44,7 +44,7 @@ export function App() {
     // TODO: move the string into constant, use proper error code
     if (
       !result.Success &&
-      ['invalid prompt input type', 'Wrong prompt correlation ID'].includes(
+      ['InvalidInputType-0001', 'WrongPromptCorrelationId-0001'].includes(
         result.CodeMessage,
       )
     ) {
