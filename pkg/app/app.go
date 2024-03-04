@@ -79,14 +79,29 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 // Functions to send user input to the backend from the wails frontend
 
 func (a *WalletApp) SendPromptInput(input string, correlationID string) {
+	if !a.IsListening {
+		logger.Warn("Not listening (in SendPromptInput)")
+		return
+	}
+
 	a.PromptInput <- &StringPromptInput{BaseMessage: BaseMessage{CorrelationID: correlationID}, Message: input}
 }
 
 func (a *WalletApp) SendSignPromptInput(password string, fees string, correlationID string) {
+	if !a.IsListening {
+		logger.Warn("Not listening (in SendSignPromptInput)")
+		return
+	}
+
 	a.PromptInput <- &SignPromptInput{BaseMessage: BaseMessage{CorrelationID: correlationID}, Password: password, Fees: fees}
 }
 
 func (a *WalletApp) SendPKeyPromptInput(privateKeyText string, nickname string, password string, correlationID string) {
+	if !a.IsListening {
+		logger.Warn("Not listening (in SendPKeyPromptInput)")
+		return
+	}
+
 	guardedPrivateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
 
 	a.PromptInput <- &ImportPKeyPromptInput{
