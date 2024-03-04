@@ -27,7 +27,7 @@ func Test_traderolls_handler(t *testing.T) {
 	})
 
 	t.Run("Trade rolls with unknown account", func(t *testing.T) {
-		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/rolls", "WEEWHEHWHS"), `{
+		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/rolls", "no-a-nickname"), `{
 			"fee": "1",
 			"amount": "2",
 			"side": "buy"

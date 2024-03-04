@@ -26,8 +26,6 @@ type WalletPrompter struct {
 	PromptLocker
 }
 
-const CORRELATION_ID_SIZE = 32
-
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
 	return &WalletPrompter{
 		PromptLocker: PromptLocker{
@@ -70,6 +68,9 @@ func WakeUpPrompt(
 	defer prompterApp.Unlock()
 
 	correlationId := uuid.Must(uuid.NewRandom()).String()
+	if correlationId == "" {
+		return nil, fmt.Errorf("error generating correlation id")
+	}
 	req.CorrelationID = correlationId
 	prompterApp.PromptRequest(req)
 
@@ -85,7 +86,6 @@ func WakeUpPrompt(
 			// TODO: in test environnement we don't provide the correlation id for now
 			// so here we accept to have an empty correlation id
 			if receivedCorrelationId != "" && receivedCorrelationId != correlationId {
-				logger.Warnf("received input with wrong correlation id")
 				return nil, WrongCorrelationIdError(prompterApp)
 			}
 
