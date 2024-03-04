@@ -81,6 +81,9 @@ func WakeUpPrompt(
 		select {
 		case input := <-prompterApp.App().PromptInput:
 			receivedCorrelationId := input.GetCorrelationID()
+			// In test environnement we can't provide the correlation id,
+			// so here we continue only if the correlation id is not the same as the one we sent,
+			// and if the correlation id is not 1 (which is the test value for correlation id).
 			if receivedCorrelationId != "1" && receivedCorrelationId != correlationId {
 				return nil, WrongCorrelationIdError(prompterApp)
 			}
