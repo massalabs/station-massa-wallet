@@ -82,10 +82,13 @@ func Test_walletDelete_Handle(t *testing.T) {
 	})
 
 	t.Run("invalid prompt correlation id", func(t *testing.T) {
+		// first send a invalid id and then the correct one
+		testResult := make(chan walletapp.EventData)
+
 		// Send password to prompter app and wait for result
-		go func() {
+		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: "wrong-correlation-id"},
+				BaseMessage: walletapp.BaseMessage{CorrelationID: "666"},
 				Message:     password,
 			}
 			// forward test result to test goroutine
@@ -93,9 +96,15 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 			checkResultChannel(t, failRes, false, utils.ErrWrongPromptCorrelationIdMsg)
 
-			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
-		}()
+			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Password:    password,
+				Fees:        "1000",
+			}
+
+			// forward test result to test goroutine
+			failRes = <-resChan
+		}(testResult)
 
 		resp := deleteWallet(t, api, nickname)
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
