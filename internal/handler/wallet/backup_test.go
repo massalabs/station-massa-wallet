@@ -53,7 +53,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		result := <-testResult
 
-		checkResultChannel(t, result, false, utils.ErrInvalidInputType.Error())
+		checkResultChannel(t, result, false, utils.ErrInvalidInputTypeMsg)
 	})
 
 	t.Run("export canceled by user", func(t *testing.T) {

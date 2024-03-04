@@ -143,7 +143,7 @@ func WakeUpPrompt(
 func InputTypeError(prompterApp WalletPrompterInterface) error {
 	logger.Error(utils.ErrInvalidInputType.Error())
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputType.Error()})
+		walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputTypeMsg})
 
 	return utils.ErrInvalidInputType
 }
@@ -151,7 +151,7 @@ func InputTypeError(prompterApp WalletPrompterInterface) error {
 func WrongCorrelationIdError(prompterApp WalletPrompterInterface) error {
 	logger.Error(utils.ErrWrongPromptCorrelationId.Error())
 	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: utils.ErrWrongPromptCorrelationId.Error()})
+		walletapp.EventData{Success: false, CodeMessage: utils.ErrWrongPromptCorrelationIdMsg})
 
 	return utils.ErrWrongPromptCorrelationId
 }
