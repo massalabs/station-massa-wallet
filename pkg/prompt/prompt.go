@@ -2,10 +2,9 @@ package prompt
 
 import (
 	"context"
-	cryptorand "crypto/rand"
 	"fmt"
-	"io"
 
+	"github.com/google/uuid"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
@@ -19,26 +18,15 @@ type PromptRequest struct {
 	Msg           string
 	Data          interface{}
 	CodeMessage   string
-	CorrelationId string
+	CorrelationID string
 }
 
-// WalletPrompter is a struct that wraps a Fyne GUI application and implements the delete.Confirmer interface.
+// WalletPrompter is a struct that wraps a Wails GUI application and implements the WalletPrompterInterface interface.
 type WalletPrompter struct {
 	PromptLocker
 }
 
 const CORRELATION_ID_SIZE = 32
-
-func generateCorrelationID() (string, error) {
-	rand := cryptorand.Reader
-
-	correlationId := make([]byte, CORRELATION_ID_SIZE)
-	if _, err := io.ReadFull(rand, correlationId); err != nil {
-		return "", err
-	}
-
-	return string(correlationId), nil
-}
 
 func NewWalletPrompter(app *walletapp.WalletApp) *WalletPrompter {
 	return &WalletPrompter{
@@ -81,12 +69,8 @@ func WakeUpPrompt(
 	prompterApp.Lock()
 	defer prompterApp.Unlock()
 
-	correlationId, err := generateCorrelationID()
-	if err != nil {
-		logger.Error(err)
-		return nil, err
-	}
-	req.CorrelationId = correlationId
+	correlationId := uuid.Must(uuid.NewRandom()).String()
+	req.CorrelationID = correlationId
 	prompterApp.PromptRequest(req)
 
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
