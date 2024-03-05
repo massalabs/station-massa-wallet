@@ -77,7 +77,9 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	var correlationID *memguard.LockedBuffer
 	var privateKey *memguard.LockedBuffer
 
-	if params.Body.CorrelationID != nil {
+	const disableBatchSigning = true
+
+	if params.Body.CorrelationID != nil && !disableBatchSigning {
 		correlationID = memguard.NewBufferFromBytes(params.Body.CorrelationID)
 
 		pk, err := w.privateKeyFromCache(acc, correlationID)
