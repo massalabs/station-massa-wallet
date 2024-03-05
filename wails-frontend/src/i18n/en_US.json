@@ -129,7 +129,7 @@
     "DuplicateNickname-001": "This account name already exists",
     "Timeout-0001": "Timeout error",
     "WrongPassword-0001": "Wrong password",
-    "InvalidInputType-0001": "Invalid input type",
+    "InvalidInputType-0001": "Failed to process operation",
     "ActionCanceled-0001": "Action canceled",
     "PasswordRequired": "Password is required",
     "Wallet-0011": "Failed to sign: operation is not base 64 valid",
