@@ -85,7 +85,7 @@ func WakeUpPrompt(
 			// so here we continue only if the correlation id is not the same as the one we sent,
 			// and if the correlation id is not 1 (which is the test value for correlation id).
 			if receivedCorrelationId != "1" && receivedCorrelationId != correlationId {
-				return nil, WrongCorrelationIdError(prompterApp)
+				continue
 			}
 
 			var keepListening bool
@@ -144,12 +144,4 @@ func InputTypeError(prompterApp WalletPrompterInterface) error {
 		walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputTypeMsg})
 
 	return utils.ErrInvalidInputType
-}
-
-func WrongCorrelationIdError(prompterApp WalletPrompterInterface) error {
-	logger.Error(utils.ErrWrongPromptCorrelationId.Error())
-	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: utils.ErrWrongPromptCorrelationIdMsg})
-
-	return utils.ErrWrongPromptCorrelationId
 }

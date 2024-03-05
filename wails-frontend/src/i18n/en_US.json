@@ -130,7 +130,6 @@
     "Timeout-0001": "Timeout error",
     "WrongPassword-0001": "Wrong password",
     "InvalidInputType-0001": "Invalid input type",
-    "WrongPromptCorrelationId-0001": "Wrong prompt correlation id",
     "ActionCanceled-0001": "Action canceled",
     "PasswordRequired": "Password is required",
     "Wallet-0011": "Failed to sign: operation is not base 64 valid",

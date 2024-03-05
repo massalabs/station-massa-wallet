@@ -19,7 +19,6 @@ const (
 	ErrTimeoutMsg                  = "Timeout-0001"
 	ErrNetwork                     = "Network-0001"
 	ErrInvalidInputTypeMsg         = "InvalidInputType-0001"
-	ErrWrongPromptCorrelationIdMsg = "WrongPromptCorrelationId-0001"
 )
 
 // Message codes
@@ -36,13 +35,12 @@ const (
 
 // Sentinel errors
 var (
-	ErrCorrelationIDNotFound    = errors.New("Correlation ID not found")
-	ErrCache                    = errors.New("Error loading cache")
-	ErrWrongPassword            = errors.New("wrong password")
-	ErrActionCanceled           = errors.New("Action canceled by user")
-	ErrInvalidInputType         = errors.New("invalid prompt input type")
-	ErrTimeout                  = errors.New("Password prompt reached timeout")
-	ErrWrongPromptCorrelationId = errors.New("Wrong prompt correlation ID")
+	ErrCorrelationIDNotFound = errors.New("Correlation ID not found")
+	ErrCache                 = errors.New("Error loading cache")
+	ErrWrongPassword         = errors.New("wrong password")
+	ErrActionCanceled        = errors.New("Action canceled by user")
+	ErrInvalidInputType      = errors.New("invalid prompt input type")
+	ErrTimeout               = errors.New("Password prompt reached timeout")
 )
 
 func WailsErrorCode(err error) string {

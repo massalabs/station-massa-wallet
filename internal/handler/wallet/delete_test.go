@@ -82,35 +82,32 @@ func Test_walletDelete_Handle(t *testing.T) {
 	})
 
 	t.Run("invalid prompt correlation id", func(t *testing.T) {
-		// first send a invalid id and then the correct one
-		testResult := make(chan walletapp.EventData)
-
-		// Send password to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
+		// first send a invalid prompt correlation id and then the correct one
+		go func() {
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{CorrelationID: "666"},
 				Message:     password,
 			}
-			// forward test result to test goroutine
-			failRes := <-resChan
 
-			checkResultChannel(t, failRes, false, utils.ErrWrongPromptCorrelationIdMsg)
-
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
-				Password:    password,
-				Fees:        "1000",
+				Message:     password,
 			}
-
 			// forward test result to test goroutine
-			failRes = <-resChan
-		}(testResult)
+			testResult <- (<-resChan)
+		}()
 
 		resp := deleteWallet(t, api, nickname)
-		verifyStatusCode(t, resp, http.StatusUnauthorized)
+		verifyStatusCode(t, resp, http.StatusNoContent)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+		_, err = prompterApp.App().Wallet.GetAccount(nickname)
+		assert.Error(t, err, "Wallet should have been deleted")
 	})
 
 	t.Run("delete success", func(t *testing.T) {
+		createAccount(password, nickname, t, prompterApp)
+
 		// Send password to prompter app and wait for result
 		go func() {
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
