@@ -116,7 +116,7 @@ func WakeUpPrompt(
 				if !keepListening {
 					return nil, err
 				} else {
-					logger.Warn("Keep listening")
+					logger.Warn("Handling the user prompt input failed, keep listening for another input...")
 					output = nil
 				}
 			}
