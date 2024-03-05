@@ -85,6 +85,7 @@ func WakeUpPrompt(
 			// so here we continue only if the correlation id is not the same as the one we sent,
 			// and if the correlation id is not 1 (which is the test value for correlation id).
 			if receivedCorrelationId != "1" && receivedCorrelationId != correlationId {
+				logger.Warn("Received a prompt input with a different correlation id")
 				continue
 			}
 
@@ -115,6 +116,7 @@ func WakeUpPrompt(
 				if !keepListening {
 					return nil, err
 				} else {
+					logger.Warn("Keep listening")
 					output = nil
 				}
 			}
