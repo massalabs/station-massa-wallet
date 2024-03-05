@@ -37,23 +37,34 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 
-	t.Run("invalid backup method", func(t *testing.T) {
+	t.Run("invalid backup method, then valid one", func(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 
 		go func() {
+			// Send invalid backup method
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
 				Message:     "unknown method",
+			}
+			// Send valid backup method (private key)
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Message:     string(prompt.PrivateKeyBackup),
+			}
+			// Send password to un-cipher the private key
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Message:     password,
 			}
 			testResult <- (<-resChan)
 		}()
 
 		resp := backupWallet(t, api, nickname)
-		verifyStatusCode(t, resp, http.StatusUnauthorized)
+		verifyStatusCode(t, resp, http.StatusNoContent)
 
 		result := <-testResult
 
-		checkResultChannel(t, result, false, utils.ErrInvalidInputTypeMsg)
+		checkResultChannel(t, result, true, "")
 	})
 
 	t.Run("export canceled by user", func(t *testing.T) {

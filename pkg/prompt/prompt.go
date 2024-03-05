@@ -114,6 +114,8 @@ func WakeUpPrompt(
 
 				if !keepListening {
 					return nil, err
+				} else {
+					output = nil
 				}
 			}
 
@@ -140,8 +142,5 @@ func WakeUpPrompt(
 
 func InputTypeError(prompterApp WalletPrompterInterface) error {
 	logger.Error(utils.ErrInvalidInputType.Error())
-	prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: false, CodeMessage: utils.ErrInvalidInputTypeMsg})
-
 	return utils.ErrInvalidInputType
 }

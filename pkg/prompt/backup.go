@@ -13,7 +13,7 @@ const (
 func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) (*BackupMethod, bool, error) {
 	inputObject, ok := input.(*walletapp.StringPromptInput)
 	if !ok {
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 
 	method := inputObject.Message
@@ -28,6 +28,6 @@ func handleBackupMethod(prompterApp WalletPrompterInterface, input interface{}) 
 		return &res, true, nil
 
 	default:
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 }

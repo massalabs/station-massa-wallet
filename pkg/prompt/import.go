@@ -19,7 +19,7 @@ func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) 
 		return handleImportPrivateKey(prompterApp, *walletInfo)
 	}
 
-	return nil, false, InputTypeError(prompterApp)
+	return nil, true, InputTypeError(prompterApp)
 }
 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*account.Account, bool, error) {

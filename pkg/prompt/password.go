@@ -13,7 +13,7 @@ import (
 func handlePasswordPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*memguard.LockedBuffer, bool, error) {
 	inputObject, ok := input.(*walletapp.StringPromptInput)
 	if !ok {
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 
 	message := inputObject.Message

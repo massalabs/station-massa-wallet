@@ -10,7 +10,7 @@ import (
 func handleNewPasswordPrompt(prompterApp WalletPrompterInterface, input interface{}) (*memguard.LockedBuffer, bool, error) {
 	inputObject, ok := input.(*walletapp.StringPromptInput)
 	if !ok {
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 
 	trimmedPassword := strings.TrimSpace(inputObject.Message)

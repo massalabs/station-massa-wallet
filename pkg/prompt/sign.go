@@ -14,7 +14,7 @@ import (
 func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*walletapp.SignPromptOutput, bool, error) {
 	inputObject, ok := input.(*walletapp.SignPromptInput)
 	if !ok {
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 
 	fees, err := strconv.ParseUint(inputObject.Fees, 10, 64)

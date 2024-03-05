@@ -9,16 +9,15 @@ import (
 
 // Error codes
 const (
-	ErrInvalidNickname             = "Nickname-0001"
-	ErrInvalidPrivateKey           = "PrivateKey-0001"
-	ErrAccountFile                 = "AccountFile-0001"
-	ErrNoFile                      = "NoFile-0001"
-	ErrDuplicateKey                = "DuplicateKey-0001"
-	ErrUnknown                     = "Unknown-0001"
-	ErrDuplicateNickname           = "DuplicateNickname-001"
-	ErrTimeoutMsg                  = "Timeout-0001"
-	ErrNetwork                     = "Network-0001"
-	ErrInvalidInputTypeMsg         = "InvalidInputType-0001"
+	ErrInvalidNickname   = "Nickname-0001"
+	ErrInvalidPrivateKey = "PrivateKey-0001"
+	ErrAccountFile       = "AccountFile-0001"
+	ErrNoFile            = "NoFile-0001"
+	ErrDuplicateKey      = "DuplicateKey-0001"
+	ErrUnknown           = "Unknown-0001"
+	ErrDuplicateNickname = "DuplicateNickname-001"
+	ErrTimeoutMsg        = "Timeout-0001"
+	ErrNetwork           = "Network-0001"
 )
 
 // Message codes
