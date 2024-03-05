@@ -131,10 +131,10 @@ func (a *WalletApp) Hide() {
 }
 
 type selectFileResult struct {
-	Err         string
-	CodeMessage string
-	FilePath    string
-	Nickname    string
+	Err         string `json:"err"`
+	CodeMessage string `json:"codeMessage"`
+	FilePath    string `json:"filePath"`
+	Nickname    string `json:"nickname"`
 }
 
 func (a *WalletApp) SelectAccountFile() selectFileResult {
