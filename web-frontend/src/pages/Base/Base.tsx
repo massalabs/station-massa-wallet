@@ -43,7 +43,7 @@ function Base() {
     // this needs to be removed as soon we fix the steps to create an account
     <div className={`${theme} theme-dark`}>
       <Outlet context={context} />
-      <Toast theme={theme} storageKey={THEME_STORAGE_KEY} />
+      <Toast />
     </div>
   );
 }
