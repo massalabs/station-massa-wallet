@@ -42,7 +42,7 @@ export const handleApplyResult = (
       navigate('/failure', {
         state: { req },
       });
-      if (quitOnError || result.CodeMessage === 'Timeout-0001') {
+      if (quitOnError) {
         timeoutId = setTimeout(hideAndReload, timeoutDelay);
       }
     }

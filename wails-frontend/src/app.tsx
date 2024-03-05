@@ -7,8 +7,10 @@ import {
   promptRequest,
   promptResult,
 } from './events/events';
+import Intl from './i18n/i18n';
+import { Loading } from './pages/loading';
 import { useConfigStore } from './store/store';
-import { hideAndReload } from './utils';
+import { ErrorCode } from './utils';
 
 export function App() {
   const navigate = useNavigate();
@@ -37,25 +39,17 @@ export function App() {
   };
 
   EventsOn(events.promptResult, (result: promptResult) => {
-    // TODO: redirect to a page that display the error
-    if (!result.Success && result.CodeMessage === 'Timeout-0001') {
-      hideAndReload();
-    }
-    // TODO: move the string into constant, use proper error code
-    if (
-      !result.Success &&
-      ['InvalidInputType-0001', 'WrongPromptCorrelationId-0001'].includes(
-        result.CodeMessage,
-      )
-    ) {
-      hideAndReload();
+    if (!result.Success && result.CodeMessage === ErrorCode.Timeout) {
+      const errorMessage = Intl.t(`errors.${result.CodeMessage}`);
+      navigate('/failure', {
+        state: { req: { Msg: errorMessage } },
+      });
     }
   });
 
   EventsOn(events.promptRequest, handlePromptRequest);
 
-  // TODO: display a prettier loading screen
-  return <>Loading...</>;
+  return <Loading />;
 }
 
 export default App;
