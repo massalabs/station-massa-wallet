@@ -14,12 +14,17 @@ import { Loading } from './Loading';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
-import { routeFor, formatStandard, fetchAccounts, maskNickname } from '@/utils';
+import {
+  routeFor,
+  formatStandard,
+  useFetchAccounts,
+  maskNickname,
+} from '@/utils';
 
 export default function AccountSelect() {
   const navigate = useNavigate();
 
-  const { okAccounts: accounts, isLoading, error } = fetchAccounts();
+  const { okAccounts: accounts, isLoading, error } = useFetchAccounts();
   const hasAccounts = accounts?.length;
 
   useEffect(() => {

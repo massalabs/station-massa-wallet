@@ -37,7 +37,7 @@ export default function SettingsUpdate() {
     } else if (isSuccessUpdate) {
       navigate(routeFor(`${newNickname}/settings`));
     }
-  }, [isSuccessUpdate, errorUpdate]);
+  }, [isSuccessUpdate, errorUpdate, newNickname, navigate]);
 
   function validate(e: SyntheticEvent) {
     const formObject = parseForm(e);

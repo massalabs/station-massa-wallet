@@ -11,7 +11,9 @@ type ThemeSettings = {
   };
 };
 
-export const themeSettings: ThemeSettings = {
+const THEME_STORAGE_KEY = 'massa-wallet-theme';
+
+const themeSettings: ThemeSettings = {
   'theme-dark': {
     icon: <FiSun />,
     label: 'light theme',
@@ -24,7 +26,7 @@ export const themeSettings: ThemeSettings = {
 
 function Base() {
   const [theme, setTheme] = useLocalStorage<string>(
-    'massa-station-theme',
+    THEME_STORAGE_KEY,
     'theme-dark',
   );
   const themeIcon = themeSettings[theme].icon;
@@ -41,7 +43,7 @@ function Base() {
     // this needs to be removed as soon we fix the steps to create an account
     <div className={`${theme} theme-dark`}>
       <Outlet context={context} />
-      <Toast theme={theme} />
+      <Toast theme={theme} storageKey={THEME_STORAGE_KEY} />
     </div>
   );
 }

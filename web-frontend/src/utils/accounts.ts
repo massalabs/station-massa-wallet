@@ -22,7 +22,7 @@ function separateAccounts(accounts: AccountObject[] | undefined) {
   return { okAccounts, corruptedAccounts };
 }
 
-export function fetchAccounts() {
+export function useFetchAccounts() {
   const getAccounts = useResource<AccountObject[]>('accounts');
   const { data: accounts } = getAccounts;
   const { okAccounts, corruptedAccounts } = separateAccounts(accounts);

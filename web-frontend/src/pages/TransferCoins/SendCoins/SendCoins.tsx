@@ -48,7 +48,7 @@ export default function SendCoins(props: SendCoinsProps) {
 
       navigate(routeFor(`${nickname}/home`));
     }
-  }, [isSuccess]);
+  }, [isSuccess, error, data, nickname, navigate]);
 
   function handleSubmit(data: SendConfirmationData) {
     setData(data);

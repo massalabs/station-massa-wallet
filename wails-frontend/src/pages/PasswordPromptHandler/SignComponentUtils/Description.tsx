@@ -28,10 +28,11 @@ export function Description(props: DescriptionProps) {
           categoryTitle={
             <div className="flex items-center w-full">
               <Tooltip
-                icon={<FiInfo size={18} />}
                 className="mas-caption pl-0 pr-2"
-                content={Intl.t('password-prompt.sign.description-tooltip')}
-              />
+                body={Intl.t('password-prompt.sign.description-tooltip')}
+              >
+                <FiInfo size={18} />
+              </Tooltip>
               <p>{Intl.t(label)}</p>
             </div>
           }

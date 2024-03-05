@@ -15,7 +15,7 @@ import {
   toMASS,
   formatStandard,
   reverseFormatStandard,
-  fetchAccounts,
+  useFetchAccounts,
   checkAddressFormat,
 } from '@/utils';
 import { handlePercent } from '@/utils/math';
@@ -55,7 +55,7 @@ export function SendForm(props: SendFormProps) {
   );
   const [fees, setFees] = useState<bigint>(1000n);
   const [recipient, setRecipient] = useState<string>(data.recipientAddress);
-  const { okAccounts: accounts } = fetchAccounts();
+  const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );
@@ -64,7 +64,7 @@ export function SendForm(props: SendFormProps) {
     setAmount(redirectAmount || data.amount);
     setRecipient(redirectedTo || data.recipientAddress);
     setFees(BigInt(data.fee || 1000n));
-  }, [data]);
+  }, [data, redirectAmount, redirectedTo]);
 
   function validate(formObject: IForm) {
     const { amount, recipientAddress } = formObject;

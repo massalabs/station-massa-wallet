@@ -57,7 +57,7 @@ export function AssetsImportModal(props: ImportModalProps) {
     } else if (postError) {
       displayErrors(postErrorStatus);
     }
-  }, [postSuccess, postError]);
+  }, [postSuccess, postError, closeModal, refetch, postErrorStatus, data]);
 
   function displayErrors(postStatus: number | undefined) {
     switch (postStatus) {

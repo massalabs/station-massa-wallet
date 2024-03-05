@@ -44,12 +44,14 @@ export function OperationCost(props: OperationCostProps) {
     allowFeeEdition,
   } = props;
 
-  const [operationCost, setOperationCost] = useState(computeCost());
+  const [operationCost, setOperationCost] = useState(
+    new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9),
+  );
 
   if (fees === '') setFees(defaultFees);
 
   useEffect(() => {
-    setOperationCost(computeCost());
+    setOperationCost(new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9));
   }, [fees, coins]);
 
   function handleEdit(e: SyntheticEvent) {
@@ -66,10 +68,6 @@ export function OperationCost(props: OperationCostProps) {
     e.preventDefault();
     setIsEditing(false);
     setFees(defaultFees);
-  }
-
-  function computeCost() {
-    return new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9);
   }
 
   const feeEditionButtonsRow = allowFeeEdition ? (
@@ -122,15 +120,16 @@ export function OperationCost(props: OperationCostProps) {
                 <p className="flex mas-caption">
                   <Tooltip
                     className="mr-1"
-                    icon={<FiInfo size={16} />}
-                    content={
+                    body={
                       <>
                         {Intl.t('password-prompt.sign.fees-tooltip.1')}
                         <br />
                         {Intl.t('password-prompt.sign.fees-tooltip.2')}
                       </>
                     }
-                  />
+                  >
+                    <FiInfo size={16} />
+                  </Tooltip>
                   <label className="mas-caption">
                     {Intl.t('password-prompt.sign.fees')}
                   </label>
@@ -149,15 +148,16 @@ export function OperationCost(props: OperationCostProps) {
                   <p className="flex mas-caption">
                     <Tooltip
                       className="mr-1"
-                      icon={<FiInfo size={16} />}
-                      content={
+                      body={
                         <>
                           {Intl.t('password-prompt.sign.coins-tooltip')}
                           <br />
                           {Intl.t('password-prompt.sign.coins-tooltip-2')}
                         </>
                       }
-                    />
+                    >
+                      <FiInfo size={16} />
+                    </Tooltip>
                     {Intl.t('password-prompt.sign.coins')}
                   </p>
                   <InlineMoney
