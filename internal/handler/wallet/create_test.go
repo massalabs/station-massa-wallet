@@ -43,7 +43,10 @@ func Test_walletCreate_Handle(t *testing.T) {
 					// Send cancel to prompter app to unlock the handler
 					prompterApp.App().CtrlChan <- walletapp.Cancel
 				} else {
-					prompterApp.App().PromptInput <- test.password
+					prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+						BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+						Message:     test.password,
+					}
 					// forward test result to test goroutine
 				}
 				res <- (<-resChan)

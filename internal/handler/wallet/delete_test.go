@@ -40,7 +40,10 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("invalid password", func(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- "invalid password"
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Message:     "invalid password",
+			}
 			// forward test result to test goroutine
 			failRes := <-resChan
 
@@ -57,7 +60,10 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("canceled by user", func(t *testing.T) {
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- "this is not the password"
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Message:     "this is not the password",
+			}
 			// forward test result to test goroutine
 			failRes := <-resChan
 
@@ -75,10 +81,39 @@ func Test_walletDelete_Handle(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	t.Run("invalid prompt correlation id", func(t *testing.T) {
+		// first send a invalid prompt correlation id and then the correct one
+		go func() {
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: "666"},
+				Message:     password,
+			}
+
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Message:     password,
+			}
+			// forward test result to test goroutine
+			testResult <- (<-resChan)
+		}()
+
+		resp := deleteWallet(t, api, nickname)
+		verifyStatusCode(t, resp, http.StatusNoContent)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+		_, err = prompterApp.App().Wallet.GetAccount(nickname)
+		assert.Error(t, err, "Wallet should have been deleted")
+	})
+
 	t.Run("delete success", func(t *testing.T) {
+		createAccount(password, nickname, t, prompterApp)
+
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- password
+			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Message:     password,
+			}
 			// forward test result to test goroutine
 			testResult <- (<-resChan)
 		}()

@@ -9,17 +9,17 @@ import (
 )
 
 func handleImportPrompt(prompterApp WalletPrompterInterface, input interface{}) (*account.Account, bool, error) {
-	filePath, ok := input.(string)
+	inputObject, ok := input.(*walletapp.StringPromptInput)
 	if ok {
-		return handleImportFile(prompterApp, filePath)
+		return handleImportFile(prompterApp, inputObject.Message)
 	}
 
-	walletInfo, ok := input.(walletapp.ImportFromPKey)
+	walletInfo, ok := input.(*walletapp.ImportPKeyPromptInput)
 	if ok {
-		return handleImportPrivateKey(prompterApp, walletInfo)
+		return handleImportPrivateKey(prompterApp, *walletInfo)
 	}
 
-	return nil, false, InputTypeError(prompterApp)
+	return nil, true, InputTypeError(prompterApp)
 }
 
 func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*account.Account, bool, error) {
@@ -45,7 +45,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*ac
 	return acc, false, nil
 }
 
-func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportFromPKey) (*account.Account, bool, error) {
+func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo walletapp.ImportPKeyPromptInput) (*account.Account, bool, error) {
 	acc, err := account.NewFromPrivateKey(walletInfo.Password, walletInfo.Nickname, walletInfo.PrivateKey)
 	if err != nil {
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,

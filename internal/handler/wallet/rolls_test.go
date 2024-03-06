@@ -27,7 +27,7 @@ func Test_traderolls_handler(t *testing.T) {
 	})
 
 	t.Run("Trade rolls with unknown account", func(t *testing.T) {
-		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/rolls", "WEEWHEHWHS"), `{
+		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/rolls", "not-a-nickname"), `{
 			"fee": "1",
 			"amount": "2",
 			"side": "buy"
@@ -84,7 +84,11 @@ func Test_traderolls_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Password:    password,
+				Fees:        "1000",
+			}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -107,7 +111,11 @@ func Test_traderolls_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Password:    password,
+				Fees:        "1000",
+			}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)

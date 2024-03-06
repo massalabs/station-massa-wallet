@@ -14,7 +14,7 @@ const Failure = () => {
         <div className="w-12 h-12 bg-s-error flex flex-col justify-center items-center rounded-full mb-6">
           <FiX className="w-6 h-6" />
         </div>
-        <p className="text-neutral mas-body">{req.Msg}</p>
+        <p className="text-neutral text-center mas-body">{req.Msg}</p>
       </div>
     </Layout>
   );

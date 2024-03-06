@@ -99,7 +99,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		msg := fmt.Sprintf("error %sing rolls coin: %v", *params.Body.Side, err.Error())
 
 		t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-			walletapp.EventData{Success: false})
+			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 
 		return newErrorResponse(msg, errorTransferCoin, http.StatusInternalServerError)
 	}

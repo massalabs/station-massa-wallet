@@ -12,14 +12,17 @@ import (
 
 // handleSignPrompt returns the password as a LockedBuffer, or an error if the input is not a string.
 func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*walletapp.SignPromptOutput, bool, error) {
-	inputObject, ok := input.(walletapp.SignPromptInput)
+	inputObject, ok := input.(*walletapp.SignPromptInput)
 	if !ok {
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 
 	fees, err := strconv.ParseUint(inputObject.Fees, 10, 64)
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to parse fees: %w", err)
+		prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: false, CodeMessage: utils.InvalidFees})
+
+		return nil, true, fmt.Errorf("failed to parse fees: %w", err)
 	}
 
 	inputString := inputObject.Password

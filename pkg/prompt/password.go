@@ -11,15 +11,17 @@ import (
 
 // handlePasswordPrompt returns the password as a LockedBuffer, or an error if the input is not a string.
 func handlePasswordPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*memguard.LockedBuffer, bool, error) {
-	inputString, ok := input.(string)
+	inputObject, ok := input.(*walletapp.StringPromptInput)
 	if !ok {
-		return nil, false, InputTypeError(prompterApp)
+		return nil, true, InputTypeError(prompterApp)
 	}
 
-	password := memguard.NewBufferFromBytes([]byte(inputString))
+	message := inputObject.Message
+
+	password := memguard.NewBufferFromBytes([]byte(message))
 
 	// password will be destroy in acc.HasAccess, so we need to create a new one.
-	passwordReturned := memguard.NewBufferFromBytes([]byte(inputString))
+	passwordReturned := memguard.NewBufferFromBytes([]byte(message))
 
 	if acc != nil && !acc.HasAccess(password) {
 		msg := fmt.Sprintf("Invalid password for account %s", acc.Nickname)
