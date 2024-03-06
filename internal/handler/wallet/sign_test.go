@@ -177,16 +177,36 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		transactionDataBatch = fmt.Sprintf(`{"chainId": `+strconv.FormatUint(ChainIDUnitTests, 10)+`, "operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
 		// Send new transaction without password prompt
+		// ---
+		// No, we disable batch signing, so send password prompt:
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+		// ---
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		// Send new transaction with incorrect correlation id
 		correlationId = base64.StdEncoding.EncodeToString([]byte("wrong correlation id"))
 		transactionDataBatch = fmt.Sprintf(`{"chainId": `+strconv.FormatUint(ChainIDUnitTests, 10)+`, "operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
+
+		// We disable batch signing, so send password prompt:
+		go func(res chan walletapp.EventData) {
+			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
-		var bodyError operations.SignInternalServerError
-		err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
-		assert.NoError(t, err)
-		verifyStatusCode(t, resp, http.StatusNotFound)
+
+		verifyStatusCode(t, resp, http.StatusOK) // remove this line when enabling batch signing
+
+		// Uncomment the code below when enabling batch signing:
+		// var bodyError operations.SignInternalServerError
+		// err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
+		// assert.NoError(t, err)
+		// verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 }
