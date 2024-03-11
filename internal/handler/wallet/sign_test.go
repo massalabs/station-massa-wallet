@@ -204,7 +204,11 @@ func Test_walletSign_Handle(t *testing.T) {
 		// ---
 		// No, we disable batch signing, so send password prompt:
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Password:    password,
+				Fees:        "1000",
+			}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
@@ -218,7 +222,11 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// We disable batch signing, so send password prompt:
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- walletapp.SignPromptInput{Password: password, Fees: "1000"}
+			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				Password:    password,
+				Fees:        "1000",
+			}
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
