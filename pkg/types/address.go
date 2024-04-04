@@ -30,7 +30,7 @@ func (a *Address) validate() error {
 	return nil
 }
 
-// Custom YAML marshaller for EncryptedPrivateKey
+// Custom YAML marshaller for Address
 func (a Address) MarshalYAML() (interface{}, error) {
 	data, err := a.MarshalText()
 
