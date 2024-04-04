@@ -85,11 +85,12 @@ func (s *AssetsStore) loadAccountsStore(assetsJSONPath string) error {
 		}
 
 		for _, asset := range accountData.Assets {
+			decimals := asset.Decimals // Copy the decimals value to avoid a pointer to a local variable
 			assetInfo := models.AssetInfo{
 				Address:  asset.ContractAddress,
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
-				Decimals: &asset.Decimals,
+				Decimals: &decimals,
 			}
 			accountAssets.ContractAssets[asset.ContractAddress] = assetInfo
 		}
