@@ -41,15 +41,15 @@ func NewAssetsStore(assetsJSONPath string) (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets: make(map[string]Assets),
 	}
-	if err := store.loadaccountsStore(assetsJSONPath); err != nil {
+	if err := store.loadAccountsStore(assetsJSONPath); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
 	return store, nil
 }
 
-// loadaccountsStore loads the data from the assets JSON file into the AssetsStore.
-func (s *AssetsStore) loadaccountsStore(assetsJSONPath string) error {
+// loadAccountsStore loads the data from the assets JSON file into the AssetsStore.
+func (s *AssetsStore) loadAccountsStore(assetsJSONPath string) error {
 	// Check if the file exists, and if not, create a new one with an empty object
 	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
 		if err := createJSONFile(assetsJSONPath); err != nil {
@@ -85,11 +85,12 @@ func (s *AssetsStore) loadaccountsStore(assetsJSONPath string) error {
 		}
 
 		for _, asset := range accountData.Assets {
+			decimals := asset.Decimals // Copy the decimals value to avoid a pointer to a local variable
 			assetInfo := models.AssetInfo{
 				Address:  asset.ContractAddress,
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
-				Decimals: &asset.Decimals,
+				Decimals: &decimals,
 			}
 			accountAssets.ContractAssets[asset.ContractAddress] = assetInfo
 		}
