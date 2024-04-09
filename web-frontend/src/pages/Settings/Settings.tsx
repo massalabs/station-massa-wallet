@@ -16,7 +16,7 @@ export default function Settings() {
       <div className="flex flex-col justify-center items-center gap-9 w-1/2">
         <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
           <p className="mas-body text-f-primary pb-5">
-            {Intl.t('settings.title-profil')}
+            {Intl.t('settings.title-profile')}
           </p>
           <div className="pb-7">
             <Identicon

@@ -93,7 +93,7 @@
     "corrupted-accounts": "Your wallet files: {accounts} are found, but their format is unknown. Import accounts to use them."
   },
   "settings": {
-    "title-profil": "Account profil",
+    "title-profile": "Account profile",
     "title-security": "Account security",
     "inputs": {
       "nickname": "Account name"
