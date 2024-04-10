@@ -30,10 +30,11 @@
     "prepare": "cd .. && husky install web-frontend/.husky"
   },
   "dependencies": {
-    "@massalabs/massa-web3": "^3.0.2",
+    "@massalabs/massa-web3": "^4.0.2-dev",
     "@massalabs/react-ui-kit": "^0.0.4-dev",
     "@tanstack/react-query": "^4.29.5",
     "axios": "^1.6.0",
+    "currency.js": "^2.0.4",
     "dot-object": "^2.1.4",
     "esbuild": "0.17.19",
     "qrcode.react": "^3.1.0",

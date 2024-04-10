@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import { fromMAS } from '@massalabs/massa-web3';
 import { toast } from '@massalabs/react-ui-kit';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -8,7 +9,7 @@ import { SendForm } from './SendForm';
 import { usePost } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { AccountObject, SendTransactionObject } from '@/models/AccountModel';
-import { routeFor, toNanoMASS, maskAddress } from '@/utils';
+import { routeFor, maskAddress } from '@/utils';
 
 interface SendCoinsProps {
   account: AccountObject;
@@ -36,7 +37,7 @@ export default function SendCoins(props: SendCoinsProps) {
 
   useEffect(() => {
     if (error) {
-      toast.error(Intl.t(`errors.send-coins.sent`));
+      toast.error(Intl.t('errors.send-coins.sent'));
     } else if (isSuccess) {
       let { amount, recipientAddress } = data;
       toast.success(
@@ -61,9 +62,9 @@ export default function SendCoins(props: SendCoinsProps) {
       setSubmit(false);
     } else {
       mutate({
-        fee: data.fee,
+        fee: fromMAS(data.fee).toString(),
         recipientAddress: data.recipientAddress,
-        amount: toNanoMASS(data.amount).toString(),
+        amount: fromMAS(data.amount).toString(),
       });
     }
   }

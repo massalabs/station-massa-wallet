@@ -1,9 +1,10 @@
 import { useState, FormEvent, useEffect } from 'react';
 
+import { fromMAS } from '@massalabs/massa-web3';
 import { Balance, Button, Money, Input } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
-import Advanced from './Advanced';
+import Advanced, { PRESET_LOW } from './Advanced';
 import ContactList from './ContactList';
 import { SendConfirmationData } from './SendConfirmation';
 import Intl from '@/i18n/i18n';
@@ -11,14 +12,11 @@ import { AccountObject } from '@/models/AccountModel';
 import {
   IForm,
   parseForm,
-  toNanoMASS,
-  toMASS,
-  formatStandard,
-  reverseFormatStandard,
   useFetchAccounts,
   checkAddressFormat,
 } from '@/utils';
 import { handlePercent } from '@/utils/math';
+import { formatAmount } from '@/utils/parseAmount';
 
 interface InputsErrors {
   amount?: string;
@@ -45,15 +43,13 @@ export function SendForm(props: SendFormProps) {
   const { amount: redirectAmount, to: redirectedTo } = redirect;
 
   const balance = BigInt(currentAccount.candidateBalance) || 0n;
-  const formattedBalance = formatStandard(toMASS(balance));
+  const formattedBalance = formatAmount(balance.toString()).amountFormattedFull;
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string>(
-    data.amount ? toMASS(toNanoMASS(data.amount)).toString() : '',
-  );
-  const [fees, setFees] = useState<bigint>(1000n);
+  const [amount, setAmount] = useState<string>(data.amount ? data.amount : '');
+  const [fees, setFees] = useState<string>(PRESET_LOW);
   const [recipient, setRecipient] = useState<string>(data.recipientAddress);
   const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
@@ -63,30 +59,35 @@ export function SendForm(props: SendFormProps) {
   useEffect(() => {
     setAmount(redirectAmount || data.amount);
     setRecipient(redirectedTo || data.recipientAddress);
-    setFees(BigInt(data.fee || 1000n));
+    setFees(data.fee || PRESET_LOW);
   }, [data, redirectAmount, redirectedTo]);
 
+  function handleSetAmount(value: string) {
+    setAmount(value.replace(/[^0-9.-]/g, '')); // Remove non-numeric characters);
+  }
+
   function validate(formObject: IForm) {
-    const { amount, recipientAddress } = formObject;
+    const { amount: amountFormatted, recipientAddress } = formObject;
 
     setError(null);
+    const amount = amountFormatted.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
 
     if (!amount) {
       setError({ amount: Intl.t('errors.send-coins.invalid-amount') });
       return false;
     }
 
-    if (reverseFormatStandard(amount) <= 0) {
+    if (fromMAS(amount) <= fromMAS(PRESET_LOW)) {
       setError({ amount: Intl.t('errors.send-coins.amount-to-low') });
       return false;
     }
 
-    if (toMASS(toNanoMASS(amount)) > toMASS(balance)) {
+    if (fromMAS(amount) > balance) {
       setError({ amount: Intl.t('errors.send-coins.amount-to-high') });
       return false;
     }
 
-    if (toNanoMASS(amount) + fees > balance) {
+    if (fromMAS(amount) + fromMAS(fees) > balance) {
       setError({
         amount: Intl.t('errors.send-coins.amount-plus-fees-to-high'),
       });
@@ -114,7 +115,8 @@ export function SendForm(props: SendFormProps) {
 
     sendCoinsHandleSubmit({
       ...(formObject as SendConfirmationData),
-      fee: fees.toString(),
+      amount: amount.replace(/[^0-9.-]/g, ''), // Remove non-numeric characters
+      fee: fees,
     });
   }
 
@@ -135,8 +137,9 @@ export function SendForm(props: SendFormProps) {
           <Money
             placeholder={Intl.t('send-coins.amount-to-send')}
             name="amount"
+            variant="MAS"
             value={amount}
-            onValueChange={(event) => setAmount(event.value)}
+            onValueChange={(event) => handleSetAmount(event.value)}
             error={error?.amount}
           />
         </div>
@@ -145,7 +148,7 @@ export function SendForm(props: SendFormProps) {
             <li
               data-testid="send-percent-25"
               onClick={() =>
-                setAmount(handlePercent(balance, 25n, fees, balance).toString())
+                setAmount(handlePercent(balance, 25n, fromMAS(fees), balance))
               }
               className="mr-3.5 hover:cursor-pointer"
             >
@@ -154,7 +157,7 @@ export function SendForm(props: SendFormProps) {
             <li
               data-testid="send-percent-50"
               onClick={() =>
-                setAmount(handlePercent(balance, 50n, fees, balance).toString())
+                setAmount(handlePercent(balance, 50n, fromMAS(fees), balance))
               }
               className="mr-3.5 hover:cursor-pointer"
             >
@@ -163,7 +166,7 @@ export function SendForm(props: SendFormProps) {
             <li
               data-testid="send-percent-75"
               onClick={() =>
-                setAmount(handlePercent(balance, 75n, fees, balance).toString())
+                setAmount(handlePercent(balance, 75n, fromMAS(fees), balance))
               }
               className="mr-3.5 hover:cursor-pointer"
             >
@@ -172,9 +175,7 @@ export function SendForm(props: SendFormProps) {
             <li
               data-testid="send-percent-100"
               onClick={() =>
-                setAmount(
-                  handlePercent(balance, 100n, fees, balance).toString(),
-                )
+                setAmount(handlePercent(balance, 100n, fromMAS(fees), balance))
               }
               className="mr-3.5 hover:cursor-pointer"
             >

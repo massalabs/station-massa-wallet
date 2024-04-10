@@ -20,11 +20,11 @@ interface FeesForm {
   fees: number;
 }
 
-const PRESET_LOW = 1n;
-const PRESET_STANDARD = 1000n;
-const PRESET_HIGH = 5000n;
+export const PRESET_LOW = '0.01';
+export const PRESET_STANDARD = '0.03';
+export const PRESET_HIGH = '0.1';
 
-export const presetFees: { [key: string]: bigint } = {
+export const presetFees: { [key: string]: string } = {
   low: PRESET_LOW,
   standard: PRESET_STANDARD,
   high: PRESET_HIGH,
@@ -32,34 +32,33 @@ export const presetFees: { [key: string]: bigint } = {
 
 export interface AdvancedProps {
   onClose: () => void;
-  fees: bigint;
-  setFees: (fees: bigint) => void;
+  fees: string;
+  setFees: (fees: string) => void;
 }
 
 export default function Advanced(props: AdvancedProps) {
   const { onClose, fees: currentFees, setFees: setCurrentFees } = props;
 
   const isOneOfPressedFees = Object.values(presetFees).includes(currentFees);
-  const initialFees = !isOneOfPressedFees ? currentFees : 0n;
+  const initialFees = !isOneOfPressedFees ? currentFees : PRESET_LOW;
   const initialPresetFees = !isOneOfPressedFees
-    ? 0n
-    : currentFees || PRESET_STANDARD;
+    ? PRESET_LOW
+    : currentFees || PRESET_LOW;
   const initialCustomFees = !isOneOfPressedFees;
 
   const [error, setError] = useState<InputsErrors | null>(null);
-  const [fees, setFees] = useState<bigint>(initialFees);
+  const [fees, setFees] = useState<string>(initialFees);
   const [feesField, setFeesField] = useState<string>(
     initialFees ? initialFees.toString() : '',
   );
   const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
-  const [presetFee, setPresetFee] = useState<bigint>(initialPresetFees);
+  const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
   function handleGasFeesOption(isCustomFees: boolean) {
     setCustomFees(isCustomFees);
     setError(null);
-    setFees(0n);
-
-    isCustomFees ? setPresetFee(0n) : setPresetFee(PRESET_STANDARD);
+    setFees(PRESET_LOW);
+    setPresetFee(PRESET_LOW);
   }
 
   function validate(formObject: FeesForm) {
@@ -84,14 +83,16 @@ export default function Advanced(props: AdvancedProps) {
 
     if (!validate(formObject)) return;
 
-    let pickedFee = Number(fees) > 0 ? fees : presetFee;
-
-    setCurrentFees(pickedFee);
+    setCurrentFees(fees);
     onClose();
   }
 
   function FeesSelector({ name }: { name: string }) {
     const isDisabled = presetFee !== presetFees[name];
+    function handleClick() {
+      setPresetFee(presetFees[name]);
+      setFees(presetFees[name]);
+    }
     return (
       <Button
         disabled={customFees}
@@ -102,18 +103,18 @@ export default function Advanced(props: AdvancedProps) {
             : 'w-1/3 h-12 bg-neutral'
         }
         variant="toggle"
-        onClick={() => setPresetFee(presetFees[name])}
+        onClick={handleClick}
       >
         {name}
         <label className="text-tertiary text-xs flex pl-1 items-center cursor-pointer">
-          ({presetFees[name].toString()} nMAS)
+          ({presetFees[name].toString()} MAS)
         </label>
       </Button>
     );
   }
 
   function onFeeChange(event: { value: string }) {
-    setFees(BigInt(event.value));
+    setFees(event.value);
     setFeesField(event.value);
   }
 
@@ -171,7 +172,7 @@ export default function Advanced(props: AdvancedProps) {
             <Money
               placeholder={Intl.t('send-coins.custom-fees')}
               name="fees"
-              variant="nMAS"
+              variant="MAS"
               value={feesField}
               disabled={!customFees}
               onValueChange={(event) => onFeeChange(event)}

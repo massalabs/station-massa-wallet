@@ -4,12 +4,9 @@ import { wait } from '@massalabs/massa-web3/dist/utils/time';
 import { Server } from 'miragejs';
 
 import { mockServer } from '../../../../src/mirage';
-import {
-  toMASS,
-  formatStandard,
-  maskAddress,
-} from '../../../../src/utils/massaFormat';
+import { maskAddress } from '../../../../src/utils/massaFormat';
 import { handlePercent } from '../../../../src/utils/math';
+import { formatAmount } from '@/utils/parseAmount';
 
 describe('E2E | Acceptance | Home | Send', () => {
   let server: Server;
@@ -62,8 +59,8 @@ describe('E2E | Acceptance | Home | Send', () => {
     }
 
     function setAccountBalance(account) {
-      const balance = Number(account.candidateBalance);
-      const formattedBalance = formatStandard(toMASS(balance));
+      const balance = account.candidateBalance;
+      const formattedBalance = formatAmount(balance).amountFormattedFull;
       return formattedBalance;
     }
 
@@ -133,10 +130,10 @@ describe('E2E | Acceptance | Home | Send', () => {
 
       cy.get('[data-testid="send-confirmation-info"]').should(
         'contain',
-        `Amount (550.1234 MAS) + fees (${standardFees} nMAS)`,
+        `Amount (550.1234 MAS) + fees (${standardFees} MAS)`,
       );
 
-      cy.get('[data-testid="balance-amount"]').contains(formatStandard(amount));
+      cy.get('[data-testid="balance-amount"]').contains(amount.toString());
 
       cy.get('[data-testid="send-confirmation-recipient"]').contains(
         maskAddress(recipientAccount.address),
