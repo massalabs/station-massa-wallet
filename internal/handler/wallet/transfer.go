@@ -61,7 +61,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		recipientNickname = recipientAcc.Nickname
 	}
 
-	chainID, err := network.GetChainID()
+	chainID, minimalFees, err := network.GetNodeInfo()
 	if err != nil {
 		return newErrorResponse("failed to get chain id", errorTransferCoin, http.StatusInternalServerError)
 	}
@@ -70,6 +70,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 		Action: walletapp.Sign,
 		Data: PromptRequestSignData{
 			Fees:              strconv.FormatUint(fee, 10),
+			MinFees:           minimalFees,
 			WalletAddress:     address,
 			Nickname:          acc.Nickname,
 			OperationType:     int(transaction.OpType),

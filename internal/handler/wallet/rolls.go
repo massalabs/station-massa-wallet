@@ -59,7 +59,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		opType = sellrolls.OpType
 	}
 
-	chainID, err := network.GetChainID()
+	chainID, minimalFees, err := network.GetNodeInfo()
 	if err != nil {
 		return newErrorResponse("failed to get chain id", errorTradeRoll, http.StatusInternalServerError)
 	}
@@ -68,6 +68,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 		Action: walletapp.Sign,
 		Data: PromptRequestSignData{
 			Fees:            strconv.FormatUint(fee, 10),
+			MinFees:         minimalFees,
 			WalletAddress:   string(addressBytes),
 			Nickname:        acc.Nickname,
 			OperationType:   int(opType),
