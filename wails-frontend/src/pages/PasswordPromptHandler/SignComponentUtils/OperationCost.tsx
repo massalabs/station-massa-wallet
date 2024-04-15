@@ -98,6 +98,7 @@ export function OperationCost(props: OperationCostProps) {
   function handleReset(e: SyntheticEvent) {
     e.preventDefault();
     setIsEditing(false);
+    setError('');
     setFees(defaultFees);
   }
 

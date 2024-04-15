@@ -1,3 +1,5 @@
+// copied from bridge-web repo
+
 import currency from 'currency.js';
 import { parseUnits } from 'viem';
 

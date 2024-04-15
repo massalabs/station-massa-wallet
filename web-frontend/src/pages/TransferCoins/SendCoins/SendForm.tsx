@@ -63,14 +63,12 @@ export function SendForm(props: SendFormProps) {
   }, [data, redirectAmount, redirectedTo]);
 
   function handleSetAmount(value: string) {
-    setAmount(value.replace(/[^0-9.-]/g, '')); // Remove non-numeric characters);
+    setAmount(value);
   }
 
   function validate(formObject: IForm) {
-    const { amount: amountFormatted, recipientAddress } = formObject;
-
+    const { recipientAddress } = formObject;
     setError(null);
-    const amount = amountFormatted.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
 
     if (!amount) {
       setError({ amount: Intl.t('errors.send-coins.invalid-amount') });
@@ -115,7 +113,7 @@ export function SendForm(props: SendFormProps) {
 
     sendCoinsHandleSubmit({
       ...(formObject as SendConfirmationData),
-      amount: amount.replace(/[^0-9.-]/g, ''), // Remove non-numeric characters
+      amount,
       fee: fees,
     });
   }
