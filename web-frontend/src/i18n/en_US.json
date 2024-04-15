@@ -181,7 +181,7 @@
     "fee-low": "Low",
     "fee-high": "High",
     "fee-custom": "Custom",
-    "send-confirmation": "Amount ({amount}) + fees ({fee} MAS)",
+    "send-confirmation": "Amount ({amount} MAS) + fees ({fee} MAS)",
     "amount-to-send": "Amount to send"
   },
   "receive-coins": {

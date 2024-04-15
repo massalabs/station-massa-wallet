@@ -33,6 +33,9 @@ export function SendConfirmation(props: SendConfirmationProps) {
 
   const formattedRecipientAddress = maskAddress(recipientAddress);
   const total = fromMAS(amount) + fromMAS(fee);
+  const formattedAmount = formatAmount(
+    fromMAS(amount).toString(),
+  ).amountFormattedFull;
 
   const formattedTotal = formatAmount(total.toString()).amountFormattedFull;
   const [showTooltip, setShowTooltip] = useState(false);
@@ -76,7 +79,10 @@ export function SendConfirmation(props: SendConfirmationProps) {
       >
         <div className="flex flex-row items-center pb-3 ">
           <div data-testid="send-confirmation-info" className="pr-2 text-info">
-            {Intl.t('send-coins.send-confirmation', { amount, fee })}
+            {Intl.t('send-coins.send-confirmation', {
+              amount: formattedAmount,
+              fee,
+            })}
           </div>
           <div
             className="flex flex-row relative items-center gap-1"

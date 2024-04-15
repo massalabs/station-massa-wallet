@@ -43,7 +43,7 @@ export function SendForm(props: SendFormProps) {
   const { amount: redirectAmount, to: redirectedTo } = redirect;
 
   const balance = BigInt(currentAccount.candidateBalance) || 0n;
-  const formattedBalance = formatAmount(balance.toString()).amountFormattedFull;
+  const formattedBalance = formatAmount(balance.toString());
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
@@ -124,11 +124,15 @@ export function SendForm(props: SendFormProps) {
         <p className="mas-subtitle mb-5">
           {Intl.t('send-coins.account-balance')}
         </p>
-        <Balance customClass="mb-5" amount={formattedBalance} />
+        <Balance
+          customClass="mb-5"
+          amount={formattedBalance.amountFormattedPreview}
+        />
         <div className="flex flex-row justify-between w-full pb-3.5 ">
           <p className="mas-body2"> {Intl.t('send-coins.send-action')} </p>
           <p className="mas-body2">
-            {Intl.t('send-coins.available-balance')} <u>{formattedBalance}</u>
+            {Intl.t('send-coins.available-balance')}{' '}
+            <u>{formattedBalance.amountFormattedFull}</u>
           </p>
         </div>
         <div className="pb-3.5">

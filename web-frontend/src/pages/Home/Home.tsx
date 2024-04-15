@@ -32,7 +32,9 @@ export default function Home() {
 
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);
-  const formattedBalance = formatAmount(balance.toString()).amountFormattedFull;
+  const formattedBalance = formatAmount(
+    balance.toString(),
+  ).amountFormattedPreview;
   const address = account?.address ?? '';
 
   return (
