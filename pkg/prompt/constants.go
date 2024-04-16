@@ -9,5 +9,5 @@ const (
 )
 
 const (
-	TIMEOUT = 5 * time.Minute
+	TIMEOUT = 1 * time.Minute
 )
