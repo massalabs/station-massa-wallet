@@ -4,6 +4,6 @@
   "description": "Massa blockchain official wallet",
   "logo": "wallet.svg",
   "home": "",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "apispec": ""
 }
