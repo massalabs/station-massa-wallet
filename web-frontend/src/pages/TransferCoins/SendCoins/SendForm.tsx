@@ -75,7 +75,7 @@ export function SendForm(props: SendFormProps) {
       return false;
     }
 
-    if (fromMAS(amount) <= fromMAS(PRESET_LOW)) {
+    if (fromMAS(amount) <= 0n) {
       setError({ amount: Intl.t('errors.send-coins.amount-to-low') });
       return false;
     }
