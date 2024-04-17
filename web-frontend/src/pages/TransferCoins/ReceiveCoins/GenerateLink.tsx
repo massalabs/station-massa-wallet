@@ -14,7 +14,8 @@ import {
 
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
-import { parseForm, formatStandard } from '@/utils/';
+import { parseForm } from '@/utils/';
+import { formatAmount } from '@/utils/parseAmount';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
 export type AmountValue = number | string | undefined;
@@ -35,8 +36,9 @@ function GenerateLink(props: GenerateLinkProps) {
   const { account, presetURL, setURL, setModal } = props;
 
   const recipient = account.nickname;
-  const recipientBalance = parseInt(account.candidateBalance) / 10 ** 9;
-  const formattedBalance = formatStandard(recipientBalance);
+  const formattedBalance = formatAmount(
+    account.candidateBalance,
+  ).amountFormattedFull;
 
   const [amount, setAmount] = useState<number | string | undefined>('');
   const [link, setLink] = useState('');

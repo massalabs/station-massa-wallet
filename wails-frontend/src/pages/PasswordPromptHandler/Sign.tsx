@@ -36,6 +36,7 @@ import {
 export interface SignBodyProps {
   Description: string;
   Fees: string; // in nanoMassa
+  MinFees: string; // in MAS
   OperationType: number;
   Coins: string; // in nanoMassa
   Address: string;
@@ -129,7 +130,7 @@ export function Sign() {
 
   const operationCostsArgs = {
     fees,
-    defaultFees: toMAS(signData.Fees || 0).toFixed(9),
+    minFees: signData.MinFees,
     setFees,
     isEditing,
     setIsEditing,

@@ -10,7 +10,8 @@ import { useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
-import { routeFor, formatStandard, Unit } from '@/utils';
+import { routeFor } from '@/utils';
+import { formatAmount } from '@/utils/parseAmount';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -31,7 +32,9 @@ export default function Home() {
 
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);
-  const formattedBalance = formatStandard(balance, Unit.NanoMAS);
+  const formattedBalance = formatAmount(
+    balance.toString(),
+  ).amountFormattedPreview;
   const address = account?.address ?? '';
 
   return (

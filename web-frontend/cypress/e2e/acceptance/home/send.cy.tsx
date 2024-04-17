@@ -4,12 +4,9 @@ import { wait } from '@massalabs/massa-web3/dist/utils/time';
 import { Server } from 'miragejs';
 
 import { mockServer } from '../../../../src/mirage';
-import {
-  toMASS,
-  formatStandard,
-  maskAddress,
-} from '../../../../src/utils/massaFormat';
+import { maskAddress } from '../../../../src/utils/massaFormat';
 import { handlePercent } from '../../../../src/utils/math';
+import { formatAmount } from '../../../../src/utils/parseAmount';
 
 describe('E2E | Acceptance | Home | Send', () => {
   let server: Server;
@@ -62,8 +59,8 @@ describe('E2E | Acceptance | Home | Send', () => {
     }
 
     function setAccountBalance(account) {
-      const balance = Number(account.candidateBalance);
-      const formattedBalance = formatStandard(toMASS(balance));
+      const balance = account.candidateBalance;
+      const formattedBalance = formatAmount(balance).amountFormattedPreview;
       return formattedBalance;
     }
 
@@ -119,7 +116,6 @@ describe('E2E | Acceptance | Home | Send', () => {
       const account = mockedAccounts.at(2);
       const recipientAccount = mockedAccounts.at(1);
       const amount = 550.1234;
-      const standardFees = '1000';
 
       navigateToTransferCoinsOfAccountIndex(2);
       cy.get('[data-testid="money-field"')
@@ -133,10 +129,10 @@ describe('E2E | Acceptance | Home | Send', () => {
 
       cy.get('[data-testid="send-confirmation-info"]').should(
         'contain',
-        `Amount (550.1234 MAS) + fees (${standardFees} nMAS)`,
+        'Amount (550.123400000 MAS) + fees (0.01 MAS)',
       );
 
-      cy.get('[data-testid="balance-amount"]').contains(formatStandard(amount));
+      cy.get('[data-testid="balance-amount"]').contains('550.133400000');
 
       cy.get('[data-testid="send-confirmation-recipient"]').contains(
         maskAddress(recipientAccount.address),
@@ -163,18 +159,27 @@ describe('E2E | Acceptance | Home | Send', () => {
         cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
 
         cy.get(`[data-testid="send-percent-25"]`).click();
-        cy.get('[data-testid="money-field"').should('have.value', '250 MAS');
+        cy.get('[data-testid="money-field"').should(
+          'have.value',
+          '250.000000000 MAS',
+        );
 
         cy.get(`[data-testid="send-percent-50"]`).click();
-        cy.get('[data-testid="money-field"').should('have.value', '500 MAS');
+        cy.get('[data-testid="money-field"').should(
+          'have.value',
+          '500.000000000 MAS',
+        );
 
         cy.get(`[data-testid="send-percent-75"]`).click();
-        cy.get('[data-testid="money-field"').should('have.value', '750 MAS');
+        cy.get('[data-testid="money-field"').should(
+          'have.value',
+          '750.000000000 MAS',
+        );
 
         cy.get(`[data-testid="send-percent-100"]`).click();
         cy.get('[data-testid="money-field"').should(
           'have.value',
-          '999.999999 MAS',
+          '999.990000000 MAS',
         );
       });
       server.trackRequest = false;

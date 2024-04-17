@@ -1,6 +1,6 @@
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useMemo, useState } from 'react';
 
-import { toMAS } from '@massalabs/massa-web3';
+import { fromMAS, toMAS } from '@massalabs/massa-web3';
 import {
   AccordionCategory,
   AccordionContent,
@@ -21,11 +21,14 @@ import { NumberFormatValues } from 'react-number-format';
 import Intl from '@/i18n/i18n';
 import { formatStandard, masToken } from '@/utils';
 
+export const MAX_FEES = 1_000_000_000_000_000_000n; // MASSA total supply
+
 export interface OperationCostProps {
   coins?: string; // in nanoMAS
   fees: string; // in MAS
-  defaultFees: string; // in MAS
+  minFees: string; // in MAS
   setFees: (fees: string) => void;
+  feesError?: string;
   isEditing?: boolean;
   setIsEditing: (isEditing: boolean) => void;
   allowFeeEdition: boolean;
@@ -35,18 +38,28 @@ export function OperationCost(props: OperationCostProps) {
   const hideCoins = props.coins === undefined;
 
   const coins = toMAS(props.coins || 0).toFixed(9);
-  const {
-    fees,
-    setFees,
-    defaultFees,
-    isEditing,
-    setIsEditing,
-    allowFeeEdition,
-  } = props;
+  const { fees, setFees, minFees, isEditing, setIsEditing, allowFeeEdition } =
+    props;
 
   const [operationCost, setOperationCost] = useState(
     new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9),
   );
+  const [error, setError] = useState<string>();
+
+  function getDefaultFees(): string {
+    if (fees === '') {
+      return minFees;
+    }
+
+    if (fromMAS(fees) < fromMAS(minFees)) {
+      return minFees;
+    }
+
+    return toMAS(fees).toFixed(9);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const defaultFees = useMemo(getDefaultFees, [minFees]);
 
   if (fees === '') setFees(defaultFees);
 
@@ -59,14 +72,33 @@ export function OperationCost(props: OperationCostProps) {
     setIsEditing(true);
   }
 
+  function validate(): boolean {
+    if (fromMAS(fees) < fromMAS(minFees)) {
+      setError(Intl.t('password-prompt.sign.fees-to-low'));
+      return false;
+    }
+
+    if (fromMAS(fees) >= MAX_FEES) {
+      setError(Intl.t('password-prompt.sign.fees-to-high'));
+      return false;
+    }
+
+    setError('');
+    return true;
+  }
+
   function handleConfirm(e: SyntheticEvent) {
     e.preventDefault();
+
+    if (!validate()) return;
+
     setIsEditing(false);
   }
 
   function handleReset(e: SyntheticEvent) {
     e.preventDefault();
     setIsEditing(false);
+    setError('');
     setFees(defaultFees);
   }
 
@@ -143,6 +175,9 @@ export function OperationCost(props: OperationCostProps) {
                   }
                 />
               </div>
+              {error && (
+                <div className="flex justify-between text-s-error">{error}</div>
+              )}
               {!hideCoins && (
                 <div className="flex justify-between pb-2">
                   <p className="flex mas-caption">

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-import { toMAS } from '@massalabs/massa-web3';
 import {
   Button,
   Selector,
@@ -14,12 +13,8 @@ import { Loading } from './Loading';
 import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
-import {
-  routeFor,
-  formatStandard,
-  useFetchAccounts,
-  maskNickname,
-} from '@/utils';
+import { routeFor, useFetchAccounts, maskNickname } from '@/utils';
+import { formatAmount } from '@/utils/parseAmount';
 
 export default function AccountSelect() {
   const navigate = useNavigate();
@@ -36,7 +31,7 @@ export default function AccountSelect() {
   }, [accounts, navigate, hasAccounts, error, isLoading]);
 
   function getFormattedBalance(account: AccountObject): string {
-    return formatStandard(toMAS(account.candidateBalance).toNumber());
+    return formatAmount(account.candidateBalance).amountFormattedFull;
   }
 
   return (

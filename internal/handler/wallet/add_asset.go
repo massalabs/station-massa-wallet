@@ -6,7 +6,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
-	address "github.com/massalabs/station/pkg/dnshelper"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
 type AssetInfoListResponse struct {
@@ -27,7 +27,7 @@ type addAsset struct {
 
 func (a *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
 	// Check if the address is valid
-	if !address.IsValidAddress(params.AssetAddress) {
+	if !utils.IsValidAddress(params.AssetAddress) {
 		// Return an error indicating the address is not valid
 		errorMsg := "Invalid address format"
 		return operations.NewAddAssetUnprocessableEntity().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})

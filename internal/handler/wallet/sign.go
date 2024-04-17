@@ -17,6 +17,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
@@ -38,6 +39,7 @@ const (
 type PromptRequestSignData struct {
 	Description       string
 	Fees              string
+	MinFees           string
 	OperationType     int
 	Coins             string
 	Address           string
@@ -263,8 +265,14 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 		return nil, 0, fmt.Errorf("failed to marshal address: %w", err)
 	}
 
+	_, minimalFees, err := network.GetNodeInfo()
+	if err != nil {
+		minimalFees = "0"
+	}
+
 	data.Description = description
 	data.Fees = strconv.FormatUint(fees, 10)
+	data.MinFees = minimalFees
 	data.WalletAddress = string(addressBytes)
 	data.Nickname = acc.Nickname
 	data.OperationType = int(opType)

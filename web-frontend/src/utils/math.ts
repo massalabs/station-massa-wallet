@@ -1,11 +1,11 @@
-import { toMASS } from './massaFormat';
+import { formatAmount } from './parseAmount';
 
 export function handlePercent(
   amount = 0n,
   percent: bigint,
   fees: bigint,
   balance: bigint,
-): number {
+): string {
   let newAmount = (amount * percent) / 100n;
 
   if (newAmount > balance - fees) {
@@ -16,5 +16,5 @@ export function handlePercent(
     }
   }
 
-  return toMASS(newAmount);
+  return formatAmount(newAmount.toString()).amountFormattedFull;
 }

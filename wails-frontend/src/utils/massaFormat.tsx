@@ -1,4 +1,4 @@
-import { fromMAS, toMAS } from '@massalabs/massa-web3';
+import { toMAS } from '@massalabs/massa-web3';
 import { formatValue } from 'react-currency-input-field';
 
 /**
@@ -10,24 +10,6 @@ export enum Unit {
 }
 
 export const masToken = 'MAS';
-
-export const presetFees: { [key: string]: string } = {
-  low: '1',
-  standard: '1000',
-  high: '5000',
-};
-
-export function toMASS(num: string | number): number {
-  return Number(toMAS(num));
-}
-
-export function toNanoMASS(str: string): number {
-  const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
-
-  // fromMAS -> MassaToNano
-  // toMASS -> NanotoMASSsa
-  return Number(fromMAS(formattedString));
-}
 
 export function removeTrailingZeros(numStr: string): string {
   return numStr.replace(/\.?0+$/, '');
@@ -56,27 +38,6 @@ export function formatStandard(
     decimalScale: 9,
   });
   return removeTrailingZeros(formattedNum);
-}
-
-/**
- * Reverses the formatting of a number string and converts it to a number.
- * @param str - The formatted number string to reverse.
- * @returns The reversed and parsed number.
- */
-
-export function reverseFormatStandard(str: string): number {
-  const formattedString = str?.replace(/[^0-9.-]/g, ''); // Remove non-numeric characters
-  return Number(formattedString);
-}
-
-/**
- * Checks if a recipient address is in the correct format.
- * @param recipient - The recipient address to check.
- * @returns `true` if the address is in the correct format, `false` otherwise.
- */
-
-export function checkAddressFormat(recipient: string): boolean {
-  return /^AU[a-zA-Z0-9]{4,}$/.test(recipient);
 }
 
 /**

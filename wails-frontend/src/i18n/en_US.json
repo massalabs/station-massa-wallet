@@ -56,6 +56,8 @@
         "1": "The compensation paid to",
         "2": "validators for computational work."
       },
+      "fees-to-low": "Fees are too low",
+      "fees-to-high": "Fees are too high",
       "coins": "Coins ",
       "coins-tooltip": "The amount of coins locked for",
       "coins-tooltip-2": "storage space on the ledger.",

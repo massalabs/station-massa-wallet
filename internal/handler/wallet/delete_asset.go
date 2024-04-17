@@ -5,7 +5,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
-	address "github.com/massalabs/station/pkg/dnshelper"
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
 func NewDeleteAsset(AssetsStore *assets.AssetsStore) operations.DeleteAssetHandler {
@@ -20,7 +20,7 @@ type deleteAsset struct {
 
 func (d *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Responder {
 	// Check if the address is valid
-	if !address.IsValidAddress(params.AssetAddress) {
+	if !utils.IsValidAddress(params.AssetAddress) {
 		// Return an error indicating the address is not valid
 		errorMsg := "Invalid address format"
 		return operations.NewDeleteAssetBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})

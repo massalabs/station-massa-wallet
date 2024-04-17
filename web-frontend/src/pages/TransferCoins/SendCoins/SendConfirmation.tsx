@@ -1,11 +1,14 @@
 import { useState } from 'react';
 
+import { fromMAS } from '@massalabs/massa-web3';
 import { Balance, Button } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 
+import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import ToolTip from './ToolTip';
 import Intl from '@/i18n/i18n';
-import { maskAddress, formatStandard, toNanoMASS, toMASS } from '@/utils';
+import { maskAddress } from '@/utils';
+import { formatAmount } from '@/utils/parseAmount';
 
 export interface SendConfirmationData {
   amount: string;
@@ -23,30 +26,33 @@ export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
   const { amount, fee, recipientAddress } = data;
 
-  const GAS_STANDARD = Intl.t('send-coins.fee-standard');
-  const GAS_LOW = Intl.t('send-coins.fee-low');
-  const GAS_HIGH = Intl.t('send-coins.fee-high');
-  const GAS_CUSTOM = Intl.t('send-coins.fee-custom');
+  const FEES_STANDARD = Intl.t('send-coins.fee-standard');
+  const FEES_LOW = Intl.t('send-coins.fee-low');
+  const FEES_HIGH = Intl.t('send-coins.fee-high');
+  const FEES_CUSTOM = Intl.t('send-coins.fee-custom');
 
   const formattedRecipientAddress = maskAddress(recipientAddress);
-  const total = toNanoMASS(amount) + BigInt(fee);
+  const total = fromMAS(amount) + fromMAS(fee);
+  const formattedAmount = formatAmount(
+    fromMAS(amount).toString(),
+  ).amountFormattedFull;
 
-  const formattedTotal = formatStandard(toMASS(total));
+  const formattedTotal = formatAmount(total.toString()).amountFormattedFull;
   const [showTooltip, setShowTooltip] = useState(false);
   let selectedFees;
 
   switch (fee) {
-    case '1000':
-      selectedFees = GAS_STANDARD;
+    case PRESET_STANDARD:
+      selectedFees = FEES_STANDARD;
       break;
-    case '1':
-      selectedFees = GAS_LOW;
+    case PRESET_LOW:
+      selectedFees = FEES_LOW;
       break;
-    case '5000':
-      selectedFees = GAS_HIGH;
+    case PRESET_HIGH:
+      selectedFees = FEES_HIGH;
       break;
     default:
-      selectedFees = GAS_CUSTOM;
+      selectedFees = FEES_CUSTOM;
       break;
   }
 
@@ -55,7 +61,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
     fee,
   });
   const gasAlert = `  \u26A0  ${Intl.t('send-coins.fee-alert')}`;
-  let content = selectedFees == GAS_STANDARD ? feeInfo + gasAlert : gasAlert;
+  let content = selectedFees == FEES_LOW ? feeInfo + gasAlert : gasAlert;
 
   return (
     <>
@@ -73,7 +79,10 @@ export function SendConfirmation(props: SendConfirmationProps) {
       >
         <div className="flex flex-row items-center pb-3 ">
           <div data-testid="send-confirmation-info" className="pr-2 text-info">
-            {Intl.t('send-coins.send-confirmation', { amount, fee })}
+            {Intl.t('send-coins.send-confirmation', {
+              amount: formattedAmount,
+              fee,
+            })}
           </div>
           <div
             className="flex flex-row relative items-center gap-1"
