@@ -75,12 +75,11 @@ export function Sign() {
   const form = useRef(null);
   const { state } = useLocation();
   const req: promptRequest = state.req;
+  const signData = req.Data as SignBodyProps;
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [fees, setFees] = useState<string>('');
+  const [fees, setFees] = useState<string>(toMAS(signData.Fees).toString());
   const [isEditing, setIsEditing] = useState(false);
-
-  const signData = req.Data as SignBodyProps;
 
   function save(e: SyntheticEvent) {
     const form = parseForm(e);

@@ -48,9 +48,7 @@ export default function Advanced(props: AdvancedProps) {
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [fees, setFees] = useState<string>(initialFees);
-  const [feesField, setFeesField] = useState<string>(
-    initialFees ? initialFees.toString() : '',
-  );
+  const [feesField, setFeesField] = useState<string>('');
   const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
   const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
