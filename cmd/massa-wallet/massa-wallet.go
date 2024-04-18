@@ -61,9 +61,12 @@ func StartServer(app *walletApp.WalletApp) {
 		logger.Fatalf("Failed to create HTTP listener: %v", err)
 	}
 
-	plugin.RegisterPlugin(listener)
+	err = plugin.RegisterPlugin(listener)
+	if err != nil {
+		logger.Fatalf("Failed to register plugin: %v", err)
+	}
 
-	if err := server.Serve(); err != nil {
+	if err = server.Serve(); err != nil {
 		logger.Fatalf("Failed to serve: %v", err)
 	}
 }

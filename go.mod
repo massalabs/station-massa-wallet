@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/runtime v0.25.0
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/massalabs/station v0.6.3-0.20240415204727-599dc5497976
-	github.com/massalabs/station-massa-hello-world v0.0.10
+	github.com/massalabs/station-massa-hello-world v0.0.11-0.20240417140254-7d634fa41a71
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
