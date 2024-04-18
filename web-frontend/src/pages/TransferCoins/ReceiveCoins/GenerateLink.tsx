@@ -18,10 +18,8 @@ import { parseForm } from '@/utils/';
 import { formatAmount } from '@/utils/parseAmount';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
-export type AmountValue = number | string | undefined;
-
 interface MoneyForm {
-  amount: AmountValue;
+  amount: string;
 }
 
 interface GenerateLinkProps {
@@ -40,7 +38,7 @@ function GenerateLink(props: GenerateLinkProps) {
     account.candidateBalance,
   ).amountFormattedFull;
 
-  const [amount, setAmount] = useState<number | string | undefined>('');
+  const [amount, setAmount] = useState<string>('');
   const [link, setLink] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
 
