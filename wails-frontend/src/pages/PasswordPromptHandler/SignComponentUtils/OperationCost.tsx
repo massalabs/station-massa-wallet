@@ -55,7 +55,7 @@ export function OperationCost(props: OperationCostProps) {
       return minFees;
     }
 
-    return toMAS(fees).toFixed(9);
+    return fees;
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
