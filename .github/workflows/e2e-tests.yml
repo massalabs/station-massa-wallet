@@ -46,7 +46,9 @@ jobs:
       - name: build
         run: go build -tags desktop,production -ldflags "-w -s" -o build/test_wallet main.go
       - name: Set up wallet
-        run: echo "$WALLET_TEST_WALLET" > $HOME/.config/massa-station-wallet/wallet_fullpower.yaml
+        run: |
+          mkdir -p $HOME/.config/massa-station-wallet/
+          echo "$WALLET_TEST_WALLET" > $HOME/.config/massa-station-wallet/wallet_fullpower.yaml
       - name: Run app
         run: STANDALONE=1 xvfb-run ./build/test_wallet > logs.txt &
         env:
