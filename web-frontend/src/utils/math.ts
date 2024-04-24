@@ -1,4 +1,4 @@
-import { formatAmount } from './parseAmount';
+import { formatAmount } from '@massalabs/react-ui-kit';
 
 export function handlePercent(
   amount = 0n,

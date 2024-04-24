@@ -1,7 +1,7 @@
 import { useState, FormEvent, useEffect } from 'react';
 
 import { fromMAS } from '@massalabs/massa-web3';
-import { Balance, Button, Money, Input } from '@massalabs/react-ui-kit';
+import { Button, Money, Input, formatAmount } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import Advanced, { PRESET_LOW } from './Advanced';
@@ -16,7 +16,6 @@ import {
   checkAddressFormat,
 } from '@/utils';
 import { handlePercent } from '@/utils/math';
-import { formatAmount } from '@/utils/parseAmount';
 
 interface InputsErrors {
   amount?: string;

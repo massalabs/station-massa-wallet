@@ -10,12 +10,12 @@ import {
   PopupModalHeader,
   Selector,
   Clipboard,
+  formatAmount,
 } from '@massalabs/react-ui-kit';
 
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { parseForm } from '@/utils/';
-import { formatAmount } from '@/utils/parseAmount';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
 interface MoneyForm {

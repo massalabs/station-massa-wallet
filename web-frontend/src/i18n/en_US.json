@@ -159,11 +159,10 @@
     "receive-tab": "Receive"
   },
   "send-coins": {
-    "amount": "Amount",
-    "account-balance": "Account Balance",
-    "send-action": "Send Tokens",
+    "balance": "Balance",
+    "send-action": "Send Token",
     "available-balance": "Available: ",
-    "recipient": "To:",
+    "recipient": "to:",
     "transfer-between-acc": "Transfer between my accounts",
     "advanced": "Advanced",
     "send": "Send",
@@ -176,12 +175,12 @@
     "advanced-message": "You pay gas fees to reward block validators and maximize your chances to see your transaction validated. It is a tip for people that support the blockchain network.",
     "confirm-fees": "Confirm fees ",
     "fee-info": "{feeType} gas fees are {fee} MAS, to set custom fees head to the Advanced section on the previous step.",
-    "fee-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
+    "account-fee-alert": "If this account is new you'll be charged 0.001 MAS for blockchain storage cost.",
     "fee-standard": "Standard",
     "fee-low": "Low",
     "fee-high": "High",
     "fee-custom": "Custom",
-    "send-confirmation": "Amount ({amount} MAS) + fees ({fee} MAS)",
+    "fee": "Fees",
     "amount-to-send": "Amount to send"
   },
   "receive-coins": {

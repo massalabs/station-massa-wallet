@@ -5,11 +5,11 @@ import {
   Selector,
   Identicon,
   MassaLogo,
+  formatAmount,
 } from '@massalabs/react-ui-kit';
 
 import { AccountObject } from '@/models/AccountModel';
 import { maskNickname } from '@/utils/massaFormat';
-import { formatAmount } from '@/utils/parseAmount';
 
 interface ContactListProps {
   setRecipient: React.Dispatch<string>;
