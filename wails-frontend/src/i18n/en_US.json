@@ -64,7 +64,6 @@
       "edit-fees": "edit fees",
       "confirm-fees": "confirm change",
       "reset-fees": "reset to default",
-      "sending-amount": "Sending amount ",
       "max-coins": "Max. spendable MAS",
       "roll-amount": "Roll amount",
       "amount-to-send": "Amount to send",
@@ -90,7 +89,9 @@
         "1": "Most similar concept is Giving Allowance on EVM chains.",
         "2": "In ExecuteSC sense, it is the maximal amount of MAS that can be spent in this operation."
       },
-      "unknown-network-name": "Unknown"
+      "unknown-network-name": "Unknown",
+      "recipient": "Recipient",
+      "amount": "Amount"
     }
   },
   "backup": {

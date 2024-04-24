@@ -1,3 +1,4 @@
+import { FTTransferInfo } from './FTTransferInfo';
 import Intl from '@/i18n/i18n';
 import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
 import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
@@ -11,8 +12,12 @@ export function CallSc(props: SignBodyProps) {
     OperationType,
     Description: description,
     Nickname,
+    Assets,
+    Parameters,
     children,
   } = props;
+
+  const asset = Assets.find((a) => a.address === Address);
 
   return (
     <div className="flex flex-col items-center gap-4 mas-menu-default w-[326px]">
@@ -39,6 +44,8 @@ export function CallSc(props: SignBodyProps) {
           <p className="mas-caption">{CalledFunction}</p>
         </div>
       </div>
+
+      <FTTransferInfo asset={asset} parameters={Parameters} />
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
