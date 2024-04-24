@@ -11,6 +11,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 func NewGetAllAssets(wallet *wallet.Wallet, AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
@@ -56,11 +57,12 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	}
 	AssetsWithBalance = append(AssetsWithBalance, MassaAsset)
 
-	// Retrieve all assets from the selected WalletNickname
+	// Retrieve all assets from the selected nickname
 	for assetAddress, assetInfo := range g.AssetsStore.Assets[params.Nickname].ContractAssets {
 		// First, check if the asset exists in the network
 		if !g.massaClient.AssetExistInNetwork(assetAddress) {
 			// If the asset does not exist in the network, skip it and go to the next one
+			logger.Infof("Asset %s does not exist in the network", assetAddress)
 			continue
 		}
 		// Fetch the balance for the current asset

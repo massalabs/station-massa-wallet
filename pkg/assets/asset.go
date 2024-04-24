@@ -8,14 +8,17 @@ import (
 	"sync"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/pkg/errors"
 )
 
 // AssetsStore encapsulates all the nicknames with their related contract assets.
 type AssetsStore struct {
-	Assets     map[string]Assets
-	StoreMutex sync.Mutex
+	Assets      map[string]Assets
+	StoreMutex  sync.Mutex
+	massaClient *network.NodeFetcher
 }
 
 // Assets encapsulates the contract assets associated with a specific account.
@@ -37,9 +40,10 @@ type assetData struct {
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
-func NewAssetsStore(assetsJSONPath string) (*AssetsStore, error) {
+func NewAssetsStore(assetsJSONPath string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
 	store := &AssetsStore{
-		Assets: make(map[string]Assets),
+		Assets:      make(map[string]Assets),
+		massaClient: massaClient,
 	}
 	if err := store.loadAccountsStore(assetsJSONPath); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
@@ -228,6 +232,24 @@ func (s *AssetsStore) DeleteAsset(nickname, assetAddress string) error {
 	}
 
 	return nil
+}
+
+func (s *AssetsStore) AllAssets(nickname string) []models.AssetInfo {
+	addresses := make([]models.AssetInfo, 0)
+
+	// Retrieve all assets from the given nickname
+	for assetAddress := range s.Assets[nickname].ContractAssets {
+		// First, check if the asset exists in the network
+		if !s.massaClient.AssetExistInNetwork(assetAddress) {
+			// If the asset does not exist in the network, skip it and go to the next one
+			logger.Infof("Asset %s does not exist in the network", assetAddress)
+			continue
+		}
+
+		addresses = append(addresses, s.Assets[nickname].ContractAssets[assetAddress])
+	}
+
+	return addresses
 }
 
 // createJSONFile creates an empty JSON file at the specified path.
