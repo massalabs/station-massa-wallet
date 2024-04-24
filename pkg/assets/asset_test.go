@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,7 +46,8 @@ func TestLoadAccountsStore(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
-	store, err := NewAssetsStore(tmpFile.Name())
+	nodeFetcher := network.NewNodeFetcher()
+	store, err := NewAssetsStore(tmpFile.Name(), nodeFetcher)
 	assert.NoError(t, err)
 
 	// Validate the loaded data
@@ -71,7 +73,8 @@ func TestAssetExists(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
-	store, err := NewAssetsStore(tmpFile.Name())
+	nodeFetcher := network.NewNodeFetcher()
+	store, err := NewAssetsStore(tmpFile.Name(), nodeFetcher)
 	assert.NoError(t, err)
 
 	// Test case 1: Check for an existing asset
@@ -120,7 +123,8 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
-	store, err := NewAssetsStore(tmpFile.Name())
+	nodeFetcher := network.NewNodeFetcher()
+	store, err := NewAssetsStore(tmpFile.Name(), nodeFetcher)
 	assert.NoError(t, err)
 
 	// Test case 1: Add an asset and check if it's saved to JSON
