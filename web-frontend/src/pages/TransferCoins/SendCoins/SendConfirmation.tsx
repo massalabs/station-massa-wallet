@@ -1,14 +1,13 @@
 import { useState } from 'react';
 
 import { fromMAS } from '@massalabs/massa-web3';
-import { Balance, Button } from '@massalabs/react-ui-kit';
+import { Balance, Button, formatAmount } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import ToolTip from './ToolTip';
 import Intl from '@/i18n/i18n';
 import { maskAddress } from '@/utils';
-import { formatAmount } from '@/utils/parseAmount';
 
 export interface SendConfirmationData {
   amount: string;

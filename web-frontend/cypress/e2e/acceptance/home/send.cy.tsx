@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { wait } from '@massalabs/massa-web3/dist/utils/time';
+import { formatAmount } from '@massalabs/react-ui-kit';
 import { Server } from 'miragejs';
 
 import { mockServer } from '../../../../src/mirage';
 import { maskAddress } from '../../../../src/utils/massaFormat';
 import { handlePercent } from '../../../../src/utils/math';
-import { formatAmount } from '../../../../src/utils/parseAmount';
 
 describe('E2E | Acceptance | Home | Send', () => {
   let server: Server;
