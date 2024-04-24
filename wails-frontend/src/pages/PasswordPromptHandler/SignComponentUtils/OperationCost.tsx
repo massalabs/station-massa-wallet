@@ -62,6 +62,7 @@ export function OperationCost(props: OperationCostProps) {
   const defaultFees = useMemo(getDefaultFees, [minFees]);
 
   if (fees === '') setFees(defaultFees);
+  if (fromMAS(fees) < fromMAS(minFees)) setFees(minFees);
 
   useEffect(() => {
     setOperationCost(new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9));
