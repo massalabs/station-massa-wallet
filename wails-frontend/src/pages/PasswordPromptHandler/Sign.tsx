@@ -33,6 +33,13 @@ import {
   parseForm,
 } from '@/utils';
 
+export interface AssetInfo {
+  address: string;
+  decimals: number;
+  name: string;
+  symbol: string;
+}
+
 export interface SignBodyProps {
   Description: string;
   Fees: string; // in nanoMassa
@@ -52,6 +59,8 @@ export interface SignBodyProps {
   AllowFeeEdition: boolean;
   DisplayData: boolean;
   ChainID: number;
+  Assets: AssetInfo[];
+  Parameters: string; // base64
   children?: React.ReactNode;
 }
 
