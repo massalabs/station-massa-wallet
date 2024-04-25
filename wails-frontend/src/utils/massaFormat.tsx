@@ -1,15 +1,15 @@
 import { toMAS } from '@massalabs/massa-web3';
 import { formatValue } from 'react-currency-input-field';
 
+export const masToken = 'MAS';
+
 /**
  * Enumeration for unit options.
  */
 export enum Unit {
-  MAS = 'MAS',
+  MAS = masToken,
   NanoMAS = 'NanoMAS',
 }
-
-export const masToken = 'MAS';
 
 export function removeTrailingZeros(numStr: string): string {
   return numStr.replace(/\.?0+$/, '');
