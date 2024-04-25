@@ -63,12 +63,12 @@ export default function Advanced(props: AdvancedProps) {
     const { fees } = formObject;
     setError(null);
     if (customFees && !fees) {
-      setError({ fees: Intl.t('errors.send-coins.no-gas-fees') });
+      setError({ fees: Intl.t('errors.send-coins.no-fees') });
       return false;
     }
 
     if (customFees && fees <= 0) {
-      setError({ fees: Intl.t('errors.send-coins.gas-fees-to-low') });
+      setError({ fees: Intl.t('errors.send-coins.fees-to-low') });
       return false;
     }
 

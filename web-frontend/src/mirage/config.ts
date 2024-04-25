@@ -20,6 +20,9 @@ export function mockServer(environment = ENV.DEV) {
         server.createList('asset', 3, { account });
       });
     },
+    routes() {
+      this.passthrough('https://station.massa/**');
+    },
   });
 
   for (const namespace of Object.keys(handlers)) {

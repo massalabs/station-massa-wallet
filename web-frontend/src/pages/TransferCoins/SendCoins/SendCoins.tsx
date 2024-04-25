@@ -6,7 +6,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { SendConfirmation, SendConfirmationData } from './SendConfirmation';
 import { SendForm } from './SendForm';
+import { MAS } from '@/const/assets/assets';
 import { usePost } from '@/custom/api';
+import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
 import { AccountObject, SendTransactionObject } from '@/models/AccountModel';
 import { routeFor, maskAddress } from '@/utils';
@@ -26,19 +28,23 @@ export default function SendCoins(props: SendCoinsProps) {
   const { nickname } = useParams();
 
   const [submit, setSubmit] = useState<boolean>(false);
-  const [data, setData] = useState<SendConfirmationData>({
-    amount: '',
-    fee: '',
-    recipientAddress: '',
-  });
+  const [data, setData] = useState<SendConfirmationData>();
+  const [errorToastId, setErrorToastId] = useState<string | null>(null);
 
-  const { mutate, isSuccess, isLoading, error } =
-    usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
+  const {
+    mutate: transferMAS,
+    isSuccess: transferMASSuccess,
+    isLoading: transferMASLoading,
+    error: transferMASError,
+  } = usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
+  const { transfer: transferFT, isPending: transferFTLoading } = useFTTransfer(
+    nickname || '',
+  );
 
   useEffect(() => {
-    if (error) {
-      toast.error(Intl.t('errors.send-coins.sent'));
-    } else if (isSuccess) {
+    if (transferMASError && !errorToastId) {
+      setErrorToastId(toast.error(Intl.t('errors.send-coins.sent')));
+    } else if (transferMASSuccess && data) {
       let { amount, recipientAddress } = data;
       toast.success(
         Intl.t('success.send-coins.sent', {
@@ -49,7 +55,15 @@ export default function SendCoins(props: SendCoinsProps) {
 
       navigate(routeFor(`${nickname}/home`));
     }
-  }, [isSuccess, error, data, nickname, navigate]);
+  }, [
+    transferMASSuccess,
+    transferMASError,
+    data,
+    nickname,
+    navigate,
+    errorToastId,
+    setErrorToastId,
+  ]);
 
   function handleSubmit(data: SendConfirmationData) {
     setData(data);
@@ -60,22 +74,32 @@ export default function SendCoins(props: SendCoinsProps) {
   function handleConfirm(confirmed: boolean) {
     if (!confirmed) {
       setSubmit(false);
-    } else {
-      mutate({
-        fee: fromMAS(data.fee).toString(),
-        recipientAddress: data.recipientAddress,
-        amount: fromMAS(data.amount).toString(),
-      });
+    } else if (data) {
+      if (data.asset.symbol !== MAS) {
+        transferFT(
+          data.recipientAddress,
+          data.asset.address,
+          data.amount,
+          data.asset.decimals,
+        );
+      } else {
+        setErrorToastId(null);
+        transferMAS({
+          fee: fromMAS(data.fees).toString(),
+          recipientAddress: data.recipientAddress,
+          amount: fromMAS(data.amount).toString(),
+        });
+      }
     }
   }
 
   return (
     <div className="mt-5" data-testid="send-coins">
-      {submit ? (
+      {submit && data ? (
         <SendConfirmation
           data={data}
           handleConfirm={handleConfirm}
-          isLoading={isLoading}
+          isLoading={transferMASLoading || transferFTLoading}
         />
       ) : (
         <SendForm
