@@ -3,6 +3,7 @@ package wallet
 import (
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -89,6 +90,11 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		}
 		AssetsWithBalance = append(AssetsWithBalance, assetWithBalance)
 	}
+
+	// sort AssetsWithBalance by name
+	sort.Slice(AssetsWithBalance, func(i, j int) bool {
+		return AssetsWithBalance[i].Name < AssetsWithBalance[j].Name
+	})
 
 	// Return the list of assets with balance
 	return operations.NewGetAllAssetsOK().WithPayload(AssetsWithBalance)
