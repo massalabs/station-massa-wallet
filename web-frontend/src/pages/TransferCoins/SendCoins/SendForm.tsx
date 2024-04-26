@@ -8,7 +8,7 @@ import {
   formatAmount,
   Dropdown,
   IOption,
-  getIcon,
+  getAssetIcons,
   Spinner,
   parseAmount,
 } from '@massalabs/react-ui-kit';
@@ -176,7 +176,7 @@ export function SendForm(props: SendFormProps) {
             </p>
           </div>
         ),
-        icon: getIcon(
+        icon: getAssetIcons(
           symbolDict[asset.symbol as keyof typeof symbolDict],
           true,
           isMainnet,

@@ -3,7 +3,7 @@ import {
   Button,
   Tooltip,
   formatFTAmount,
-  getIcon,
+  getAssetIcons,
   parseAmount,
 } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -99,7 +99,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
           customClass="p-0 bg-transparent mb-3"
           amount={formattedAmount}
           symbol={symbol}
-          icon={getIcon(
+          icon={getAssetIcons(
             symbolDict[symbol as keyof typeof symbolDict],
             false,
             isMainnet,
