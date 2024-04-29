@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 tasks:
   install:
@@ -14,7 +14,7 @@ tasks:
       - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
       - cmd: go install github.com/daixiang0/gci@latest
 
-  generate: 
+  generate:
     cmds:
       - cmd: go generate ./...
       - cmd: gci write .
@@ -27,7 +27,7 @@ tasks:
       - cmd: rm -f internal/handler/wallet/wallet_*.yaml &>/dev/null
         platforms: [linux, darwin]
 
-  test: 
+  test:
     cmds:
       - task: clean
       - cmd: go test -v -timeout 20s ./...
@@ -136,9 +136,9 @@ tasks:
       - task: run
 
   build-install-plugin:
-    cmds: 
+    cmds:
       - task: generate
-      - task: build 
+      - task: build
       - task: install-plugin
 
   all:
