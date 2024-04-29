@@ -6,24 +6,20 @@ import {
   Money,
   Input,
   formatAmount,
-  Dropdown,
-  IOption,
-  getAssetIcons,
   Spinner,
   parseAmount,
 } from '@massalabs/react-ui-kit';
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
-import { useParams } from 'react-router-dom';
 
-import Advanced, { PRESET_LOW } from './Advanced';
-import ContactList from './ContactList';
-import { SendConfirmationData } from './SendConfirmation';
 import { MAS } from '@/const/assets/assets';
-import { useResource } from '@/custom/api';
-import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
+import Advanced, { PRESET_LOW } from '@/pages/TransferCoins/SendCoins/Advanced';
+import { AssetSelector } from '@/pages/TransferCoins/SendCoins/AssetSelector';
+import ContactList from '@/pages/TransferCoins/SendCoins/ContactList';
+import { SendConfirmationData } from '@/pages/TransferCoins/SendCoins/SendConfirmation';
+import { Redirect } from '@/pages/TransferCoins/TransferCoins';
 import {
   IForm,
   parseForm,
@@ -31,7 +27,6 @@ import {
   checkAddressFormat,
 } from '@/utils';
 import { handlePercent } from '@/utils/math';
-import { symbolDict } from '@/utils/tokenIcon';
 
 interface InputsErrors {
   amount?: string;
@@ -42,10 +37,7 @@ interface SendFormProps {
   handleSubmit: (confirmed: SendConfirmationData) => void;
   account: AccountObject;
   data?: SendConfirmationData;
-  redirect: {
-    amount: string;
-    to: string;
-  };
+  redirect: Redirect;
 }
 
 export function SendForm(props: SendFormProps) {
@@ -55,9 +47,11 @@ export function SendForm(props: SendFormProps) {
     data,
     redirect,
   } = props;
-  const { amount: redirectAmount, to: redirectedTo } = redirect;
-  const { nickname } = useParams();
-  const { isMainnet } = useFTTransfer(nickname || '');
+  const {
+    amount: redirectAmount,
+    to: redirectedTo,
+    symbol: redirectSymbol,
+  } = redirect;
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
@@ -69,25 +63,23 @@ export function SendForm(props: SendFormProps) {
   const [recipient, setRecipient] = useState<string>(
     data?.recipientAddress || '',
   );
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
   const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
-  );
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
-    data?.asset,
-  );
-  const { data: assets, isLoading: isAssetsLoading } = useResource<Asset[]>(
-    `accounts/${nickname}/assets`,
-    false,
   );
 
   const balance = BigInt(selectedAsset?.balance || '0');
 
   useEffect(() => {
-    if (data) {
-      setAmount(redirectAmount || data.amount);
-      setRecipient(redirectedTo || data.recipientAddress);
-      setFees(data.fees || PRESET_LOW);
+    if (!data) {
+      setAmount(redirectAmount);
+      setRecipient(redirectedTo);
+      setFees(PRESET_LOW);
+    } else {
+      setAmount(data?.amount);
+      setRecipient(data?.recipientAddress);
+      setFees(data?.fees);
     }
   }, [data, redirectAmount, redirectedTo]);
 
@@ -145,45 +137,6 @@ export function SendForm(props: SendFormProps) {
       amount,
       asset: selectedAsset,
       fees,
-    });
-  }
-
-  useEffect(() => {
-    if (!selectedAsset && assets && assets?.length > 0) {
-      setSelectedAsset(assets?.[0]);
-    }
-  }, [assets, setSelectedAsset, selectedAsset]);
-
-  const selectedAssetKey: number = selectedAsset
-    ? assets?.indexOf(selectedAsset) || 0
-    : 0;
-
-  let options: IOption[] = [];
-
-  if (assets) {
-    options = assets.map((asset) => {
-      const formattedBalance = formatAmount(
-        asset.balance,
-        asset.decimals,
-      ).amountFormattedFull;
-      return {
-        itemPreview: asset.name,
-        item: (
-          <div>
-            <p>{asset.name}</p>
-            <p className="mas-caption">
-              {Intl.t('send-coins.balance')} {formattedBalance}
-            </p>
-          </div>
-        ),
-        icon: getAssetIcons(
-          symbolDict[asset.symbol as keyof typeof symbolDict],
-          true,
-          isMainnet,
-          28,
-        ),
-        onClick: () => setSelectedAsset(asset),
-      };
     });
   }
 
@@ -296,13 +249,10 @@ export function SendForm(props: SendFormProps) {
             </div>
           </div>
           <div>
-            <Dropdown
-              select={selectedAssetKey}
-              readOnly={isAssetsLoading}
-              size="md"
-              options={options}
-              className="pb-3.5"
-              fullWidth={false}
+            <AssetSelector
+              selectedAsset={selectedAsset}
+              setSelectedAsset={setSelectedAsset}
+              selectSymbol={redirectSymbol}
             />
             <div data-testid="available-amount">
               <p className="mas-caption inline-block mr-1">

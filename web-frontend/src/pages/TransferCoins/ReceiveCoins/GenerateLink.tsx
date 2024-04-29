@@ -2,20 +2,24 @@ import { useState, FormEvent } from 'react';
 
 import {
   Button,
-  Identicon,
   Money,
-  MassaLogo,
   PopupModal,
   PopupModalContent,
   PopupModalHeader,
-  Selector,
   Clipboard,
   formatAmount,
+  getAssetIcons,
+  Selector,
+  Identicon,
 } from '@massalabs/react-ui-kit';
 
+import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
+import { Asset } from '@/models/AssetModel';
+import { AssetSelector } from '@/pages/TransferCoins/SendCoins/AssetSelector';
 import { parseForm } from '@/utils/';
+import { symbolDict } from '@/utils/tokenIcon';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
 interface MoneyForm {
@@ -33,14 +37,17 @@ interface GenerateLinkProps {
 function GenerateLink(props: GenerateLinkProps) {
   const { account, presetURL, setURL, setModal } = props;
 
-  const recipient = account.nickname;
-  const formattedBalance = formatAmount(
-    account.candidateBalance,
-  ).amountFormattedFull;
+  const { isMainnet } = useFTTransfer(account.nickname);
 
   const [amount, setAmount] = useState<string>('');
   const [link, setLink] = useState('');
   const [error, setError] = useState<SendInputsErrors | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
+
+  const formattedBalance = selectedAsset
+    ? formatAmount(selectedAsset.balance, selectedAsset.decimals)
+        .amountFormattedFull
+    : '';
 
   function validate(formObject: MoneyForm) {
     const { amount } = formObject;
@@ -61,7 +68,9 @@ function GenerateLink(props: GenerateLinkProps) {
 
     if (!validate(formObject)) return;
 
-    const amountArg = amount ? `&amount=${amount}` : '';
+    const amountArg = amount
+      ? `&amount=${amount}&symbol=${selectedAsset?.symbol}`
+      : '';
 
     const newURL = presetURL + amountArg;
 
@@ -84,25 +93,44 @@ function GenerateLink(props: GenerateLinkProps) {
         <form onSubmit={handleSubmit}>
           <div className="pb-10">
             <div className="flex flex-col gap-3 mb-6">
-              <p className="mas-body2">
-                {Intl.t('receive-coins.receive-amount')}
-              </p>
-              <Money
-                data-testid="amount-to-send"
-                placeholder={Intl.t('receive-coins.amount-to-ask')}
-                name="amount"
-                value={amount}
-                onValueChange={(event) => setAmount(event.value)}
-                error={error?.amount}
-              />
+              <p className="mas-body2">{Intl.t('receive-coins.coins')}</p>
+              <div className="flex flex-row gap-2">
+                <div className="grow">
+                  <Money
+                    data-testid="amount-to-send"
+                    placeholder={Intl.t('receive-coins.amount-to-ask')}
+                    name="amount"
+                    value={amount}
+                    suffix=""
+                    onValueChange={(event) => setAmount(event.value)}
+                    error={error?.amount}
+                    decimalScale={selectedAsset?.decimals}
+                    customClass="h-14 pb-3"
+                  />
+                </div>
+                <AssetSelector
+                  selectedAsset={selectedAsset}
+                  setSelectedAsset={setSelectedAsset}
+                />
+              </div>
             </div>
             <div className="flex flex-col gap-3 mb-6">
               <p className="mas-body2">{Intl.t('receive-coins.recipient')}</p>
               <Selector
                 preIcon={<Identicon username={account.nickname} />}
-                content={recipient}
+                content={account.nickname}
                 amount={formattedBalance}
-                posIcon={<MassaLogo size={24} />}
+                posIcon={
+                  getAssetIcons(
+                    symbolDict[
+                      selectedAsset?.symbol as keyof typeof symbolDict
+                    ],
+                    true,
+                    isMainnet,
+                    24,
+                    'mr-3',
+                  ) as JSX.Element
+                }
                 variant="secondary"
               />
             </div>

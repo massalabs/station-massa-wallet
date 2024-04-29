@@ -12,15 +12,22 @@ import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
 import { routeFor } from '@/utils';
 
+export interface Redirect {
+  to: string;
+  amount: string;
+  symbol: string;
+}
+
 export default function TransferCoins() {
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
 
-  const redirect = useMemo(() => {
+  const redirect: Redirect = useMemo(() => {
     return {
       to: searchParams.get('to') || '',
       amount: searchParams.get('amount') || '',
+      symbol: searchParams.get('symbol') || '',
     };
   }, [searchParams]);
 
