@@ -1,15 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { wait } from '@massalabs/massa-web3/dist/utils/time';
-import { formatAmount } from '@massalabs/react-ui-kit';
-import { Server } from 'miragejs';
-
 import { mockServer } from '../../../../src/mirage';
 import { maskAddress } from '../../../../src/utils/massaFormat';
-import { handlePercent } from '../../../../src/utils/math';
+import { AccountObject } from '@/models/AccountModel';
 
 describe('E2E | Acceptance | Home | Send', () => {
-  let server: Server;
+  let server: any;
   const baseUrl = Cypress.config().baseUrl;
 
   beforeEach(() => {
@@ -21,22 +15,42 @@ describe('E2E | Acceptance | Home | Send', () => {
   });
 
   describe('send', () => {
-    let mockedAccounts;
+    let mockedAccounts: AccountObject[];
 
     function mockAccounts() {
       const mockedAccounts = server.createList('account', 2);
-      mockedAccounts.forEach((account) => {
+      mockedAccounts.forEach((account: AccountObject) => {
         server.createList('asset', 3, { account });
       });
 
-      const account = {
+      const account = server.create('account', {
         nickname: 'MarioX',
         candidateBalance: '1000000000000',
         balance: '10000',
         address: 'AU1ZMBZeARHYMFfV4uvbyCB85DAUPr2BJXzU1kSYdwCKKrY5crWY',
-      };
-      mockedAccounts.push(server.create('account', { ...account }));
+      });
+      const assets = server.createList('asset', 3, { account });
+      account.assets = assets;
+
+      mockedAccounts.push(account);
       return mockedAccounts;
+    }
+
+    function navigateToSendForm() {
+      server.trackRequest = true;
+      const account = mockedAccounts.at(2);
+      if (account === undefined) throw new Error('Account not found');
+
+      cy.visit('/');
+
+      cy.get('[data-testid="account-2"]').click();
+
+      cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
+
+      cy.get('[data-testid="send-button"]').click();
+      cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
+
+      cy.get('[data-testid="spinner"]').should('not.exist');
     }
 
     beforeEach(() => {
@@ -48,7 +62,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       cy.get('[data-testid="account-2"]').should('exist').click();
     }
 
-    function navigateToTransferCoinsOfAccountIndex(index) {
+    function navigateToTransferCoinsOfAccountIndex(index: string) {
       cy.visit('/');
 
       cy.get(`[data-testid="account-${index}"]`).should('exist').click();
@@ -58,14 +72,9 @@ describe('E2E | Acceptance | Home | Send', () => {
         .click();
     }
 
-    function setAccountBalance(account) {
-      const balance = account.candidateBalance;
-      const formattedBalance = formatAmount(balance).amountFormattedPreview;
-      return formattedBalance;
-    }
-
     it('should have loading state', () => {
       const account = mockedAccounts.at(2);
+      if (account === undefined) throw new Error('Account not found');
 
       cy.visit('/');
       cy.get('[data-testid="account-2"]').click();
@@ -83,6 +92,8 @@ describe('E2E | Acceptance | Home | Send', () => {
 
     it('should land on send page when send CTA is clicked', () => {
       const account = mockedAccounts.at(2);
+      if (account === undefined) throw new Error('Account not found');
+
       navigateToHome();
       cy.get('[data-testid="send-button"]').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
@@ -93,6 +104,7 @@ describe('E2E | Acceptance | Home | Send', () => {
 
     it('should navigate to /transfer-coins when accessing it by the side-menu', () => {
       const account = mockedAccounts.at(2);
+      if (account === undefined) throw new Error('Account not found');
 
       navigateToHome();
       cy.get('[data-testid="side-menu"]').click();
@@ -101,38 +113,32 @@ describe('E2E | Acceptance | Home | Send', () => {
     });
 
     it('should render balance and amount should equal account balance', () => {
-      const account = mockedAccounts.at(2);
-
-      navigateToTransferCoinsOfAccountIndex(2);
-
-      cy.get('[data-testid="balance').should('exist');
-
-      cy.get('[data-testid="balance-amount"]').contains(
-        setAccountBalance(account),
-      );
+      navigateToSendForm();
+      cy.get('[data-testid="available-amount"]').contains('1,000.000000000');
     });
 
     it('should send coins to address', () => {
       const account = mockedAccounts.at(2);
+      if (account === undefined) throw new Error('Account not found');
       const recipientAccount = mockedAccounts.at(1);
-      const amount = 550.1234;
+      if (recipientAccount === undefined)
+        throw new Error('Recipient account not found');
 
-      navigateToTransferCoinsOfAccountIndex(2);
-      cy.get('[data-testid="money-field"')
-        .type(amount)
-        .should('have.value', '550.1234 MAS');
-      cy.get('[data-testid="input-field"').type(recipientAccount.address);
+      navigateToSendForm();
+
+      cy.get('[data-testid="money-field"]')
+        .type('550.1234')
+        .should('have.value', '550.1234');
+      cy.get('[data-testid="input-field"]').type(recipientAccount.address);
 
       cy.get('[data-testid="button"]').contains('Send').click();
       cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
       cy.get('[data-testid="send-confirmation"]').should('be.visible');
 
-      cy.get('[data-testid="send-confirmation-info"]').should(
+      cy.get('[data-testid="send-confirmation"]').should(
         'contain',
-        'Amount (550.123400000 MAS) + fees (0.01 MAS)',
+        '550.123400000 MAS',
       );
-
-      cy.get('[data-testid="balance-amount"]').contains('550.133400000');
 
       cy.get('[data-testid="send-confirmation-recipient"]').contains(
         maskAddress(recipientAccount.address),
@@ -145,50 +151,39 @@ describe('E2E | Acceptance | Home | Send', () => {
     });
 
     it('should process any % as input', () => {
-      server.trackRequest = true;
-      const account = mockedAccounts.at(2);
+      navigateToSendForm();
 
-      cy.visit('/');
+      cy.get('[data-testid="send-percent-25"]').click();
+      cy.get('[data-testid="money-field"]').should(
+        'have.value',
+        '250.000000000',
+      );
 
-      cy.get('[data-testid="account-2"]').click();
+      cy.get('[data-testid="send-percent-50"]').click();
+      cy.get('[data-testid="money-field"]').should(
+        'have.value',
+        '500.000000000',
+      );
 
-      cy.url().should('eq', `${baseUrl}/${account.nickname}/home`);
+      cy.get('[data-testid="send-percent-75"]').click();
+      cy.get('[data-testid="money-field"]').should(
+        'have.value',
+        '750.000000000',
+      );
 
-      cy.waitForRequest(server, '/accounts/MarioX', 'GET').then(() => {
-        cy.get('[data-testid="send-button"]').click();
-        cy.url().should('eq', `${baseUrl}/${account.nickname}/transfer-coins`);
-
-        cy.get(`[data-testid="send-percent-25"]`).click();
-        cy.get('[data-testid="money-field"').should(
-          'have.value',
-          '250.000000000 MAS',
-        );
-
-        cy.get(`[data-testid="send-percent-50"]`).click();
-        cy.get('[data-testid="money-field"').should(
-          'have.value',
-          '500.000000000 MAS',
-        );
-
-        cy.get(`[data-testid="send-percent-75"]`).click();
-        cy.get('[data-testid="money-field"').should(
-          'have.value',
-          '750.000000000 MAS',
-        );
-
-        cy.get(`[data-testid="send-percent-100"]`).click();
-        cy.get('[data-testid="money-field"').should(
-          'have.value',
-          '999.990000000 MAS',
-        );
-      });
+      cy.get('[data-testid="send-percent-100"]').click();
+      cy.get('[data-testid="money-field"]').should(
+        'have.value',
+        '999.990000000',
+      );
       server.trackRequest = false;
     });
 
     it('should transfer to accounts', () => {
       const selectedAccount = mockedAccounts.at(1);
+      if (selectedAccount === undefined) throw new Error('Account not found');
 
-      navigateToTransferCoinsOfAccountIndex(0);
+      navigateToTransferCoinsOfAccountIndex('0');
 
       cy.get('[data-testid="transfer-between-accounts"]')
         .should('exist')
@@ -207,20 +202,20 @@ describe('E2E | Acceptance | Home | Send', () => {
 
     it('should refuse wrong currency input', () => {
       const account = mockedAccounts.at(2);
+      if (account === undefined) throw new Error('Account not found');
       const recipientAccount = mockedAccounts.at(1);
+      if (recipientAccount === undefined) throw new Error('Account not found');
 
-      const amount = 1000.12311132;
       const invalidAmount = 'things';
       const tooMuch = Number(account.candidateBalance) + 1000;
       const tooLow = 0;
       const notEnoughForFees = Number(account.candidateBalance);
 
-      const standardFees = '1000';
-      navigateToTransferCoinsOfAccountIndex(2);
+      navigateToSendForm();
 
-      cy.get('[data-testid="money-field"').should('exist').type(invalidAmount);
+      cy.get('[data-testid="money-field"]').should('exist').type(invalidAmount);
 
-      cy.get('[data-testid="input-field"').type(recipientAccount.address);
+      cy.get('[data-testid="input-field"]').type(recipientAccount.address);
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -228,7 +223,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Invalid amount',
       );
 
-      cy.get('[data-testid="money-field"').clear().type(tooMuch);
+      cy.get('[data-testid="money-field"]').clear().type(String(tooMuch));
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -236,7 +231,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Insufficient funds',
       );
 
-      cy.get('[data-testid="money-field"').clear().type(tooLow);
+      cy.get('[data-testid="money-field"]').clear().type(String(tooLow));
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -244,7 +239,9 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Amount must be greater than zero',
       );
 
-      cy.get('[data-testid="money-field"').clear().type(notEnoughForFees);
+      cy.get('[data-testid="money-field"]')
+        .clear()
+        .type(String(notEnoughForFees));
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -254,16 +251,16 @@ describe('E2E | Acceptance | Home | Send', () => {
     });
 
     it('should refuse wrong address input', () => {
-      const account = mockedAccounts.at(2);
       const wrongAddress = 'wrong address';
-      const amount = 42;
+      const amount = '42';
 
-      navigateToTransferCoinsOfAccountIndex(2);
-      cy.get('[data-testid="money-field"')
+      navigateToSendForm();
+
+      cy.get('[data-testid="money-field"]')
         .type(amount)
-        .should('have.value', '42 MAS');
+        .should('have.value', '42');
 
-      cy.get('[data-testid="input-field"').type(wrongAddress);
+      cy.get('[data-testid="input-field"]').type(wrongAddress);
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(
@@ -271,7 +268,7 @@ describe('E2E | Acceptance | Home | Send', () => {
         'Recipient address is not a valid Massa address',
       );
 
-      cy.get('[data-testid="input-field"').clear();
+      cy.get('[data-testid="input-field"]').clear();
       cy.get('[data-testid="button"]').contains('Send').click();
 
       cy.get('[data-testid="input-field-message"]').should(

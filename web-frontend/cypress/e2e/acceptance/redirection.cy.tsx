@@ -10,11 +10,7 @@ describe('E2E | Acceptance | Redirection', () => {
 
   beforeEach(() => {
     server = mockServer('test');
-
-    const accounts = server.createList('account', 2);
-    accounts.forEach((account) => {
-      server.createList('asset', 3, { account });
-    });
+    server.createList('account', 2);
   });
 
   afterEach(() => {

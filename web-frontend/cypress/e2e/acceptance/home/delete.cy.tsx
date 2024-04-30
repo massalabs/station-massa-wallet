@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { Server } from 'miragejs';
-
 import { mockServer } from '../../../../src/mirage';
 import { compareSnapshot } from '../../../compareSnapshot';
+import { AccountObject } from '@/models/AccountModel';
 
 describe('E2E | Acceptance | Home', () => {
-  let server: Server;
+  let server: any;
   const baseUrl = Cypress.config().baseUrl;
 
   beforeEach(() => {
@@ -18,13 +15,10 @@ describe('E2E | Acceptance | Home', () => {
   });
 
   describe('delete', () => {
-    let mockedAccounts;
+    let mockedAccounts: AccountObject[];
 
     function mockAccounts() {
       const mockedAccounts = server.createList('account', 1);
-      mockedAccounts.forEach((account) => {
-        server.createList('asset', 1, { account });
-      });
       const account = {
         nickname: 'Mario',
         address: 'AU1ZMBZeARHYMFfV4uvbyCB85DAUPr2BJXzU1kSYdwCKKrY5crWY',
@@ -39,8 +33,7 @@ describe('E2E | Acceptance | Home', () => {
     });
 
     // util functions
-    function selectAccount(index) {
-      const account = mockedAccounts.at(index);
+    function selectAccount(index: number) {
       cy.visit('/');
       cy.get(`[data-testid="account-${index}"]`).click();
     }
@@ -52,6 +45,7 @@ describe('E2E | Acceptance | Home', () => {
 
     it('should direct me to /nickname/home', () => {
       const account = mockedAccounts.at(1);
+      if (account === undefined) throw new Error('Account not found');
 
       selectAccount(1);
 
@@ -63,6 +57,7 @@ describe('E2E | Acceptance | Home', () => {
 
     it('should access delete page', () => {
       const account = mockedAccounts.at(1);
+      if (account === undefined) throw new Error('Account not found');
 
       selectAccount(1);
 
@@ -78,8 +73,6 @@ describe('E2E | Acceptance | Home', () => {
     });
 
     it('should delete account', () => {
-      const account = mockedAccounts.at(1);
-
       selectAccount(1);
       navigateToSettings();
 

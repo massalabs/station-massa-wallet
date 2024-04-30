@@ -24,12 +24,14 @@ async function prepareFTTransfer(nickname: string) {
     console.error('FATAL: Massa provider not found');
     return;
   }
+
   const account = (await massaProvider.accounts()).find(
     (a) => a.name() === nickname,
   );
   if (!account) {
     return;
   }
+
   return {
     client: await ClientFactory.fromWalletProvider(massaProvider, account),
     chainId: await massaProvider.getChainId(),

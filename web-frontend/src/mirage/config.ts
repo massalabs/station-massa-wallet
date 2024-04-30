@@ -3,31 +3,31 @@
 import { createServer, Response } from 'miragejs';
 
 import { factories } from './factories';
-import { handlers } from './handlers';
+import { handlers, otherDomainHandlers } from './handlers';
 import { models } from './models';
 import { ENV } from '../const/env/env';
 import { AccountObject } from '@/models/AccountModel';
 
+const serverData = {
+  trackRequests: true,
+  models,
+  factories,
+  seeds(server) {
+    const accounts: AccountObject[] = server.createList('account', 5);
+    accounts.forEach((account: AccountObject) => {
+      server.createList('asset', 3, { account });
+    });
+  },
+};
+
 export function mockServer(environment = ENV.DEV) {
-  const server = createServer({
-    trackRequests: true,
-    environment,
-    models,
-    factories,
-    seeds(server) {
-      const accounts: AccountObject[] = server.createList('account', 5);
-      accounts.forEach((account: AccountObject) => {
-        server.createList('asset', 3, { account });
-      });
-    },
-    routes() {
-      this.passthrough('https://station.massa/**');
-    },
-  });
+  const server = createServer({ ...serverData, environment });
 
   for (const namespace of Object.keys(handlers)) {
     handlers[namespace](server);
   }
+
+  otherDomainHandlers(server);
 
   return server;
 }
@@ -40,7 +40,8 @@ export function mockServerWithCypress() {
     let otherDomains = [];
     let methods = ['get', 'put', 'patch', 'post', 'delete'];
 
-    createServer({
+    const server = createServer({
+      ...serverData,
       environment: 'test',
       routes() {
         for (const domain of ['/', ...otherDomains]) {
@@ -53,9 +54,7 @@ export function mockServerWithCypress() {
             });
           }
         }
-
-        // If your central server has any calls to passthrough(), you'll need to duplicate them here
-        // this.passthrough('https://analytics.google.com')
+        otherDomainHandlers(this);
       },
     });
   }

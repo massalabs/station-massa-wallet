@@ -16,7 +16,6 @@ export function useResource<T>(
     queryKey: ['', url],
     queryFn: async () => {
       const { data } = await axios.get<T, AxiosResponse<T>>(url);
-
       return data;
     },
     refetchOnWindowFocus,

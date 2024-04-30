@@ -26,4 +26,14 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['cypress/**/*'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-namespace': 'off',
+        '@typescript-eslint/ban-ts-comment': 'warn',
+      },
+    },
+  ],
 };

@@ -14,7 +14,7 @@ import { AccountObject, SendTransactionObject } from '@/models/AccountModel';
 import { routeFor, maskAddress } from '@/utils';
 
 interface SendCoinsProps {
-  account: AccountObject;
+  account?: AccountObject;
   redirect: {
     amount: string;
     to: string;
@@ -92,6 +92,8 @@ export default function SendCoins(props: SendCoinsProps) {
       }
     }
   }
+
+  if (!account) return null;
 
   return (
     <div className="mt-5" data-testid="send-coins">

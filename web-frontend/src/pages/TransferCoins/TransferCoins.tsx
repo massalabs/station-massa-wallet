@@ -42,11 +42,6 @@ export default function TransferCoins() {
     }
   }, [account, error, navigate, nickname, redirect]);
 
-  if (!account) {
-    navigate(routeFor(`${nickname}/home`));
-    return null;
-  }
-
   const tabsConfig = [
     {
       label: Intl.t('transfer-coins.send-tab'),

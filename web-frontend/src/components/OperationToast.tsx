@@ -20,7 +20,7 @@ export function OperationToast({
           href={generateExplorerLink(operationId, isMainnet)}
           target="_blank"
           rel="noreferrer"
-          className="mas-caption-underline self-center mr-3"
+          className="mas-caption underline self-center mr-3"
         >
           {Intl.t('toast.explorer')}
         </a>

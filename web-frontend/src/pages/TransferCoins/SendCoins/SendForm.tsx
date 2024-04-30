@@ -304,7 +304,7 @@ export function SendForm(props: SendFormProps) {
               className="pb-3.5"
               fullWidth={false}
             />
-            <div>
+            <div data-testid="available-amount">
               <p className="mas-caption inline-block mr-1">
                 {Intl.t('send-coins.available-balance')}
               </p>
