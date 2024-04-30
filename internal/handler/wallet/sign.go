@@ -17,6 +17,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -54,15 +55,18 @@ type PromptRequestSignData struct {
 	PlainText         string
 	AllowFeeEdition   bool
 	ChainID           int64
+	Assets            []models.AssetInfo
+	Parameters        []byte
 }
 
-func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignHandler {
-	return &walletSign{gc: gc, prompterApp: prompterApp}
+func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache, AssetsStore *assets.AssetsStore) operations.SignHandler {
+	return &walletSign{gc: gc, prompterApp: prompterApp, AssetsStore: AssetsStore}
 }
 
 type walletSign struct {
 	prompterApp prompt.WalletPrompterInterface
 	gc          gcache.Cache
+	AssetsStore *assets.AssetsStore
 }
 
 func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
@@ -241,13 +245,13 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 
 	switch opType {
 	case transaction.OpType:
-		data, err = w.getTransactionPromptData(decodedMsg, acc)
+		data, err = w.getTransactionPromptData(decodedMsg)
 
 	case buyrolls.OpType, sellrolls.OpType:
-		data, err = getRollPromptData(decodedMsg, acc)
+		data, err = getRollPromptData(decodedMsg)
 
 	case executesc.OpType:
-		data, err = getExecuteSCPromptData(decodedMsg, acc)
+		data, err = getExecuteSCPromptData(decodedMsg)
 
 	case callsc.OpType:
 		data, err = getCallSCPromptData(decodedMsg, acc)
@@ -278,6 +282,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.OperationType = int(opType)
 	data.AllowFeeEdition = *params.AllowFeeEdition
 	data.ChainID = chainID
+	data.Assets = w.AssetsStore.AllAssets(acc.Nickname)
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
@@ -297,15 +302,15 @@ func getCallSCPromptData(
 	}
 
 	return PromptRequestSignData{
-		Coins:    strconv.FormatUint(msg.Coins, 10),
-		Address:  msg.Address,
-		Function: msg.Function,
+		Coins:      strconv.FormatUint(msg.Coins, 10),
+		Address:    msg.Address,
+		Function:   msg.Function,
+		Parameters: msg.Parameters,
 	}, nil
 }
 
 func getExecuteSCPromptData(
 	decodedMsg []byte,
-	acc *account.Account,
 ) (PromptRequestSignData, error) {
 	msg, err := executesc.DecodeMessage(decodedMsg)
 	if err != nil {
@@ -319,7 +324,6 @@ func getExecuteSCPromptData(
 
 func getRollPromptData(
 	decodedMsg []byte,
-	acc *account.Account,
 ) (PromptRequestSignData, error) {
 	msg, err := sendoperation.RollDecodeMessage(decodedMsg)
 	if err != nil {
@@ -334,7 +338,6 @@ func getRollPromptData(
 
 func (w *walletSign) getTransactionPromptData(
 	decodedMsg []byte,
-	acc *account.Account,
 ) (PromptRequestSignData, error) {
 	msg, err := transaction.DecodeMessage(decodedMsg)
 	if err != nil {

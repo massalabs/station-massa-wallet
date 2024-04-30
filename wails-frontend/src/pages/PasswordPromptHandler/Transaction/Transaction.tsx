@@ -1,4 +1,5 @@
 import Intl from '@/i18n/i18n';
+import { AmountBox } from '@/pages/PasswordPromptHandler/AmountBox';
 import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
 import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
 import { FromTo } from '@/pages/PasswordPromptHandler/SignComponentUtils/FromTo';
@@ -39,14 +40,9 @@ export function Transaction(props: SignBodyProps) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 w-full">
-        <div className="flex w-full items-center justify-between">
-          <p>{Intl.t('password-prompt.sign.sending-amount')}</p>
-          <p>
-            {formatStandard(Amount, Unit.NanoMAS)} {masToken}
-          </p>
-        </div>
-      </div>
+      <AmountBox>
+        {formatStandard(Amount, Unit.NanoMAS)} {masToken}
+      </AmountBox>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
