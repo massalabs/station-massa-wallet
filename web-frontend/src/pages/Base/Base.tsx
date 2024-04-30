@@ -38,10 +38,7 @@ function Base() {
   }
 
   return (
-    // TODO
-    // remove theme-dark
-    // this needs to be removed as soon we fix the steps to create an account
-    <div className={`${theme} theme-dark`}>
+    <div className={theme}>
       <Outlet context={context} />
       <Toast />
     </div>

@@ -54,7 +54,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
   const location = useLocation();
   const { nickname } = useParams();
 
-  const { themeIcon, themeLabel, theme, handleSetTheme } =
+  const { themeIcon, themeLabel, handleSetTheme } =
     useOutletContext<IOutletContextType>();
 
   const { okAccounts: accounts = [], isLoading, error } = useFetchAccounts();
@@ -164,10 +164,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
   );
 
   return (
-    // TODO
-    // remove ${theme}
-    // this needs to be removed as soon we fix the steps to create an account
-    <div className={`${theme} bg-primary`}>
+    <div className="bg-primary">
       <SideMenu
         conf={menuConf}
         items={menuItems}
