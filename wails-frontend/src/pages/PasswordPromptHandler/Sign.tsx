@@ -132,7 +132,7 @@ export function Sign() {
   }
 
   const winWidth = 460;
-  const winHeight = 660;
+  const winHeight = 800;
 
   WindowSetSize(winWidth, winHeight);
 
