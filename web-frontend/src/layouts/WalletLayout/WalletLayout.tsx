@@ -23,8 +23,9 @@ import {
   createSearchParams,
 } from 'react-router-dom';
 
-import Intl from '../../i18n/i18n';
-import { useFetchAccounts, routeFor } from '../../utils';
+import Intl from '@/i18n/i18n';
+import { useAppStore } from '@/store/appStore';
+import { routeFor, useFetchAccounts } from '@/utils';
 
 export enum MenuItem {
   Home = 'home',
@@ -52,6 +53,7 @@ export function WalletLayout(props: IWalletLayoutProps) {
   const { menuItem } = props;
   const navigate = useNavigate();
   const location = useLocation();
+  const { disableSwitchAccount } = useAppStore();
   const { nickname } = useParams();
 
   const { themeIcon, themeLabel, handleSetTheme } =
@@ -175,7 +177,11 @@ export function WalletLayout(props: IWalletLayoutProps) {
       </div>
       <div className="absolute top-0 right-0 p-6">
         <div className="w-64">
-          <Dropdown options={accountsItems} select={selectedAccountKey} />
+          <Dropdown
+            options={accountsItems}
+            select={selectedAccountKey}
+            readOnly={disableSwitchAccount}
+          />
         </div>
       </div>
     </div>
