@@ -77,9 +77,8 @@ jobs:
         if: matrix.target == 'darwin'
         shell: bash
         run: |
-          ls -la ~/go/bin
           export PATH=$PATH:~/go/bin/darwin_amd64
-          echo $PATH
+          export PATH=$PATH:~/go/bin/darwin_arm64
           task build
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
