@@ -36,13 +36,13 @@ jobs:
             target: linux
 
           # The third combination is macOS running on an AMD64 processor, building for Darwin (macOS).
-          - os: macos-14
+          - os: macos-13
             arch: amd64
             target: darwin
             cgo_ldflags: "-framework UniformTypeIdentifiers -F /System/Library/Frameworks"
 
           # The fourth combination is macOS running on an ARM64 processor, building for Darwin (macOS).
-          - os: macos-14
+          - os: macos-13
             arch: arm64
             target: darwin
             cgo_ldflags: "-framework UniformTypeIdentifiers -F /System/Library/Frameworks"
