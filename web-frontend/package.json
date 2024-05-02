@@ -14,6 +14,8 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
+    "fmt": "npm run prettier:fix && npm run lint:fix",
+    "fmt:check": "npm run prettier && npm run lint",
     "cy:open": "cypress open",
     "cy:e2e": "start-server-and-test dev http://localhost:8080 'cypress run --browser chrome'",
     "cy:e2e-ci": "start-server-and-test dev http://localhost:8080 'cypress run --browser chrome --env VITE_CI_TEST=true'",
@@ -25,8 +27,6 @@
     "cy:component-firefox": "cypress run --component --browser firefox",
     "cy:component-ci-firefox": "export VITE_CI_TEST=true && cypress run --component --browser firefox",
     "postcy:component-ci": "mv -n cypress-visual-report/cypress-visual-report.html cypress-visual-report/cypress-visual-report-component.html",
-    "fmt": "npm run prettier:fix && npm run lint:fix",
-    "fmt:check": "npm run prettier && npm run lint",
     "prepare": "cd .. && husky install web-frontend/.husky"
   },
   "dependencies": {
