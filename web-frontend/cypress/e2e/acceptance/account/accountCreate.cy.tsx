@@ -51,8 +51,10 @@ describe('E2E | Acceptance | Account | Create', () => {
 
       server.create('account');
 
-      cy.url().should('eq', `${baseUrl}/testAccount/home`);
-      compareSnapshot(cy, 'account-create-home');
+      cy.waitForRequest(server, '/accounts/testAccount', 'POST').then(() => {
+        cy.url().should('eq', `${baseUrl}/testAccount/home`);
+        compareSnapshot(cy, 'account-create-home');
+      });
     });
 
     it('should prevent me from creating an account with wrong nickname', () => {

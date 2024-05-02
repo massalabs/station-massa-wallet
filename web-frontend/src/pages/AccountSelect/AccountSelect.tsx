@@ -5,6 +5,7 @@ import {
   Selector,
   MassaLogo,
   Identicon,
+  formatAmount,
 } from '@massalabs/react-ui-kit';
 import { FiPlus } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,7 +15,6 @@ import Intl from '@/i18n/i18n';
 import LandingPage from '@/layouts/LandingPage/LandingPage';
 import { AccountObject } from '@/models/AccountModel';
 import { routeFor, useFetchAccounts, maskNickname } from '@/utils';
-import { formatAmount } from '@/utils/parseAmount';
 
 export default function AccountSelect() {
   const navigate = useNavigate();

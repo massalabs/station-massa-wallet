@@ -1,18 +1,25 @@
-import { useState } from 'react';
-
-import { fromMAS } from '@massalabs/massa-web3';
-import { Balance, Button } from '@massalabs/react-ui-kit';
+import {
+  Balance,
+  Button,
+  Tooltip,
+  formatFTAmount,
+  getAssetIcons,
+  parseAmount,
+} from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
+import { useParams } from 'react-router-dom';
 
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
-import ToolTip from './ToolTip';
+import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
+import { Asset } from '@/models/AssetModel';
 import { maskAddress } from '@/utils';
-import { formatAmount } from '@/utils/parseAmount';
+import { symbolDict } from '@/utils/tokenIcon';
 
 export interface SendConfirmationData {
   amount: string;
-  fee: string;
+  asset: Asset;
+  fees: string;
   recipientAddress: string;
 }
 
@@ -24,7 +31,11 @@ interface SendConfirmationProps {
 
 export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
-  const { amount, fee, recipientAddress } = data;
+  const { nickname } = useParams();
+  const { isMainnet } = useFTTransfer(nickname || '');
+
+  const { amount, asset, fees, recipientAddress } = data;
+  const { symbol, decimals } = asset;
 
   const FEES_STANDARD = Intl.t('send-coins.fee-standard');
   const FEES_LOW = Intl.t('send-coins.fee-low');
@@ -32,16 +43,17 @@ export function SendConfirmation(props: SendConfirmationProps) {
   const FEES_CUSTOM = Intl.t('send-coins.fee-custom');
 
   const formattedRecipientAddress = maskAddress(recipientAddress);
-  const total = fromMAS(amount) + fromMAS(fee);
-  const formattedAmount = formatAmount(
-    fromMAS(amount).toString(),
+  // amount is the value given by the Money input component
+  // we convert to the smallest unit with parseAmount
+  // and then format it with formatFTAmount
+  const formattedAmount = formatFTAmount(
+    parseAmount(amount, data.asset.decimals),
+    decimals,
   ).amountFormattedFull;
 
-  const formattedTotal = formatAmount(total.toString()).amountFormattedFull;
-  const [showTooltip, setShowTooltip] = useState(false);
   let selectedFees;
 
-  switch (fee) {
+  switch (fees) {
     case PRESET_STANDARD:
       selectedFees = FEES_STANDARD;
       break;
@@ -58,10 +70,15 @@ export function SendConfirmation(props: SendConfirmationProps) {
 
   const feeInfo = Intl.t('send-coins.fee-info', {
     feeType: selectedFees,
-    fee,
+    fee: fees,
   });
-  const gasAlert = `  \u26A0  ${Intl.t('send-coins.fee-alert')}`;
-  let content = selectedFees == FEES_LOW ? feeInfo + gasAlert : gasAlert;
+  const accountCreationFeeAlert = `  \u26A0  ${Intl.t(
+    'send-coins.account-fee-alert',
+  )}`;
+  let content =
+    selectedFees == FEES_LOW
+      ? feeInfo + accountCreationFeeAlert
+      : accountCreationFeeAlert;
 
   return (
     <>
@@ -72,30 +89,31 @@ export function SendConfirmation(props: SendConfirmationProps) {
         <FiChevronLeft />
         <p>{Intl.t('send-coins.back-to-sending')}</p>
       </div>
-      <p className="mb-6">{Intl.t('send-coins.send-message')}</p>
       <div
         data-testid="send-confirmation"
-        className="flex flex-col p-10 bg-secondary rounded-lg mb-6"
+        className="flex flex-col items-center p-10 bg-secondary rounded-lg mb-6"
       >
-        <div className="flex flex-row items-center pb-3 ">
-          <div data-testid="send-confirmation-info" className="pr-2 text-info">
-            {Intl.t('send-coins.send-confirmation', {
-              amount: formattedAmount,
-              fee,
-            })}
-          </div>
-          <div
-            className="flex flex-row relative items-center gap-1"
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
-            <ToolTip showTooltip={showTooltip} content={content} />
-          </div>
-        </div>
+        <p className="mb-6 mas-body">{Intl.t('send-coins.send-message')}</p>
+
         <Balance
           customClass="p-0 bg-transparent mb-3"
-          amount={formattedTotal}
+          amount={formattedAmount}
+          symbol={symbol}
+          icon={getAssetIcons(
+            symbolDict[symbol as keyof typeof symbolDict],
+            true,
+            isMainnet,
+            32,
+            'mr-3',
+          )}
         />
+        <div className="flex flex-row items-center gap-8 mb-3">
+          <div className="flex flex-row items-center">
+            <Tooltip body={content} />
+            <p>{Intl.t('send-coins.fee')}</p>
+          </div>
+          <Balance amount={fees} symbol="MAS" size="xs" />
+        </div>
         <div className="text-info flex items-center gap-2">
           {Intl.t('send-coins.recipient')}
           <p data-testid="send-confirmation-recipient">

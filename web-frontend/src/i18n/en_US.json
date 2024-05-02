@@ -131,8 +131,8 @@
       "amount-to-high": "Insufficient funds",
       "amount-plus-fees-to-high": "Insufficient funds to pay fees",
       "amount-to-low": "Amount must be greater than zero",
-      "gas-fees-to-low": "Gas fees must be greater than or equal to zero",
-      "no-gas-fees": "Gas fees are required",
+      "fees-to-low": "Fees must be greater than or equal to zero",
+      "no-fees": "Fees are required",
       "no-address": "Recipient is required",
       "invalid-address": "Recipient address is not a valid Massa address",
       "sent": "Oops! Something went wrong in your transfer. Please, try again later..."
@@ -159,11 +159,10 @@
     "receive-tab": "Receive"
   },
   "send-coins": {
-    "amount": "Amount",
-    "account-balance": "Account Balance",
-    "send-action": "Send Tokens",
+    "balance": "Balance",
+    "send-action": "Send Token",
     "available-balance": "Available: ",
-    "recipient": "To:",
+    "recipient": "to:",
     "transfer-between-acc": "Transfer between my accounts",
     "advanced": "Advanced",
     "send": "Send",
@@ -176,13 +175,19 @@
     "advanced-message": "You pay gas fees to reward block validators and maximize your chances to see your transaction validated. It is a tip for people that support the blockchain network.",
     "confirm-fees": "Confirm fees ",
     "fee-info": "{feeType} gas fees are {fee} MAS, to set custom fees head to the Advanced section on the previous step.",
-    "fee-alert": "If this account is new you'll be charged 0.01 MAS for blockchain storage cost.",
+    "account-fee-alert": "If this account is new you'll be charged 0.001 MAS for blockchain storage cost.",
     "fee-standard": "Standard",
     "fee-low": "Low",
     "fee-high": "High",
     "fee-custom": "Custom",
-    "send-confirmation": "Amount ({amount} MAS) + fees ({fee} MAS)",
-    "amount-to-send": "Amount to send"
+    "fee": "Fees",
+    "amount-to-send": "Amount to send",
+    "steps": {
+      "ft-transfer-pending": "Transfer in progress...",
+      "ft-transfer-success": "Successfully transfered",
+      "ft-transfer-failed": "Transfer failed",
+      "failed-timeout": "Operation failed due to timeout, please retry with more fees."
+    }
   },
   "receive-coins": {
     "generate-link": "Generate a link",
@@ -199,5 +204,8 @@
     "teaser-banner": "Our new feature is coming soon",
     "teaser-transaction-page": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll be able to consult them in a few months!",
     "teaser-contacts-page": "Managing your contact list for a smoother transaction management."
+  },
+  "toast": {
+    "explorer": "view in explorer"
   }
 }

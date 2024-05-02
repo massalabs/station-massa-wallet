@@ -1,11 +1,11 @@
 import { Args } from '@massalabs/massa-web3';
+import { formatFTAmount } from '@massalabs/react-ui-kit';
 
 import Intl from '@/i18n/i18n';
 import { AmountBox } from '@/pages/PasswordPromptHandler/AmountBox';
 import { AssetInfo } from '@/pages/PasswordPromptHandler/Sign';
 import { maskAddress } from '@/utils';
 import { base64ToArray } from '@/utils/parameters';
-import { formatFTAmount } from '@/utils/parseAmount';
 
 interface FTTransferInfoProps {
   asset?: AssetInfo;

@@ -152,8 +152,6 @@ export function routesForAccounts(server: Server) {
           { code: '402', error: 'Provide an asset address in query' },
         );
 
-      // const newAsset = schema.create('asset', { account });
-
       return new Response(201);
     },
     { timing: 500 },
