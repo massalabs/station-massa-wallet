@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 tasks:
   install:
@@ -7,14 +7,16 @@ tasks:
       - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.0-dev
         platforms: [linux]
         ignore_error: true
-      - cmd: brew install mitchellh/gon/gon
-        platforms: [darwin]
-        ignore_error: true
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
       - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
+        platforms: [linux, windows]
+      - cmd: GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
+        platforms: [darwin/amd64]
+      - cmd: GOARCH=arm64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.6.0
+        platforms: [darwin/arm64]
       - cmd: go install github.com/daixiang0/gci@latest
 
-  generate: 
+  generate:
     cmds:
       - cmd: go generate ./...
       - cmd: gci write .
@@ -27,7 +29,7 @@ tasks:
       - cmd: rm -f internal/handler/wallet/wallet_*.yaml &>/dev/null
         platforms: [linux, darwin]
 
-  test: 
+  test:
     cmds:
       - task: clean
       - cmd: go test -v -timeout 20s ./...
@@ -136,9 +138,9 @@ tasks:
       - task: run
 
   build-install-plugin:
-    cmds: 
+    cmds:
       - task: generate
-      - task: build 
+      - task: build
       - task: install-plugin
 
   all:

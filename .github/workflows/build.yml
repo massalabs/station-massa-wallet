@@ -36,13 +36,13 @@ jobs:
             target: linux
 
           # The third combination is macOS running on an AMD64 processor, building for Darwin (macOS).
-          - os: macos-latest
+          - os: macos-13
             arch: amd64
             target: darwin
             cgo_ldflags: "-framework UniformTypeIdentifiers -F /System/Library/Frameworks"
 
           # The fourth combination is macOS running on an ARM64 processor, building for Darwin (macOS).
-          - os: macos-latest
+          - os: macos-13
             arch: arm64
             target: darwin
             cgo_ldflags: "-framework UniformTypeIdentifiers -F /System/Library/Frameworks"
@@ -77,7 +77,6 @@ jobs:
         if: matrix.target == 'darwin'
         shell: bash
         run: |
-          export PATH=$PATH:~/go/bin/darwin_amd64
           task build
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
