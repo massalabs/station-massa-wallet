@@ -67,9 +67,10 @@ function GenerateLink(props: GenerateLinkProps) {
     const formObject = parseForm(e) as MoneyForm;
 
     if (!validate(formObject)) return;
+    if (!selectedAsset) return;
 
     const amountArg = amount
-      ? `&amount=${amount}&symbol=${selectedAsset?.symbol}`
+      ? `&amount=${amount}&symbol=${selectedAsset.symbol}`
       : '';
 
     const newURL = presetURL + amountArg;
@@ -147,7 +148,11 @@ function GenerateLink(props: GenerateLinkProps) {
               </div>
             </div>
             <div className="pb-3">
-              <Button data-testid="generate-link-button" type="submit">
+              <Button
+                data-testid="generate-link-button"
+                type="submit"
+                disabled={!selectedAsset}
+              >
                 {Intl.t('receive-coins.generate-link')}
               </Button>
             </div>
