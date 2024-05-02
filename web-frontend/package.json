@@ -34,7 +34,7 @@
     "@massalabs/react-ui-kit": "^0.0.4-dev",
     "@massalabs/wallet-provider": "^2.0.1-dev",
     "@tanstack/react-query": "^4.29.5",
-    "axios": "^1.6.0",
+    "axios": "^1.6.1",
     "currency.js": "^2.0.4",
     "dot-object": "^2.1.4",
     "esbuild": "0.17.19",
