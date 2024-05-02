@@ -77,9 +77,10 @@ jobs:
         if: matrix.target == 'darwin'
         shell: bash
         run: |
-          if [ "${{ matrix.arch }}" == "arm64" ]; then
-            export PATH=$PATH:~/go/bin/darwin_arm64
-          elif [ "${{ matrix.arch }}" == "amd64" ]; then
+          # if [ "${{ matrix.arch }}" == "arm64" ]; then
+          #   export PATH=$PATH:~/go/bin/darwin_arm64
+          # fi
+          if [ "${{ matrix.arch }}" == "amd64" ]; then
             export PATH=$PATH:~/go/bin/darwin_amd64
           fi
           task build
