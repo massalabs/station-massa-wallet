@@ -73,18 +73,15 @@ jobs:
         run: |
           go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
 
-      - name: Push in PATH for darwin_arm64
-        if: matrix.target == 'darwin' && matrix.arch == 'arm64'
-        run: export PATH=$PATH:~/go/bin/darwin_arm64
-
-      - name: Push in PATH for darwin_amd64
-        if: matrix.target == 'darwin' && matrix.arch == 'amd64'
-        run: export PATH=$PATH:~/go/bin/darwin_amd64
-
       - name: Build binary for MacOS ${{ matrix.arch }}
         if: matrix.target == 'darwin'
         shell: bash
         run: |
+          if [ "${{ matrix.arch }}" == "arm64" ]; then
+            export PATH=$PATH:~/go/bin/darwin_arm64
+          elif [ "${{ matrix.arch }}" == "amd64" ]; then
+            export PATH=$PATH:~/go/bin/darwin_amd64
+          fi
           task build
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
