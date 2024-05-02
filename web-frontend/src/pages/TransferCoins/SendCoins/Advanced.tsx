@@ -17,7 +17,7 @@ interface InputsErrors {
 }
 
 interface FeesForm {
-  fees: number;
+  fees: string;
 }
 
 export const PRESET_LOW = '0.01';
@@ -64,11 +64,6 @@ export default function Advanced(props: AdvancedProps) {
     setError(null);
     if (customFees && !fees) {
       setError({ fees: Intl.t('errors.send-coins.no-fees') });
-      return false;
-    }
-
-    if (customFees && fees <= 0) {
-      setError({ fees: Intl.t('errors.send-coins.fees-to-low') });
       return false;
     }
 
