@@ -21,5 +21,11 @@ export default ({ mode }) => {
     resolve: {
       alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
     },
+    server: {
+      fs: {
+        // to allow server ui kit asset like font files
+        allow: ['../..'],
+      },
+    },
   });
 };

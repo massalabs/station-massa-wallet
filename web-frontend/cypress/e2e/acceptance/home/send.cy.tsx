@@ -258,7 +258,7 @@ describe('E2E | Acceptance | Home | Send', () => {
 
       cy.get('[data-testid="money-field"]')
         .type(amount)
-        .should('have.value', '42');
+        .should('have.value', amount);
 
       cy.get('[data-testid="input-field"]').type(wrongAddress);
       cy.get('[data-testid="button"]').contains('Send').click();

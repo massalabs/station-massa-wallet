@@ -4,21 +4,22 @@ import { fromMAS } from '@massalabs/massa-web3';
 import { toast } from '@massalabs/react-ui-kit';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SendConfirmation, SendConfirmationData } from './SendConfirmation';
-import { SendForm } from './SendForm';
 import { MAS } from '@/const/assets/assets';
 import { usePost } from '@/custom/api';
 import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
 import { AccountObject, SendTransactionObject } from '@/models/AccountModel';
+import {
+  SendConfirmation,
+  SendConfirmationData,
+} from '@/pages/TransferCoins/SendCoins/SendConfirmation';
+import { SendForm } from '@/pages/TransferCoins/SendCoins/SendForm';
+import { Redirect } from '@/pages/TransferCoins/TransferCoins';
 import { routeFor, maskAddress } from '@/utils';
 
 interface SendCoinsProps {
   account?: AccountObject;
-  redirect: {
-    amount: string;
-    to: string;
-  };
+  redirect: Redirect;
 }
 
 export default function SendCoins(props: SendCoinsProps) {

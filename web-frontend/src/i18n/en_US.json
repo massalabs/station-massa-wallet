@@ -191,7 +191,7 @@
   },
   "receive-coins": {
     "generate-link": "Generate a link",
-    "receive-amount": "Amount",
+    "coins": "Coins",
     "account-address": "Account address: ",
     "amount-to-ask": "Amount to ask",
     "recipient": "Recipient",
