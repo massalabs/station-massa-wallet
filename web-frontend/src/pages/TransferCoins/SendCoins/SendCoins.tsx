@@ -15,6 +15,7 @@ import {
 } from '@/pages/TransferCoins/SendCoins/SendConfirmation';
 import { SendForm } from '@/pages/TransferCoins/SendCoins/SendForm';
 import { Redirect } from '@/pages/TransferCoins/TransferCoins';
+import { useAppStore } from '@/store/appStore';
 import { routeFor, maskAddress } from '@/utils';
 
 interface SendCoinsProps {
@@ -27,6 +28,7 @@ export default function SendCoins(props: SendCoinsProps) {
 
   const navigate = useNavigate();
   const { nickname } = useParams();
+  const { setDisableSwitchAccount } = useAppStore();
 
   const [submit, setSubmit] = useState<boolean>(false);
   const [data, setData] = useState<SendConfirmationData>();
@@ -38,9 +40,11 @@ export default function SendCoins(props: SendCoinsProps) {
     isLoading: transferMASLoading,
     error: transferMASError,
   } = usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
-  const { transfer: transferFT, isPending: transferFTLoading } = useFTTransfer(
-    nickname || '',
-  );
+  const {
+    transfer: transferFT,
+    isPending: transferFTLoading,
+    isSuccess: transferFTSuccess,
+  } = useFTTransfer(nickname || '');
 
   useEffect(() => {
     if (transferMASError && !errorToastId) {
@@ -55,16 +59,26 @@ export default function SendCoins(props: SendCoinsProps) {
       );
 
       navigate(routeFor(`${nickname}/home`));
+      setDisableSwitchAccount(false);
+    } else if (transferFTSuccess) {
+      navigate(routeFor(`${nickname}/home`));
+      setDisableSwitchAccount(false);
     }
   }, [
     transferMASSuccess,
     transferMASError,
+    transferFTSuccess,
     data,
     nickname,
     navigate,
     errorToastId,
     setErrorToastId,
+    setDisableSwitchAccount,
   ]);
+
+  useEffect(() => {
+    setDisableSwitchAccount(submit && !!data);
+  }, [submit, data, setDisableSwitchAccount]);
 
   function handleSubmit(data: SendConfirmationData) {
     setData(data);

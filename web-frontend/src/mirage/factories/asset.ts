@@ -3,7 +3,7 @@ import { Factory } from 'miragejs';
 
 import { MAS } from '../../const/assets/assets';
 
-export const assetFactory = Factory.extend<any>({
+export const assetFactory = Factory.extend({
   name(i: number) {
     return faker.word.sample(5) + 'Token' + i++;
   },

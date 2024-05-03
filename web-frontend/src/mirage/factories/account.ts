@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Factory } from 'miragejs';
 
-export const accountFactory = Factory.extend<any>({
+export const accountFactory = Factory.extend({
   nickname: (i: number) => faker.internet.userName() + i,
   candidateBalance: (i: number) =>
     Math.trunc(faker.number.int() * (i > 0 ? i / 10 : 0)).toString(),

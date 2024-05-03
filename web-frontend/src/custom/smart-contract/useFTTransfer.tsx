@@ -172,12 +172,11 @@ function useWriteSmartContract(client?: Client, isMainnet?: boolean) {
           .smartContracts()
           .awaitMultipleRequiredOperationStatus(operationId, [
             EOperationStatus.SPECULATIVE_ERROR,
-            EOperationStatus.FINAL_ERROR,
-            EOperationStatus.FINAL_SUCCESS,
+            EOperationStatus.SPECULATIVE_SUCCESS,
           ]);
       })
       .then((status: EOperationStatus) => {
-        if (status !== EOperationStatus.FINAL_SUCCESS) {
+        if (status !== EOperationStatus.SPECULATIVE_SUCCESS) {
           throw new Error('Operation failed', { cause: { status } });
         }
         setIsSuccess(true);
@@ -211,12 +210,7 @@ function useWriteSmartContract(client?: Client, isMainnet?: boolean) {
           return;
         }
 
-        if (
-          [
-            EOperationStatus.FINAL_ERROR,
-            EOperationStatus.SPECULATIVE_ERROR,
-          ].includes(error.cause?.status)
-        ) {
+        if (error.cause?.status === EOperationStatus.SPECULATIVE_ERROR) {
           toast.error((t) => (
             <ToastContent t={t}>
               <OperationToast
