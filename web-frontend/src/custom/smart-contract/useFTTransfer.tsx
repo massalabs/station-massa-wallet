@@ -141,7 +141,10 @@ function useWriteSmartContract(client?: Client, isMainnet?: boolean) {
 
     client
       .smartContracts()
-      .readSmartContract(callData)
+      .readSmartContract({
+        ...callData,
+        callerAddress: client.wallet().getBaseAccount()?.address(),
+      })
       .then((response) => {
         const gasCost = BigInt(response.info.gas_cost);
         return minBigInt(gasCost + (gasCost * 20n) / 100n, MAX_GAS_CALL);
