@@ -95,13 +95,8 @@ func webAppMiddleware(handler http.Handler) http.Handler {
 				Resource:    strings.TrimPrefix(r.URL.Path, prefix),
 			}
 			responder := html.HandleWebApp(params)
-			if responder != nil {
-				// Handle the successful response
-				responder.WriteResponse(w, runtime.JSONProducer())
-				return
-			}
-			// Handle nil response
-			http.Error(w, "No response from handler", http.StatusInternalServerError)
+			// Handle the successful response
+			responder.WriteResponse(w, runtime.JSONProducer())
 			return
 		}
 		handler.ServeHTTP(w, r)
