@@ -4,12 +4,12 @@ import (
 	"log"
 	"testing"
 
-	"github.com/massalabs/station-massa-wallet/internal/initialize"
+	testutils "github.com/massalabs/station-massa-wallet/pkg/testUtils"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAssetExistInNetwork(t *testing.T) {
-	err := initialize.Logger()
+	err := testutils.LoggerTest()
 	if err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)
 	}
