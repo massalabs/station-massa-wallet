@@ -85,12 +85,36 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*models.AssetInfoWithB
 }
 
 func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoWithBalance, middleware.Responder) {
+	defaultAssets, err := assets.GetDefaultAssets()
+	if err != nil {
+		logger.Errorf("Failed to get default assets: %s", err.Error())
+	}
+
+	assetsInfo := make([]models.AssetInfo, 0)
+
+	// Initialize map to track addressed already added
+	includedAddresses := map[string]bool{}
+
+	for _, asset := range defaultAssets {
+		assetsInfo = append(assetsInfo, asset)
+		includedAddresses[asset.Address] = true
+	}
+
+	// Append default assets ensuring no duplication
+	for _, asset := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
+		// Append the asset info to the result slice if it is not already in the list
+		if _, exists := includedAddresses[asset.Address]; !exists {
+			assetsInfo = append(assetsInfo, asset)
+			includedAddresses[asset.Address] = true
+		}
+	}
+
 	assetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Retrieve all assets from the selected nickname
-	for assetAddress, assetInfo := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
+	for _, assetInfo := range assetsInfo {
 		// Fetch the balance for the current asset
-		balance, resp := g.fetchAssetData(assetAddress, acc)
+		balance, resp := g.fetchAssetData(assetInfo.Address, acc)
 		if resp != nil {
 			return nil, resp
 		}
