@@ -159,11 +159,10 @@ export function WalletLayout(props: IWalletLayoutProps) {
       ),
   });
 
-  const selectedAccountKey: number = parseInt(
-    Object.keys(accounts).find(
-      (_, idx) => accounts[idx].nickname === nickname,
-    ) || '0',
+  const account = Object.keys(accounts).find(
+    (_, idx) => accounts[idx].nickname === nickname,
   );
+  const selectedAccountKey = account ? parseInt(account) : undefined;
 
   return (
     <div className="bg-primary">
