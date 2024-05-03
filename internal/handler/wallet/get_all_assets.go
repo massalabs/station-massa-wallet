@@ -89,17 +89,21 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 
 	// Retrieve all assets from the selected nickname
 	for assetAddress, assetInfo := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
-		
-		// If the asset does not exist in the network, skip it and go to the next one
 		// Fetch the balance for the current asset
 		balance, resp := g.fetchAssetData(assetAddress, acc)
 		if resp != nil {
 			return nil, resp
 		}
-			// Create the asset info with balance and append it to the result slice
+		
+		// If the asset does not exist in the network, skip it and go to the next one
+		if balance == nil {
+			continue
+		}
+
+		// Create the asset info with balance and append it to the result slice
 		assetWithBalance := &models.AssetInfoWithBalance{
 			AssetInfo: assetInfo,
-			Balance:   balance,
+			Balance:   *balance,
 		}
 
 		assetsWithBalance = append(assetsWithBalance, assetWithBalance)
@@ -108,29 +112,28 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 	return assetsWithBalance, nil
 }
 
-func (g *getAllAssets) fetchAssetData(assetAddress string, acc *account.Account) (string, middleware.Responder) {
+func (g *getAllAssets) fetchAssetData(assetAddress string, acc *account.Account) (*string, middleware.Responder) {
 	// First, check if the asset exists in the network
 	if !g.massaClient.AssetExistInNetwork(assetAddress) {
 		logger.Infof("Asset %s does not exist in the network", assetAddress)
-		return "", nil
+		return nil, nil
 	}
 
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return "", newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
 	if err != nil {
-
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
 
 		// Handle the error and return an internal server error response
-		return "", operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
+		return nil, operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
 			Code:    errorFetchAssetBalance,
 			Message: errorMsg,
 		})
 	}
 
-	return balance, nil
+	return &balance, nil
 }
