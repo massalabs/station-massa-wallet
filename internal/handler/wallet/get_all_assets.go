@@ -94,7 +94,7 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 		if resp != nil {
 			return nil, resp
 		}
-		
+
 		// If the asset does not exist in the network, skip it and go to the next one
 		if balance == nil {
 			continue
