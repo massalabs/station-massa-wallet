@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"fmt"
-	"net/http"
 	"sort"
 	"strconv"
 
@@ -150,10 +149,7 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 		}
 
 		// Fetch the balance for the current asset
-		balance, dollarValue, resp := g.fetchAssetData(asset, acc)
-		if resp != nil {
-			return nil, resp
-		}
+		balance, dollarValue := g.fetchAssetData(asset, acc)
 
 		asset.Balance = balance
 		asset.DollarValue = dollarValue
@@ -163,29 +159,32 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 	return assetsWithBalance, nil
 }
 
-func (g *getAllAssets) fetchAssetData(asset *models.AssetInfoWithBalance, acc *account.Account) (string, string, middleware.Responder) {
+func (g *getAllAssets) fetchAssetData(asset *models.AssetInfoWithBalance, acc *account.Account) (string, string) {
 	assetAddress := asset.Address
 
 	// Balance
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return "", "", newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+		logger.Errorf("Failed to marshal address: %s", err.Error())
+
+		return "", ""
 	}
 
 	balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
 	if err != nil {
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
-		return "", "", newErrorResponse(errorMsg, errorFetchAssetBalance, http.StatusInternalServerError)
+		logger.Errorf(errorMsg)
+
+		return "", ""
 	}
 
 	// Dollar value
 	dollarValue, err := assets.DollarValue(balance, asset.Symbol, *asset.Decimals)
 	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to fetch dollar value for asset %s: %s", assetAddress, err.Error())
-		logger.Errorf(errorMsg)
+		logger.Errorf(fmt.Sprintf("Failed to fetch dollar value for asset %s: %s", assetAddress, err.Error()))
 
-		return balance, "", nil
+		return balance, ""
 	}
 
-	return balance, dollarValue, nil
+	return balance, dollarValue
 }
