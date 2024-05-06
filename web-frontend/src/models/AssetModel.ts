@@ -1,9 +1,9 @@
 export interface Asset {
   name: string;
-  address: string;
+  address?: string;
   symbol: string;
   decimals: number;
-  balance: string;
+  balance?: string;
   isDefault: boolean;
-  dollarValue: string;
+  dollarValue?: string;
 }

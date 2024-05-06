@@ -152,7 +152,8 @@
     "timeout": "Timeout error",
     "invalid-prompt-input": "Invalid user input",
     "action-canceled": "Action canceled",
-    "password-required": "Password is required"
+    "password-required": "Password is required",
+    "dollar-value": "Error retrieving dollar value"
   },
   "transfer-coins": {
     "send-tab": "Send",

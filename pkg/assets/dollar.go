@@ -88,13 +88,13 @@ func DollarPrice(ticker string) (float64, error) {
 func SymbolToTicker(symbol string) (string, error) {
 	switch symbol {
 	case "tDAI.s", "DAI.e":
-		return "DAIUSDT", nil
+		return "USD", nil // or DAIUSDT
 	case "WETH.e", "WETH.s":
 		return "ETHUSDT", nil
 	case "MAS", "WMAS":
 		return "MASUSDT", nil
 	case "USDC.s", "USDC.e":
-		return "USD", nil
+		return "USD", nil // or USDCUSDT
 	}
 
 	return "", fmt.Errorf("Invalid symbol: %s", symbol)
