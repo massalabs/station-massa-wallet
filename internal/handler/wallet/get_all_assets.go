@@ -79,6 +79,7 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*models.AssetInfoWithB
 	massaAsset := &models.AssetInfoWithBalance{
 		AssetInfo: assets.MASInfo(),
 		Balance:   fmt.Sprint(infos[0].CandidateBalance),
+		IsDefault: true,
 	}
 
 	return massaAsset, nil
@@ -90,13 +91,18 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 		logger.Errorf("Failed to get default assets: %s", err.Error())
 	}
 
-	assetsInfo := make([]models.AssetInfo, 0)
+	assetsInfo := make([]*models.AssetInfoWithBalance, 0)
 
 	// Initialize map to track addressed already added
 	includedAddresses := map[string]bool{}
 
 	for _, asset := range defaultAssets {
-		assetsInfo = append(assetsInfo, asset)
+		completeAsset := &models.AssetInfoWithBalance{
+			AssetInfo: asset,
+			Balance:   "",
+			IsDefault: true,
+		}
+		assetsInfo = append(assetsInfo, completeAsset)
 		includedAddresses[asset.Address] = true
 	}
 
@@ -104,7 +110,12 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 	for _, asset := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
 		// Append the asset info to the result slice if it is not already in the list
 		if _, exists := includedAddresses[asset.Address]; !exists {
-			assetsInfo = append(assetsInfo, asset)
+			completeAsset := &models.AssetInfoWithBalance{
+				AssetInfo: asset,
+				Balance:   "",
+				IsDefault: false,
+			}
+			assetsInfo = append(assetsInfo, completeAsset)
 			includedAddresses[asset.Address] = true
 		}
 	}
@@ -112,9 +123,9 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 	assetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Retrieve all assets from the selected nickname
-	for _, assetInfo := range assetsInfo {
+	for _, asset := range assetsInfo {
 		// Fetch the balance for the current asset
-		balance, resp := g.fetchAssetData(assetInfo.Address, acc)
+		balance, resp := g.fetchAssetData(asset.Address, acc)
 		if resp != nil {
 			return nil, resp
 		}
@@ -124,13 +135,8 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 			continue
 		}
 
-		// Create the asset info with balance and append it to the result slice
-		assetWithBalance := &models.AssetInfoWithBalance{
-			AssetInfo: assetInfo,
-			Balance:   *balance,
-		}
-
-		assetsWithBalance = append(assetsWithBalance, assetWithBalance)
+		asset.Balance = *balance
+		assetsWithBalance = append(assetsWithBalance, asset)
 	}
 
 	return assetsWithBalance, nil

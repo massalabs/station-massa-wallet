@@ -42,7 +42,7 @@ export function AssetsList(props: AssetsListProps) {
           decimals={token.decimals}
           balance={token.balance}
           key={index}
-          disable={token?.symbol === MAS ? true : false}
+          disable={token?.isDefault}
           onDelete={() => {
             handleDelete(token.address);
           }}

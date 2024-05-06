@@ -283,13 +283,13 @@ paths:
       operationId: SignMessage
       description: Sign a message using the account associated with the provided nickname in the path.
       parameters:
-          - $ref: "#/parameters/nickname"
-          - in: body
-            name: body
-            required: true
-            x-nullable: false
-            schema:
-              $ref: "#/definitions/SignMessageRequest"
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          x-nullable: false
+          schema:
+            $ref: "#/definitions/SignMessageRequest"
       produces:
         - application/json
       responses:
@@ -753,3 +753,5 @@ definitions:
         properties:
           balance:
             type: string
+          isDefault:
+            type: boolean
