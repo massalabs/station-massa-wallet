@@ -22,6 +22,9 @@ type AssetInfoWithBalance struct {
 	// balance
 	Balance string `json:"balance,omitempty"`
 
+	// dollar value
+	DollarValue string `json:"dollarValue,omitempty"`
+
 	// is default
 	IsDefault bool `json:"isDefault,omitempty"`
 }
@@ -39,6 +42,8 @@ func (m *AssetInfoWithBalance) UnmarshalJSON(raw []byte) error {
 	var dataAO1 struct {
 		Balance string `json:"balance,omitempty"`
 
+		DollarValue string `json:"dollarValue,omitempty"`
+
 		IsDefault bool `json:"isDefault,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
@@ -46,6 +51,8 @@ func (m *AssetInfoWithBalance) UnmarshalJSON(raw []byte) error {
 	}
 
 	m.Balance = dataAO1.Balance
+
+	m.DollarValue = dataAO1.DollarValue
 
 	m.IsDefault = dataAO1.IsDefault
 
@@ -64,10 +71,14 @@ func (m AssetInfoWithBalance) MarshalJSON() ([]byte, error) {
 	var dataAO1 struct {
 		Balance string `json:"balance,omitempty"`
 
+		DollarValue string `json:"dollarValue,omitempty"`
+
 		IsDefault bool `json:"isDefault,omitempty"`
 	}
 
 	dataAO1.Balance = m.Balance
+
+	dataAO1.DollarValue = m.DollarValue
 
 	dataAO1.IsDefault = m.IsDefault
 

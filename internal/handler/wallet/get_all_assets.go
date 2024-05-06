@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strconv"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -55,7 +56,17 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	// sort AssetsWithBalance by name
 	sort.Slice(assetsWithBalance, func(i, j int) bool {
-		return assetsWithBalance[i].Name < assetsWithBalance[j].Name
+		dollarValueFloatI, err := strconv.ParseFloat(assetsWithBalance[i].DollarValue, 64)
+		if err != nil {
+			logger.Errorf("Failed to parse dollar value for asset %s: %s", assetsWithBalance[i].Name, err.Error())
+			return false
+		}
+		dollarValueFloatJ, err := strconv.ParseFloat(assetsWithBalance[j].DollarValue, 64)
+		if err != nil {
+			logger.Errorf("Failed to parse dollar value for asset %s: %s", assetsWithBalance[j].Name, err.Error())
+			return false
+		}
+		return dollarValueFloatI > dollarValueFloatJ
 	})
 
 	// Return the list of assets with balance
@@ -74,13 +85,21 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*models.AssetInfoWithB
 			Message: errorMsg,
 		})
 	}
-
 	// Create the asset info for the Massa token and append it to the result slice
+	asset := assets.MASInfo()
 	massaAsset := &models.AssetInfoWithBalance{
-		AssetInfo: assets.MASInfo(),
+		AssetInfo: asset,
 		Balance:   fmt.Sprint(infos[0].CandidateBalance),
 		IsDefault: true,
 	}
+
+	dollarValue, err := assets.DollarValue(massaAsset.Balance, asset.Symbol, *asset.Decimals)
+	if err != nil {
+		errorMsg := fmt.Sprintf("Failed to fetch dollar value for asset %s: %s", asset.Address, err.Error())
+		logger.Errorf(errorMsg)
+	}
+
+	massaAsset.DollarValue = dollarValue
 
 	return massaAsset, nil
 }
@@ -124,46 +143,49 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoW
 
 	// Retrieve all assets from the selected nickname
 	for _, asset := range assetsInfo {
+		// First, check if the asset exists in the network
+		if !g.massaClient.AssetExistInNetwork(asset.Address) {
+			logger.Infof("Asset %s does not exist in the network", asset.Address)
+			continue
+		}
+
 		// Fetch the balance for the current asset
-		balance, resp := g.fetchAssetData(asset.Address, acc)
+		balance, dollarValue, resp := g.fetchAssetData(asset, acc)
 		if resp != nil {
 			return nil, resp
 		}
 
-		// If the asset does not exist in the network, skip it and go to the next one
-		if balance == nil {
-			continue
-		}
-
-		asset.Balance = *balance
+		asset.Balance = balance
+		asset.DollarValue = dollarValue
 		assetsWithBalance = append(assetsWithBalance, asset)
 	}
 
 	return assetsWithBalance, nil
 }
 
-func (g *getAllAssets) fetchAssetData(assetAddress string, acc *account.Account) (*string, middleware.Responder) {
-	// First, check if the asset exists in the network
-	if !g.massaClient.AssetExistInNetwork(assetAddress) {
-		logger.Infof("Asset %s does not exist in the network", assetAddress)
-		return nil, nil
-	}
+func (g *getAllAssets) fetchAssetData(asset *models.AssetInfoWithBalance, acc *account.Account) (string, string, middleware.Responder) {
+	assetAddress := asset.Address
 
+	// Balance
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+		return "", "", newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
 
 	balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
 	if err != nil {
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
-
-		// Handle the error and return an internal server error response
-		return nil, operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
-			Code:    errorFetchAssetBalance,
-			Message: errorMsg,
-		})
+		return "", "", newErrorResponse(errorMsg, errorFetchAssetBalance, http.StatusInternalServerError)
 	}
 
-	return &balance, nil
+	// Dollar value
+	dollarValue, err := assets.DollarValue(balance, asset.Symbol, *asset.Decimals)
+	if err != nil {
+		errorMsg := fmt.Sprintf("Failed to fetch dollar value for asset %s: %s", assetAddress, err.Error())
+		logger.Errorf(errorMsg)
+
+		return balance, "", nil
+	}
+
+	return balance, dollarValue, nil
 }

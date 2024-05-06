@@ -5,4 +5,5 @@ export interface Asset {
   decimals: number;
   balance: string;
   isDefault: boolean;
+  dollarValue: string;
 }
