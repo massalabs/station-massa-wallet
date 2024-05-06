@@ -42,8 +42,8 @@ export default function SendCoins(props: SendCoinsProps) {
   } = usePost<SendTransactionObject>(`accounts/${nickname}/transfer`);
   const {
     transfer: transferFT,
+    isOpPending: transferFTPending,
     isPending: transferFTLoading,
-    isSuccess: transferFTSuccess,
   } = useFTTransfer(nickname || '');
 
   useEffect(() => {
@@ -60,14 +60,14 @@ export default function SendCoins(props: SendCoinsProps) {
 
       navigate(routeFor(`${nickname}/home`));
       setDisableSwitchAccount(false);
-    } else if (transferFTSuccess) {
+    } else if (transferFTPending) {
       navigate(routeFor(`${nickname}/home`));
       setDisableSwitchAccount(false);
     }
   }, [
     transferMASSuccess,
     transferMASError,
-    transferFTSuccess,
+    transferFTPending,
     data,
     nickname,
     navigate,
