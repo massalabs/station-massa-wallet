@@ -261,7 +261,9 @@ async function estimateCoinsCost(
   const addrInfo = await client.publicApi().getAddresses([tokenAddress]);
   const allKeys = addrInfo[0].candidate_datastore_keys;
   const key = balanceKey(recipient);
-  const foundKey = allKeys.find((k) => k === key);
+  const foundKey = allKeys.find((k) => {
+    return JSON.stringify(k) === JSON.stringify(key);
+  });
 
   if (foundKey) {
     return 0n;
