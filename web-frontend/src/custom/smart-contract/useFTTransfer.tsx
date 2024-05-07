@@ -8,6 +8,8 @@ import {
   Args,
   ClientFactory,
   MAINNET_CHAIN_ID,
+  strToBytes,
+  STORAGE_BYTE_COST,
 } from '@massalabs/massa-web3';
 import { ToastContent, parseAmount, toast } from '@massalabs/react-ui-kit';
 import { providers } from '@massalabs/wallet-provider';
@@ -70,17 +72,19 @@ export function useFTTransfer(nickname: string) {
     const rawAmount = parseAmount(amount, decimals);
     const args = new Args().addString(recipient).addU256(rawAmount);
 
-    callSmartContract(
-      'transfer',
-      tokenAddress,
-      args.serialize(),
-      {
-        pending: Intl.t('send-coins.steps.ft-transfer-pending'),
-        success: Intl.t('send-coins.steps.ft-transfer-success'),
-        error: Intl.t('send-coins.steps.ft-transfer-failed'),
-      },
-      BigInt(0),
-    );
+    estimateCoinsCost(client, tokenAddress, recipient).then((coins) => {
+      callSmartContract(
+        'transfer',
+        tokenAddress,
+        args.serialize(),
+        {
+          pending: Intl.t('send-coins.steps.ft-transfer-pending'),
+          success: Intl.t('send-coins.steps.ft-transfer-success'),
+          error: Intl.t('send-coins.steps.ft-transfer-failed'),
+        },
+        coins,
+      );
+    });
   };
 
   return {
@@ -248,4 +252,31 @@ function useWriteSmartContract(client?: Client, isMainnet?: boolean) {
     isError,
     callSmartContract,
   };
+}
+async function estimateCoinsCost(
+  client: Client,
+  tokenAddress: string,
+  recipient: string,
+): Promise<bigint> {
+  const addrInfo = await client.publicApi().getAddresses([tokenAddress]);
+  const allKeys = addrInfo[0].candidate_datastore_keys;
+  const key = balanceKey(recipient);
+  const foundKey = allKeys.find((k) => k === key);
+
+  if (foundKey) {
+    return 0n;
+  }
+
+  const storage =
+    4n + // space of a key/value in the datastore
+    BigInt(key.length) + // key length
+    32n; // length of the value of the balance
+
+  return STORAGE_BYTE_COST * storage;
+}
+
+function balanceKey(address: string): number[] {
+  const BALANCE_KEY_PREFIX = 'BALANCE';
+
+  return Array.from(strToBytes(BALANCE_KEY_PREFIX + address));
 }
