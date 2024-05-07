@@ -46,15 +46,17 @@ export default function Advanced(props: AdvancedProps) {
     : currentFees || PRESET_LOW;
   const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
-  const [newCustomFees, setNewCustomFees] = useState<string>('');
   const [isCustomFeesSelected, setIsCustomFeesSelected] = useState<boolean>(
     !isPresetFeeSelected,
   );
+  const initialCustomFees = isCustomFeesSelected ? currentFees : '';
+  const [newCustomFees, setNewCustomFees] = useState<string>(initialCustomFees);
 
   function handlePresetFeesOption() {
     setIsCustomFeesSelected(false);
     setError(null);
     setPresetFee(PRESET_LOW);
+    setNewCustomFees('');
   }
 
   function handleCustomFeesOption() {
