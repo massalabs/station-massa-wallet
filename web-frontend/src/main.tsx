@@ -12,7 +12,6 @@ import {
 
 import '@massalabs/react-ui-kit/src/global.css';
 import './index.css';
-
 import { ENV } from '@/const/env/env';
 import { mockServer, mockServerWithCypress } from '@/mirage';
 import AccountCreate from '@/pages/AccountCreate/AccountCreate.tsx';
