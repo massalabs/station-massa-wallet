@@ -166,7 +166,7 @@ export default function Advanced(props: AdvancedProps) {
               placeholder={Intl.t('send-coins.custom-fees')}
               name="fees"
               variant="MAS"
-              value={feesField}
+              value={(customFees && currentFees) || feesField}
               disabled={!customFees}
               onValueChange={(event) => onFeeChange(event)}
               error={error?.fees}
