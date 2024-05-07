@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-import { Token } from '@massalabs/react-ui-kit';
+import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
 
+import { MAS } from '@/const/assets/assets';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
