@@ -61,9 +61,11 @@ export function SendForm(props: SendFormProps) {
   );
   const [fees, setFees] = useState<string>(PRESET_LOW);
   const [recipient, setRecipient] = useState<string>(
-    data?.recipientAddress || '',
+    (data && data.recipientAddress) || '',
   );
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
+    (data && data.asset) || undefined,
+  );
   const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
@@ -250,7 +252,7 @@ export function SendForm(props: SendFormProps) {
           </div>
           <div>
             <AssetSelector
-              selectedAsset={selectedAsset}
+              selectedAsset={selectedAsset || data?.asset}
               setSelectedAsset={setSelectedAsset}
               selectSymbol={redirectSymbol}
             />
