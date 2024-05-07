@@ -15,17 +15,11 @@ import { useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
-import { useNetworkStore } from '@/store/networkStore';
 import { routeFor } from '@/utils';
 
 export default function Home() {
   const navigate = useNavigate();
   const { nickname } = useParams();
-  const { isMainnet } = useNetworkStore();
-
-  useEffect(() => {
-    console.log('Home.tsx: isMainnet', isMainnet);
-  }, [isMainnet]);
 
   const {
     error,

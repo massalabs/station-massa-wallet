@@ -15,7 +15,7 @@ import {
 } from '@/pages/TransferCoins/SendCoins/SendConfirmation';
 import { SendForm } from '@/pages/TransferCoins/SendCoins/SendForm';
 import { Redirect } from '@/pages/TransferCoins/TransferCoins';
-import { useAppStore } from '@/store/appStore';
+import { useAppStore } from '@/store/store';
 import { routeFor, maskAddress } from '@/utils';
 
 interface SendCoinsProps {

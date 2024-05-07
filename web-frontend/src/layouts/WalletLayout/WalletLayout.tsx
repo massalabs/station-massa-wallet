@@ -24,7 +24,7 @@ import {
 } from 'react-router-dom';
 
 import Intl from '@/i18n/i18n';
-import { useAppStore } from '@/store/appStore';
+import { useAppStore } from '@/store/store';
 import { routeFor, useFetchAccounts } from '@/utils';
 
 export enum MenuItem {
