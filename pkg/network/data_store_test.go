@@ -4,14 +4,13 @@ import (
 	"log"
 	"testing"
 
-	testutils "github.com/massalabs/station-massa-wallet/pkg/testUtils"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAssetExistInNetwork(t *testing.T) {
-	err := testutils.LoggerTest()
-	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
+	if err := logger.InitializeGlobal("./unit-test.log"); err != nil {
+		log.Fatalf("while initializing global logger: %s", err.Error())
 	}
 
 	nodeFetcher := NewNodeFetcher()
