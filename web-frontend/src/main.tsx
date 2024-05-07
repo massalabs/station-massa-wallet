@@ -13,6 +13,7 @@ import {
 import '@massalabs/react-ui-kit/src/global.css';
 import './index.css';
 
+import { useNetworkStore } from './store/networkStore';
 import { ENV } from '@/const/env/env';
 import { mockServer, mockServerWithCypress } from '@/mirage';
 import AccountCreate from '@/pages/AccountCreate/AccountCreate.tsx';
@@ -40,6 +41,8 @@ if ([ENV.DEV, ENV.TEST].includes(baseENV)) {
   mockServer(import.meta.env.VITE_ENV);
   mockServerWithCypress();
 }
+
+useNetworkStore.getState().initNetworkStore();
 
 const queryClient = new QueryClient();
 
