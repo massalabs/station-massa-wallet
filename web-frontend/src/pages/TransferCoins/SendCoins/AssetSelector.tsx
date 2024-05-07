@@ -51,10 +51,10 @@ export function AssetSelector(props: AssetSelectorProps) {
         asset.decimals,
       ).amountFormattedFull;
       return {
-        itemPreview: asset.name,
+        itemPreview: asset.symbol,
         item: (
           <div>
-            <p>{asset.name}</p>
+            <p>{asset.symbol}</p>
             <p className="mas-caption">
               {Intl.t('send-coins.balance')} {formattedBalance}
             </p>
