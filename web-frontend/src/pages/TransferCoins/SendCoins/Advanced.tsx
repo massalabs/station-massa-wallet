@@ -38,31 +38,36 @@ export interface AdvancedProps {
 
 export default function Advanced(props: AdvancedProps) {
   const { onClose, fees: currentFees, setFees: setCurrentFees } = props;
+  const [error, setError] = useState<InputsErrors | null>(null);
 
-  const isOneOfPressedFees = Object.values(presetFees).includes(currentFees);
-  const initialFees = !isOneOfPressedFees ? currentFees : PRESET_LOW;
-  const initialPresetFees = !isOneOfPressedFees
+  const isPresetFeeSelected = Object.values(presetFees).includes(currentFees);
+  const initialPresetFees = !isPresetFeeSelected
     ? PRESET_LOW
     : currentFees || PRESET_LOW;
-  const initialCustomFees = !isOneOfPressedFees;
-
-  const [error, setError] = useState<InputsErrors | null>(null);
-  const [fees, setFees] = useState<string>(initialFees);
-  const [feesField, setFeesField] = useState<string>('');
-  const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
   const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
-  function handleGasFeesOption(isCustomFees: boolean) {
-    setCustomFees(isCustomFees);
+  const [isCustomFeesSelected, setIsCustomFeesSelected] = useState<boolean>(
+    !isPresetFeeSelected,
+  );
+  const initialCustomFees = isCustomFeesSelected ? currentFees : '';
+  const [newCustomFees, setNewCustomFees] = useState<string>(initialCustomFees);
+
+  function handlePresetFeesOption() {
+    setIsCustomFeesSelected(false);
     setError(null);
-    setFees(PRESET_LOW);
     setPresetFee(PRESET_LOW);
+    setNewCustomFees('');
+  }
+
+  function handleCustomFeesOption() {
+    setIsCustomFeesSelected(true);
+    setError(null);
   }
 
   function validate(formObject: FeesForm) {
     const { fees } = formObject;
     setError(null);
-    if (customFees && !fees) {
+    if (isCustomFeesSelected && !fees) {
       setError({ fees: Intl.t('errors.send-coins.no-fees') });
       return false;
     }
@@ -76,7 +81,9 @@ export default function Advanced(props: AdvancedProps) {
 
     if (!validate(formObject)) return;
 
-    setCurrentFees(fees);
+    isCustomFeesSelected
+      ? setCurrentFees(newCustomFees)
+      : setCurrentFees(presetFee);
     onClose();
   }
 
@@ -84,11 +91,10 @@ export default function Advanced(props: AdvancedProps) {
     const isDisabled = presetFee !== presetFees[name];
     function handleClick() {
       setPresetFee(presetFees[name]);
-      setFees(presetFees[name]);
     }
     return (
       <Button
-        disabled={customFees}
+        disabled={isCustomFeesSelected}
         name={name}
         customClass={
           isDisabled
@@ -107,9 +113,10 @@ export default function Advanced(props: AdvancedProps) {
   }
 
   function onFeeChange(event: { value: string }) {
-    setFees(event.value);
-    setFeesField(event.value);
+    setNewCustomFees(event.value);
   }
+
+  const currentOpFees = isCustomFeesSelected ? currentFees : '';
 
   return (
     <PopupModal
@@ -132,13 +139,13 @@ export default function Advanced(props: AdvancedProps) {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-row items-center mas-buttons mb-3">
               <RadioButton
-                checked={!customFees}
-                onChange={() => handleGasFeesOption(false)}
+                checked={!isCustomFeesSelected}
+                onChange={() => handlePresetFeesOption()}
                 name="gas"
               />
               <p
                 className="h-full ml-3 pb-1 cursor-pointer"
-                onClick={() => handleGasFeesOption(false)}
+                onClick={() => handlePresetFeesOption()}
               >
                 {Intl.t('send-coins.preset')}
               </p>
@@ -151,13 +158,13 @@ export default function Advanced(props: AdvancedProps) {
 
             <div className="flex flex-row items-center mas-buttons mb-3">
               <RadioButton
-                checked={customFees}
-                onChange={() => handleGasFeesOption(true)}
+                checked={isCustomFeesSelected}
+                onChange={() => handleCustomFeesOption()}
                 name="gas"
               />
               <p
                 className="h-full ml-3 pb-1 cursor-pointer"
-                onClick={() => handleGasFeesOption(true)}
+                onClick={() => handleCustomFeesOption()}
               >
                 {Intl.t('send-coins.custom-fees')}:
               </p>
@@ -166,8 +173,8 @@ export default function Advanced(props: AdvancedProps) {
               placeholder={Intl.t('send-coins.custom-fees')}
               name="fees"
               variant="MAS"
-              value={feesField}
-              disabled={!customFees}
+              value={currentOpFees || newCustomFees}
+              disabled={!isCustomFeesSelected}
               onValueChange={(event) => onFeeChange(event)}
               error={error?.fees}
             />
