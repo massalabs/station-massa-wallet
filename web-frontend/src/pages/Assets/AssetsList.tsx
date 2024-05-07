@@ -1,10 +1,13 @@
 import { useState } from 'react';
 
-import { FT1, MassaLogo, Token } from '@massalabs/react-ui-kit';
+import { Token, getAssetIcons } from '@massalabs/react-ui-kit';
+import { useParams } from 'react-router-dom';
 
 import { MAS } from '@/const/assets/assets';
+import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import { Asset } from '@/models/AssetModel';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
+import { symbolDict } from '@/utils/tokenIcon';
 
 interface AssetsListProps {
   assets: Asset[] | undefined;
@@ -21,13 +24,19 @@ export function AssetsList(props: AssetsListProps) {
     setModal(true);
   }
 
+  const { nickname } = useParams();
+  const { isMainnet } = useFTTransfer(nickname || '');
+
   return (
     <>
       {assets?.map((token: Asset, index: number) => (
         <Token
-          logo={
-            token.symbol === MAS ? <MassaLogo size={40} /> : <FT1 size={40} />
-          }
+          logo={getAssetIcons(
+            symbolDict[token.symbol as keyof typeof symbolDict],
+            !isMainnet,
+            isMainnet,
+            32,
+          )}
           name={token.name}
           symbol={token.symbol}
           decimals={token.decimals}
