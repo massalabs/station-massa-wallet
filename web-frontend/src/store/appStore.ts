@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface AppStoreState {
+export interface AppStoreState {
   disableSwitchAccount: boolean;
   setDisableSwitchAccount: (newValue: boolean) => void;
 }
