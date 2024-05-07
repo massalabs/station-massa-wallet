@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   Client,
@@ -59,33 +59,36 @@ export function useFTTransfer(nickname: string) {
     callSmartContract,
   } = useWriteSmartContract(client, isMainnet);
 
-  const transfer = (
-    recipient: string,
-    tokenAddress: string,
-    amount: string,
-    decimals: number,
-  ) => {
-    if (!client) {
-      throw new Error('Massa client not found');
-    }
+  const transfer = useCallback(
+    (
+      recipient: string,
+      tokenAddress: string,
+      amount: string,
+      decimals: number,
+    ) => {
+      if (!client) {
+        throw new Error('Massa client not found');
+      }
 
-    const rawAmount = parseAmount(amount, decimals);
-    const args = new Args().addString(recipient).addU256(rawAmount);
+      const rawAmount = parseAmount(amount, decimals);
+      const args = new Args().addString(recipient).addU256(rawAmount);
 
-    estimateCoinsCost(client, tokenAddress, recipient).then((coins) => {
-      callSmartContract(
-        'transfer',
-        tokenAddress,
-        args.serialize(),
-        {
-          pending: Intl.t('send-coins.steps.ft-transfer-pending'),
-          success: Intl.t('send-coins.steps.ft-transfer-success'),
-          error: Intl.t('send-coins.steps.ft-transfer-failed'),
-        },
-        coins,
-      );
-    });
-  };
+      estimateCoinsCost(client, tokenAddress, recipient).then((coins) => {
+        callSmartContract(
+          'transfer',
+          tokenAddress,
+          args.serialize(),
+          {
+            pending: Intl.t('send-coins.steps.ft-transfer-pending'),
+            success: Intl.t('send-coins.steps.ft-transfer-success'),
+            error: Intl.t('send-coins.steps.ft-transfer-failed'),
+          },
+          coins,
+        );
+      });
+    },
+    [client, callSmartContract],
+  );
 
   return {
     opId,
