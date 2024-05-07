@@ -44,7 +44,7 @@ export function SendForm(props: SendFormProps) {
   const {
     handleSubmit: sendCoinsHandleSubmit,
     account: currentAccount,
-    data,
+    data: sendOpData,
     redirect,
   } = props;
   const {
@@ -57,14 +57,14 @@ export function SendForm(props: SendFormProps) {
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
   const [amount, setAmount] = useState<string>(
-    data && data.amount ? data.amount : '',
+    sendOpData && sendOpData.amount ? sendOpData.amount : '',
   );
   const [fees, setFees] = useState<string>(PRESET_LOW);
   const [recipient, setRecipient] = useState<string>(
-    (data && data.recipientAddress) || '',
+    (sendOpData && sendOpData.recipientAddress) || '',
   );
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
-    (data && data.asset) || undefined,
+    (sendOpData && sendOpData.asset) || undefined,
   );
   const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
@@ -74,16 +74,16 @@ export function SendForm(props: SendFormProps) {
   const balance = BigInt(selectedAsset?.balance || '0');
 
   useEffect(() => {
-    if (!data) {
+    if (!sendOpData) {
       setAmount(redirectAmount);
       setRecipient(redirectedTo);
       setFees(PRESET_LOW);
     } else {
-      setAmount(data?.amount);
-      setRecipient(data?.recipientAddress);
-      setFees(data?.fees);
+      setAmount(sendOpData?.amount);
+      setRecipient(sendOpData?.recipientAddress);
+      setFees(sendOpData?.fees);
     }
-  }, [data, redirectAmount, redirectedTo]);
+  }, [sendOpData, redirectAmount, redirectedTo]);
 
   function validate(formObject: IForm) {
     const { recipientAddress } = formObject;
@@ -252,7 +252,7 @@ export function SendForm(props: SendFormProps) {
           </div>
           <div>
             <AssetSelector
-              selectedAsset={selectedAsset || data?.asset}
+              selectedAsset={selectedAsset || sendOpData?.asset}
               setSelectedAsset={setSelectedAsset}
               selectSymbol={redirectSymbol}
             />

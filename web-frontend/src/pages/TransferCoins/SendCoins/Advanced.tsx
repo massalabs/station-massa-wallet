@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 
 import {
   Button,
@@ -48,12 +48,20 @@ export default function Advanced(props: AdvancedProps) {
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [fees, setFees] = useState<string>(initialFees);
-  const [feesField, setFeesField] = useState<string>('');
-  const [customFees, setCustomFees] = useState<boolean>(initialCustomFees);
+  const [customFees, setCustomFees] = useState<string>('');
+  const [isCustomFeesSelected, setIsCustomFeesSelected] =
+    useState<boolean>(initialCustomFees);
   const [presetFee, setPresetFee] = useState<string>(initialPresetFees);
 
-  function handleGasFeesOption(isCustomFees: boolean) {
-    setCustomFees(isCustomFees);
+  useEffect(() => {
+    console.log('fees', fees);
+    console.log('customFees', customFees);
+    console.log('isCustomFeesSelected', isCustomFeesSelected);
+  }, [fees, customFees, isCustomFeesSelected]);
+
+  function handleGasFeesOption(isCustomFeesSelected: boolean) {
+    console.log('isCustomFeesSelected', isCustomFeesSelected);
+    setIsCustomFeesSelected(isCustomFeesSelected);
     setError(null);
     setFees(PRESET_LOW);
     setPresetFee(PRESET_LOW);
@@ -62,7 +70,7 @@ export default function Advanced(props: AdvancedProps) {
   function validate(formObject: FeesForm) {
     const { fees } = formObject;
     setError(null);
-    if (customFees && !fees) {
+    if (isCustomFeesSelected && !fees) {
       setError({ fees: Intl.t('errors.send-coins.no-fees') });
       return false;
     }
@@ -88,7 +96,7 @@ export default function Advanced(props: AdvancedProps) {
     }
     return (
       <Button
-        disabled={customFees}
+        disabled={isCustomFeesSelected}
         name={name}
         customClass={
           isDisabled
@@ -108,8 +116,10 @@ export default function Advanced(props: AdvancedProps) {
 
   function onFeeChange(event: { value: string }) {
     setFees(event.value);
-    setFeesField(event.value);
+    setCustomFees(event.value);
   }
+
+  const currentOpFees = isCustomFeesSelected ? currentFees : '';
 
   return (
     <PopupModal
@@ -132,7 +142,7 @@ export default function Advanced(props: AdvancedProps) {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-row items-center mas-buttons mb-3">
               <RadioButton
-                checked={!customFees}
+                checked={!isCustomFeesSelected}
                 onChange={() => handleGasFeesOption(false)}
                 name="gas"
               />
@@ -151,7 +161,7 @@ export default function Advanced(props: AdvancedProps) {
 
             <div className="flex flex-row items-center mas-buttons mb-3">
               <RadioButton
-                checked={customFees}
+                checked={isCustomFeesSelected}
                 onChange={() => handleGasFeesOption(true)}
                 name="gas"
               />
@@ -166,8 +176,8 @@ export default function Advanced(props: AdvancedProps) {
               placeholder={Intl.t('send-coins.custom-fees')}
               name="fees"
               variant="MAS"
-              value={(customFees && currentFees) || feesField}
-              disabled={!customFees}
+              value={currentOpFees || customFees}
+              disabled={!isCustomFeesSelected}
               onValueChange={(event) => onFeeChange(event)}
               error={error?.fees}
             />
