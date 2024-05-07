@@ -33,7 +33,7 @@ export function AssetsList(props: AssetsListProps) {
         <Token
           logo={getAssetIcons(
             symbolDict[token.symbol as keyof typeof symbolDict],
-            !isMainnet,
+            true,
             isMainnet,
             32,
           )}
