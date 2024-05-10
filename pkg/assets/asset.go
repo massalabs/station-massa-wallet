@@ -20,9 +20,10 @@ const (
 
 // AssetsStore encapsulates all the nicknames with their related contract assets.
 type AssetsStore struct {
-	Assets      map[string]Assets
-	StoreMutex  sync.Mutex
-	massaClient *network.NodeFetcher
+	Assets        map[string]Assets
+	StoreMutex    sync.Mutex
+	massaClient   *network.NodeFetcher
+	assetsJSONDir string
 }
 
 // Assets encapsulates the contract assets associated with a specific account.
@@ -44,12 +45,28 @@ type assetData struct {
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
-func NewAssetsStore(assetsJSONPath string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
+func NewAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets:      make(map[string]Assets),
 		massaClient: massaClient,
 	}
-	if err := store.loadAccountsStore(assetsJSONPath); err != nil {
+
+	if assetsJSONDir == "" {
+		assetsJSONDir, err := wallet.Path()
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to get AssetsStore JSON file")
+		}
+		store.assetsJSONDir = assetsJSONDir
+	} else {
+		store.assetsJSONDir = assetsJSONDir
+	}
+
+	if err := store.loadAccountsStore(); err != nil {
+		return nil, errors.Wrap(err, "failed to create AssetsStore")
+	}
+
+	err := store.InitDefaultAsset()
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
@@ -57,8 +74,9 @@ func NewAssetsStore(assetsJSONPath string, massaClient *network.NodeFetcher) (*A
 }
 
 // loadAccountsStore loads the data from the assets JSON file into the AssetsStore.
-func (s *AssetsStore) loadAccountsStore(assetsJSONPath string) error {
+func (s *AssetsStore) loadAccountsStore() error {
 	// Check if the file exists, and if not, create a new one with an empty object
+	assetsJSONPath := getAssetJSONPath(s.assetsJSONDir)
 	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
 		if err := createJSONFile(assetsJSONPath); err != nil {
 			return errors.Wrap(err, "failed to create assets JSON file")
@@ -163,12 +181,7 @@ func (s *AssetsStore) save() error {
 	}
 
 	// Write the JSON data to the file
-	assetsJSONPath, err := GetAssetsJSONPath()
-	if err != nil {
-		return errors.Wrap(err, "error getting assets JSON file")
-	}
-
-	if err := os.WriteFile(assetsJSONPath, data, permissionUrwGrOr); err != nil {
+	if err := os.WriteFile(getAssetJSONPath(s.assetsJSONDir), data, permissionUrwGrOr); err != nil {
 		return errors.Wrap(err, "failed to write JSON data to file")
 	}
 
@@ -256,6 +269,10 @@ func (s *AssetsStore) AllAssets(nickname string) []models.AssetInfo {
 	return addresses
 }
 
+func getAssetJSONPath(assetsJSONDir string) string {
+	return filepath.Join(assetsJSONDir, "assets.json")
+}
+
 // createJSONFile creates an empty JSON file at the specified path.
 func createJSONFile(path string) error {
 	if err := os.WriteFile(path, []byte("{}"), permissionUrwGrOr); err != nil {
@@ -263,16 +280,6 @@ func createJSONFile(path string) error {
 	}
 
 	return nil
-}
-
-// GetAssetsJSONPath returns the path to the assets JSON file.
-func GetAssetsJSONPath() (string, error) {
-	walletPath, err := wallet.Path()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(walletPath, "assets.json"), nil
 }
 
 func MASInfo() models.AssetInfo {

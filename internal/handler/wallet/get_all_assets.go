@@ -108,7 +108,7 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*AssetInfoWithBalances
 }
 
 func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*AssetInfoWithBalances, middleware.Responder) {
-	defaultAssets, err := assets.GetDefaultAssets()
+	defaultAssets, err := g.AssetsStore.GetDefaultAssets()
 	if err != nil {
 		logger.Errorf("Failed to get default assets: %s", err.Error())
 	}

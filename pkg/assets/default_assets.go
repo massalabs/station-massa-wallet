@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
 type DefaultAssetInfo struct {
@@ -16,13 +14,13 @@ type DefaultAssetInfo struct {
 	MEXCSymbol string `json:"MEXCSymbol"`
 }
 
-func GetDefaultAssets() ([]DefaultAssetInfo, error) {
-	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath()
+func (s *AssetsStore) GetDefaultAssets() ([]DefaultAssetInfo, error) {
+	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath(s.assetsJSONDir)
 	if err != nil {
 		return nil, err
 	}
 
-	defaultAssets, err := loadDefaultAssets(defaultAssetsJSONPath)
+	defaultAssets, err := s.loadDefaultAssets(defaultAssetsJSONPath)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +29,7 @@ func GetDefaultAssets() ([]DefaultAssetInfo, error) {
 }
 
 // loadDefaultAssets loads the default assets from the JSON file.
-func loadDefaultAssets(path string) ([]DefaultAssetInfo, error) {
+func (s *AssetsStore) loadDefaultAssets(path string) ([]DefaultAssetInfo, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -46,15 +44,15 @@ func loadDefaultAssets(path string) ([]DefaultAssetInfo, error) {
 	return defaultAssets, nil
 }
 
-func InitDefaultAsset() error {
+func (s *AssetsStore) InitDefaultAsset() error {
 	// Get the path to the default assets JSON file
-	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath()
+	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath(s.assetsJSONDir)
 	if err != nil {
 		return err
 	}
 
 	if _, err := os.Stat(defaultAssetsJSONPath); os.IsNotExist(err) {
-		if err := createFileDefaultAssets(defaultAssetsJSONPath); err != nil {
+		if err := s.createFileDefaultAssets(defaultAssetsJSONPath); err != nil {
 			return err
 		}
 	}
@@ -63,17 +61,12 @@ func InitDefaultAsset() error {
 }
 
 // getDefaultAssetsJSONPath returns the path to the default assets JSON file.
-func getDefaultAssetsJSONPath() (string, error) {
-	walletPath, err := wallet.Path()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(walletPath, "assets_default.json"), nil
+func getDefaultAssetsJSONPath(assetsJSONDir string) (string, error) {
+	return filepath.Join(assetsJSONDir, "assets_default.json"), nil
 }
 
 // createFileDefaultAssets creates the default assets JSON file with the default assets.
-func createFileDefaultAssets(path string) error {
+func (s *AssetsStore) createFileDefaultAssets(path string) error {
 	if err := os.WriteFile(path, []byte(`[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",
