@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
-	utils "github.com/massalabs/station-massa-wallet/pkg/assets"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/massalabs/station/pkg/logger"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -101,15 +98,7 @@ func TestAddAssetHandler(t *testing.T) {
 
 		// Assert that the error message matches the expected value
 		assert.Equal(t, "Asset with the provided address already exists.", errorResponse.Message)
-
-		// Remove the json file created
-		err = RemoveJSONFile()
-		assert.NoError(t, err)
 	})
-
-	// Remove the json file created
-	err = RemoveJSONFile()
-	assert.NoError(t, err)
 }
 
 func addAssetTest(t *testing.T, api *operations.MassaWalletAPI, nickname, assetAddress string) *models.AssetInfo {
@@ -130,24 +119,4 @@ func addAssetTest(t *testing.T, api *operations.MassaWalletAPI, nickname, assetA
 	assert.NoError(t, err)
 
 	return &addedAsset
-}
-
-// RemoveJSONFile removes the assets.json file if it exists.
-func RemoveJSONFile() error {
-	assetsJSONPath, err := utils.GetAssetsJSONPath()
-	if err != nil {
-		return err
-	}
-
-	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
-		// The file does not exist, so there's nothing to remove.
-		return nil
-	}
-
-	// The file exists, so let's attempt to remove it.
-	if err := os.Remove(assetsJSONPath); err != nil {
-		return errors.Wrap(err, "failed to remove assets JSON file")
-	}
-
-	return nil
 }

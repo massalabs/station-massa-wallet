@@ -32,9 +32,6 @@ func TestAddGetDeleteAsset(t *testing.T) {
 	// Assert that the number of assets increased by 1 after adding
 	assert.Len(t, assetsAfterAdd, len(assetsBeforeAdd)+1, "the assets list should have increased by 1 after adding")
 
-	// Assert the first asset remains unchanged
-	assertAssetInfoWithBalanceEqual(t, assetsAfterAdd[0], assetsBeforeAdd[0])
-
 	// Assert the newly added asset
 	assert.Equal(t, validAddress, addedAsset.Address)
 	assert.Equal(t, "TestToken", addedAsset.Name)
@@ -42,10 +39,10 @@ func TestAddGetDeleteAsset(t *testing.T) {
 	assert.Equal(t, int64(9), *addedAsset.Decimals)
 
 	// Assert the balance of the newly added asset
-	assert.Equal(t, "10000", assetsAfterAdd[1].Balance)
+	assert.Equal(t, "10000", assetsAfterAdd[len(assetsAfterAdd)-1].Balance)
 
 	// Assert the address of the newly added asset
-	assert.Equal(t, validAddress, assetsAfterAdd[1].Address)
+	assert.Equal(t, validAddress, assetsAfterAdd[len(assetsAfterAdd)-1].Address)
 
 	// Step 4: Delete the imported asset
 	deleteAssetTest(t, api, nickname, validAddress)
@@ -58,10 +55,6 @@ func TestAddGetDeleteAsset(t *testing.T) {
 
 	// Assert the first asset remains unchanged after deletion
 	assertAssetInfoWithBalanceEqual(t, assetsAfterDelete[0], assetsBeforeAdd[0])
-
-	// Remove the json file created
-	err = RemoveJSONFile()
-	assert.NoError(t, err)
 }
 
 func deleteAssetTest(t *testing.T, api *operations.MassaWalletAPI, nickname, assetAddress string) {

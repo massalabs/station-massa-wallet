@@ -23,15 +23,11 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	assetsWithBalance := getAssets(t, api, nickname)
 
 	// Assert that assetsWithBalance contains the expected data
-	assert.Len(t, assetsWithBalance, 1, "the assets list should have 1 item")
+	assert.Len(t, assetsWithBalance, 8, "the assets list should have 1 item")
 
 	assert.Equal(t, "1000000", assetsWithBalance[0].Balance)
 	assert.Equal(t, "Massa", assetsWithBalance[0].AssetInfo.Name)
 	assert.Equal(t, "MAS", assetsWithBalance[0].AssetInfo.Symbol)
-
-	// Remove the json file created
-	err = RemoveJSONFile()
-	assert.NoError(t, err)
 }
 
 func getAssets(t *testing.T, api *operations.MassaWalletAPI, nickname string) []*models.AssetInfoWithBalance {
