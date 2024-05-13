@@ -10,6 +10,7 @@ import {
   MAINNET_CHAIN_ID,
   strToBytes,
   STORAGE_BYTE_COST,
+  fromMAS,
 } from '@massalabs/massa-web3';
 import { ToastContent, parseAmount, toast } from '@massalabs/react-ui-kit';
 import { providers } from '@massalabs/wallet-provider';
@@ -65,6 +66,7 @@ export function useFTTransfer(nickname: string) {
       tokenAddress: string,
       amount: string,
       decimals: number,
+      fees: string,
     ) => {
       if (!client) {
         throw new Error('Massa client not found');
@@ -84,6 +86,7 @@ export function useFTTransfer(nickname: string) {
             error: Intl.t('send-coins.steps.ft-transfer-failed'),
           },
           coins,
+          fees,
         );
       });
     },
@@ -125,6 +128,7 @@ function useWriteSmartContract(client?: Client, isMainnet?: boolean) {
     parameter: number[],
     messages: ToasterMessage,
     coins = BigInt(0),
+    fees: string,
   ) {
     if (!client) {
       throw new Error('Massa client not found');
@@ -144,6 +148,7 @@ function useWriteSmartContract(client?: Client, isMainnet?: boolean) {
       targetFunction,
       parameter,
       coins,
+      fee: fromMAS(fees),
     } as ICallData;
 
     client
