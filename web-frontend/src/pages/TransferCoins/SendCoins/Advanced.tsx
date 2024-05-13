@@ -39,8 +39,9 @@ export interface AdvancedProps {
 export default function Advanced(props: AdvancedProps) {
   const { onClose, fees: currentFees, setFees: setCurrentFees } = props;
   const [error, setError] = useState<InputsErrors | null>(null);
-
-  const isPresetFeeSelected = Object.values(presetFees).includes(currentFees);
+  const [isPresetFeeSelected, setIsPresetFeeSelected] = useState<boolean>(
+    Object.values(presetFees).includes(currentFees),
+  );
   const initialPresetFees = !isPresetFeeSelected
     ? PRESET_LOW
     : currentFees || PRESET_LOW;
@@ -54,6 +55,7 @@ export default function Advanced(props: AdvancedProps) {
 
   function handlePresetFeesOption() {
     setIsCustomFeesSelected(false);
+    setIsPresetFeeSelected(true);
     setError(null);
     setPresetFee(PRESET_LOW);
     setNewCustomFees('');
@@ -61,6 +63,7 @@ export default function Advanced(props: AdvancedProps) {
 
   function handleCustomFeesOption() {
     setIsCustomFeesSelected(true);
+    setIsPresetFeeSelected(false);
     setError(null);
   }
 
@@ -88,7 +91,7 @@ export default function Advanced(props: AdvancedProps) {
   }
 
   function FeesSelector({ name }: { name: string }) {
-    const isDisabled = presetFee !== presetFees[name];
+    const isDisabled = presetFee !== presetFees[name] || isCustomFeesSelected;
     function handleClick() {
       setPresetFee(presetFees[name]);
     }
