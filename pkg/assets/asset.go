@@ -261,6 +261,9 @@ func (s *AssetsStore) DeleteAsset(nickname, assetAddress string) error {
 	return nil
 }
 
+// All returns all the assets associated with a specific account nickname.
+// It returns the default assets first, followed by the assets added by the user.
+// If user already added the default asset, it will not be duplicated.
 func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
 	defaultAssets, err := s.Default()
 	if err != nil {

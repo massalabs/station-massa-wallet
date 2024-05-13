@@ -101,6 +101,8 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*assets.AssetInfoWithB
 	return massaAsset, nil
 }
 
+// getAssetsData fetches the balance and dollar value for each asset in the account.
+// If user has asset that are deployed on another network, it will not be included.
 func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoWithBalances, middleware.Responder) {
 	assetsInfo := g.AssetsStore.All(acc.Nickname)
 
