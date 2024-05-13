@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 )
 
+const defaultAssetsFilename = "assets_default.json"
+
 type DefaultAssetInfo struct {
 	Address    string `json:"address"`
 	Name       string `json:"name"`
@@ -62,7 +64,7 @@ func (s *AssetsStore) InitDefaultAsset() error {
 
 // getDefaultAssetsJSONPath returns the path to the default assets JSON file.
 func getDefaultAssetsJSONPath(assetsJSONDir string) (string, error) {
-	return filepath.Join(assetsJSONDir, "assets_default.json"), nil
+	return filepath.Join(assetsJSONDir, defaultAssetsFilename), nil
 }
 
 // createFileDefaultAssets creates the default assets JSON file with the default assets.

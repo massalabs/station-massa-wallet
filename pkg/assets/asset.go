@@ -16,6 +16,7 @@ import (
 
 const (
 	permissionUrwGrOr = 0o644
+	assetsFilename    = "assets.json"
 )
 
 // AssetsStore encapsulates all the nicknames with their related contract assets.
@@ -45,6 +46,7 @@ type assetData struct {
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
+// If assetsJSONDir is empty, it will use the default wallet path.
 func NewAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets:      make(map[string]Assets),
@@ -270,7 +272,7 @@ func (s *AssetsStore) AllAssets(nickname string) []models.AssetInfo {
 }
 
 func getAssetJSONPath(assetsJSONDir string) string {
-	return filepath.Join(assetsJSONDir, "assets.json")
+	return filepath.Join(assetsJSONDir, assetsFilename)
 }
 
 // createJSONFile creates an empty JSON file at the specified path.
