@@ -96,6 +96,7 @@ export default function SendCoins(props: SendCoinsProps) {
           data.asset.address,
           data.amount,
           data.asset.decimals,
+          data.fees,
         );
       } else {
         setErrorToastId(null);
