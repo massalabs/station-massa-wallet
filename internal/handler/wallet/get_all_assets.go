@@ -28,13 +28,7 @@ type getAllAssets struct {
 	massaClient network.NodeFetcherInterface
 }
 
-type AssetInfoWithBalances struct {
-	AssetInfo   *models.AssetInfo
-	Balance     string
-	MEXCSymbol  string
-	DollarValue *float64
-	IsDefault   bool
-}
+
 
 func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
 	// Load the wallet based on the provided Nickname
@@ -44,7 +38,7 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	}
 
 	// Create a slice to store the assets with their balances
-	assetsWithBalance := make([]*AssetInfoWithBalances, 0)
+	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
 
 	massaAsset, resp := g.getMASAsset(acc)
 	if resp != nil {
@@ -75,7 +69,7 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	return operations.NewGetAllAssetsOK().WithPayload(convertToModel(assetsWithBalance))
 }
 
-func (g *getAllAssets) getMASAsset(acc *account.Account) (*AssetInfoWithBalances, middleware.Responder) {
+func (g *getAllAssets) getMASAsset(acc *account.Account) (*assets.AssetInfoWithBalances, middleware.Responder) {
 	// Fetch the account information for the wallet using the massaClient
 	infos, err := g.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
@@ -89,7 +83,7 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*AssetInfoWithBalances
 	}
 	// Create the asset info for the Massa token and append it to the result slice
 	asset := assets.MASInfo()
-	massaAsset := &AssetInfoWithBalances{
+	massaAsset := &assets.AssetInfoWithBalances{
 		AssetInfo:  &asset,
 		Balance:    fmt.Sprint(infos[0].CandidateBalance),
 		IsDefault:  true,
@@ -107,56 +101,10 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*AssetInfoWithBalances
 	return massaAsset, nil
 }
 
-func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*AssetInfoWithBalances, middleware.Responder) {
-	defaultAssets, err := g.AssetsStore.GetDefaultAssets()
-	if err != nil {
-		logger.Errorf("Failed to get default assets: %s", err.Error())
-	}
+func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoWithBalances, middleware.Responder) {
+	assetsInfo := g.AssetsStore.All(acc.Nickname)
 
-	assetsInfo := make([]*AssetInfoWithBalances, 0)
-
-	// Initialize map to track addressed already added
-	includedAddresses := map[string]bool{}
-
-	for _, asset := range defaultAssets {
-		completeAsset := &AssetInfoWithBalances{
-			AssetInfo: &models.AssetInfo{
-				Address:  asset.Address,
-				Decimals: &asset.Decimals,
-				Name:     asset.Name,
-				Symbol:   asset.Symbol,
-			},
-			Balance:     "",
-			MEXCSymbol:  asset.MEXCSymbol,
-			DollarValue: nil,
-			IsDefault:   true,
-		}
-		assetsInfo = append(assetsInfo, completeAsset)
-		includedAddresses[asset.Address] = true
-	}
-
-	// Append default assets ensuring no duplication
-	for _, asset := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
-		// Append the asset info to the result slice if it is not already in the list
-		if _, exists := includedAddresses[asset.Address]; !exists {
-			completeAsset := &AssetInfoWithBalances{
-				AssetInfo: &models.AssetInfo{
-					Address:  asset.Address,
-					Decimals: asset.Decimals,
-					Name:     asset.Name,
-					Symbol:   asset.Symbol,
-				},
-				Balance:     "",
-				MEXCSymbol:  "",
-				DollarValue: nil,
-				IsDefault:   false,
-			}
-			assetsInfo = append(assetsInfo, completeAsset)
-			includedAddresses[asset.Address] = true
-		}
-	}
-
-	assetsWithBalance := make([]*AssetInfoWithBalances, 0)
+	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
 
 	// Retrieve all assets from the selected nickname
 	for _, asset := range assetsInfo {
@@ -177,7 +125,7 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*AssetInfoWithBala
 	return assetsWithBalance, nil
 }
 
-func (g *getAllAssets) fetchAssetData(asset *AssetInfoWithBalances, acc *account.Account) (string, *float64) {
+func (g *getAllAssets) fetchAssetData(asset *assets.AssetInfoWithBalances, acc *account.Account) (string, *float64) {
 	assetAddress := asset.AssetInfo.Address
 
 	// Balance
@@ -207,7 +155,7 @@ func (g *getAllAssets) fetchAssetData(asset *AssetInfoWithBalances, acc *account
 	return balance, dollarValue
 }
 
-func convertToModel(assetsWithBalance []*AssetInfoWithBalances) []*models.AssetInfoWithBalance {
+func convertToModel(assetsWithBalance []*assets.AssetInfoWithBalances) []*models.AssetInfoWithBalance {
 	result := make([]*models.AssetInfoWithBalance, 0)
 
 	for _, asset := range assetsWithBalance {

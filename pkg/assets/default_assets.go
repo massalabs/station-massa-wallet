@@ -16,8 +16,8 @@ type DefaultAssetInfo struct {
 	MEXCSymbol string `json:"MEXCSymbol"`
 }
 
-func (s *AssetsStore) GetDefaultAssets() ([]DefaultAssetInfo, error) {
-	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath(s.assetsJSONDir)
+func (s *AssetsStore) Default() ([]DefaultAssetInfo, error) {
+	defaultAssetsJSONPath, err := getDefaultJSONPath(s.assetsJSONDir)
 	if err != nil {
 		return nil, err
 	}
@@ -46,15 +46,15 @@ func (s *AssetsStore) loadDefaultAssets(path string) ([]DefaultAssetInfo, error)
 	return defaultAssets, nil
 }
 
-func (s *AssetsStore) InitDefaultAsset() error {
+func (s *AssetsStore) InitDefault() error {
 	// Get the path to the default assets JSON file
-	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath(s.assetsJSONDir)
+	defaultAssetsJSONPath, err := getDefaultJSONPath(s.assetsJSONDir)
 	if err != nil {
 		return err
 	}
 
 	if _, err := os.Stat(defaultAssetsJSONPath); os.IsNotExist(err) {
-		if err := s.createFileDefaultAssets(defaultAssetsJSONPath); err != nil {
+		if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
 			return err
 		}
 	}
@@ -62,13 +62,13 @@ func (s *AssetsStore) InitDefaultAsset() error {
 	return nil
 }
 
-// getDefaultAssetsJSONPath returns the path to the default assets JSON file.
-func getDefaultAssetsJSONPath(assetsJSONDir string) (string, error) {
+// getDefaultJSONPath returns the path to the default assets JSON file.
+func getDefaultJSONPath(assetsJSONDir string) (string, error) {
 	return filepath.Join(assetsJSONDir, defaultAssetsFilename), nil
 }
 
-// createFileDefaultAssets creates the default assets JSON file with the default assets.
-func (s *AssetsStore) createFileDefaultAssets(path string) error {
+// createFileDefault creates the default assets JSON file with the default assets.
+func (s *AssetsStore) createFileDefault(path string) error {
 	if err := os.WriteFile(path, []byte(`[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",

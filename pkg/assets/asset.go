@@ -27,6 +27,14 @@ type AssetsStore struct {
 	assetsJSONDir string
 }
 
+type AssetInfoWithBalances struct {
+	AssetInfo   *models.AssetInfo
+	Balance     string
+	MEXCSymbol  string
+	DollarValue *float64
+	IsDefault   bool
+}
+
 // Assets encapsulates the contract assets associated with a specific account.
 type Assets struct {
 	ContractAssets map[string]models.AssetInfo
@@ -67,7 +75,7 @@ func NewAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*As
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
-	err := store.InitDefaultAsset()
+	err := store.InitDefault()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
@@ -253,22 +261,56 @@ func (s *AssetsStore) DeleteAsset(nickname, assetAddress string) error {
 	return nil
 }
 
-func (s *AssetsStore) AllAssets(nickname string) []models.AssetInfo {
-	addresses := make([]models.AssetInfo, 0)
-
-	// Retrieve all assets from the given nickname
-	for assetAddress := range s.Assets[nickname].ContractAssets {
-		// First, check if the asset exists in the network
-		if !s.massaClient.AssetExistInNetwork(assetAddress) {
-			// If the asset does not exist in the network, skip it and go to the next one
-			logger.Infof("Asset %s does not exist in the network", assetAddress)
-			continue
-		}
-
-		addresses = append(addresses, s.Assets[nickname].ContractAssets[assetAddress])
+func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
+	defaultAssets, err := s.Default()
+	if err != nil {
+		logger.Errorf("Failed to get default assets: %s", err.Error())
 	}
 
-	return addresses
+	assetsInfo := make([]*AssetInfoWithBalances, 0)
+
+	// Initialize map to track addressed already added
+	includedAddresses := map[string]bool{}
+
+	for _, asset := range defaultAssets {
+		completeAsset := &AssetInfoWithBalances{
+			AssetInfo: &models.AssetInfo{
+				Address:  asset.Address,
+				Decimals: &asset.Decimals,
+				Name:     asset.Name,
+				Symbol:   asset.Symbol,
+			},
+			Balance:     "",
+			MEXCSymbol:  asset.MEXCSymbol,
+			DollarValue: nil,
+			IsDefault:   true,
+		}
+		assetsInfo = append(assetsInfo, completeAsset)
+		includedAddresses[asset.Address] = true
+	}
+
+	// Append default assets ensuring no duplication
+	for _, asset := range s.Assets[nickname].ContractAssets {
+		// Append the asset info to the result slice if it is not already in the list
+		if _, exists := includedAddresses[asset.Address]; !exists {
+			completeAsset := &AssetInfoWithBalances{
+				AssetInfo: &models.AssetInfo{
+					Address:  asset.Address,
+					Decimals: asset.Decimals,
+					Name:     asset.Name,
+					Symbol:   asset.Symbol,
+				},
+				Balance:     "",
+				MEXCSymbol:  "",
+				DollarValue: nil,
+				IsDefault:   false,
+			}
+			assetsInfo = append(assetsInfo, completeAsset)
+			includedAddresses[asset.Address] = true
+		}
+	}
+
+	return assetsInfo
 }
 
 func getAssetJSONPath(assetsJSONDir string) string {

@@ -26,6 +26,8 @@ type Wallet struct {
 	mutex                   sync.Mutex
 }
 
+// New creates a new wallet instance.
+// If walletPath is empty, it will use the default wallet path.
 func New(walletPath string) (*Wallet, error) {
 	wallet := &Wallet{
 		accounts: &sync.Map{},
