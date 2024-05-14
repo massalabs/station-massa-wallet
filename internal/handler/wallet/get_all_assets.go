@@ -54,6 +54,12 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	// sort AssetsWithBalance by name
 	sort.Slice(assetsWithBalance, func(i, j int) bool {
+		if assetsWithBalance[i].AssetInfo.Symbol == "MAS" {
+			return true
+		}
+		if assetsWithBalance[j].AssetInfo.Symbol == "MAS" {
+			return false
+		}
 		if assetsWithBalance[i].DollarValue == nil {
 			return false
 		}
