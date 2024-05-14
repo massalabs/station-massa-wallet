@@ -4,6 +4,7 @@ import { Args, ICallData } from '@massalabs/massa-web3';
 import { bytesToStr } from '@massalabs/web3-utils';
 
 import { usePrepareScCall } from './usePrepareScCall';
+import { contracts } from '@/utils/const';
 
 export function useMNS() {
   const [address, setAddress] = useState<string>('');
@@ -11,17 +12,12 @@ export function useMNS() {
 
   const { client, account } = usePrepareScCall();
 
-  const MNSTargetAddress =
-    'AS1CpitsdLu4dtbQrqAzhThygL2ytGyacFED1ogr2HsxZxfNy8qQ';
-
   const accountAddress = account?.address() ?? '';
 
-  const reverseResolveArgs = new Args().addString(accountAddress);
-
   const reverseResolveData = {
-    targetAddress: MNSTargetAddress,
+    targetAddress: contracts.buildnet.MNSContract,
     targetFunction: 'dnsReverseResolve',
-    parameter: reverseResolveArgs.serialize(),
+    parameter: new Args().addString(accountAddress).serialize(),
   } as ICallData;
 
   const reverseResolveDns = useCallback(async () => {
@@ -39,11 +35,11 @@ export function useMNS() {
 
   async function resolveDns(domain: string): Promise<string | undefined> {
     if (!client) return;
-    const resolveArgs = new Args().addString(domain);
+
     const resolveData = {
-      targetAddress: MNSTargetAddress,
+      targetAddress: contracts.buildnet.MNSContract,
       targetFunction: 'dnsResolve',
-      parameter: resolveArgs.serialize(),
+      parameter: new Args().addString(domain).serialize(),
     } as ICallData;
     try {
       await client
