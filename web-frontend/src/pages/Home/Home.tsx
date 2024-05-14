@@ -14,13 +14,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Loading } from './Loading';
 import { TAB_SEND, TAB_RECEIVE } from '@/const/tabs/tabs';
 import { useResource } from '@/custom/api';
-// import { useMNS } from '@/custom/useMNS';
 import { useMNS } from '@/custom/useMNS';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
 import { maskAddress, routeFor } from '@/utils';
-// import { useMNS } from '@/custom/useMNS';
 
 export default function Home() {
   const navigate = useNavigate();
