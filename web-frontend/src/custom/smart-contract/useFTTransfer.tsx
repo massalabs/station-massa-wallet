@@ -6,47 +6,24 @@ import {
   ICallData,
   MAX_GAS_CALL,
   Args,
-  ClientFactory,
   MAINNET_CHAIN_ID,
   strToBytes,
   STORAGE_BYTE_COST,
   fromMAS,
 } from '@massalabs/massa-web3';
 import { ToastContent, parseAmount, toast } from '@massalabs/react-ui-kit';
-import { providers } from '@massalabs/wallet-provider';
 
 import { logSmartContractEvents } from './massa-utils';
 import { OperationToast } from '@/components/OperationToast';
 import Intl from '@/i18n/i18n';
-
-async function prepareFTTransfer(nickname: string) {
-  const massaProvider = (await providers())?.find(
-    (p) => p.name() === 'MASSASTATION',
-  );
-  if (!massaProvider) {
-    console.error('FATAL: Massa provider not found');
-    return;
-  }
-
-  const account = (await massaProvider.accounts()).find(
-    (a) => a.name() === nickname,
-  );
-  if (!account) {
-    return;
-  }
-
-  return {
-    client: await ClientFactory.fromWalletProvider(massaProvider, account),
-    chainId: await massaProvider.getChainId(),
-  };
-}
+import { prepareSCCall } from '@/utils/prepareSCCall';
 
 export function useFTTransfer(nickname: string) {
   const [client, setClient] = useState<Client>();
   const [chainId, setChainId] = useState<bigint>();
   const isMainnet = chainId === MAINNET_CHAIN_ID;
   useEffect(() => {
-    prepareFTTransfer(nickname).then((result) => {
+    prepareSCCall(nickname).then((result) => {
       setClient(result?.client);
       setChainId(result?.chainId);
     });
