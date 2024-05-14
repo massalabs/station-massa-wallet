@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   Client,
@@ -17,18 +17,13 @@ import { logSmartContractEvents } from '@massalabs/react-ui-kit/src/lib/massa-re
 import { providers } from '@massalabs/wallet-provider';
 
 import Intl from '@/i18n/i18n';
-import { prepareSCCall } from '@/utils/prepareSCCall';
 
-export function useFTTransfer(nickname: string) {
-  const [client, setClient] = useState<Client>();
-  const [chainId, setChainId] = useState<bigint>();
+
+export function useFTTransfer() {
+  const { client, chainId } = usePrepareScCall();
+
   const isMainnet = chainId === MAINNET_CHAIN_ID;
-  useEffect(() => {
-    prepareSCCall(nickname).then((result) => {
-      setClient(result?.client);
-      setChainId(result?.chainId);
-    });
-  }, [nickname, setClient]);
+
   const {
     opId,
     isPending,

@@ -45,7 +45,7 @@ export default function SendCoins(props: SendCoinsProps) {
     transfer: transferFT,
     isOpPending: transferFTPending,
     isPending: transferFTLoading,
-  } = useFTTransfer(nickname || '');
+  } = useFTTransfer();
 
   useEffect(() => {
     if (transferMASError && !errorToastId) {

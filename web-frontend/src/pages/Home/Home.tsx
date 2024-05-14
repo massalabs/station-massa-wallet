@@ -30,7 +30,7 @@ export default function Home() {
     data: account,
     isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
-  const { reverseResolveDns, mns } = useMNS(nickname);
+  const { reverseResolveDns, mns } = useMNS();
 
   useEffect(() => {
     reverseResolveDns();

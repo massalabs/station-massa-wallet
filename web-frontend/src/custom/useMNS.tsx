@@ -1,26 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { Args, Client, ICallData } from '@massalabs/massa-web3';
-import { IAccount } from '@massalabs/wallet-provider';
+import { Args, ICallData } from '@massalabs/massa-web3';
 import { bytesToStr } from '@massalabs/web3-utils';
 
-import { prepareSCCall } from '@/utils/prepareSCCall';
+import { usePrepareScCall } from './usePrepareScCall';
 
-export function useMNS(nickname: string | undefined) {
-  const [client, setClient] = useState<Client>();
-  const [account, setAccount] = useState<IAccount>();
+export function useMNS() {
   const [address, setAddress] = useState<string>('');
   const [mns, setMns] = useState<string>('');
-  if (!nickname) {
-    throw new Error('Nickname not found');
-  }
 
-  useEffect(() => {
-    prepareSCCall(nickname).then((result) => {
-      setClient(result?.client);
-      setAccount(result?.account);
-    });
-  }, [nickname, setClient]);
+  const { client, account } = usePrepareScCall();
 
   const MNSTargetAddress =
     'AS1CpitsdLu4dtbQrqAzhThygL2ytGyacFED1ogr2HsxZxfNy8qQ';
