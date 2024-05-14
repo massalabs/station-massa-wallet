@@ -1,15 +1,13 @@
-// TODO: add network store to be able to dynamically fetch correct contract
-
-export enum MnsContract {
+export enum networks {
   mainnet = 'mainnet',
   buildnet = 'buildnet',
 }
 
 export const contracts = {
-  [MnsContract.mainnet]: {
-    MNScontract: '',
+  [networks.mainnet]: {
+    mnsContract: '',
   },
-  [MnsContract.buildnet]: {
-    MNSContract: 'AS1CpitsdLu4dtbQrqAzhThygL2ytGyacFED1ogr2HsxZxfNy8qQ',
+  [networks.buildnet]: {
+    mnsContract: 'AS1CpitsdLu4dtbQrqAzhThygL2ytGyacFED1ogr2HsxZxfNy8qQ',
   },
 };
