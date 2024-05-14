@@ -28,8 +28,6 @@ type getAllAssets struct {
 	massaClient network.NodeFetcherInterface
 }
 
-
-
 func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.Responder {
 	// Load the wallet based on the provided Nickname
 	acc, errResp := loadAccount(g.wallet, params.Nickname)
