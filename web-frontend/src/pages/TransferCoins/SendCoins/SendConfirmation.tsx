@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import {
   Balance,
   Button,
@@ -5,11 +7,13 @@ import {
   formatFTAmount,
   getAssetIcons,
   parseAmount,
+  Clipboard,
 } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
 
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
+import { useMNS } from '@/custom/useMNS';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
 import { maskAddress } from '@/utils';
@@ -49,6 +53,12 @@ export function SendConfirmation(props: SendConfirmationProps) {
     parseAmount(amount, data.asset.decimals),
     decimals,
   ).amountFormattedFull;
+
+  const { reverseResolveDns, mns } = useMNS();
+
+  useEffect(() => {
+    reverseResolveDns();
+  }, [reverseResolveDns]);
 
   let selectedFees;
 
@@ -90,12 +100,12 @@ export function SendConfirmation(props: SendConfirmationProps) {
       </div>
       <div
         data-testid="send-confirmation"
-        className="flex flex-col items-center p-10 bg-secondary rounded-lg mb-6"
+        className="flex flex-col items-center gap-4 p-10 bg-secondary rounded-lg mb-6"
       >
         <p className="mb-6 mas-body">{Intl.t('send-coins.send-message')}</p>
 
         <Balance
-          customClass="p-0 bg-transparent mb-3"
+          customClass="p-0 bg-transparent"
           amount={formattedAmount}
           symbol={symbol}
           icon={getAssetIcons(
@@ -106,19 +116,29 @@ export function SendConfirmation(props: SendConfirmationProps) {
             'mr-3',
           )}
         />
-        <div className="flex flex-row items-center gap-8 mb-3">
-          <div className="flex flex-row items-center">
+        <div className="flex items-center gap-8 ">
+          <div className="flex items-center">
             <Tooltip body={content} />
             <p>{Intl.t('send-coins.fee')}</p>
           </div>
           <Balance amount={fees} symbol="MAS" size="xs" />
         </div>
         <div className="text-info flex items-center gap-2">
-          {Intl.t('send-coins.recipient')}
-          <p data-testid="send-confirmation-recipient">
-            {formattedRecipientAddress}
-          </p>
+          <div>{Intl.t('send-coins.recipient')}</div>
+          <Clipboard
+            displayedContent={formattedRecipientAddress}
+            rawContent={recipientAddress}
+            error={Intl.t('errors.no-content-to-copy')}
+            className="flex flex-row items-center mas-body2 justify-between
+              w-fit h-fit px-3 rounded bg-primary cursor-pointer"
+          />
         </div>
+        {mns && (
+          <div className="flex items-center gap-2 text-info">
+            <div>{Intl.t('send-coins.mns.mns')}</div>
+            <div>{mns}</div>
+          </div>
+        )}
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}

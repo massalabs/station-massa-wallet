@@ -190,7 +190,8 @@
       "failed-timeout": "Operation failed due to timeout, please retry with more fees."
     },
     "mns": {
-      "mns-correlation": "MNS: {mns} correlates with the following address: {address}"
+      "mns-correlation": "MNS: {mns} correlates with the following address: {address}",
+      "mns": "MNS:"
     }
   },
   "receive-coins": {
