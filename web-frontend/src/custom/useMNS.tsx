@@ -14,7 +14,7 @@ export function useMNS() {
 
   const accountAddress = account?.address() ?? '';
 
-  const reverseResolveData = {
+  const reverseResolveCallData = {
     targetAddress: contracts.buildnet.MNSContract,
     targetFunction: 'dnsReverseResolve',
     parameter: new Args().addString(accountAddress).serialize(),
@@ -25,18 +25,18 @@ export function useMNS() {
     try {
       const result = await client
         .smartContracts()
-        .readSmartContract(reverseResolveData);
+        .readSmartContract(reverseResolveCallData);
       setMns(bytesToStr(result.returnValue));
     } catch (e) {
       setMns('');
       console.error(e);
     }
-  }, [client, reverseResolveData]);
+  }, [client, reverseResolveCallData]);
 
   async function resolveDns(domain: string): Promise<string | undefined> {
     if (!client) return;
 
-    const resolveData = {
+    const resolveCallData = {
       targetAddress: contracts.buildnet.MNSContract,
       targetFunction: 'dnsResolve',
       parameter: new Args().addString(domain).serialize(),
@@ -44,7 +44,7 @@ export function useMNS() {
     try {
       await client
         .smartContracts()
-        .readSmartContract(resolveData)
+        .readSmartContract(resolveCallData)
         .then((result) => {
           setAddress(bytesToStr(result.returnValue));
         });
