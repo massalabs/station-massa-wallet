@@ -23,7 +23,7 @@ interface AssetSelectorProps {
 export function AssetSelector(props: AssetSelectorProps) {
   const { selectedAsset, setSelectedAsset, selectSymbol } = props;
   const { nickname } = useParams();
-  const { isMainnet } = useFTTransfer(nickname || '');
+  const { isMainnet } = useFTTransfer();
 
   const { data: assets, isLoading: isAssetsLoading } = useResource<Asset[]>(
     `accounts/${nickname}/assets`,

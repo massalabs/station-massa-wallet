@@ -37,7 +37,7 @@ interface GenerateLinkProps {
 function GenerateLink(props: GenerateLinkProps) {
   const { account, presetURL, setURL, setModal } = props;
 
-  const { isMainnet } = useFTTransfer(account.nickname);
+  const { isMainnet } = useFTTransfer();
 
   const [amount, setAmount] = useState<string>('');
   const [link, setLink] = useState('');

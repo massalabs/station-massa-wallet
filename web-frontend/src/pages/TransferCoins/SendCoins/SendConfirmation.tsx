@@ -7,7 +7,6 @@ import {
   parseAmount,
 } from '@massalabs/react-ui-kit';
 import { FiChevronLeft } from 'react-icons/fi';
-import { useParams } from 'react-router-dom';
 
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
@@ -31,8 +30,8 @@ interface SendConfirmationProps {
 
 export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
-  const { nickname } = useParams();
-  const { isMainnet } = useFTTransfer(nickname || '');
+
+  const { isMainnet } = useFTTransfer();
 
   const { amount, asset, fees, recipientAddress } = data;
   const { symbol, decimals } = asset;
