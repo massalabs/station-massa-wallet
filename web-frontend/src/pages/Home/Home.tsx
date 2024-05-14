@@ -5,6 +5,8 @@ import {
   Balance,
   Clipboard,
   formatAmount,
+  Tag,
+  MassaLogo,
 } from '@massalabs/react-ui-kit';
 import { FiArrowDownLeft, FiArrowUpRight } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,10 +14,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Loading } from './Loading';
 import { TAB_SEND, TAB_RECEIVE } from '@/const/tabs/tabs';
 import { useResource } from '@/custom/api';
+import { useMNS } from '@/custom/useMNS';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
-import { routeFor } from '@/utils';
+import { maskAddress, routeFor } from '@/utils';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ export default function Home() {
     data: account,
     isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
+  const { reverseResolveDns, mns } = useMNS(nickname);
 
   useEffect(() => {
     if (error) {
@@ -40,6 +44,10 @@ export default function Home() {
     balance.toString(),
   ).amountFormattedPreview;
   const address = account?.address ?? '';
+
+  useEffect(() => {
+    reverseResolveDns();
+  }, [reverseResolveDns]);
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
@@ -79,17 +87,27 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-secondary rounded-2xl w-full max-w-lg p-10">
+          <div className="bg-secondary rounded-2xl w-full max-w-lg p-10 flex flex-col justify-between">
             <p className="mas-body text-f-primary mb-6">
               {Intl.t('home.title-account-address')}
             </p>
-            <Clipboard
-              displayedContent={address}
-              rawContent={address}
-              error={Intl.t('errors.no-content-to-copy')}
-              className="flex flex-row items-center mas-body2 justify-between
-              w-full h-12 px-3 rounded bg-primary cursor-pointer"
-            />
+            <div className="flex w-full justify-between items-center">
+              {mns && (
+                <Tag type="default">
+                  <div className="flex items-center gap-2">
+                    <MassaLogo size={24} />
+                    <div>{mns}</div>
+                  </div>
+                </Tag>
+              )}
+              <Clipboard
+                displayedContent={maskAddress(address)}
+                rawContent={address}
+                error={Intl.t('errors.no-content-to-copy')}
+                className="flex flex-row items-center mas-body2 justify-between
+              w-fit h-12 px-3 rounded bg-primary cursor-pointer"
+              />
+            </div>
           </div>
         </div>
       )}
