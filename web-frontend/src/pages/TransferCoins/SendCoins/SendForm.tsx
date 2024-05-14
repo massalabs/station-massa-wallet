@@ -12,6 +12,7 @@ import {
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import { MAS } from '@/const/assets/assets';
+import { useMNS } from '@/custom/useMNS';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
@@ -63,6 +64,9 @@ export function SendForm(props: SendFormProps) {
   const [recipient, setRecipient] = useState<string>(
     (sendOpData && sendOpData.recipientAddress) || '',
   );
+  const [mnsAddressCorrelelation, setMnsAddressCorrelelation] =
+    useState<boolean>();
+
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
     (sendOpData && sendOpData.asset) || undefined,
   );
@@ -72,6 +76,8 @@ export function SendForm(props: SendFormProps) {
   );
 
   const balance = BigInt(selectedAsset?.balance || '0');
+
+  const { resolveDns, address } = useMNS();
 
   useEffect(() => {
     if (!sendOpData) {
@@ -152,6 +158,28 @@ export function SendForm(props: SendFormProps) {
   ) : (
     <Spinner size={12} customClass="inline-block" />
   );
+
+  function getRecipient(e: string) {
+    setRecipient(e);
+    setError(null);
+    setMnsAddressCorrelelation(false);
+    const regex = /^A/;
+    if (!regex.test(e) && e !== '') {
+      resolveDns(e);
+    }
+  }
+
+  function confirmAddress(): void {
+    if (address && checkAddressFormat(address)) {
+      setRecipient(address);
+    } else return;
+  }
+
+  useEffect(() => {
+    if (address && checkAddressFormat(address)) {
+      setMnsAddressCorrelelation(true);
+    }
+  }, [address]);
 
   return (
     <div>
@@ -270,9 +298,17 @@ export function SendForm(props: SendFormProps) {
             placeholder={Intl.t('receive-coins.recipient')}
             value={recipient}
             name="recipientAddress"
-            onChange={(e) => setRecipient(e.target.value)}
+            onChange={(e) => getRecipient(e.target.value)}
             error={error?.recipient}
           />
+          {mnsAddressCorrelelation && (
+            <div className="mas-caption text-brand">
+              {Intl.t('send-coins.mns.mns-correlation', {
+                mns: recipient,
+                address: address,
+              })}
+            </div>
+          )}
         </div>
         {filteredAccounts.length > 0 && (
           <div className="flex flex-row-reverse pb-3.5">
@@ -297,7 +333,11 @@ export function SendForm(props: SendFormProps) {
           </Button>
 
           <div>
-            <Button type="submit" posIcon={<FiArrowUpRight />}>
+            <Button
+              type="submit"
+              posIcon={<FiArrowUpRight />}
+              onClick={() => confirmAddress()}
+            >
               {Intl.t('send-coins.send')}
             </Button>
           </div>
