@@ -14,6 +14,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	permissionUrwGrOr = 0o644
+)
+
 // AssetsStore encapsulates all the nicknames with their related contract assets.
 type AssetsStore struct {
 	Assets      map[string]Assets
@@ -164,7 +168,7 @@ func (s *AssetsStore) save() error {
 		return errors.Wrap(err, "error getting assets JSON file")
 	}
 
-	if err := os.WriteFile(assetsJSONPath, data, 0o644); err != nil {
+	if err := os.WriteFile(assetsJSONPath, data, permissionUrwGrOr); err != nil {
 		return errors.Wrap(err, "failed to write JSON data to file")
 	}
 
@@ -254,7 +258,7 @@ func (s *AssetsStore) AllAssets(nickname string) []models.AssetInfo {
 
 // createJSONFile creates an empty JSON file at the specified path.
 func createJSONFile(path string) error {
-	if err := os.WriteFile(path, []byte("{}"), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte("{}"), permissionUrwGrOr); err != nil {
 		return err
 	}
 

@@ -21,6 +21,9 @@ type AssetInfoWithBalance struct {
 
 	// balance
 	Balance string `json:"balance,omitempty"`
+
+	// is default
+	IsDefault bool `json:"isDefault,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object from a JSON structure
@@ -35,12 +38,16 @@ func (m *AssetInfoWithBalance) UnmarshalJSON(raw []byte) error {
 	// AO1
 	var dataAO1 struct {
 		Balance string `json:"balance,omitempty"`
+
+		IsDefault bool `json:"isDefault,omitempty"`
 	}
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
 	}
 
 	m.Balance = dataAO1.Balance
+
+	m.IsDefault = dataAO1.IsDefault
 
 	return nil
 }
@@ -56,9 +63,13 @@ func (m AssetInfoWithBalance) MarshalJSON() ([]byte, error) {
 	_parts = append(_parts, aO0)
 	var dataAO1 struct {
 		Balance string `json:"balance,omitempty"`
+
+		IsDefault bool `json:"isDefault,omitempty"`
 	}
 
 	dataAO1.Balance = m.Balance
+
+	dataAO1.IsDefault = m.IsDefault
 
 	jsonDataAO1, errAO1 := swag.WriteJSON(dataAO1)
 	if errAO1 != nil {

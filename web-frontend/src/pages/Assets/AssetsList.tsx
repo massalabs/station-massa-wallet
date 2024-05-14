@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Token, getAssetIcons } from '@massalabs/react-ui-kit';
 import { useParams } from 'react-router-dom';
 
-import { MAS } from '@/const/assets/assets';
 import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import { Asset } from '@/models/AssetModel';
 import { DeleteAssetModal } from '@/pages/Assets/DeleteAssets';
@@ -42,7 +41,7 @@ export function AssetsList(props: AssetsListProps) {
           decimals={token.decimals}
           balance={token.balance}
           key={index}
-          disable={token?.symbol === MAS ? true : false}
+          disable={token?.isDefault}
           onDelete={() => {
             handleDelete(token.address);
           }}

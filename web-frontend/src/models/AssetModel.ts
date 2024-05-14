@@ -4,4 +4,5 @@ export interface Asset {
   symbol: string;
   decimals: number;
   balance: string;
+  isDefault: boolean;
 }

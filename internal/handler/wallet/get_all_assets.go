@@ -37,65 +37,133 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	}
 
 	// Create a slice to store the assets with their balances
-	AssetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
+	assetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
+	massaAsset, resp := g.getMASAsset(acc)
+	if resp != nil {
+		return resp
+	}
+
+	assetsWithBalance = append(assetsWithBalance, massaAsset)
+
+	userAssetData, resp := g.getAssetsData(acc)
+	if resp != nil {
+		return resp
+	}
+
+	assetsWithBalance = append(assetsWithBalance, userAssetData...)
+
+	// sort AssetsWithBalance by name
+	sort.Slice(assetsWithBalance, func(i, j int) bool {
+		return assetsWithBalance[i].Name < assetsWithBalance[j].Name
+	})
+
+	// Return the list of assets with balance
+	return operations.NewGetAllAssetsOK().WithPayload(assetsWithBalance)
+}
+
+func (g *getAllAssets) getMASAsset(acc *account.Account) (*models.AssetInfoWithBalance, middleware.Responder) {
 	// Fetch the account information for the wallet using the massaClient
 	infos, err := g.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
 		// Handle the error and return an internal server error response
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", "MASSA", err.Error())
 
-		return operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
+		return nil, operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
 			Code:    errorFetchAssetBalance,
 			Message: errorMsg,
 		})
 	}
 
 	// Create the asset info for the Massa token and append it to the result slice
-	MassaAsset := &models.AssetInfoWithBalance{
+	massaAsset := &models.AssetInfoWithBalance{
 		AssetInfo: assets.MASInfo(),
 		Balance:   fmt.Sprint(infos[0].CandidateBalance),
+		IsDefault: true,
 	}
-	AssetsWithBalance = append(AssetsWithBalance, MassaAsset)
+
+	return massaAsset, nil
+}
+
+func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoWithBalance, middleware.Responder) {
+	defaultAssets, err := assets.GetDefaultAssets()
+	if err != nil {
+		logger.Errorf("Failed to get default assets: %s", err.Error())
+	}
+
+	assetsInfo := make([]*models.AssetInfoWithBalance, 0)
+
+	// Initialize map to track addressed already added
+	includedAddresses := map[string]bool{}
+
+	for _, asset := range defaultAssets {
+		completeAsset := &models.AssetInfoWithBalance{
+			AssetInfo: asset,
+			Balance:   "",
+			IsDefault: true,
+		}
+		assetsInfo = append(assetsInfo, completeAsset)
+		includedAddresses[asset.Address] = true
+	}
+
+	// Append default assets ensuring no duplication
+	for _, asset := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
+		// Append the asset info to the result slice if it is not already in the list
+		if _, exists := includedAddresses[asset.Address]; !exists {
+			completeAsset := &models.AssetInfoWithBalance{
+				AssetInfo: asset,
+				Balance:   "",
+				IsDefault: false,
+			}
+			assetsInfo = append(assetsInfo, completeAsset)
+			includedAddresses[asset.Address] = true
+		}
+	}
+
+	assetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
 
 	// Retrieve all assets from the selected nickname
-	for assetAddress, assetInfo := range g.AssetsStore.Assets[params.Nickname].ContractAssets {
-		// First, check if the asset exists in the network
-		if !g.massaClient.AssetExistInNetwork(assetAddress) {
-			// If the asset does not exist in the network, skip it and go to the next one
-			logger.Infof("Asset %s does not exist in the network", assetAddress)
+	for _, asset := range assetsInfo {
+		// Fetch the balance for the current asset
+		balance, resp := g.fetchAssetData(asset.Address, acc)
+		if resp != nil {
+			return nil, resp
+		}
+
+		// If the asset does not exist in the network, skip it and go to the next one
+		if balance == nil {
 			continue
 		}
-		// Fetch the balance for the current asset
-		address, err := acc.Address.MarshalText()
-		if err != nil {
-			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
-		}
 
-		balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
-		if err != nil {
-			// Handle the error and return an internal server error response
-			errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
-
-			return operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
-				Code:    errorFetchAssetBalance,
-				Message: errorMsg,
-			})
-		}
-
-		// Create the asset info with balance and append it to the result slice
-		assetWithBalance := &models.AssetInfoWithBalance{
-			AssetInfo: assetInfo,
-			Balance:   balance,
-		}
-		AssetsWithBalance = append(AssetsWithBalance, assetWithBalance)
+		asset.Balance = *balance
+		assetsWithBalance = append(assetsWithBalance, asset)
 	}
 
-	// sort AssetsWithBalance by name
-	sort.Slice(AssetsWithBalance, func(i, j int) bool {
-		return AssetsWithBalance[i].Name < AssetsWithBalance[j].Name
-	})
+	return assetsWithBalance, nil
+}
 
-	// Return the list of assets with balance
-	return operations.NewGetAllAssetsOK().WithPayload(AssetsWithBalance)
+func (g *getAllAssets) fetchAssetData(assetAddress string, acc *account.Account) (*string, middleware.Responder) {
+	// First, check if the asset exists in the network
+	if !g.massaClient.AssetExistInNetwork(assetAddress) {
+		logger.Infof("Asset %s does not exist in the network", assetAddress)
+		return nil, nil
+	}
+
+	address, err := acc.Address.MarshalText()
+	if err != nil {
+		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+	}
+
+	balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
+	if err != nil {
+		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
+
+		// Handle the error and return an internal server error response
+		return nil, operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
+			Code:    errorFetchAssetBalance,
+			Message: errorMsg,
+		})
+	}
+
+	return &balance, nil
 }

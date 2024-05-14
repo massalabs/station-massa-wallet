@@ -29,6 +29,11 @@ func main() {
 		logger.Fatalf("Failed to initialize wallet: %v", err)
 	}
 
+	err = initialize.Asset()
+	if err != nil {
+		logger.Errorf("Failed to initialize asset: %v", err)
+	}
+
 	app := walletApp.NewWalletApp(wallet)
 
 	if walletApp.IsTestMode() {

@@ -4,14 +4,13 @@ import (
 	"log"
 	"testing"
 
-	"github.com/massalabs/station-massa-wallet/internal/initialize"
+	"github.com/massalabs/station/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetNetworkInfo(t *testing.T) {
-	err := initialize.Logger()
-	if err != nil {
-		log.Fatalf("Failed to initialize logger: %v", err)
+	if err := logger.InitializeGlobal("./unit-test.log"); err != nil {
+		log.Fatalf("while initializing global logger: %s", err.Error())
 	}
 
 	networkInfo, err := GetNetworkInfo()
