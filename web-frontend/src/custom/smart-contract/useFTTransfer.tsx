@@ -28,7 +28,7 @@ export function useFTTransfer(nickname: string) {
       setClient(result?.client);
       setChainId(result?.chainId);
     });
-  }, [nickname, client, setClient]);
+  }, [nickname, setClient]);
   const {
     opId,
     isPending,

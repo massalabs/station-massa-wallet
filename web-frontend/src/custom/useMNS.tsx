@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Args, Client, ICallData } from '@massalabs/massa-web3';
 import { IAccount } from '@massalabs/wallet-provider';
@@ -9,11 +9,18 @@ import { prepareSCCall } from '@/utils/prepareSCCall';
 export function useMNS(nickname: string | undefined) {
   const [client, setClient] = useState<Client>();
   const [account, setAccount] = useState<IAccount>();
+  const [address, setAddress] = useState<string>('');
   const [mns, setMns] = useState<string>('');
-
   if (!nickname) {
     throw new Error('Nickname not found');
   }
+
+  useEffect(() => {
+    prepareSCCall(nickname).then((result) => {
+      setClient(result?.client);
+      setAccount(result?.account);
+    });
+  }, [nickname, setClient]);
 
   const MNSTargetAddress =
     'AS1CpitsdLu4dtbQrqAzhThygL2ytGyacFED1ogr2HsxZxfNy8qQ';
@@ -28,26 +35,39 @@ export function useMNS(nickname: string | undefined) {
     parameter: reverseResolveArgs.serialize(),
   } as ICallData;
 
-  useEffect(() => {
-    prepareSCCall(nickname).then((result) => {
-      setClient(result?.client);
-      setAccount(result?.account);
-    });
-  }, [nickname, client, setClient]);
-
-  async function reverseResolveDns() {
+  const reverseResolveDns = useCallback(async () => {
     if (!client) return;
+    try {
+      const result = await client
+        .smartContracts()
+        .readSmartContract(reverseResolveData);
+      setMns(bytesToStr(result.returnValue));
+    } catch (e) {
+      setMns('');
+      console.error(e);
+    }
+  }, [client, reverseResolveData]);
+
+  async function resolveDns(domain: string): Promise<string | undefined> {
+    if (!client) return;
+    const resolveArgs = new Args().addString(domain);
+    const resolveData = {
+      targetAddress: MNSTargetAddress,
+      targetFunction: 'dnsResolve',
+      parameter: resolveArgs.serialize(),
+    } as ICallData;
     try {
       await client
         .smartContracts()
-        .readSmartContract(reverseResolveData)
+        .readSmartContract(resolveData)
         .then((result) => {
-          setMns(bytesToStr(result.returnValue));
+          setAddress(bytesToStr(result.returnValue));
         });
     } catch (e) {
+      setAddress('');
       console.error(e);
     }
   }
 
-  return { reverseResolveDns, mns };
+  return { mns, resolveDns, address, reverseResolveDns };
 }
