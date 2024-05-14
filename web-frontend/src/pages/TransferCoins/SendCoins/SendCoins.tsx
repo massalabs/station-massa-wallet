@@ -90,7 +90,7 @@ export default function SendCoins(props: SendCoinsProps) {
     if (!confirmed) {
       setSubmit(false);
     } else if (data) {
-      if (data.asset.symbol !== MAS) {
+      if (data.asset.symbol !== MAS && data.asset.address) {
         transferFT(
           data.recipientAddress,
           data.asset.address,

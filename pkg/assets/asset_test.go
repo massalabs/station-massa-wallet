@@ -34,20 +34,15 @@ const dummyAssetsJSON = `
 
 func TestLoadAccountsStore(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
-	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
+	tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
 	assert.NoError(t, err)
 
-	defer func() {
-		tmpFile.Close()
-		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
-	}()
-
-	_, err = tmpFile.Write([]byte(dummyAssetsJSON))
+	err = os.WriteFile(getAssetJSONPath(tempDir), []byte(dummyAssetsJSON), permissionUrwGrOr)
 	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	nodeFetcher := network.NewNodeFetcher()
-	store, err := NewAssetsStore(tmpFile.Name(), nodeFetcher)
+	store, err := NewAssetsStore(tempDir, nodeFetcher)
 	assert.NoError(t, err)
 
 	// Validate the loaded data
@@ -61,20 +56,15 @@ func TestLoadAccountsStore(t *testing.T) {
 
 func TestAssetExists(t *testing.T) {
 	// Create a temporary testing JSON file with dummy data
-	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
+	tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
 	assert.NoError(t, err)
 
-	defer func() {
-		tmpFile.Close()
-		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
-	}()
-
-	_, err = tmpFile.Write([]byte(dummyAssetsJSON))
+	err = os.WriteFile(getAssetJSONPath(tempDir), []byte(dummyAssetsJSON), permissionUrwGrOr)
 	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	nodeFetcher := network.NewNodeFetcher()
-	store, err := NewAssetsStore(tmpFile.Name(), nodeFetcher)
+	store, err := NewAssetsStore(tempDir, nodeFetcher)
 	assert.NoError(t, err)
 
 	// Test case 1: Check for an existing asset
@@ -93,38 +83,33 @@ func TestAssetExists(t *testing.T) {
 }
 
 func TestAddAndDeleteAsset(t *testing.T) {
-	// Create a temporary testing JSON file with dummy data
-	tmpFile, err := os.CreateTemp("", "dummy_assets.json")
-	assert.NoError(t, err)
-
-	defer func() {
-		tmpFile.Close()
-		os.Remove(tmpFile.Name()) // Clean up the temporary file after the test
-	}()
-
 	// Initial dummy JSON data with at least one entry
 	initialDummyJSON := `
-{
-	"accounts": {
-		"dummyAccount": {
-			"assets": [
-				{
-					"contractAddress": "0xffffffffffffff",
-					"name":            "DummyToken",
-					"symbol":          "DT",
-					"decimals":        18
+		{
+			"accounts": {
+				"dummyAccount": {
+					"assets": [
+						{
+							"contractAddress": "0xffffffffffffff",
+							"name":            "DummyToken",
+							"symbol":          "DT",
+							"decimals":        18
+						}
+					]
 				}
-			]
+			}
 		}
-	}
-}
-`
-	_, err = tmpFile.Write([]byte(initialDummyJSON))
+		`
+	// Create a temporary testing JSON file with dummy data
+	tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
+	assert.NoError(t, err)
+
+	err = os.WriteFile(getAssetJSONPath(tempDir), []byte(initialDummyJSON), permissionUrwGrOr)
 	assert.NoError(t, err)
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	nodeFetcher := network.NewNodeFetcher()
-	store, err := NewAssetsStore(tmpFile.Name(), nodeFetcher)
+	store, err := NewAssetsStore(tempDir, nodeFetcher)
 	assert.NoError(t, err)
 
 	// Test case 1: Add an asset and check if it's saved to JSON

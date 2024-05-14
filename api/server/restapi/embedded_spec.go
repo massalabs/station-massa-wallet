@@ -891,6 +891,9 @@ func init() {
             "balance": {
               "type": "string"
             },
+            "dollarValue": {
+              "type": "string"
+            },
             "isDefault": {
               "type": "boolean"
             }
@@ -2066,6 +2069,9 @@ func init() {
           "type": "object",
           "properties": {
             "balance": {
+              "type": "string"
+            },
+            "dollarValue": {
               "type": "string"
             },
             "isDefault": {

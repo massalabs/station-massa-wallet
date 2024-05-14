@@ -755,3 +755,5 @@ definitions:
             type: string
           isDefault:
             type: boolean
+          dollarValue:
+            type: string

@@ -282,7 +282,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.OperationType = int(opType)
 	data.AllowFeeEdition = *params.AllowFeeEdition
 	data.ChainID = chainID
-	data.Assets = w.AssetsStore.AllAssets(acc.Nickname)
+	data.Assets = convertAssetsToModel(w.AssetsStore.All(acc.Nickname))
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
@@ -445,4 +445,20 @@ func generateCorrelationID() (*memguard.LockedBuffer, error) {
 	}
 
 	return memguard.NewBufferFromBytes(correlationId), nil
+}
+
+func convertAssetsToModel(assetsWithBalance []*assets.AssetInfoWithBalances) []models.AssetInfo {
+	result := make([]models.AssetInfo, 0)
+
+	for _, asset := range assetsWithBalance {
+		assetInfo := models.AssetInfo{
+			Address:  asset.AssetInfo.Address,
+			Decimals: asset.AssetInfo.Decimals,
+			Name:     asset.AssetInfo.Name,
+			Symbol:   asset.AssetInfo.Symbol,
+		}
+		result = append(result, assetInfo)
+	}
+
+	return result
 }

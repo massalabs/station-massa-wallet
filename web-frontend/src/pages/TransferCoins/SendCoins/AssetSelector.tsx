@@ -47,7 +47,7 @@ export function AssetSelector(props: AssetSelectorProps) {
   if (assets) {
     options = assets.map((asset) => {
       const formattedBalance = formatAmount(
-        asset.balance,
+        asset.balance || '',
         asset.decimals,
       ).amountFormattedFull;
       return {

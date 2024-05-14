@@ -2,7 +2,6 @@ package wallet
 
 import (
 	"fmt"
-	"net/http"
 	"sort"
 
 	"github.com/go-openapi/runtime/middleware"
@@ -37,7 +36,7 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 	}
 
 	// Create a slice to store the assets with their balances
-	assetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
+	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
 
 	massaAsset, resp := g.getMASAsset(acc)
 	if resp != nil {
@@ -55,14 +54,20 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	// sort AssetsWithBalance by name
 	sort.Slice(assetsWithBalance, func(i, j int) bool {
-		return assetsWithBalance[i].Name < assetsWithBalance[j].Name
+		if assetsWithBalance[i].DollarValue == nil {
+			return false
+		}
+		if assetsWithBalance[j].DollarValue == nil {
+			return false
+		}
+		return *assetsWithBalance[i].DollarValue > *assetsWithBalance[j].DollarValue
 	})
 
 	// Return the list of assets with balance
-	return operations.NewGetAllAssetsOK().WithPayload(assetsWithBalance)
+	return operations.NewGetAllAssetsOK().WithPayload(convertToModel(assetsWithBalance))
 }
 
-func (g *getAllAssets) getMASAsset(acc *account.Account) (*models.AssetInfoWithBalance, middleware.Responder) {
+func (g *getAllAssets) getMASAsset(acc *account.Account) (*assets.AssetInfoWithBalances, middleware.Responder) {
 	// Fetch the account information for the wallet using the massaClient
 	infos, err := g.massaClient.GetAccountsInfos([]*account.Account{acc})
 	if err != nil {
@@ -74,96 +79,108 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*models.AssetInfoWithB
 			Message: errorMsg,
 		})
 	}
-
 	// Create the asset info for the Massa token and append it to the result slice
-	massaAsset := &models.AssetInfoWithBalance{
-		AssetInfo: assets.MASInfo(),
-		Balance:   fmt.Sprint(infos[0].CandidateBalance),
-		IsDefault: true,
+	asset := assets.MASInfo()
+	massaAsset := &assets.AssetInfoWithBalances{
+		AssetInfo:  &asset,
+		Balance:    fmt.Sprint(infos[0].CandidateBalance),
+		IsDefault:  true,
+		MEXCSymbol: "MASUSDT",
 	}
+
+	dollarValue, err := assets.DollarValue(massaAsset.Balance, massaAsset.MEXCSymbol, asset.Symbol, *asset.Decimals)
+	if err != nil {
+		errorMsg := fmt.Sprintf("Failed to fetch dollar value for asset %s: %s", asset.Address, err.Error())
+		logger.Errorf(errorMsg)
+	}
+
+	massaAsset.DollarValue = dollarValue
 
 	return massaAsset, nil
 }
 
-func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*models.AssetInfoWithBalance, middleware.Responder) {
-	defaultAssets, err := assets.GetDefaultAssets()
-	if err != nil {
-		logger.Errorf("Failed to get default assets: %s", err.Error())
-	}
+// getAssetsData fetches the balance and dollar value for each asset in the account.
+// If user has asset that are deployed on another network, it will not be included.
+func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoWithBalances, middleware.Responder) {
+	assetsInfo := g.AssetsStore.All(acc.Nickname)
 
-	assetsInfo := make([]*models.AssetInfoWithBalance, 0)
-
-	// Initialize map to track addressed already added
-	includedAddresses := map[string]bool{}
-
-	for _, asset := range defaultAssets {
-		completeAsset := &models.AssetInfoWithBalance{
-			AssetInfo: asset,
-			Balance:   "",
-			IsDefault: true,
-		}
-		assetsInfo = append(assetsInfo, completeAsset)
-		includedAddresses[asset.Address] = true
-	}
-
-	// Append default assets ensuring no duplication
-	for _, asset := range g.AssetsStore.Assets[acc.Nickname].ContractAssets {
-		// Append the asset info to the result slice if it is not already in the list
-		if _, exists := includedAddresses[asset.Address]; !exists {
-			completeAsset := &models.AssetInfoWithBalance{
-				AssetInfo: asset,
-				Balance:   "",
-				IsDefault: false,
-			}
-			assetsInfo = append(assetsInfo, completeAsset)
-			includedAddresses[asset.Address] = true
-		}
-	}
-
-	assetsWithBalance := make([]*models.AssetInfoWithBalance, 0)
+	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
 
 	// Retrieve all assets from the selected nickname
 	for _, asset := range assetsInfo {
-		// Fetch the balance for the current asset
-		balance, resp := g.fetchAssetData(asset.Address, acc)
-		if resp != nil {
-			return nil, resp
-		}
-
-		// If the asset does not exist in the network, skip it and go to the next one
-		if balance == nil {
+		// First, check if the asset exists in the network
+		if !g.massaClient.AssetExistInNetwork(asset.AssetInfo.Address) {
+			logger.Infof("Asset %s does not exist in the network", asset.AssetInfo.Address)
 			continue
 		}
 
-		asset.Balance = *balance
+		// Fetch the balance for the current asset
+		balance, dollarValue := g.fetchAssetData(asset, acc)
+
+		asset.Balance = balance
+		asset.DollarValue = dollarValue
 		assetsWithBalance = append(assetsWithBalance, asset)
 	}
 
 	return assetsWithBalance, nil
 }
 
-func (g *getAllAssets) fetchAssetData(assetAddress string, acc *account.Account) (*string, middleware.Responder) {
-	// First, check if the asset exists in the network
-	if !g.massaClient.AssetExistInNetwork(assetAddress) {
-		logger.Infof("Asset %s does not exist in the network", assetAddress)
-		return nil, nil
-	}
+func (g *getAllAssets) fetchAssetData(asset *assets.AssetInfoWithBalances, acc *account.Account) (string, *float64) {
+	assetAddress := asset.AssetInfo.Address
 
+	// Balance
 	address, err := acc.Address.MarshalText()
 	if err != nil {
-		return nil, newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+		logger.Errorf("Failed to marshal address: %s", err.Error())
+
+		return "", nil
 	}
 
 	balance, err := g.massaClient.DatastoreAssetBalance(assetAddress, string(address))
 	if err != nil {
 		errorMsg := fmt.Sprintf("Failed to fetch balance for asset %s: %s", assetAddress, err.Error())
+		logger.Errorf(errorMsg)
 
-		// Handle the error and return an internal server error response
-		return nil, operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
-			Code:    errorFetchAssetBalance,
-			Message: errorMsg,
-		})
+		return "", nil
 	}
 
-	return &balance, nil
+	// Dollar value
+	dollarValue, err := assets.DollarValue(balance, asset.MEXCSymbol, asset.AssetInfo.Symbol, *asset.AssetInfo.Decimals)
+	if err != nil {
+		logger.Warnf(fmt.Sprintf("Failed to fetch dollar value for asset %s: %s", assetAddress, err.Error()))
+
+		return balance, nil
+	}
+
+	return balance, dollarValue
+}
+
+func convertToModel(assetsWithBalance []*assets.AssetInfoWithBalances) []*models.AssetInfoWithBalance {
+	result := make([]*models.AssetInfoWithBalance, 0)
+
+	for _, asset := range assetsWithBalance {
+		assetInfo := models.AssetInfo{
+			Address:  asset.AssetInfo.Address,
+			Decimals: asset.AssetInfo.Decimals,
+			Name:     asset.AssetInfo.Name,
+			Symbol:   asset.AssetInfo.Symbol,
+		}
+
+		if asset.DollarValue == nil {
+			result = append(result, &models.AssetInfoWithBalance{
+				AssetInfo: assetInfo,
+				Balance:   asset.Balance,
+				IsDefault: asset.IsDefault,
+			})
+		} else {
+			result = append(result, &models.AssetInfoWithBalance{
+				AssetInfo:   assetInfo,
+				Balance:     asset.Balance,
+				DollarValue: fmt.Sprintf("%.2f", *asset.DollarValue),
+				IsDefault:   asset.IsDefault,
+			})
+		}
+	}
+
+	return result
 }

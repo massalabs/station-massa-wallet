@@ -16,13 +16,23 @@ import (
 
 const (
 	permissionUrwGrOr = 0o644
+	assetsFilename    = "assets.json"
 )
 
 // AssetsStore encapsulates all the nicknames with their related contract assets.
 type AssetsStore struct {
-	Assets      map[string]Assets
-	StoreMutex  sync.Mutex
-	massaClient *network.NodeFetcher
+	Assets        map[string]Assets
+	StoreMutex    sync.Mutex
+	massaClient   *network.NodeFetcher
+	assetsJSONDir string
+}
+
+type AssetInfoWithBalances struct {
+	AssetInfo   *models.AssetInfo
+	Balance     string
+	MEXCSymbol  string
+	DollarValue *float64
+	IsDefault   bool
 }
 
 // Assets encapsulates the contract assets associated with a specific account.
@@ -44,12 +54,29 @@ type assetData struct {
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
-func NewAssetsStore(assetsJSONPath string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
+// If assetsJSONDir is empty, it will use the default wallet path.
+func NewAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
 	store := &AssetsStore{
 		Assets:      make(map[string]Assets),
 		massaClient: massaClient,
 	}
-	if err := store.loadAccountsStore(assetsJSONPath); err != nil {
+
+	if assetsJSONDir == "" {
+		assetsJSONDir, err := wallet.Path()
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to get AssetsStore JSON file")
+		}
+		store.assetsJSONDir = assetsJSONDir
+	} else {
+		store.assetsJSONDir = assetsJSONDir
+	}
+
+	if err := store.loadAccountsStore(); err != nil {
+		return nil, errors.Wrap(err, "failed to create AssetsStore")
+	}
+
+	err := store.InitDefault()
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
@@ -57,8 +84,9 @@ func NewAssetsStore(assetsJSONPath string, massaClient *network.NodeFetcher) (*A
 }
 
 // loadAccountsStore loads the data from the assets JSON file into the AssetsStore.
-func (s *AssetsStore) loadAccountsStore(assetsJSONPath string) error {
+func (s *AssetsStore) loadAccountsStore() error {
 	// Check if the file exists, and if not, create a new one with an empty object
+	assetsJSONPath := getAssetJSONPath(s.assetsJSONDir)
 	if _, err := os.Stat(assetsJSONPath); os.IsNotExist(err) {
 		if err := createJSONFile(assetsJSONPath); err != nil {
 			return errors.Wrap(err, "failed to create assets JSON file")
@@ -163,12 +191,7 @@ func (s *AssetsStore) save() error {
 	}
 
 	// Write the JSON data to the file
-	assetsJSONPath, err := GetAssetsJSONPath()
-	if err != nil {
-		return errors.Wrap(err, "error getting assets JSON file")
-	}
-
-	if err := os.WriteFile(assetsJSONPath, data, permissionUrwGrOr); err != nil {
+	if err := os.WriteFile(getAssetJSONPath(s.assetsJSONDir), data, permissionUrwGrOr); err != nil {
 		return errors.Wrap(err, "failed to write JSON data to file")
 	}
 
@@ -238,22 +261,63 @@ func (s *AssetsStore) DeleteAsset(nickname, assetAddress string) error {
 	return nil
 }
 
-func (s *AssetsStore) AllAssets(nickname string) []models.AssetInfo {
-	addresses := make([]models.AssetInfo, 0)
-
-	// Retrieve all assets from the given nickname
-	for assetAddress := range s.Assets[nickname].ContractAssets {
-		// First, check if the asset exists in the network
-		if !s.massaClient.AssetExistInNetwork(assetAddress) {
-			// If the asset does not exist in the network, skip it and go to the next one
-			logger.Infof("Asset %s does not exist in the network", assetAddress)
-			continue
-		}
-
-		addresses = append(addresses, s.Assets[nickname].ContractAssets[assetAddress])
+// All returns all the assets associated with a specific account nickname.
+// It returns the default assets first, followed by the assets added by the user.
+// If user already added the default asset, it will not be duplicated.
+func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
+	defaultAssets, err := s.Default()
+	if err != nil {
+		logger.Errorf("Failed to get default assets: %s", err.Error())
 	}
 
-	return addresses
+	assetsInfo := make([]*AssetInfoWithBalances, 0)
+
+	// Initialize map to track addressed already added
+	includedAddresses := map[string]bool{}
+
+	for _, asset := range defaultAssets {
+		completeAsset := &AssetInfoWithBalances{
+			AssetInfo: &models.AssetInfo{
+				Address:  asset.Address,
+				Decimals: &asset.Decimals,
+				Name:     asset.Name,
+				Symbol:   asset.Symbol,
+			},
+			Balance:     "",
+			MEXCSymbol:  asset.MEXCSymbol,
+			DollarValue: nil,
+			IsDefault:   true,
+		}
+		assetsInfo = append(assetsInfo, completeAsset)
+		includedAddresses[asset.Address] = true
+	}
+
+	// Append default assets ensuring no duplication
+	for _, asset := range s.Assets[nickname].ContractAssets {
+		// Append the asset info to the result slice if it is not already in the list
+		if _, exists := includedAddresses[asset.Address]; !exists {
+			completeAsset := &AssetInfoWithBalances{
+				AssetInfo: &models.AssetInfo{
+					Address:  asset.Address,
+					Decimals: asset.Decimals,
+					Name:     asset.Name,
+					Symbol:   asset.Symbol,
+				},
+				Balance:     "",
+				MEXCSymbol:  "",
+				DollarValue: nil,
+				IsDefault:   false,
+			}
+			assetsInfo = append(assetsInfo, completeAsset)
+			includedAddresses[asset.Address] = true
+		}
+	}
+
+	return assetsInfo
+}
+
+func getAssetJSONPath(assetsJSONDir string) string {
+	return filepath.Join(assetsJSONDir, assetsFilename)
 }
 
 // createJSONFile creates an empty JSON file at the specified path.
@@ -263,16 +327,6 @@ func createJSONFile(path string) error {
 	}
 
 	return nil
-}
-
-// GetAssetsJSONPath returns the path to the assets JSON file.
-func GetAssetsJSONPath() (string, error) {
-	walletPath, err := wallet.Path()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(walletPath, "assets.json"), nil
 }
 
 func MASInfo() models.AssetInfo {

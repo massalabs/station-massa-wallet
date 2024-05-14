@@ -4,18 +4,25 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-
-	"github.com/massalabs/station-massa-wallet/api/server/models"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet"
 )
 
-func GetDefaultAssets() ([]models.AssetInfo, error) {
-	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath()
+const defaultAssetsFilename = "assets_default.json"
+
+type DefaultAssetInfo struct {
+	Address    string `json:"address"`
+	Name       string `json:"name"`
+	Symbol     string `json:"symbol"`
+	Decimals   int64  `json:"decimals"`
+	MEXCSymbol string `json:"MEXCSymbol"`
+}
+
+func (s *AssetsStore) Default() ([]DefaultAssetInfo, error) {
+	defaultAssetsJSONPath, err := getDefaultJSONPath(s.assetsJSONDir)
 	if err != nil {
 		return nil, err
 	}
 
-	defaultAssets, err := loadDefaultAssets(defaultAssetsJSONPath)
+	defaultAssets, err := s.loadDefaultAssets(defaultAssetsJSONPath)
 	if err != nil {
 		return nil, err
 	}
@@ -24,14 +31,14 @@ func GetDefaultAssets() ([]models.AssetInfo, error) {
 }
 
 // loadDefaultAssets loads the default assets from the JSON file.
-func loadDefaultAssets(path string) ([]models.AssetInfo, error) {
+func (s *AssetsStore) loadDefaultAssets(path string) ([]DefaultAssetInfo, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var defaultAssets []models.AssetInfo
+	var defaultAssets []DefaultAssetInfo
 	if err := json.NewDecoder(file).Decode(&defaultAssets); err != nil {
 		return nil, err
 	}
@@ -39,15 +46,15 @@ func loadDefaultAssets(path string) ([]models.AssetInfo, error) {
 	return defaultAssets, nil
 }
 
-func InitDefaultAsset() error {
+func (s *AssetsStore) InitDefault() error {
 	// Get the path to the default assets JSON file
-	defaultAssetsJSONPath, err := getDefaultAssetsJSONPath()
+	defaultAssetsJSONPath, err := getDefaultJSONPath(s.assetsJSONDir)
 	if err != nil {
 		return err
 	}
 
 	if _, err := os.Stat(defaultAssetsJSONPath); os.IsNotExist(err) {
-		if err := createFileDefaultAssets(defaultAssetsJSONPath); err != nil {
+		if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
 			return err
 		}
 	}
@@ -55,60 +62,62 @@ func InitDefaultAsset() error {
 	return nil
 }
 
-// getDefaultAssetsJSONPath returns the path to the default assets JSON file.
-func getDefaultAssetsJSONPath() (string, error) {
-	walletPath, err := wallet.Path()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(walletPath, "assets_default.json"), nil
+// getDefaultJSONPath returns the path to the default assets JSON file.
+func getDefaultJSONPath(assetsJSONDir string) (string, error) {
+	return filepath.Join(assetsJSONDir, defaultAssetsFilename), nil
 }
 
-// createFileDefaultAssets creates the default assets JSON file with the default assets.
-func createFileDefaultAssets(path string) error {
+// createFileDefault creates the default assets JSON file with the default assets.
+func (s *AssetsStore) createFileDefault(path string) error {
 	if err := os.WriteFile(path, []byte(`[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",
 		"name": "Sepolia USDC",
 		"symbol": "USDC.s",
-		"decimals": 6
+		"decimals": 6,
+		"MEXCSymbol": "USD"
 	},
 	{
 		"address": "AS12LpYyAjYRJfYhyu7fkrS224gMdvFHVEeVWoeHZzMdhis7UZ3Eb",
 		"name": "Sepolia tDAI",
 		"symbol": "tDAI.s",
-		"decimals": 18
+		"decimals": 18,
+		"MEXCSymbol": "USD"
 	},
 	{
 		"address": "AS1gt69gqYD92dqPyE6DBRJ7KjpnQHqFzFs2YCkBcSnuxX5bGhBC",
 		"name": "sepolia WETH",
 		"symbol": "WETH.s",
-		"decimals": 18
+		"decimals": 18,
+		"MEXCSymbol": "ETHUSDT"
 	},
 	{
 		"address": "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9",
 		"name": "Wrapped Massa",
 		"symbol": "WMAS",
-		"decimals": 9
+		"decimals": 9,
+		"MEXCSymbol": "MASUSDT"
 	},
 	{
 		"address": "AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ",
 		"name": "USD Coin",
 		"symbol": "USDC.e",
-		"decimals": 6
+		"decimals": 6,
+		"MEXCSymbol": "USD"
 	},
 	{
 		"address": "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
 		"name": "Dai Stablecoin",
 		"symbol": "DAI.e",
-		"decimals": 18
+		"decimals": 18,
+		"MEXCSymbol": "USD"
 	},
 	{
 		"address": "AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.e",
-		"decimals": 18
+		"decimals": 18,
+		"MEXCSymbol": "ETHUSDT"
 	}
 ]`), permissionUrwGrOr); err != nil {
 		return err
