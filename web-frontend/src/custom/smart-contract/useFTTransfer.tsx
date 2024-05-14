@@ -18,7 +18,6 @@ import { usePrepareScCall } from '../usePrepareScCall';
 import { OperationToast } from '@/components/OperationToast';
 import Intl from '@/i18n/i18n';
 
-
 export function useFTTransfer() {
   const { client, chainId } = usePrepareScCall();
 
