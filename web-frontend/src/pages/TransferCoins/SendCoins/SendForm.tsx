@@ -171,11 +171,9 @@ export function SendForm(props: SendFormProps) {
       resetTargetMnsAddress();
     }
 
-    if (targetMnsAddress && checkAddressFormat(targetMnsAddress)) {
-      setMnsAddressCorrelation(true);
-    } else {
-      setMnsAddressCorrelation(false);
-    }
+    setMnsAddressCorrelation(
+      !!targetMnsAddress && checkAddressFormat(targetMnsAddress),
+    );
   }, [recipient, targetMnsAddress]);
 
   function confirmMnsAddress(): void {
