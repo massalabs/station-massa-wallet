@@ -8,6 +8,7 @@ import {
   getAssetIcons,
   parseAmount,
   Clipboard,
+  Mns,
 } from '@massalabs/react-ui-kit';
 import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { FiChevronLeft } from 'react-icons/fi';
@@ -133,15 +134,10 @@ export function SendConfirmation(props: SendConfirmationProps) {
             rawContent={recipientAddress}
             error={Intl.t('errors.no-content-to-copy')}
             className="flex flex-row items-center mas-body2 justify-between
-              w-fit h-fit px-3 rounded bg-primary cursor-pointer"
+              w-fit h-fit px-3 py-1 rounded bg-primary cursor-pointer"
           />
         </div>
-        {mns && (
-          <div className="flex items-center gap-2 text-info">
-            <div>{Intl.t('send-coins.mns.mns')}</div>
-            <div>{mns}</div>
-          </div>
-        )}
+        {mns && <Mns mns={mns} />}
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}
