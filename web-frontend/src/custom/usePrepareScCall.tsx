@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Client } from '@massalabs/massa-web3';
+import { Client, MAINNET_CHAIN_ID } from '@massalabs/massa-web3';
 import { IAccount } from '@massalabs/wallet-provider';
 import { useParams } from 'react-router-dom';
 
@@ -23,5 +23,7 @@ export function usePrepareScCall() {
     });
   }, [nickname, setClient]);
 
-  return { client, chainId, account };
+  const isMainnet = chainId === MAINNET_CHAIN_ID;
+
+  return { client, chainId, account, isMainnet };
 }

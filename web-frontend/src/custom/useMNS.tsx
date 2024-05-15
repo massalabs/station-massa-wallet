@@ -1,26 +1,27 @@
 import { useCallback, useState } from 'react';
 
-import { Args, ICallData, MAINNET_CHAIN_ID } from '@massalabs/massa-web3';
+import { Args, ICallData } from '@massalabs/massa-web3';
 import { bytesToStr } from '@massalabs/web3-utils';
 
 import { usePrepareScCall } from './usePrepareScCall';
-import { contracts, networks } from '@/utils/const';
+import { contracts } from '@/utils/const';
 
 export function useMNS() {
   const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
   const [mns, setMns] = useState<string>('');
 
-  const { client, account, chainId } = usePrepareScCall();
+  const { client, account, isMainnet } = usePrepareScCall();
 
-  const currentNetwork =
-    chainId === MAINNET_CHAIN_ID ? networks.mainnet : networks.buildnet;
+  const targetContractAddress = isMainnet
+    ? contracts.mainnet.mnsContract
+    : contracts.buildnet.mnsContract;
 
   const reverseResolveDns = useCallback(
     async (address = '') => {
       const targetAddress = address || account?.address();
       if (!targetAddress) return;
       const reverseResolveCallData = {
-        targetAddress: contracts[currentNetwork].mnsContract,
+        targetAddress: targetContractAddress,
         targetFunction: 'dnsReverseResolve',
         parameter: new Args().addString(targetAddress).serialize(),
       } as ICallData;
@@ -44,7 +45,7 @@ export function useMNS() {
     if (!client) return;
 
     const resolveCallData = {
-      targetAddress: contracts[currentNetwork].mnsContract,
+      targetAddress: targetContractAddress,
       targetFunction: 'dnsResolve',
       parameter: new Args().addString(domain).serialize(),
     } as ICallData;
