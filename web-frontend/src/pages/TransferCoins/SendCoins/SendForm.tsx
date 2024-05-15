@@ -159,7 +159,7 @@ export function SendForm(props: SendFormProps) {
     <Spinner size={12} customClass="inline-block" />
   );
 
-  function getRecipient(e: string) {
+  function checkRecipient(e: string) {
     setRecipient(e);
     setError(null);
     setMnsAddressCorrelelation(false);
@@ -172,7 +172,7 @@ export function SendForm(props: SendFormProps) {
   function confirmAddress(): void {
     if (address && checkAddressFormat(address)) {
       setRecipient(address);
-    } else return;
+    }
   }
 
   useEffect(() => {
@@ -298,7 +298,7 @@ export function SendForm(props: SendFormProps) {
             placeholder={Intl.t('receive-coins.recipient')}
             value={recipient}
             name="recipientAddress"
-            onChange={(e) => getRecipient(e.target.value)}
+            onChange={(e) => checkRecipient(e.target.value)}
             error={error?.recipient}
           />
           {mnsAddressCorrelelation && (
