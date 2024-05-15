@@ -5,8 +5,7 @@ import {
   Balance,
   Clipboard,
   formatAmount,
-  Tag,
-  MassaLogo,
+  Mns,
 } from '@massalabs/react-ui-kit';
 import { FiArrowDownLeft, FiArrowUpRight } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -92,14 +91,7 @@ export default function Home() {
               {Intl.t('home.title-account-address')}
             </p>
             <div className="flex w-full justify-between items-center">
-              {mns && (
-                <Tag type="default">
-                  <div className="flex items-center gap-2">
-                    <MassaLogo size={24} />
-                    <div>{mns}</div>
-                  </div>
-                </Tag>
-              )}
+              {mns && <Mns mns={mns} />}
               <Clipboard
                 displayedContent={maskAddress(address)}
                 rawContent={address}
