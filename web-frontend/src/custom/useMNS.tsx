@@ -7,7 +7,7 @@ import { usePrepareScCall } from './usePrepareScCall';
 import { contracts, networks } from '@/utils/const';
 
 export function useMNS() {
-  const [address, setAddress] = useState<string>('');
+  const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
   const [mns, setMns] = useState<string>('');
 
   const { client, account, chainId } = usePrepareScCall();
@@ -49,13 +49,23 @@ export function useMNS() {
         .smartContracts()
         .readSmartContract(resolveCallData)
         .then((result) => {
-          setAddress(bytesToStr(result.returnValue));
+          setTargetMnsAddress(bytesToStr(result.returnValue));
         });
     } catch (e) {
-      setAddress('');
+      setTargetMnsAddress('');
       console.error(e);
     }
   }
 
-  return { mns, resolveDns, address, reverseResolveDns };
+  function resetTargetMnsAddress() {
+    setTargetMnsAddress('');
+  }
+
+  return {
+    mns,
+    resolveDns,
+    targetMnsAddress,
+    reverseResolveDns,
+    resetTargetMnsAddress,
+  };
 }
