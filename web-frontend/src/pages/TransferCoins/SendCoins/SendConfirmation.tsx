@@ -123,7 +123,10 @@ export function SendConfirmation(props: SendConfirmationProps) {
           </div>
           <Balance amount={fees} symbol="MAS" size="xs" />
         </div>
-        <div className="text-info flex items-center gap-2">
+        <div
+          data-testid="send-confirmation-recipient"
+          className="text-info flex items-center gap-2"
+        >
           <div>{Intl.t('send-coins.recipient')}</div>
           <Clipboard
             displayedContent={formattedRecipientAddress}
