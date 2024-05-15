@@ -161,7 +161,7 @@ export function SendForm(props: SendFormProps) {
   );
 
   useEffect(() => {
-    setError(null);
+    setError({ recipient: '' });
 
     if (mnsExtension.test(recipient)) {
       const inputMns = recipient.replace(mnsExtension, '');
