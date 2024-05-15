@@ -57,7 +57,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
   const { reverseResolveDns, mns } = useMNS();
 
   useEffect(() => {
-    reverseResolveDns();
+    reverseResolveDns(recipientAddress);
   }, [reverseResolveDns]);
 
   let selectedFees;

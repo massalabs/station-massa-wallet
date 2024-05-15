@@ -12,29 +12,33 @@ export function useMNS() {
 
   const { client, account, chainId } = usePrepareScCall();
 
-  const accountAddress = account?.address() ?? '';
-
   const currentNetwork =
     chainId === MAINNET_CHAIN_ID ? networks.mainnet : networks.buildnet;
 
-  const reverseResolveCallData = {
-    targetAddress: contracts[currentNetwork].mnsContract,
-    targetFunction: 'dnsReverseResolve',
-    parameter: new Args().addString(accountAddress).serialize(),
-  } as ICallData;
+  const reverseResolveDns = useCallback(
+    async (address = '') => {
+      const targetAddress = address || account?.address();
+      if (!targetAddress) return;
+      const reverseResolveCallData = {
+        targetAddress: contracts[currentNetwork].mnsContract,
+        targetFunction: 'dnsReverseResolve',
+        parameter: new Args().addString(targetAddress).serialize(),
+      } as ICallData;
 
-  const reverseResolveDns = useCallback(async () => {
-    if (!client) return;
-    try {
-      const result = await client
-        .smartContracts()
-        .readSmartContract(reverseResolveCallData);
-      setMns(bytesToStr(result.returnValue));
-    } catch (e) {
-      setMns('');
-      console.error(e);
-    }
-  }, [client, reverseResolveCallData]);
+      if (!client) return;
+
+      try {
+        const result = await client
+          .smartContracts()
+          .readSmartContract(reverseResolveCallData);
+        setMns(bytesToStr(result.returnValue));
+      } catch (e) {
+        setMns('');
+        console.error(e);
+      }
+    },
+    [client],
+  );
 
   async function resolveDns(domain: string): Promise<string | undefined> {
     if (!client) return;
