@@ -64,8 +64,7 @@ export function SendForm(props: SendFormProps) {
   const [recipient, setRecipient] = useState<string>(
     (sendOpData && sendOpData.recipientAddress) || '',
   );
-  const [mnsAddressCorrelelation, setMnsAddressCorrelation] =
-    useState<boolean>();
+  const [mnsAddressCorrelation, setMnsAddressCorrelation] = useState<boolean>();
 
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
     (sendOpData && sendOpData.asset) || undefined,
@@ -137,7 +136,17 @@ export function SendForm(props: SendFormProps) {
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formObject = parseForm(e);
+    let formObject = parseForm(e);
+
+    if (targetMnsAddress && mnsExtension.test(recipient)) {
+      formObject = {
+        ...formObject,
+        recipientAddress: targetMnsAddress,
+      };
+    } else {
+      setMnsAddressCorrelation(false);
+      resetTargetMnsAddress();
+    }
 
     if (!validate(formObject) || !selectedAsset) return;
 
@@ -162,7 +171,6 @@ export function SendForm(props: SendFormProps) {
 
   useEffect(() => {
     setError({ recipient: '' });
-
     if (mnsExtension.test(recipient)) {
       const inputMns = recipient.replace(mnsExtension, '');
       resolveDns(inputMns);
@@ -170,20 +178,13 @@ export function SendForm(props: SendFormProps) {
       setMnsAddressCorrelation(false);
       resetTargetMnsAddress();
     }
+  }, [recipient]);
 
+  useEffect(() => {
     setMnsAddressCorrelation(
       !!targetMnsAddress && checkAddressFormat(targetMnsAddress),
     );
-  }, [recipient, targetMnsAddress]);
-
-  function confirmMnsAddress(): void {
-    if (targetMnsAddress && mnsExtension.test(recipient)) {
-      setRecipient(targetMnsAddress);
-    } else {
-      setMnsAddressCorrelation(false);
-      resetTargetMnsAddress();
-    }
-  }
+  }, [targetMnsAddress]);
 
   return (
     <div>
@@ -305,7 +306,7 @@ export function SendForm(props: SendFormProps) {
             onChange={(e) => setRecipient(e.target.value)}
             error={error?.recipient}
           />
-          {mnsAddressCorrelelation && (
+          {mnsAddressCorrelation && (
             <div className="mas-caption text-brand">
               {Intl.t('send-coins.mns.mns-correlation', {
                 mns: recipient,
@@ -340,7 +341,7 @@ export function SendForm(props: SendFormProps) {
             <Button
               type="submit"
               posIcon={<FiArrowUpRight />}
-              onClick={() => confirmMnsAddress()}
+              // onClick={() => confirmMnsAddress()}
             >
               {Intl.t('send-coins.send')}
             </Button>
