@@ -64,7 +64,7 @@ export function SendForm(props: SendFormProps) {
   const [recipient, setRecipient] = useState<string>(
     (sendOpData && sendOpData.recipientAddress) || '',
   );
-  const [mnsAddressCorrelelation, setMnsAddressCorrelelation] =
+  const [mnsAddressCorrelelation, setMnsAddressCorrelation] =
     useState<boolean>();
 
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
@@ -167,14 +167,14 @@ export function SendForm(props: SendFormProps) {
       const inputMns = recipient.replace(mnsExtension, '');
       resolveDns(inputMns);
     } else {
-      setMnsAddressCorrelelation(false);
+      setMnsAddressCorrelation(false);
       resetTargetMnsAddress();
     }
 
     if (targetMnsAddress && checkAddressFormat(targetMnsAddress)) {
-      setMnsAddressCorrelelation(true);
+      setMnsAddressCorrelation(true);
     } else {
-      setMnsAddressCorrelelation(false);
+      setMnsAddressCorrelation(false);
     }
   }, [recipient, targetMnsAddress]);
 
@@ -182,7 +182,7 @@ export function SendForm(props: SendFormProps) {
     if (targetMnsAddress && mnsExtension.test(recipient)) {
       setRecipient(targetMnsAddress);
     } else {
-      setMnsAddressCorrelelation(false);
+      setMnsAddressCorrelation(false);
       resetTargetMnsAddress();
     }
   }
