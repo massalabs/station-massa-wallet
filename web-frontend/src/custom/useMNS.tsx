@@ -20,6 +20,7 @@ export function useMNS() {
     async (address = '') => {
       const targetAddress = address || account?.address();
       if (!targetAddress) return;
+
       const reverseResolveCallData = {
         targetAddress: targetContractAddress,
         targetFunction: 'dnsReverseResolve',
@@ -35,32 +36,33 @@ export function useMNS() {
         setMns(bytesToStr(result.returnValue));
       } catch (e) {
         setMns('');
-        console.error(e);
+        console.error('Reverse DNS resolution failed:', e);
       }
     },
-    [client],
+    [client, account?.address, targetContractAddress],
   );
 
-  async function resolveDns(domain: string): Promise<string | undefined> {
-    if (!client) return;
+  const resolveDns = useCallback(
+    async (domain: string) => {
+      if (!client) return;
+      const resolveCallData = {
+        targetAddress: targetContractAddress,
+        targetFunction: 'dnsResolve',
+        parameter: new Args().addString(domain).serialize(),
+      } as ICallData;
 
-    const resolveCallData = {
-      targetAddress: targetContractAddress,
-      targetFunction: 'dnsResolve',
-      parameter: new Args().addString(domain).serialize(),
-    } as ICallData;
-    try {
-      await client
-        .smartContracts()
-        .readSmartContract(resolveCallData)
-        .then((result) => {
-          setTargetMnsAddress(bytesToStr(result.returnValue));
-        });
-    } catch (e) {
-      setTargetMnsAddress('');
-      console.error(e);
-    }
-  }
+      try {
+        const result = await client
+          .smartContracts()
+          .readSmartContract(resolveCallData);
+        setTargetMnsAddress(bytesToStr(result.returnValue));
+      } catch (e) {
+        setTargetMnsAddress('');
+        console.error('DNS resolution failed:', e);
+      }
+    },
+    [client, targetContractAddress],
+  );
 
   function resetTargetMnsAddress() {
     setTargetMnsAddress('');
