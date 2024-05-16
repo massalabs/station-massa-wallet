@@ -12,9 +12,10 @@ import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { FiChevronLeft } from 'react-icons/fi';
 
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
-import { usePrepareScCall } from '@/custom/usePrepareScCall';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
+import { useMassaWeb3Store } from '@/store/store';
+import { maskAddress } from '@/utils';
 import { symbolDict } from '@/utils/tokenIcon';
 
 export interface SendConfirmationData {
@@ -33,8 +34,7 @@ interface SendConfirmationProps {
 
 export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
-
-  const { isMainnet } = usePrepareScCall();
+  const { isMainnet } = useMassaWeb3Store();
 
   const { amount, asset, fees, recipientAddress, recipientDomainName } = data;
   const { symbol, decimals } = asset;

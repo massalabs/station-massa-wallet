@@ -18,8 +18,6 @@ export async function prepareSCCall(nickname: string) {
   }
 
   return {
-    account: account,
     client: await ClientFactory.fromWalletProvider(massaProvider, account),
-    chainId: await massaProvider.getChainId(),
   };
 }

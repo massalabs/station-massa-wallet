@@ -13,7 +13,6 @@ import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import { MAS } from '@/const/assets/assets';
 import { useMNS } from '@/custom/useMNS';
-import { usePrepareScCall } from '@/custom/usePrepareScCall';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
@@ -78,10 +77,7 @@ export function SendForm(props: SendFormProps) {
   const balance = BigInt(selectedAsset?.balance || '0');
   const mnsExtension = /\.massa$/;
 
-  const { client } = usePrepareScCall();
-
-  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } =
-    useMNS(client);
+  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
 
   useEffect(() => {
     if (!sendOpData) {

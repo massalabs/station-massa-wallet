@@ -6,7 +6,6 @@ import {
   ICallData,
   MAX_GAS_CALL,
   Args,
-  MAINNET_CHAIN_ID,
   strToBytes,
   STORAGE_BYTE_COST,
   fromMAS,
@@ -17,11 +16,11 @@ import { logSmartContractEvents } from '@massalabs/react-ui-kit/src/lib/massa-re
 import { providers } from '@massalabs/wallet-provider';
 
 import Intl from '@/i18n/i18n';
+import { useMassaWeb3Store } from '@/store/store';
 
 export function useFTTransfer() {
-  const { client, chainId } = usePrepareScCall();
-
-  const isMainnet = chainId === MAINNET_CHAIN_ID;
+  const { isMainnet } = useMassaWeb3Store();
+  const { client } = usePrepareScCall();
 
   const {
     opId,
