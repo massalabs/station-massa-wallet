@@ -18,7 +18,7 @@ export function useMNS(client: Client | undefined) {
 
   const reverseResolveDns = useCallback(
     async (targetAddress = '') => {
-      if (!client) throw new Error('Client not initialized');
+      if (!client) return;
 
       const result = await client.smartContracts().readSmartContract({
         targetAddress: targetContractAddress,
@@ -35,7 +35,7 @@ export function useMNS(client: Client | undefined) {
 
   const resolveDns = useCallback(
     async (domain: string) => {
-      if (!client) throw new Error('Client not initialized');
+      if (!client) return;
       const result = await client.smartContracts().readSmartContract({
         targetAddress: targetContractAddress,
         targetFunction: 'dnsResolve',
