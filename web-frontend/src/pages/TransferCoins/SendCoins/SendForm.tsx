@@ -13,6 +13,7 @@ import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import { MAS } from '@/const/assets/assets';
 import { useMNS } from '@/custom/useMNS';
+import { usePrepareScCall } from '@/custom/usePrepareScCall';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
@@ -77,7 +78,10 @@ export function SendForm(props: SendFormProps) {
   const balance = BigInt(selectedAsset?.balance || '0');
   const mnsExtension = /\.massa$/;
 
-  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
+  const { client } = usePrepareScCall();
+
+  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } =
+    useMNS(client);
 
   useEffect(() => {
     if (!sendOpData) {
@@ -139,9 +143,11 @@ export function SendForm(props: SendFormProps) {
     let formObject = parseForm(e);
 
     if (targetMnsAddress && mnsExtension.test(recipient)) {
+      // recipient is a domain name
       formObject = {
         ...formObject,
-        recipientAddress: targetMnsAddress,
+        recipientAddress: targetMnsAddress, // set the resolved address
+        recipientDomainName: recipient.replace(mnsExtension, ''), // set the domain name
       };
     } else {
       setMnsAddressCorrelation(false);

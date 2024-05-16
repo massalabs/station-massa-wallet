@@ -1,26 +1,23 @@
 import { useCallback, useState } from 'react';
 
-import { Args, ICallData } from '@massalabs/massa-web3';
+import { Args, Client, ICallData } from '@massalabs/massa-web3';
 import { bytesToStr } from '@massalabs/web3-utils';
 
 import { usePrepareScCall } from './usePrepareScCall';
 import { contracts } from '@/utils/const';
 
-export function useMNS() {
+export function useMNS(client: Client | undefined) {
   const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
   const [domainName, setDomainName] = useState<string>('');
 
-  const { client, account, isMainnet } = usePrepareScCall();
+  const { isMainnet } = usePrepareScCall();
 
   const targetContractAddress = isMainnet
     ? contracts.mainnet.mnsContract
     : contracts.buildnet.mnsContract;
 
   const reverseResolveDns = useCallback(
-    async (address = '') => {
-      const targetAddress = address || account?.address();
-      if (!targetAddress) return;
-
+    async (targetAddress = '') => {
       const reverseResolveCallData = {
         targetAddress: targetContractAddress,
         targetFunction: 'dnsReverseResolve',
@@ -38,7 +35,7 @@ export function useMNS() {
         console.error('Reverse DNS resolution failed:', e);
       }
     },
-    [client, account?.address, targetContractAddress],
+    [client, targetContractAddress],
   );
 
   const resolveDns = useCallback(

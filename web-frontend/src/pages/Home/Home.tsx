@@ -14,6 +14,7 @@ import { Loading } from './Loading';
 import { TAB_SEND, TAB_RECEIVE } from '@/const/tabs/tabs';
 import { useResource } from '@/custom/api';
 import { useMNS } from '@/custom/useMNS';
+import { usePrepareScCall } from '@/custom/usePrepareScCall';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { AccountObject } from '@/models/AccountModel';
@@ -27,10 +28,12 @@ export default function Home() {
     data: account,
     isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
-  const { reverseResolveDns, domainName } = useMNS();
+  const { client } = usePrepareScCall();
+  const { reverseResolveDns, domainName } = useMNS(client);
+  const accountAddress = account?.address ?? '';
 
   useEffect(() => {
-    reverseResolveDns();
+    reverseResolveDns(accountAddress);
   }, [reverseResolveDns, nickname]);
 
   useEffect(() => {
@@ -46,7 +49,6 @@ export default function Home() {
   const formattedBalance = formatAmount(
     balance.toString(),
   ).amountFormattedPreview;
-  const address = account?.address ?? '';
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
@@ -93,8 +95,8 @@ export default function Home() {
             <div className="flex w-full justify-between items-center">
               {domainName && <Mns mns={domainName} />}
               <Clipboard
-                displayedContent={maskAddress(address)}
-                rawContent={address}
+                displayedContent={maskAddress(accountAddress)}
+                rawContent={accountAddress}
                 error={Intl.t('errors.no-content-to-copy')}
                 className="flex flex-row items-center mas-body2 justify-between
               w-fit h-12 px-3 rounded bg-primary cursor-pointer"
