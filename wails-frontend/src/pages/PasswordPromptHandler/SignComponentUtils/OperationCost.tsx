@@ -7,6 +7,8 @@ import {
   InlineMoney,
   Tooltip,
 } from '@massalabs/react-ui-kit';
+import { formatStandard } from '@massalabs/react-ui-kit';
+import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 import BigNumber from 'bignumber.js';
 import {
   FiCheck,
@@ -19,7 +21,6 @@ import {
 import { NumberFormatValues } from 'react-number-format';
 
 import Intl from '@/i18n/i18n';
-import { formatStandard, masToken } from '@/utils';
 
 export const MAX_FEES = 1_000_000_000_000_000_000n; // MASSA total supply
 
@@ -131,7 +132,7 @@ export function OperationCost(props: OperationCostProps) {
       <div className="flex w-full justify-between pb-2">
         <p>{Intl.t('password-prompt.sign.operation-const')}</p>
         <p>
-          {formatStandard(operationCost)} {masToken}
+          {formatStandard(operationCost)} {massaToken}
         </p>
       </div>
 

@@ -1,9 +1,11 @@
+import { formatStandard } from '@massalabs/react-ui-kit';
+import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
+
 import { OPER_BUY_ROLL } from '@/const/operations';
 import Intl from '@/i18n/i18n';
 import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
 import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
 import { From } from '@/pages/PasswordPromptHandler/SignComponentUtils/From';
-import { formatStandard, masToken } from '@/utils';
 
 export function BuySellRoll(props: SignBodyProps) {
   const {
@@ -40,7 +42,7 @@ export function BuySellRoll(props: SignBodyProps) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t(label)}</p>
         <p>
-          {formatStandard(Coins)} {masToken}
+          {formatStandard(Coins)} {massaToken}
         </p>
       </div>
 
