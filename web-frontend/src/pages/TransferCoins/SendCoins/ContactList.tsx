@@ -7,9 +7,9 @@ import {
   MassaLogo,
   formatAmount,
 } from '@massalabs/react-ui-kit';
+import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 
 import { AccountObject } from '@/models/AccountModel';
-import { maskNickname } from '@/utils/massaFormat';
 
 interface ContactListProps {
   setRecipient: React.Dispatch<string>;

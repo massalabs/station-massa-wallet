@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@massalabs/massa-web3": "^4.0.2-dev",
-    "@massalabs/react-ui-kit": "^0.0.4-dev",
+    "@massalabs/react-ui-kit": "^0.0.5-next",
     "@massalabs/wallet-provider": "^2.0.1-dev",
     "@tanstack/react-query": "^4.29.5",
     "axios": "^1.6.0",

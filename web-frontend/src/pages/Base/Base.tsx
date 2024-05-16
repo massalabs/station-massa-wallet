@@ -1,8 +1,7 @@
 import { Toast } from '@massalabs/react-ui-kit';
+import { useLocalStorage } from '@massalabs/react-ui-kit/src/lib/util/hooks/useLocalStorage';
 import { FiSun, FiMoon } from 'react-icons/fi';
 import { Outlet } from 'react-router-dom';
-
-import { useLocalStorage } from '@/custom/useLocalStorage';
 
 type ThemeSettings = {
   [key: string]: {

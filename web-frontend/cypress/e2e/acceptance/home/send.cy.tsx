@@ -1,5 +1,6 @@
+import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+
 import { mockServer } from '../../../../src/mirage';
-import { maskAddress } from '../../../../src/utils/massaFormat';
 import { AccountObject } from '@/models/AccountModel';
 
 describe('E2E | Acceptance | Home | Send', () => {

@@ -13,10 +13,10 @@ import {
   fromMAS,
 } from '@massalabs/massa-web3';
 import { ToastContent, parseAmount, toast } from '@massalabs/react-ui-kit';
+import { OperationToast } from '@massalabs/react-ui-kit/src/lib/ConnectMassaWallets/components/OperationToast';
+import { logSmartContractEvents } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { providers } from '@massalabs/wallet-provider';
 
-import { logSmartContractEvents } from './massa-utils';
-import { OperationToast } from '@/components/OperationToast';
 import Intl from '@/i18n/i18n';
 
 async function prepareFTTransfer(nickname: string) {
