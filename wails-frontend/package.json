@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "npx tsc && vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
