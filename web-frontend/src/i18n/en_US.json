@@ -18,7 +18,9 @@
     "buttons": {
       "send": "Send",
       "receive": "Receive"
-    }
+    },
+    "title-mns": "Massa Domains",
+    "desc-mns": "Domains that target your wallet address."
   },
   "assets": {
     "title": "Assets",

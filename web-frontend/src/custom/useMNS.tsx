@@ -8,7 +8,7 @@ import { contracts } from '@/utils/const';
 
 export function useMNS(client: Client | undefined) {
   const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
-  const [domainName, setDomainName] = useState<string>('');
+  const [domainNameList, setDomainNameList] = useState<string[]>([]);
 
   const { isMainnet } = usePrepareScCall();
 
@@ -25,9 +25,10 @@ export function useMNS(client: Client | undefined) {
         targetFunction: 'dnsReverseResolve',
         parameter: new Args().addString(targetAddress).serialize(),
       });
-      const domain = bytesToStr(result.returnValue);
-      setDomainName(domain);
-      return domain;
+      const domains = bytesToStr(result.returnValue).split(',');
+
+      setDomainNameList(domains);
+      return domains;
     },
     [client, targetContractAddress],
   );
@@ -52,7 +53,7 @@ export function useMNS(client: Client | undefined) {
   }
 
   return {
-    domainName,
+    domainNameList,
     resolveDns,
     targetMnsAddress,
     reverseResolveDns,
