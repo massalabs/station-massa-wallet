@@ -1,4 +1,4 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, useMemo } from 'react';
 
 import { fromMAS } from '@massalabs/massa-web3';
 import {
@@ -64,7 +64,6 @@ export function SendForm(props: SendFormProps) {
   const [recipient, setRecipient] = useState<string>(
     (sendOpData && sendOpData.recipientAddress) || '',
   );
-  const [mnsAddressCorrelation, setMnsAddressCorrelation] = useState<boolean>();
 
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
     (sendOpData && sendOpData.asset) || undefined,
@@ -75,7 +74,7 @@ export function SendForm(props: SendFormProps) {
   );
 
   const balance = BigInt(selectedAsset?.balance || '0');
-  const mnsExtension = /\.massa$/;
+  const mnsExtension = useMemo(() => /\.massa$/, []);
 
   const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
 
@@ -139,12 +138,13 @@ export function SendForm(props: SendFormProps) {
     let formObject = parseForm(e);
 
     if (targetMnsAddress && mnsExtension.test(recipient)) {
+      // recipient is a domain name
       formObject = {
         ...formObject,
-        recipientAddress: targetMnsAddress,
+        recipientAddress: targetMnsAddress, // set the resolved address
+        recipientDomainName: recipient, // set the domain name
       };
     } else {
-      setMnsAddressCorrelation(false);
       resetTargetMnsAddress();
     }
 
@@ -175,16 +175,12 @@ export function SendForm(props: SendFormProps) {
       const inputMns = recipient.replace(mnsExtension, '');
       resolveDns(inputMns);
     } else {
-      setMnsAddressCorrelation(false);
       resetTargetMnsAddress();
     }
-  }, [recipient]);
+  }, [recipient, resolveDns, mnsExtension, resetTargetMnsAddress]);
 
-  useEffect(() => {
-    setMnsAddressCorrelation(
-      !!targetMnsAddress && checkAddressFormat(targetMnsAddress),
-    );
-  }, [targetMnsAddress]);
+  const mnsAddressCorrelation =
+    !!targetMnsAddress && checkAddressFormat(targetMnsAddress);
 
   return (
     <div>

@@ -44,6 +44,7 @@ export default function SendCoins(props: SendCoinsProps) {
     transfer: transferFT,
     isOpPending: transferFTPending,
     isPending: transferFTLoading,
+    isMainnet,
   } = useFTTransfer();
 
   useEffect(() => {
@@ -118,6 +119,7 @@ export default function SendCoins(props: SendCoinsProps) {
           data={data}
           handleConfirm={handleConfirm}
           isLoading={transferMASLoading || transferFTLoading}
+          isMainnet={isMainnet}
         />
       ) : (
         <SendForm

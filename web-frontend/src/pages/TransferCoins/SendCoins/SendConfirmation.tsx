@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import {
   Balance,
   Button,
@@ -13,8 +11,6 @@ import {
 import { FiChevronLeft } from 'react-icons/fi';
 
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
-import { useMNS } from '@/custom/useMNS';
-import { usePrepareScCall } from '@/custom/usePrepareScCall';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
 import { maskAddress } from '@/utils';
@@ -25,20 +21,26 @@ export interface SendConfirmationData {
   asset: Asset;
   fees: string;
   recipientAddress: string;
+  recipientDomainName?: string;
 }
 
 interface SendConfirmationProps {
   data: SendConfirmationData;
   handleConfirm: (confirm: boolean) => void;
   isLoading: boolean;
+  isMainnet: boolean;
 }
 
 export function SendConfirmation(props: SendConfirmationProps) {
-  const { data, handleConfirm, isLoading } = props;
+  const { data, handleConfirm, isLoading, isMainnet } = props;
 
-  const { isMainnet } = usePrepareScCall();
-
-  const { amount, asset, fees, recipientAddress } = data;
+  const {
+    amount,
+    asset,
+    fees,
+    recipientAddress,
+    recipientDomainName: domainName,
+  } = data;
   const { symbol, decimals } = asset;
 
   const FEES_STANDARD = Intl.t('send-coins.fee-standard');
@@ -54,12 +56,6 @@ export function SendConfirmation(props: SendConfirmationProps) {
     parseAmount(amount, data.asset.decimals),
     decimals,
   ).amountFormattedFull;
-
-  const { reverseResolveDns, mns } = useMNS();
-
-  useEffect(() => {
-    reverseResolveDns(recipientAddress);
-  }, [reverseResolveDns, recipientAddress]);
 
   let selectedFees;
 
@@ -137,7 +133,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
               w-fit h-fit px-3 py-1 rounded bg-primary cursor-pointer"
           />
         </div>
-        {mns && <Mns mns={mns} />}
+        {domainName && <Mns mns={domainName} />}
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}

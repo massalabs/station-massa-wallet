@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { Args, ICallData } from '@massalabs/massa-web3';
+import { Args } from '@massalabs/massa-web3';
 import { bytesToStr } from '@massalabs/web3-utils';
 
 import { usePrepareScCall } from './usePrepareScCall';
@@ -8,58 +8,41 @@ import { contracts } from '@/utils/const';
 
 export function useMNS() {
   const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
-  const [mns, setMns] = useState<string>('');
+  const [domainName, setDomainName] = useState<string>('');
 
-  const { client, account, isMainnet } = usePrepareScCall();
+  const { client, isMainnet } = usePrepareScCall();
 
   const targetContractAddress = isMainnet
     ? contracts.mainnet.mnsContract
     : contracts.buildnet.mnsContract;
 
   const reverseResolveDns = useCallback(
-    async (address = '') => {
-      const targetAddress = address || account?.address();
-      if (!targetAddress) return;
+    async (targetAddress: string) => {
+      if (!client) return;
 
-      const reverseResolveCallData = {
+      const result = await client.smartContracts().readSmartContract({
         targetAddress: targetContractAddress,
         targetFunction: 'dnsReverseResolve',
         parameter: new Args().addString(targetAddress).serialize(),
-      } as ICallData;
-
-      if (!client) return;
-
-      try {
-        const result = await client
-          .smartContracts()
-          .readSmartContract(reverseResolveCallData);
-        setMns(bytesToStr(result.returnValue));
-      } catch (e) {
-        setMns('');
-        console.error('Reverse DNS resolution failed:', e);
-      }
+      });
+      const domain = bytesToStr(result.returnValue);
+      setDomainName(domain);
+      return domain;
     },
-    [client, account?.address, targetContractAddress],
+    [client, targetContractAddress],
   );
 
   const resolveDns = useCallback(
     async (domain: string) => {
       if (!client) return;
-      const resolveCallData = {
+      const result = await client.smartContracts().readSmartContract({
         targetAddress: targetContractAddress,
         targetFunction: 'dnsResolve',
         parameter: new Args().addString(domain).serialize(),
-      } as ICallData;
-
-      try {
-        const result = await client
-          .smartContracts()
-          .readSmartContract(resolveCallData);
-        setTargetMnsAddress(bytesToStr(result.returnValue));
-      } catch (e) {
-        setTargetMnsAddress('');
-        console.error('DNS resolution failed:', e);
-      }
+      });
+      const targetAddress = bytesToStr(result.returnValue);
+      setTargetMnsAddress(bytesToStr(result.returnValue));
+      return targetAddress;
     },
     [client, targetContractAddress],
   );
@@ -69,7 +52,7 @@ export function useMNS() {
   }
 
   return {
-    mns,
+    domainName,
     resolveDns,
     targetMnsAddress,
     reverseResolveDns,

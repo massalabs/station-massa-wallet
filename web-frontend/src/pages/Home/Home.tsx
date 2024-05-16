@@ -27,11 +27,12 @@ export default function Home() {
     data: account,
     isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
-  const { reverseResolveDns, mns } = useMNS();
+  const { reverseResolveDns, domainName } = useMNS();
+  const address = account?.address ?? '';
 
   useEffect(() => {
-    reverseResolveDns();
-  }, [reverseResolveDns, nickname]);
+    reverseResolveDns(address);
+  }, [reverseResolveDns, address]);
 
   useEffect(() => {
     if (error) {
@@ -46,7 +47,6 @@ export default function Home() {
   const formattedBalance = formatAmount(
     balance.toString(),
   ).amountFormattedPreview;
-  const address = account?.address ?? '';
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
@@ -91,7 +91,7 @@ export default function Home() {
               {Intl.t('home.title-account-address')}
             </p>
             <div className="flex w-full justify-between items-center">
-              {mns && <Mns mns={mns} />}
+              {domainName && <Mns mns={domainName} />}
               <Clipboard
                 displayedContent={maskAddress(address)}
                 rawContent={address}
