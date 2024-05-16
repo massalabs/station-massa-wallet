@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { Args, Client, ICallData } from '@massalabs/massa-web3';
+import { Args, Client } from '@massalabs/massa-web3';
 import { bytesToStr } from '@massalabs/web3-utils';
 
 import { usePrepareScCall } from './usePrepareScCall';
@@ -18,44 +18,31 @@ export function useMNS(client: Client | undefined) {
 
   const reverseResolveDns = useCallback(
     async (targetAddress = '') => {
-      const reverseResolveCallData = {
+      if (!client) throw new Error('Client not initialized');
+
+      const result = await client.smartContracts().readSmartContract({
         targetAddress: targetContractAddress,
         targetFunction: 'dnsReverseResolve',
         parameter: new Args().addString(targetAddress).serialize(),
-      } as ICallData;
-
-      try {
-        if (!client) throw new Error('Client not initialized');
-        const result = await client
-          .smartContracts()
-          .readSmartContract(reverseResolveCallData);
-        setDomainName(bytesToStr(result.returnValue));
-      } catch (e) {
-        setDomainName('');
-        console.error('Reverse DNS resolution failed:', e);
-      }
+      });
+      const domain = bytesToStr(result.returnValue);
+      setDomainName(domain);
+      return domain;
     },
     [client, targetContractAddress],
   );
 
   const resolveDns = useCallback(
     async (domain: string) => {
-      const resolveCallData = {
+      if (!client) throw new Error('Client not initialized');
+      const result = await client.smartContracts().readSmartContract({
         targetAddress: targetContractAddress,
         targetFunction: 'dnsResolve',
         parameter: new Args().addString(domain).serialize(),
-      } as ICallData;
-
-      try {
-        if (!client) throw new Error('Client not initialized');
-        const result = await client
-          .smartContracts()
-          .readSmartContract(resolveCallData);
-        setTargetMnsAddress(bytesToStr(result.returnValue));
-      } catch (e) {
-        setTargetMnsAddress('');
-        console.error('DNS resolution failed:', e);
-      }
+      });
+      const targetAddress = bytesToStr(result.returnValue);
+      setTargetMnsAddress(bytesToStr(result.returnValue));
+      return targetAddress;
     },
     [client, targetContractAddress],
   );
