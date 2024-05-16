@@ -344,11 +344,7 @@ export function SendForm(props: SendFormProps) {
           </Button>
 
           <div>
-            <Button
-              type="submit"
-              posIcon={<FiArrowUpRight />}
-              // onClick={() => confirmMnsAddress()}
-            >
+            <Button type="submit" posIcon={<FiArrowUpRight />}>
               {Intl.t('send-coins.send')}
             </Button>
           </div>
