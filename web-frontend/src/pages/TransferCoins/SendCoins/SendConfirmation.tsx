@@ -55,7 +55,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
     decimals,
   ).amountFormattedFull;
 
-  const { reverseResolveDns, mns } = useMNS();
+  const { reverseResolveDns, domainName } = useMNS();
 
   useEffect(() => {
     reverseResolveDns(recipientAddress);
@@ -137,7 +137,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
               w-fit h-fit px-3 py-1 rounded bg-primary cursor-pointer"
           />
         </div>
-        {mns && <Mns mns={mns} />}
+        {domainName && <Mns mns={domainName} />}
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}

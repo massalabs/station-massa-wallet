@@ -27,7 +27,7 @@ export default function Home() {
     data: account,
     isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
-  const { reverseResolveDns, mns } = useMNS();
+  const { reverseResolveDns, domainName } = useMNS();
 
   useEffect(() => {
     reverseResolveDns();
@@ -91,7 +91,7 @@ export default function Home() {
               {Intl.t('home.title-account-address')}
             </p>
             <div className="flex w-full justify-between items-center">
-              {mns && <Mns mns={mns} />}
+              {domainName && <Mns mns={domainName} />}
               <Clipboard
                 displayedContent={maskAddress(address)}
                 rawContent={address}

@@ -8,7 +8,7 @@ import { contracts } from '@/utils/const';
 
 export function useMNS() {
   const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
-  const [mns, setMns] = useState<string>('');
+  const [domainName, setDomainName] = useState<string>('');
 
   const { client, account, isMainnet } = usePrepareScCall();
 
@@ -27,15 +27,14 @@ export function useMNS() {
         parameter: new Args().addString(targetAddress).serialize(),
       } as ICallData;
 
-      if (!client) return;
-
       try {
+        if (!client) throw new Error('Client not initialized');
         const result = await client
           .smartContracts()
           .readSmartContract(reverseResolveCallData);
-        setMns(bytesToStr(result.returnValue));
+        setDomainName(bytesToStr(result.returnValue));
       } catch (e) {
-        setMns('');
+        setDomainName('');
         console.error('Reverse DNS resolution failed:', e);
       }
     },
@@ -44,7 +43,6 @@ export function useMNS() {
 
   const resolveDns = useCallback(
     async (domain: string) => {
-      if (!client) return;
       const resolveCallData = {
         targetAddress: targetContractAddress,
         targetFunction: 'dnsResolve',
@@ -52,6 +50,7 @@ export function useMNS() {
       } as ICallData;
 
       try {
+        if (!client) throw new Error('Client not initialized');
         const result = await client
           .smartContracts()
           .readSmartContract(resolveCallData);
@@ -69,7 +68,7 @@ export function useMNS() {
   }
 
   return {
-    mns,
+    domainName,
     resolveDns,
     targetMnsAddress,
     reverseResolveDns,
