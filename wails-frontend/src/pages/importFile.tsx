@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Button } from '@massalabs/react-ui-kit';
+import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { walletapp } from '@wailsjs/go/models';
 import {
   SendPromptInput,
@@ -12,7 +13,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { events, promptRequest } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
-import { handleApplyResult, handleCancel, maskNickname } from '@/utils';
+import { handleApplyResult, handleCancel } from '@/utils';
 
 const ImportFile = () => {
   const nav = useNavigate();

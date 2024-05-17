@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx tsc && vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
@@ -17,8 +17,8 @@
     "prepare": "cd .. && husky install wails-frontend/.husky"
   },
   "dependencies": {
-    "@massalabs/massa-web3": "^1.17.1",
-    "@massalabs/react-ui-kit": "^0.0.4-dev",
+    "@massalabs/massa-web3": "^4.0.2-dev",
+    "@massalabs/react-ui-kit": "^0.0.5-dev",
     "bignumber": "^1.1.0",
     "currency.js": "^2.0.4",
     "dot-object": "^2.1.4",

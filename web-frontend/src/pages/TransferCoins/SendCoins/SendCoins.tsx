@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { fromMAS } from '@massalabs/massa-web3';
 import { toast } from '@massalabs/react-ui-kit';
+import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { MAS } from '@/const/assets/assets';
@@ -16,7 +17,7 @@ import {
 import { SendForm } from '@/pages/TransferCoins/SendCoins/SendForm';
 import { Redirect } from '@/pages/TransferCoins/TransferCoins';
 import { useAppStore } from '@/store/appStore';
-import { routeFor, maskAddress } from '@/utils';
+import { routeFor } from '@/utils';
 
 interface SendCoinsProps {
   account?: AccountObject;

@@ -27,5 +27,8 @@ export default ({ mode }) => {
         allow: ['../..'],
       },
     },
+    optimizeDeps: {
+      include: ['react-dom', 'dot-object', 'copy-to-clipboard'],
+    },
   });
 };

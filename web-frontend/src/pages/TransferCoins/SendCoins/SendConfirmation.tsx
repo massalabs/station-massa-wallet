@@ -6,6 +6,7 @@ import {
   getAssetIcons,
   parseAmount,
 } from '@massalabs/react-ui-kit';
+import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { FiChevronLeft } from 'react-icons/fi';
 import { useParams } from 'react-router-dom';
 
@@ -13,7 +14,6 @@ import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
-import { maskAddress } from '@/utils';
 import { symbolDict } from '@/utils/tokenIcon';
 
 export interface SendConfirmationData {

@@ -1,5 +1,4 @@
 import { mockServer } from '../../../../src/mirage';
-import { maskAddress } from '../../../../src/utils/massaFormat';
 import { AccountObject } from '@/models/AccountModel';
 
 describe('E2E | Acceptance | Home | Send', () => {
@@ -141,7 +140,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       );
 
       cy.get('[data-testid="send-confirmation-recipient"]').contains(
-        maskAddress(recipientAccount.address),
+        'AU1Z...crWY',
       );
 
       cy.get('[data-testid="button"]')

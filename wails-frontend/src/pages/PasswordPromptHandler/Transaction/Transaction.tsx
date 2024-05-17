@@ -1,9 +1,11 @@
+import { formatStandard } from '@massalabs/react-ui-kit';
+import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
+
 import Intl from '@/i18n/i18n';
 import { AmountBox } from '@/pages/PasswordPromptHandler/AmountBox';
 import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
 import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
 import { FromTo } from '@/pages/PasswordPromptHandler/SignComponentUtils/FromTo';
-import { formatStandard, masToken, Unit } from '@/utils';
 
 export function Transaction(props: SignBodyProps) {
   const {
@@ -41,7 +43,7 @@ export function Transaction(props: SignBodyProps) {
       </div>
 
       <AmountBox>
-        {formatStandard(Amount, Unit.NanoMAS)} {masToken}
+        {formatStandard(Amount)} {massaToken}
       </AmountBox>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />

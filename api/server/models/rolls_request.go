@@ -30,7 +30,7 @@ type RollsRequest struct {
 
 	// side
 	// Required: true
-	// Enum: [buy sell]
+	// Enum: ["buy","sell"]
 	Side *string `json:"side"`
 }
 

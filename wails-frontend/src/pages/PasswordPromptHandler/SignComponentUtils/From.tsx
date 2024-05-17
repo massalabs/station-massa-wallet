@@ -1,5 +1,9 @@
+import {
+  maskAddress,
+  maskNickname,
+} from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+
 import Intl from '@/i18n/i18n';
-import { maskAddress, maskNickname } from '@/utils';
 
 interface FromProps {
   nickname: string;

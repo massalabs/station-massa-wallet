@@ -41,7 +41,7 @@ type Account struct {
 	Nickname Nickname `json:"nickname"`
 
 	// status
-	// Enum: [ok corrupted]
+	// Enum: ["ok","corrupted"]
 	Status string `json:"status,omitempty"`
 }
 

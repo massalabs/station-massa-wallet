@@ -1,11 +1,12 @@
-import { Tooltip } from '@massalabs/react-ui-kit';
+import { Tooltip, formatStandard } from '@massalabs/react-ui-kit';
+import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 import { FiAlertTriangle, FiInfo } from 'react-icons/fi';
 
 import Intl from '@/i18n/i18n';
 import { SignBodyProps } from '@/pages/PasswordPromptHandler/Sign';
 import { Description } from '@/pages/PasswordPromptHandler/SignComponentUtils/Description';
 import { From } from '@/pages/PasswordPromptHandler/SignComponentUtils/From';
-import { Unit, formatStandard, masToken } from '@/utils';
+
 export function ExecuteSC(props: SignBodyProps) {
   const {
     MaxCoins,
@@ -81,7 +82,7 @@ export function ExecuteSC(props: SignBodyProps) {
           <p>{Intl.t('password-prompt.sign.max-coins')}</p>
         </div>
         <p>
-          {formatStandard(MaxCoins, Unit.NanoMAS)} {masToken}
+          {formatStandard(MaxCoins)} {massaToken}
         </p>
       </div>
 

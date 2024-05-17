@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { Button } from '@massalabs/react-ui-kit';
+import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { backupMethods, events, promptRequest } from '@/events/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
-import { handleApplyResult, maskNickname } from '@/utils';
+import { handleApplyResult } from '@/utils';
 
 function BackupMethods() {
   const { state } = useLocation();
