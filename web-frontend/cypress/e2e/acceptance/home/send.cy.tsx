@@ -1,5 +1,3 @@
-import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
-
 import { mockServer } from '../../../../src/mirage';
 import { AccountObject } from '@/models/AccountModel';
 
@@ -142,7 +140,7 @@ describe('E2E | Acceptance | Home | Send', () => {
       );
 
       cy.get('[data-testid="send-confirmation-recipient"]').contains(
-        maskAddress(recipientAccount.address),
+        'AU1Z...crWY',
       );
 
       cy.get('[data-testid="button"]')
