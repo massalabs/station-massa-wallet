@@ -180,7 +180,7 @@ export function SendForm(props: SendFormProps) {
       setMnsAddressCorrelation(false);
       resetTargetMnsAddress();
     }
-  }, [recipient, mnsExtension, resolveDns, resetTargetMnsAddress]);
+  }, [recipient, resolveDns, resetTargetMnsAddress]);
 
   useEffect(() => {
     setMnsAddressCorrelation(
