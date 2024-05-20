@@ -276,10 +276,11 @@ func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
 	includedAddresses := map[string]bool{}
 
 	for _, asset := range defaultAssets {
+		decimals := asset.Decimals // Copy the decimals value to avoid a pointer to a local variable
 		completeAsset := &AssetInfoWithBalances{
 			AssetInfo: &models.AssetInfo{
 				Address:  asset.Address,
-				Decimals: &asset.Decimals,
+				Decimals: &decimals,
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
 			},
