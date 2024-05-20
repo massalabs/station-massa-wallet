@@ -146,7 +146,7 @@ export function SendForm(props: SendFormProps) {
     e.preventDefault();
     let formObject = parseForm(e);
 
-    if (targetMnsAddress) {
+    if (targetMnsAddress && mnsExtensionRegex.test(recipient)) {
       // recipient is a domain name
       formObject = {
         ...formObject,
@@ -183,16 +183,16 @@ export function SendForm(props: SendFormProps) {
     async (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setRecipient(value);
-      // setError({ recipient: '', amount: error?.amount });
+      setError({ recipient: '', amount: error?.amount });
       if (value !== '' && mnsExtensionRegex.test(value)) {
         const inputMns = value.replace(mnsExtension, '');
         const targetAddress = await resolveDns(inputMns);
-        setMnsAddressCorrelation(
-          !!targetAddress && checkAddressFormat(targetAddress),
-        );
-      } else {
-        setMnsAddressCorrelation(false);
-        resetTargetMnsAddress();
+        if (targetAddress && checkAddressFormat(targetAddress)) {
+          setMnsAddressCorrelation(true);
+        } else {
+          setMnsAddressCorrelation(false);
+          resetTargetMnsAddress();
+        }
       }
     },
     [recipient, resolveDns, resetTargetMnsAddress, mnsExtensionRegex],

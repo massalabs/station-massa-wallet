@@ -33,16 +33,23 @@ export function useMNS() {
   );
 
   const resolveDns = useCallback(
-    async (domain: string) => {
-      if (!client) return;
-      const result = await client.smartContracts().readSmartContract({
-        targetAddress: targetContractAddress,
-        targetFunction: 'dnsResolve',
-        parameter: new Args().addString(domain).serialize(),
-      });
-      const targetAddress = bytesToStr(result.returnValue);
-      setTargetMnsAddress(bytesToStr(result.returnValue));
-      return targetAddress;
+    async (domain: string): Promise<string | undefined> => {
+      try {
+        if (!client) return;
+        const result = await client.smartContracts().readSmartContract({
+          targetAddress: targetContractAddress,
+          targetFunction: 'dnsResolve',
+          parameter: new Args().addString(domain).serialize(),
+        });
+
+        const targetAddress = bytesToStr(result.returnValue);
+        setTargetMnsAddress(bytesToStr(result.returnValue));
+        return targetAddress;
+      } catch (e) {
+        console.error(e);
+        setTargetMnsAddress('');
+        return '';
+      }
     },
     [client, targetContractAddress],
   );

@@ -17,7 +17,6 @@ import { Asset } from '@/models/AssetModel';
 import { useMassaWeb3Store } from '@/store/store';
 import { symbolDict } from '@/utils/tokenIcon';
 
-
 export interface SendConfirmationData {
   amount: string;
   asset: Asset;
