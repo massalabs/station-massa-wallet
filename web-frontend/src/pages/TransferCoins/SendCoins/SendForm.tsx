@@ -60,44 +60,44 @@ export function SendForm(props: SendFormProps) {
     symbol: redirectSymbol,
   } = redirect;
 
-  const [error, setError] = useState<InputsErrors | null>(null);
+  const { okAccounts: accounts } = useFetchAccounts();
+  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
 
+  const [amount, setAmount] = useState<string>('');
+  const [fees, setFees] = useState<string>(PRESET_LOW);
+  const [recipient, setRecipient] = useState<string>('');
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
+
+  const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string>(
-    sendOpData && sendOpData.amount ? sendOpData.amount : '',
-  );
-  const [fees, setFees] = useState<string>(PRESET_LOW);
-  const [recipient, setRecipient] = useState<string>(
-    (sendOpData && sendOpData.recipientAddress) || '',
-  );
   const [mnsAddressCorrelation, setMnsAddressCorrelation] = useState<boolean>();
-
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
-    (sendOpData && sendOpData.asset) || undefined,
-  );
-  const { okAccounts: accounts } = useFetchAccounts();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );
 
   const balance = BigInt(selectedAsset?.balance || '0');
-  const mnsExtension = '.massa';
-  const mnsExtensionRegex = /\.massa$/;
-
-  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
 
   useEffect(() => {
     if (!sendOpData) {
       setAmount(redirectAmount);
-      setRecipient(redirectedTo);
       setFees(PRESET_LOW);
+      setRecipient(redirectedTo);
     } else {
-      setAmount(sendOpData?.amount);
-      setRecipient(sendOpData?.recipientAddress);
-      setFees(sendOpData?.fees);
+      if (sendOpData.recipientDomainName) {
+        setRecipient(sendOpData.recipientDomainName + mnsExtension);
+        resolveDns(sendOpData.recipientDomainName);
+      } else {
+        setRecipient(sendOpData.recipientAddress);
+      }
+      setAmount(sendOpData.amount);
+      setFees(sendOpData.fees);
+      setSelectedAsset(sendOpData.asset);
     }
   }, [sendOpData, redirectAmount, redirectedTo]);
+
+  const mnsExtensionRegex = /\.massa$/;
+  const mnsExtension = '.massa';
 
   function validate(formObject: IForm) {
     const { recipientAddress } = formObject;
