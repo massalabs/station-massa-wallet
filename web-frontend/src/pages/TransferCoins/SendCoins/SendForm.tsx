@@ -94,9 +94,8 @@ export function SendForm(props: SendFormProps) {
       setFees(sendOpData.fees);
       setSelectedAsset(sendOpData.asset);
     }
-  }, [sendOpData, redirectAmount, redirectedTo]);
+  }, [sendOpData, redirectAmount, redirectedTo, resolveDns]);
 
-  const mnsExtensionRegex = /\.massa$/;
   const mnsExtension = '.massa';
 
   function validate(formObject: IForm) {
@@ -146,7 +145,7 @@ export function SendForm(props: SendFormProps) {
     e.preventDefault();
     let formObject = parseForm(e);
 
-    if (targetMnsAddress && mnsExtensionRegex.test(recipient)) {
+    if (targetMnsAddress && /\.massa$/.test(recipient)) {
       // recipient is a domain name
       formObject = {
         ...formObject,
@@ -181,9 +180,10 @@ export function SendForm(props: SendFormProps) {
 
   const handleRecipientChange = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
+      const mnsExtensionRegex = /\.massa$/;
       const value = e.target.value;
       setRecipient(value);
-      setError({ recipient: '', amount: error?.amount });
+      setError((error) => ({ ...error, recipient: '' }));
       if (value !== '' && mnsExtensionRegex.test(value)) {
         const inputMns = value.replace(mnsExtension, '');
         const targetAddress = await resolveDns(inputMns);
@@ -195,7 +195,7 @@ export function SendForm(props: SendFormProps) {
         }
       }
     },
-    [recipient, resolveDns, resetTargetMnsAddress, mnsExtensionRegex],
+    [resolveDns, resetTargetMnsAddress],
   );
 
   return (
