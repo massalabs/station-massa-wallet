@@ -15,8 +15,8 @@ import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
 import { useMassaWeb3Store } from '@/store/store';
-import { maskAddress } from '@/utils';
 import { symbolDict } from '@/utils/tokenIcon';
+
 
 export interface SendConfirmationData {
   amount: string;

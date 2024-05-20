@@ -13,8 +13,8 @@ import {
 import { ToastContent, parseAmount, toast } from '@massalabs/react-ui-kit';
 import { OperationToast } from '@massalabs/react-ui-kit/src/lib/ConnectMassaWallets/components/OperationToast';
 import { logSmartContractEvents } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
-import { providers } from '@massalabs/wallet-provider';
 
+import { usePrepareScCall } from '../usePrepareScCall';
 import Intl from '@/i18n/i18n';
 import { useMassaWeb3Store } from '@/store/store';
 
