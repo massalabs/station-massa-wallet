@@ -20,7 +20,7 @@
       "receive": "Receive"
     },
     "title-mns": "Massa Domains",
-    "desc-mns": "Domains that target your wallet address."
+    "desc-mns": "Domains that targets your wallet address."
   },
   "assets": {
     "title": "Assets",
@@ -192,8 +192,7 @@
       "failed-timeout": "Operation failed due to timeout, please retry with more fees."
     },
     "mns": {
-      "mns-correlation": "{mns} correlates with the following address: {address}",
-      "mns": "MNS:"
+      "mns-correlation": "{mns} correlates with the following address: {address}"
     }
   },
   "receive-coins": {
