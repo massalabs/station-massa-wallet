@@ -1,4 +1,10 @@
-import { useState, FormEvent, useEffect } from 'react';
+import {
+  useState,
+  FormEvent,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+} from 'react';
 
 import { fromMAS } from '@massalabs/massa-web3';
 import {
@@ -55,6 +61,7 @@ export function SendForm(props: SendFormProps) {
   } = redirect;
 
   const [error, setError] = useState<InputsErrors | null>(null);
+
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
   const [amount, setAmount] = useState<string>(
@@ -75,7 +82,8 @@ export function SendForm(props: SendFormProps) {
   );
 
   const balance = BigInt(selectedAsset?.balance || '0');
-  const mnsExtension = /\.massa$/;
+  const mnsExtension = '.massa';
+  const mnsExtensionRegex = /\.massa$/;
 
   const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
 
@@ -138,7 +146,7 @@ export function SendForm(props: SendFormProps) {
     e.preventDefault();
     let formObject = parseForm(e);
 
-    if (targetMnsAddress && mnsExtension.test(recipient)) {
+    if (targetMnsAddress) {
       // recipient is a domain name
       formObject = {
         ...formObject,
@@ -171,22 +179,24 @@ export function SendForm(props: SendFormProps) {
     <Spinner size={12} customClass="inline-block" />
   );
 
-  useEffect(() => {
-    setError({ recipient: '' });
-    if (mnsExtension.test(recipient)) {
-      const inputMns = recipient.replace(mnsExtension, '');
-      resolveDns(inputMns);
-    } else {
-      setMnsAddressCorrelation(false);
-      resetTargetMnsAddress();
-    }
-  }, [recipient, resolveDns, resetTargetMnsAddress]);
-
-  useEffect(() => {
-    setMnsAddressCorrelation(
-      !!targetMnsAddress && checkAddressFormat(targetMnsAddress),
-    );
-  }, [targetMnsAddress]);
+  const handleRecipientChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setRecipient(value);
+      // setError({ recipient: '', amount: error?.amount });
+      if (value !== '' && mnsExtensionRegex.test(value)) {
+        const inputMns = value.replace(mnsExtension, '');
+        const targetAddress = await resolveDns(inputMns);
+        setMnsAddressCorrelation(
+          !!targetAddress && checkAddressFormat(targetAddress),
+        );
+      } else {
+        setMnsAddressCorrelation(false);
+        resetTargetMnsAddress();
+      }
+    },
+    [recipient, resolveDns, resetTargetMnsAddress, mnsExtensionRegex],
+  );
 
   return (
     <div>
@@ -305,7 +315,7 @@ export function SendForm(props: SendFormProps) {
             placeholder={Intl.t('receive-coins.recipient')}
             value={recipient}
             name="recipientAddress"
-            onChange={(e) => setRecipient(e.target.value)}
+            onChange={(e) => handleRecipientChange(e)}
             error={error?.recipient}
           />
           {mnsAddressCorrelation && (
