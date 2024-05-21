@@ -316,15 +316,15 @@ export function SendForm(props: SendFormProps) {
             name="recipientAddress"
             onChange={(e) => handleRecipientChange(e)}
             error={error?.recipient}
+            success={
+              mnsAddressCorrelation
+                ? Intl.t('send-coins.mns.mns-correlation', {
+                    mns: recipient,
+                    address: targetMnsAddress,
+                  })
+                : ''
+            }
           />
-          {mnsAddressCorrelation && (
-            <div className="mas-caption text-brand">
-              {Intl.t('send-coins.mns.mns-correlation', {
-                mns: recipient,
-                address: targetMnsAddress,
-              })}
-            </div>
-          )}
         </div>
         {filteredAccounts.length > 0 && (
           <div className="flex flex-row-reverse pb-3.5">
