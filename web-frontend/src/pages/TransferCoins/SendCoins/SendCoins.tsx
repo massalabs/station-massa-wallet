@@ -16,7 +16,7 @@ import {
 } from '@/pages/TransferCoins/SendCoins/SendConfirmation';
 import { SendForm } from '@/pages/TransferCoins/SendCoins/SendForm';
 import { Redirect } from '@/pages/TransferCoins/TransferCoins';
-import { useAppStore } from '@/store/appStore';
+import { useAppStore } from '@/store/store';
 import { routeFor } from '@/utils';
 
 interface SendCoinsProps {
@@ -45,7 +45,7 @@ export default function SendCoins(props: SendCoinsProps) {
     transfer: transferFT,
     isOpPending: transferFTPending,
     isPending: transferFTLoading,
-  } = useFTTransfer(nickname || '');
+  } = useFTTransfer();
 
   useEffect(() => {
     if (transferMASError && !errorToastId) {

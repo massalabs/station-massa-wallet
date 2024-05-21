@@ -1,4 +1,10 @@
-import { useState, FormEvent, useEffect } from 'react';
+import {
+  useState,
+  FormEvent,
+  useEffect,
+  useCallback,
+  ChangeEvent,
+} from 'react';
 
 import { fromMAS } from '@massalabs/massa-web3';
 import {
@@ -12,6 +18,7 @@ import {
 import { FiArrowUpRight, FiPlus } from 'react-icons/fi';
 
 import { MAS } from '@/const/assets/assets';
+import { useMNS } from '@/custom/useMNS';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
@@ -26,6 +33,7 @@ import {
   useFetchAccounts,
   checkAddressFormat,
 } from '@/utils';
+import { mnsExtension } from '@/utils/const';
 import { handlePercent } from '@/utils/math';
 
 interface InputsErrors {
@@ -53,20 +61,18 @@ export function SendForm(props: SendFormProps) {
     symbol: redirectSymbol,
   } = redirect;
 
+  const { okAccounts: accounts } = useFetchAccounts();
+  const { resolveDns, targetMnsAddress, resetTargetMnsAddress } = useMNS();
+
+  const [amount, setAmount] = useState<string>('');
+  const [fees, setFees] = useState<string>(PRESET_LOW);
+  const [recipient, setRecipient] = useState<string>('');
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
+
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
   const [ContactListModal, setContactListModal] = useState<boolean>(false);
-  const [amount, setAmount] = useState<string>(
-    sendOpData && sendOpData.amount ? sendOpData.amount : '',
-  );
-  const [fees, setFees] = useState<string>(PRESET_LOW);
-  const [recipient, setRecipient] = useState<string>(
-    (sendOpData && sendOpData.recipientAddress) || '',
-  );
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(
-    (sendOpData && sendOpData.asset) || undefined,
-  );
-  const { okAccounts: accounts } = useFetchAccounts();
+  const [mnsAddressCorrelation, setMnsAddressCorrelation] = useState<boolean>();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
   );
@@ -76,14 +82,20 @@ export function SendForm(props: SendFormProps) {
   useEffect(() => {
     if (!sendOpData) {
       setAmount(redirectAmount);
-      setRecipient(redirectedTo);
       setFees(PRESET_LOW);
+      setRecipient(redirectedTo);
     } else {
-      setAmount(sendOpData?.amount);
-      setRecipient(sendOpData?.recipientAddress);
-      setFees(sendOpData?.fees);
+      if (sendOpData.recipientDomainName) {
+        setRecipient(sendOpData.recipientDomainName + mnsExtension);
+        resolveDns(sendOpData.recipientDomainName);
+      } else {
+        setRecipient(sendOpData.recipientAddress);
+      }
+      setAmount(sendOpData.amount);
+      setFees(sendOpData.fees);
+      setSelectedAsset(sendOpData.asset);
     }
-  }, [sendOpData, redirectAmount, redirectedTo]);
+  }, [sendOpData, redirectAmount, redirectedTo, resolveDns]);
 
   function validate(formObject: IForm) {
     const { recipientAddress } = formObject;
@@ -130,7 +142,19 @@ export function SendForm(props: SendFormProps) {
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formObject = parseForm(e);
+    let formObject = parseForm(e);
+
+    if (targetMnsAddress && /\.massa$/.test(recipient)) {
+      // recipient is a domain name
+      formObject = {
+        ...formObject,
+        recipientAddress: targetMnsAddress, // set the resolved address
+        recipientDomainName: recipient.replace(mnsExtension, ''), // set the domain name
+      };
+    } else {
+      setMnsAddressCorrelation(false);
+      resetTargetMnsAddress();
+    }
 
     if (!validate(formObject) || !selectedAsset) return;
 
@@ -151,6 +175,26 @@ export function SendForm(props: SendFormProps) {
     </u>
   ) : (
     <Spinner size={12} customClass="inline-block" />
+  );
+
+  const handleRecipientChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const mnsExtensionRegex = /\.massa$/;
+      const value = e.target.value;
+      setRecipient(value);
+      setError((error) => ({ ...error, recipient: '' }));
+      if (value !== '' && mnsExtensionRegex.test(value)) {
+        const inputMns = value.replace(mnsExtension, '');
+        const targetAddress = await resolveDns(inputMns);
+        if (targetAddress && checkAddressFormat(targetAddress)) {
+          setMnsAddressCorrelation(true);
+        } else {
+          setMnsAddressCorrelation(false);
+          resetTargetMnsAddress();
+        }
+      }
+    },
+    [resolveDns, resetTargetMnsAddress],
   );
 
   return (
@@ -270,8 +314,16 @@ export function SendForm(props: SendFormProps) {
             placeholder={Intl.t('receive-coins.recipient')}
             value={recipient}
             name="recipientAddress"
-            onChange={(e) => setRecipient(e.target.value)}
+            onChange={(e) => handleRecipientChange(e)}
             error={error?.recipient}
+            success={
+              mnsAddressCorrelation
+                ? Intl.t('send-coins.mns.mns-correlation', {
+                    mns: recipient,
+                    address: targetMnsAddress,
+                  })
+                : ''
+            }
           />
         </div>
         {filteredAccounts.length > 0 && (

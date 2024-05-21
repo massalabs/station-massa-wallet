@@ -18,7 +18,9 @@
     "buttons": {
       "send": "Send",
       "receive": "Receive"
-    }
+    },
+    "title-mns": "Massa Domains",
+    "desc-mns": "Domains that targets your wallet address."
   },
   "assets": {
     "title": "Assets",
@@ -188,6 +190,9 @@
       "ft-transfer-success": "Successfully transfered",
       "ft-transfer-failed": "Transfer failed",
       "failed-timeout": "Operation failed due to timeout, please retry with more fees."
+    },
+    "mns": {
+      "mns-correlation": "{mns} correlates with the following address: {address}"
     }
   },
   "receive-coins": {

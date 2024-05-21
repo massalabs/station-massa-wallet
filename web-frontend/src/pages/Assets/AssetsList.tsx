@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import { Token, getAssetIcons } from '@massalabs/react-ui-kit';
-import { useParams } from 'react-router-dom';
 
 import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
@@ -24,8 +23,7 @@ export function AssetsList(props: AssetsListProps) {
     setModal(true);
   }
 
-  const { nickname } = useParams();
-  const { isMainnet } = useFTTransfer(nickname || '');
+  const { isMainnet } = useFTTransfer();
 
   return (
     <>
