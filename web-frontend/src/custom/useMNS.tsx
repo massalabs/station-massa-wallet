@@ -19,15 +19,20 @@ export function useMNS() {
   const reverseResolveDns = useCallback(
     async (targetAddress: string) => {
       if (!client || !targetAddress) return;
-      const result = await client.smartContracts().readSmartContract({
-        targetAddress: targetContractAddress,
-        targetFunction: 'dnsReverseResolve',
-        parameter: new Args().addString(targetAddress).serialize(),
-      });
-      const domains = bytesToStr(result.returnValue).split(',');
+      try {
+        const result = await client.smartContracts().readSmartContract({
+          targetAddress: targetContractAddress,
+          targetFunction: 'dnsReverseResolve',
+          parameter: new Args().addString(targetAddress).serialize(),
+        });
+        const domains = bytesToStr(result.returnValue).split(',');
 
-      setDomainNameList(domains);
-      return domains;
+        setDomainNameList(domains);
+        return domains;
+      } catch (e) {
+        setDomainNameList([]);
+        console.error(e);
+      }
     },
     [client, targetContractAddress],
   );
