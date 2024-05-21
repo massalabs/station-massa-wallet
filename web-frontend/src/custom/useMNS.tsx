@@ -63,11 +63,16 @@ export function useMNS() {
     setTargetMnsAddress('');
   }
 
+  function resetDomainList() {
+    setDomainNameList([]);
+  }
+
   return {
     domainNameList,
     resolveDns,
     targetMnsAddress,
     reverseResolveDns,
     resetTargetMnsAddress,
+    resetDomainList,
   };
 }

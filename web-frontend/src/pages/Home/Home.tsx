@@ -29,10 +29,11 @@ export default function Home() {
     isLoading,
   } = useResource<AccountObject>(`accounts/${nickname}`);
 
-  const { reverseResolveDns, domainNameList } = useMNS();
+  const { reverseResolveDns, domainNameList, resetDomainList } = useMNS();
   const accountAddress = account?.address ?? '';
 
   useEffect(() => {
+    resetDomainList();
     reverseResolveDns(accountAddress);
   }, [reverseResolveDns, accountAddress]);
 
