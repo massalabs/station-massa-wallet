@@ -11,3 +11,5 @@ export const contracts = {
     mnsContract: 'AS1CpitsdLu4dtbQrqAzhThygL2ytGyacFED1ogr2HsxZxfNy8qQ',
   },
 };
+
+export const mnsExtension = '.massa';

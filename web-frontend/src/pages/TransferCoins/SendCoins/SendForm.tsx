@@ -33,6 +33,7 @@ import {
   useFetchAccounts,
   checkAddressFormat,
 } from '@/utils';
+import { mnsExtension } from '@/utils/const';
 import { handlePercent } from '@/utils/math';
 
 interface InputsErrors {
@@ -95,8 +96,6 @@ export function SendForm(props: SendFormProps) {
       setSelectedAsset(sendOpData.asset);
     }
   }, [sendOpData, redirectAmount, redirectedTo, resolveDns]);
-
-  const mnsExtension = '.massa';
 
   function validate(formObject: IForm) {
     const { recipientAddress } = formObject;
