@@ -111,7 +111,7 @@ export default function Home() {
                 </p>
                 <p className="mas-caption">{Intl.t('home.desc-mns')}</p>
               </div>
-              <div className="flex flex-col w-full gap-4 max-h-32 overflow-y-scroll ">
+              <div className="flex flex-col w-full gap-4 max-h-[120px] overflow-y-scroll ">
                 {domainNameList?.map((domainName) => (
                   <Mns mns={domainName} />
                 ))}

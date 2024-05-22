@@ -1963,11 +1963,11 @@ func init() {
         "description": "Route for the ReactJS front-end web application (in /web-frontend)",
         "produces": [
           "application/json",
-          "text/javascript",
-          "text/html",
+          "image/png",
           "text/css",
-          "text/webp",
-          "image/png"
+          "text/html",
+          "text/javascript",
+          "text/webp"
         ],
         "operationId": "webApp",
         "parameters": [
