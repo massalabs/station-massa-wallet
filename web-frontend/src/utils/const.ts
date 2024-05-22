@@ -5,7 +5,7 @@ export enum networks {
 
 export const contracts = {
   [networks.mainnet]: {
-    mnsContract: 'AS12mdKsjAqcWC5DjabWZp7tG9s5wgkrwDGDuh6xUCSc53SrmfY9r',
+    mnsContract: 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT',
   },
   [networks.buildnet]: {
     mnsContract: 'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G',
