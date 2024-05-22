@@ -35,7 +35,7 @@ export default function Home() {
   useEffect(() => {
     resetDomainList();
     reverseResolveDns(accountAddress);
-  }, [reverseResolveDns, accountAddress]);
+  }, [reverseResolveDns, accountAddress, resetDomainList]);
 
   useEffect(() => {
     if (error) {
