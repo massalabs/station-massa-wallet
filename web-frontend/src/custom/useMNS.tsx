@@ -63,9 +63,9 @@ export function useMNS() {
     setTargetMnsAddress('');
   }
 
-  function resetDomainList() {
+  const resetDomainList = useCallback(() => {
     setDomainNameList([]);
-  }
+  }, []);
 
   return {
     domainNameList,
