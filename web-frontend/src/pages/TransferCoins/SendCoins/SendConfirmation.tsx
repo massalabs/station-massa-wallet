@@ -108,27 +108,29 @@ export function SendConfirmation(props: SendConfirmationProps) {
             'mr-3',
           )}
         />
-        <div className="flex items-center gap-8 ">
-          <div className="flex items-center">
-            <Tooltip body={content} />
-            <p>{Intl.t('send-coins.fee')}</p>
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex items-center gap-8">
+            <div className="flex gap-2 items-center">
+              <Tooltip customClass="max-w-[380px] p-2" body={content} />
+              <p>{Intl.t('send-coins.fee')}</p>
+            </div>
+            <Balance amount={fees} symbol="MAS" size="xs" />
           </div>
-          <Balance amount={fees} symbol="MAS" size="xs" />
-        </div>
-        <div
-          data-testid="send-confirmation-recipient"
-          className="text-info flex items-center gap-2"
-        >
-          <div>{Intl.t('send-coins.recipient')}</div>
-          <Clipboard
-            displayedContent={formattedRecipientAddress}
-            rawContent={recipientAddress}
-            error={Intl.t('errors.no-content-to-copy')}
-            className="flex flex-row items-center mas-body2 justify-between
+          <div
+            data-testid="send-confirmation-recipient"
+            className="text-info flex items-center gap-2"
+          >
+            <div>{Intl.t('send-coins.recipient')}</div>
+            <Clipboard
+              displayedContent={formattedRecipientAddress}
+              rawContent={recipientAddress}
+              error={Intl.t('errors.no-content-to-copy')}
+              className="flex flex-row items-center mas-body2 justify-between
               w-fit h-fit px-3 py-1 rounded bg-primary cursor-pointer"
-          />
+            />
+          </div>
+          {recipientDomainName && <Mns mns={recipientDomainName} />}
         </div>
-        {recipientDomainName && <Mns mns={recipientDomainName} />}
       </div>
       <Button disabled={isLoading} onClick={() => handleConfirm(true)}>
         {Intl.t('send-coins.confirm-sign')}
