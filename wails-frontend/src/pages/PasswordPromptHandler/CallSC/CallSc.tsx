@@ -45,7 +45,11 @@ export function CallSc(props: SignBodyProps) {
         </div>
       </div>
 
-      <FTTransferInfo asset={asset} parameters={Parameters} />
+      <FTTransferInfo
+        targetFunction={CalledFunction}
+        asset={asset}
+        parameters={Parameters}
+      />
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />
 
