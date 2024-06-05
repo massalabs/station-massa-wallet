@@ -124,7 +124,7 @@ func (s *AssetsStore) createFileDefault(path string) error {
 		"name": "Purrfect Universe",
 		"symbol": "PUR",
 		"decimals": 18,
-		"MEXCSymbol": "PURMAS"
+		"MEXCSymbol": ""
 	}
 ]`), permissionUrwGrOr); err != nil {
 		return err
