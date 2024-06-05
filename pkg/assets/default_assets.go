@@ -70,7 +70,7 @@ func (s *AssetsStore) InitDefault() error {
 		}
 
 		// if the content is different, overwrite the default assets JSON file
-		if string(content) != assetsJSON {
+		if string(content) != AssetsJSON {
 			if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
 				return err
 			}
@@ -87,14 +87,14 @@ func getDefaultJSONPath(assetsJSONDir string) (string, error) {
 
 // createFileDefault creates the default assets JSON file with the default assets.
 func (s *AssetsStore) createFileDefault(path string) error {
-	if err := os.WriteFile(path, []byte(assetsJSON), permissionUrwGrOr); err != nil {
+	if err := os.WriteFile(path, []byte(AssetsJSON), permissionUrwGrOr); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-const assetsJSON = `[
+const AssetsJSON = `[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",
 		"name": "Sepolia USDC",
@@ -152,30 +152,6 @@ const assetsJSON = `[
 		"ChainID": 77658377
 	},
 	{
-		"address": "AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan",
-		"name": "Purrfect Universe",
-		"symbol": "PUR",
-		"decimals": 18,
-		"MEXCSymbol": "",
-		"ChainID": 77658377
-	},
-	{
-		"address": "",
-		"name": "Wrapped Ether",
-		"symbol": "WETH.b",
-		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT",
-		"ChainID": 77658377
-	},
-	{
-		"address": "",
-		"name": "Wrapped Binance USD",
-		"symbol": "USDT.b",
-		"decimals": 18,
-		"MEXCSymbol": "USD",
-		"ChainID": 77658377
-	},
-	{
 		"address": "AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.bt",
@@ -192,3 +168,21 @@ const assetsJSON = `[
 		"ChainID": 77658366
 	}
 ]`
+
+// TODO: add the following assets with the addresses
+// {
+// 	"address": "",
+// 	"name": "Wrapped Ether",
+// 	"symbol": "WETH.b",
+// 	"decimals": 18,
+// 	"MEXCSymbol": "ETHUSDT",
+// 	"ChainID": 77658377
+// },
+// {
+// 	"address": "",
+// 	"name": "Wrapped Binance USD",
+// 	"symbol": "USDT.b",
+// 	"decimals": 18,
+// 	"MEXCSymbol": "USD",
+// 	"ChainID": 77658377
+// },
