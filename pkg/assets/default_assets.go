@@ -149,5 +149,33 @@ const assetsJSON = `[
 		"symbol": "PUR",
 		"decimals": 18,
 		"MEXCSymbol": ""
+	},
+	{
+		"address": "",
+		"name": "Wrapped Ether",
+		"symbol": "WETH.b",
+		"decimals": 18,
+		"MEXCSymbol": "ETHUSDT"
+	},
+	{
+		"address": "",
+		"name": "Wrapped Binance USD",
+		"symbol": "USDT.b",
+		"decimals": 18,
+		"MEXCSymbol": "USD"
+	},
+	{
+		"address": "AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs",
+		"name": "Wrapped Ether",
+		"symbol": "WETH.bt",
+		"decimals": 18,
+		"MEXCSymbol": "ETHUSDT"
+	},
+	{
+		"address": "AS12ix1Qfpue7BB8q6mWVtjNdNE9UV3x4MaUo7WhdUubov8sJ3CuP",
+		"name": "Wrapped Binance USD",
+		"symbol": "USDT.bt",
+		"decimals": 18,
+		"MEXCSymbol": "USD"
 	}
 ]`
