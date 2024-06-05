@@ -73,6 +73,4 @@ MassaStation can detect the plugin and launch it.
 
 ### Postman collection
 
-You will find a postman collection in the `/api` directory.
-
-Before testing this API, you must initialize the `baseURL` variable to <127.0.0.1:8080>.
+You can import the swagger file `api/walletApi-V0.yml` into Postman to test the API.
