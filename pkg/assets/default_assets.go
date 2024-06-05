@@ -14,6 +14,7 @@ type DefaultAssetInfo struct {
 	Symbol     string `json:"symbol"`
 	Decimals   int64  `json:"decimals"`
 	MEXCSymbol string `json:"MEXCSymbol"`
+	ChainID    int    `json:"chainID"`
 }
 
 func (s *AssetsStore) Default() ([]DefaultAssetInfo, error) {
@@ -99,76 +100,87 @@ const assetsJSON = `[
 		"name": "Sepolia USDC",
 		"symbol": "USDC.s",
 		"decimals": 6,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS12LpYyAjYRJfYhyu7fkrS224gMdvFHVEeVWoeHZzMdhis7UZ3Eb",
 		"name": "Sepolia tDAI",
 		"symbol": "tDAI.s",
 		"decimals": 18,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS1gt69gqYD92dqPyE6DBRJ7KjpnQHqFzFs2YCkBcSnuxX5bGhBC",
 		"name": "sepolia WETH",
 		"symbol": "WETH.s",
 		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT"
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9",
 		"name": "Wrapped Massa",
 		"symbol": "WMAS",
 		"decimals": 9,
-		"MEXCSymbol": "MASUSDT"
+		"MEXCSymbol": "MASUSDT",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ",
 		"name": "USD Coin",
 		"symbol": "USDC.e",
 		"decimals": 6,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
 		"name": "Dai Stablecoin",
 		"symbol": "DAI.e",
 		"decimals": 18,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.e",
 		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT"
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658377
 	},
 	{
 		"address": "",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.b",
 		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT"
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658377
 	},
 	{
 		"address": "",
 		"name": "Wrapped Binance USD",
 		"symbol": "USDT.b",
 		"decimals": 18,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.bt",
 		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT"
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS12ix1Qfpue7BB8q6mWVtjNdNE9UV3x4MaUo7WhdUubov8sJ3CuP",
 		"name": "Wrapped Binance USD",
 		"symbol": "USDT.bt",
 		"decimals": 18,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658366
 	}
 ]`

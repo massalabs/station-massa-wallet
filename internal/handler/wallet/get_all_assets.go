@@ -46,10 +46,15 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	assetsWithBalance = append(assetsWithBalance, massaAsset)
 
-	userAssetData, resp := g.getAssetsData(acc)
-	if resp != nil {
-		return resp
+	nodeInfo, err := network.GetNetworkInfo()
+	if err != nil {
+		operations.NewGetAllAssetsInternalServerError().WithPayload(&models.Error{
+			Code:    errorFetchAssetBalance,
+			Message: fmt.Sprintf("Failed to fetch network info: %s", err.Error()),
+		})
 	}
+
+	userAssetData := g.getAssetsData(acc, nodeInfo.ChainID)
 
 	assetsWithBalance = append(assetsWithBalance, userAssetData...)
 
@@ -115,8 +120,8 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*assets.AssetInfoWithB
 
 // getAssetsData fetches the balance and dollar value for each asset in the account.
 // If user has asset that are deployed on another network, it will not be included.
-func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoWithBalances, middleware.Responder) {
-	assetsInfo := g.AssetsStore.All(acc.Nickname)
+func (g *getAllAssets) getAssetsData(acc *account.Account, chainID int) []*assets.AssetInfoWithBalances {
+	assetsInfo := g.AssetsStore.All(acc.Nickname, chainID)
 
 	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
 	var wg sync.WaitGroup
@@ -130,13 +135,11 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoW
 		go func(asset *assets.AssetInfoWithBalances) {
 			defer wg.Done()
 
-			// First, check if the asset exists in the network
-			if !g.massaClient.AssetExistInNetwork(asset.AssetInfo.Address) {
-				logger.Infof("Asset %s does not exist in the network", asset.AssetInfo.Address)
+			if asset.AssetInfo.Address == "" {
 				return
 			}
 
-			// Fetch the balance for the current asset
+			// Fetch the balance and dollar value of the current asset
 			balance, dollarValue := g.fetchAssetData(asset, acc)
 
 			asset.Balance = balance
@@ -157,7 +160,7 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoW
 		mu.Unlock()
 	}
 
-	return assetsWithBalance, nil
+	return assetsWithBalance
 }
 
 func (g *getAllAssets) fetchAssetData(asset *assets.AssetInfoWithBalances, acc *account.Account) (string, *float64) {
@@ -199,22 +202,20 @@ func convertToModel(assetsWithBalance []*assets.AssetInfoWithBalances) []*models
 			Decimals: asset.AssetInfo.Decimals,
 			Name:     asset.AssetInfo.Name,
 			Symbol:   asset.AssetInfo.Symbol,
+			ChainID:  asset.AssetInfo.ChainID,
 		}
 
-		if asset.DollarValue == nil {
-			result = append(result, &models.AssetInfoWithBalance{
-				AssetInfo: assetInfo,
-				Balance:   asset.Balance,
-				IsDefault: asset.IsDefault,
-			})
-		} else {
-			result = append(result, &models.AssetInfoWithBalance{
-				AssetInfo:   assetInfo,
-				Balance:     asset.Balance,
-				DollarValue: fmt.Sprintf("%.2f", *asset.DollarValue),
-				IsDefault:   asset.IsDefault,
-			})
+		newAsset := &models.AssetInfoWithBalance{
+			AssetInfo: assetInfo,
+			Balance:   asset.Balance,
+			IsDefault: asset.IsDefault,
 		}
+
+		if asset.DollarValue != nil {
+			newAsset.DollarValue = fmt.Sprintf("%.2f", *asset.DollarValue)
+		}
+
+		result = append(result, newAsset)
 	}
 
 	return result
