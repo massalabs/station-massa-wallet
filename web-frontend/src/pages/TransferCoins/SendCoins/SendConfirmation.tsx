@@ -3,7 +3,6 @@ import {
   Button,
   Tooltip,
   formatFTAmount,
-  getAssetIcons,
   parseAmount,
   Clipboard,
   Mns,
@@ -14,8 +13,7 @@ import { FiChevronLeft } from 'react-icons/fi';
 import { PRESET_HIGH, PRESET_LOW, PRESET_STANDARD } from './Advanced';
 import Intl from '@/i18n/i18n';
 import { Asset } from '@/models/AssetModel';
-import { useMassaWeb3Store } from '@/store/store';
-import { symbolDict } from '@/utils/tokenIcon';
+import { tokenIcon } from '@/utils/tokenIcon';
 
 export interface SendConfirmationData {
   amount: string;
@@ -33,7 +31,6 @@ interface SendConfirmationProps {
 
 export function SendConfirmation(props: SendConfirmationProps) {
   const { data, handleConfirm, isLoading } = props;
-  const { isMainnet } = useMassaWeb3Store();
 
   const { amount, asset, fees, recipientAddress, recipientDomainName } = data;
   const { symbol, decimals } = asset;
@@ -106,13 +103,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
           customClass="p-0 bg-transparent"
           amount={formattedAmount}
           symbol={symbol}
-          icon={getAssetIcons(
-            symbolDict[symbol as keyof typeof symbolDict],
-            true,
-            isMainnet,
-            32,
-            'mr-3',
-          )}
+          icon={tokenIcon(symbol, 28)}
         />
         <div className="flex flex-col gap-4 p-4">
           <div className="flex items-center gap-8">
