@@ -53,7 +53,6 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 
 	assetsWithBalance = append(assetsWithBalance, userAssetData...)
 
-	// sort AssetsWithBalance by name
 	sort.Slice(assetsWithBalance, func(i, j int) bool {
 		if assetsWithBalance[i].AssetInfo.Symbol == "MAS" {
 			return true
@@ -61,13 +60,21 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		if assetsWithBalance[j].AssetInfo.Symbol == "MAS" {
 			return false
 		}
-		if assetsWithBalance[i].DollarValue == nil {
+
+		valueI := assetsWithBalance[i].DollarValue
+		valueJ := assetsWithBalance[j].DollarValue
+
+		if (valueI == nil || *valueI == 0) && (valueJ == nil || *valueJ == 0) {
+			return assetsWithBalance[i].AssetInfo.Symbol < assetsWithBalance[j].AssetInfo.Symbol
+		}
+		if valueI == nil || *valueI == 0 {
 			return false
 		}
-		if assetsWithBalance[j].DollarValue == nil {
-			return false
+		if valueJ == nil || *valueJ == 0 {
+			return true
 		}
-		return *assetsWithBalance[i].DollarValue > *assetsWithBalance[j].DollarValue
+
+		return *valueI > *valueJ
 	})
 
 	// Return the list of assets with balance
