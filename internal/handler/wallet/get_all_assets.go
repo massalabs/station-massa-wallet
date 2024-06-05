@@ -3,6 +3,7 @@ package wallet
 import (
 	"fmt"
 	"sort"
+	"sync"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -111,21 +112,42 @@ func (g *getAllAssets) getAssetsData(acc *account.Account) ([]*assets.AssetInfoW
 	assetsInfo := g.AssetsStore.All(acc.Nickname)
 
 	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
+	var wg sync.WaitGroup
+	mu := &sync.Mutex{}
+	resultsCh := make(chan *assets.AssetInfoWithBalances)
 
 	// Retrieve all assets from the selected nickname
 	for _, asset := range assetsInfo {
-		// First, check if the asset exists in the network
-		if !g.massaClient.AssetExistInNetwork(asset.AssetInfo.Address) {
-			logger.Infof("Asset %s does not exist in the network", asset.AssetInfo.Address)
-			continue
-		}
+		wg.Add(1)
 
-		// Fetch the balance for the current asset
-		balance, dollarValue := g.fetchAssetData(asset, acc)
+		go func(asset *assets.AssetInfoWithBalances) {
+			defer wg.Done()
 
-		asset.Balance = balance
-		asset.DollarValue = dollarValue
-		assetsWithBalance = append(assetsWithBalance, asset)
+			// First, check if the asset exists in the network
+			if !g.massaClient.AssetExistInNetwork(asset.AssetInfo.Address) {
+				logger.Infof("Asset %s does not exist in the network", asset.AssetInfo.Address)
+				return
+			}
+
+			// Fetch the balance for the current asset
+			balance, dollarValue := g.fetchAssetData(asset, acc)
+
+			asset.Balance = balance
+			asset.DollarValue = dollarValue
+
+			resultsCh <- asset
+		}(asset)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultsCh)
+	}()
+
+	for result := range resultsCh {
+		mu.Lock()
+		assetsWithBalance = append(assetsWithBalance, result)
+		mu.Unlock()
 	}
 
 	return assetsWithBalance, nil
