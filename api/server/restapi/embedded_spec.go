@@ -868,6 +868,9 @@ func init() {
         "address": {
           "type": "string"
         },
+        "chainID": {
+          "type": "integer"
+        },
         "decimals": {
           "type": "integer"
         },
@@ -2046,6 +2049,10 @@ func init() {
       "properties": {
         "address": {
           "type": "string"
+        },
+        "chainID": {
+          "type": "integer",
+          "minimum": 0
         },
         "decimals": {
           "type": "integer",
