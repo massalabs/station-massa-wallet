@@ -156,7 +156,8 @@ const assetsJSON = `[
 		"name": "Purrfect Universe",
 		"symbol": "PUR",
 		"decimals": 18,
-		"MEXCSymbol": ""
+		"MEXCSymbol": "",
+		"ChainID": 77658377
 	},
 	{
 		"address": "",
