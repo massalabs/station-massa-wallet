@@ -55,4 +55,5 @@ func assertAssetInfoWithBalanceEqual(t *testing.T, actual, expected *models.Asse
 	assert.Equal(t, expected.AssetInfo.Name, actual.AssetInfo.Name)
 	assert.Equal(t, expected.AssetInfo.Symbol, actual.AssetInfo.Symbol)
 	assert.Equal(t, expected.AssetInfo.Decimals, actual.AssetInfo.Decimals)
+	assert.Equal(t, expected.AssetInfo.ChainID, actual.AssetInfo.ChainID)
 }

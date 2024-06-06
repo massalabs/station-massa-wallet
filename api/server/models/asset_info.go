@@ -22,6 +22,10 @@ type AssetInfo struct {
 	// address
 	Address string `json:"address,omitempty"`
 
+	// chain ID
+	// Minimum: 0
+	ChainID *int64 `json:"chainID,omitempty"`
+
 	// decimals
 	// Minimum: 0
 	Decimals *int64 `json:"decimals,omitempty"`
@@ -37,6 +41,10 @@ type AssetInfo struct {
 func (m *AssetInfo) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateChainID(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateDecimals(formats); err != nil {
 		res = append(res, err)
 	}
@@ -44,6 +52,18 @@ func (m *AssetInfo) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *AssetInfo) validateChainID(formats strfmt.Registry) error {
+	if swag.IsZero(m.ChainID) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("chainID", "body", *m.ChainID, 0, false); err != nil {
+		return err
+	}
+
 	return nil
 }
 

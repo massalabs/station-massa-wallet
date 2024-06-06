@@ -745,6 +745,9 @@ definitions:
       decimals:
         type: integer
         minimum: 0
+      chainID:
+        type: integer
+        minimum: 0
     x-nullable: false
   AssetInfoWithBalance:
     allOf:

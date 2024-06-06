@@ -129,7 +129,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 	}
 
-	operation, msgToSign, err := prepareOperation(acc, fees, params.Body.Operation.String(), promptRequest.Data.(PromptRequestSignData).OperationType, *params.Body.ChainID)
+	operation, msgToSign, err := prepareOperation(acc, fees, params.Body.Operation.String(), *params.Body.ChainID)
 	if err != nil {
 		return newErrorResponse(err.Error(), errorSignDecodeOperation, http.StatusBadRequest)
 	}
@@ -203,7 +203,7 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, correlation
 // prepareOperation prepares the operation to be signed.
 // Returns the modified operation (fees change) and the operation to be signed (with public key).
 // Returns an error if the operation cannot be decoded.
-func prepareOperation(acc *account.Account, fees uint64, operationB64 string, operationType int, chainID int64) ([]byte, []byte, error) {
+func prepareOperation(acc *account.Account, fees uint64, operationB64 string, chainID int64) ([]byte, []byte, error) {
 	decodedMsg, _, expiry, err := sendoperation.DecodeMessage64(operationB64)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to decode operation for preparing before signing: %w", err)
@@ -254,7 +254,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 		data, err = getExecuteSCPromptData(decodedMsg)
 
 	case callsc.OpType:
-		data, err = getCallSCPromptData(decodedMsg, acc)
+		data, err = getCallSCPromptData(decodedMsg)
 
 	default:
 		return nil, 0, fmt.Errorf("unhandled operation type: %d", opType)
@@ -282,7 +282,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.OperationType = int(opType)
 	data.AllowFeeEdition = *params.AllowFeeEdition
 	data.ChainID = chainID
-	data.Assets = convertAssetsToModel(w.AssetsStore.All(acc.Nickname))
+	data.Assets = convertAssetsToModel(w.AssetsStore.All(acc.Nickname, int(chainID)))
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
@@ -294,7 +294,6 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 
 func getCallSCPromptData(
 	decodedMsg []byte,
-	acc *account.Account,
 ) (PromptRequestSignData, error) {
 	msg, err := callsc.DecodeMessage(decodedMsg)
 	if err != nil {
@@ -456,6 +455,7 @@ func convertAssetsToModel(assetsWithBalance []*assets.AssetInfoWithBalances) []m
 			Decimals: asset.AssetInfo.Decimals,
 			Name:     asset.AssetInfo.Name,
 			Symbol:   asset.AssetInfo.Symbol,
+			ChainID:  asset.AssetInfo.ChainID,
 		}
 		result = append(result, assetInfo)
 	}

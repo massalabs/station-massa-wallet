@@ -56,7 +56,7 @@ func (a *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Add Asset and persist in JSON file.
-	if err := a.AssetsStore.AddAsset(params.Nickname, params.AssetAddress, *assetInfoFromSC); err != nil {
+	if err := a.AssetsStore.AddAsset(params.Nickname, *assetInfoFromSC); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to add the asset to the JSON file."
 		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorAddAssetJSON, Message: errorMsg})

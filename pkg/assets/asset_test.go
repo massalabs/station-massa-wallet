@@ -115,16 +115,18 @@ func TestAddAndDeleteAsset(t *testing.T) {
 	// Test case 1: Add an asset and check if it's saved to JSON
 	nickname := "dummyAccount"
 	assetAddress := "0x1234567890abcdef"
+	chainID := int64(77658366)
 	assetInfo := models.AssetInfo{
 		Address:  assetAddress,
 		Name:     "TestToken",
 		Symbol:   "TT",
 		Decimals: new(int64),
+		ChainID:  &chainID,
 	}
 	*assetInfo.Decimals = 18
 
 	// Add the asset
-	err = store.AddAsset(nickname, assetAddress, assetInfo)
+	err = store.AddAsset(nickname, assetInfo)
 	assert.NoError(t, err)
 
 	// Check if the added asset exists
