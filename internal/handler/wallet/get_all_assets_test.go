@@ -23,7 +23,7 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	assetsWithBalance := getAssets(t, api, nickname)
 
 	// Assert that assetsWithBalance contains the expected data
-	assert.Len(t, assetsWithBalance, 8, "the assets list should have 8 items")
+	assert.Len(t, assetsWithBalance, 9, "the assets list should have 9 items")
 
 	assert.Equal(t, "1000000", assetsWithBalance[0].Balance)
 	assert.Equal(t, "Massa", assetsWithBalance[0].AssetInfo.Name)
