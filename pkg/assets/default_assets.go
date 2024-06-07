@@ -70,7 +70,7 @@ func (s *AssetsStore) InitDefault() error {
 		}
 
 		// if the content is different, overwrite the default assets JSON file
-		if string(content) != assetsJSON {
+		if string(content) != AssetsJSON {
 			if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
 				return err
 			}
@@ -87,14 +87,14 @@ func getDefaultJSONPath(assetsJSONDir string) (string, error) {
 
 // createFileDefault creates the default assets JSON file with the default assets.
 func (s *AssetsStore) createFileDefault(path string) error {
-	if err := os.WriteFile(path, []byte(assetsJSON), permissionUrwGrOr); err != nil {
+	if err := os.WriteFile(path, []byte(AssetsJSON), permissionUrwGrOr); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-const assetsJSON = `[
+const AssetsJSON = `[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",
 		"name": "Sepolia USDC",

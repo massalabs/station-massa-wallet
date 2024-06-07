@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
+	"github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +26,8 @@ func TestGetAllAssetsHandler(t *testing.T) {
 	assetsWithBalance := getAssets(t, api, nickname)
 
 	// Assert that assetsWithBalance contains the expected data
-	assert.Len(t, assetsWithBalance, 9, "the assets list should have 9 items")
+	counter := getExpectedAssetsCount(t)
+	assert.Len(t, assetsWithBalance, counter+1) // +1 for native MAS
 
 	assert.Equal(t, "1000000", assetsWithBalance[0].Balance)
 	assert.Equal(t, "Massa", assetsWithBalance[0].AssetInfo.Name)
@@ -56,4 +60,23 @@ func assertAssetInfoWithBalanceEqual(t *testing.T, actual, expected *models.Asse
 	assert.Equal(t, expected.AssetInfo.Symbol, actual.AssetInfo.Symbol)
 	assert.Equal(t, expected.AssetInfo.Decimals, actual.AssetInfo.Decimals)
 	assert.Equal(t, expected.AssetInfo.ChainID, actual.AssetInfo.ChainID)
+}
+
+func getExpectedAssetsCount(t *testing.T) int {
+	tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
+	assert.NoError(t, err)
+	nodeFetcher := network.NewNodeFetcher()
+	store, err := assets.NewAssetsStore(tempDir, nodeFetcher)
+	assert.NoError(t, err)
+	defaultAssets, err := store.Default()
+	assert.NoError(t, err)
+	counter := 0
+
+	for _, asset := range defaultAssets {
+		if asset.ChainID == 77658377 {
+			counter += 1
+		}
+	}
+
+	return counter
 }
