@@ -118,6 +118,13 @@ func (s *AssetsStore) createFileDefault(path string) error {
 		"symbol": "WETH.e",
 		"decimals": 18,
 		"MEXCSymbol": "ETHUSDT"
+	},
+ 	{
+		"address": "AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan",
+		"name": "Purrfect Universe",
+		"symbol": "PUR",
+		"decimals": 18,
+		"MEXCSymbol": ""
 	}
 ]`), permissionUrwGrOr); err != nil {
 		return err
