@@ -14,6 +14,7 @@ type DefaultAssetInfo struct {
 	Symbol     string `json:"symbol"`
 	Decimals   int64  `json:"decimals"`
 	MEXCSymbol string `json:"MEXCSymbol"`
+	ChainID    int    `json:"chainID"`
 }
 
 func (s *AssetsStore) Default() ([]DefaultAssetInfo, error) {
@@ -69,7 +70,7 @@ func (s *AssetsStore) InitDefault() error {
 		}
 
 		// if the content is different, overwrite the default assets JSON file
-		if string(content) != assetsJSON {
+		if string(content) != AssetsJSON {
 			if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
 				return err
 			}
@@ -86,68 +87,110 @@ func getDefaultJSONPath(assetsJSONDir string) (string, error) {
 
 // createFileDefault creates the default assets JSON file with the default assets.
 func (s *AssetsStore) createFileDefault(path string) error {
-	if err := os.WriteFile(path, []byte(assetsJSON), permissionUrwGrOr); err != nil {
+	if err := os.WriteFile(path, []byte(AssetsJSON), permissionUrwGrOr); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-const assetsJSON = `[
+const AssetsJSON = `[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",
 		"name": "Sepolia USDC",
 		"symbol": "USDC.s",
 		"decimals": 6,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS12LpYyAjYRJfYhyu7fkrS224gMdvFHVEeVWoeHZzMdhis7UZ3Eb",
 		"name": "Sepolia tDAI",
 		"symbol": "tDAI.s",
 		"decimals": 18,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS1gt69gqYD92dqPyE6DBRJ7KjpnQHqFzFs2YCkBcSnuxX5bGhBC",
 		"name": "sepolia WETH",
 		"symbol": "WETH.s",
 		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT"
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658366
 	},
 	{
 		"address": "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9",
 		"name": "Wrapped Massa",
 		"symbol": "WMAS",
 		"decimals": 9,
-		"MEXCSymbol": "MASUSDT"
+		"MEXCSymbol": "MASUSDT",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ",
 		"name": "USD Coin",
 		"symbol": "USDC.e",
 		"decimals": 6,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
 		"name": "Dai Stablecoin",
 		"symbol": "DAI.e",
 		"decimals": 18,
-		"MEXCSymbol": "USD"
+		"MEXCSymbol": "USD",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.e",
 		"decimals": 18,
-		"MEXCSymbol": "ETHUSDT"
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658377
 	},
 	{
 		"address": "AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan",
 		"name": "Purrfect Universe",
 		"symbol": "PUR",
 		"decimals": 18,
-		"MEXCSymbol": ""
+		"MEXCSymbol": "",
+		"ChainID": 77658377
+	},
+	{
+		"address": "AS12RmCXTA9NZaTBUBnRJuH66AGNmtEfEoqXKxLdmrTybS6GFJPFs",
+		"name": "Wrapped Ether",
+		"symbol": "WETH.bt",
+		"decimals": 18,
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658366
+	},
+	{
+		"address": "AS12ix1Qfpue7BB8q6mWVtjNdNE9UV3x4MaUo7WhdUubov8sJ3CuP",
+		"name": "Wrapped Binance USD",
+		"symbol": "USDT.bt",
+		"decimals": 18,
+		"MEXCSymbol": "USD",
+		"ChainID": 77658366
 	}
 ]`
+
+// TODO: add the following assets with the addresses
+// {
+// 	"address": "",
+// 	"name": "Wrapped Ether",
+// 	"symbol": "WETH.b",
+// 	"decimals": 18,
+// 	"MEXCSymbol": "ETHUSDT",
+// 	"ChainID": 77658377
+// },
+// {
+// 	"address": "",
+// 	"name": "Wrapped Binance USD",
+// 	"symbol": "USDT.b",
+// 	"decimals": 18,
+// 	"MEXCSymbol": "USD",
+// 	"ChainID": 77658377
+// },

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/go-openapi/swag"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
@@ -51,6 +52,7 @@ type assetData struct {
 	Name            string `json:"name"`
 	Symbol          string `json:"symbol"`
 	Decimals        int64  `json:"decimals"`
+	ChainID         int64  `json:"chainID"`
 }
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
@@ -127,6 +129,7 @@ func (s *AssetsStore) loadAccountsStore() error {
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
 				Decimals: &decimals,
+				ChainID:  swag.Int64(asset.ChainID),
 			}
 			accountAssets.ContractAssets[asset.ContractAddress] = assetInfo
 		}
@@ -176,6 +179,7 @@ func (s *AssetsStore) save() error {
 				Name:            assetInfo.Name,
 				Symbol:          assetInfo.Symbol,
 				Decimals:        *assetInfo.Decimals,
+				ChainID:         *assetInfo.ChainID,
 			}
 			assetsData.Assets = append(assetsData.Assets, asset)
 		}
@@ -199,9 +203,9 @@ func (s *AssetsStore) save() error {
 }
 
 // AddAsset adds the asset information for a given account nickname in the JSON.
-func (s *AssetsStore) AddAsset(nickname, assetAddress string, assetInfo models.AssetInfo) error {
+func (s *AssetsStore) AddAsset(nickname string, assetInfo models.AssetInfo) error {
 	// Update the ContractAssets map with the new asset information
-	s.AddAssetToMemory(nickname, assetAddress, assetInfo)
+	s.AddAssetToMemory(nickname, assetInfo)
 
 	// Synchronize the AssetsStore map to JSON and write to the file
 	if err := s.save(); err != nil {
@@ -212,7 +216,7 @@ func (s *AssetsStore) AddAsset(nickname, assetAddress string, assetInfo models.A
 }
 
 // AddAssetToMemory adds the asset information for a given account nickname to the AssetsStore.
-func (s *AssetsStore) AddAssetToMemory(nickname, assetAddress string, assetInfo models.AssetInfo) {
+func (s *AssetsStore) AddAssetToMemory(nickname string, assetInfo models.AssetInfo) {
 	s.StoreMutex.Lock()
 	defer s.StoreMutex.Unlock()
 
@@ -226,7 +230,7 @@ func (s *AssetsStore) AddAssetToMemory(nickname, assetAddress string, assetInfo 
 	}
 
 	// Update the ContractAssets map of the specific *assets.AssetsStore with the new asset information
-	accountAssets.ContractAssets[assetAddress] = assetInfo
+	accountAssets.ContractAssets[assetInfo.Address] = assetInfo
 	s.Assets[nickname] = accountAssets
 }
 
@@ -264,7 +268,7 @@ func (s *AssetsStore) DeleteAsset(nickname, assetAddress string) error {
 // All returns all the assets associated with a specific account nickname.
 // It returns the default assets first, followed by the assets added by the user.
 // If user already added the default asset, it will not be duplicated.
-func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
+func (s *AssetsStore) All(nickname string, chainID int) []*AssetInfoWithBalances {
 	defaultAssets, err := s.Default()
 	if err != nil {
 		logger.Errorf("Failed to get default assets: %s", err.Error())
@@ -276,6 +280,9 @@ func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
 	includedAddresses := map[string]bool{}
 
 	for _, asset := range defaultAssets {
+		if asset.ChainID != chainID {
+			continue
+		}
 		decimals := asset.Decimals // Copy the decimals value to avoid a pointer to a local variable
 		completeAsset := &AssetInfoWithBalances{
 			AssetInfo: &models.AssetInfo{
@@ -283,6 +290,7 @@ func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
 				Decimals: &decimals,
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
+				ChainID:  swag.Int64((int64(asset.ChainID))),
 			},
 			Balance:     "",
 			MEXCSymbol:  asset.MEXCSymbol,
@@ -295,23 +303,26 @@ func (s *AssetsStore) All(nickname string) []*AssetInfoWithBalances {
 
 	// Append default assets ensuring no duplication
 	for _, asset := range s.Assets[nickname].ContractAssets {
-		// Append the asset info to the result slice if it is not already in the list
-		if _, exists := includedAddresses[asset.Address]; !exists {
-			completeAsset := &AssetInfoWithBalances{
-				AssetInfo: &models.AssetInfo{
-					Address:  asset.Address,
-					Decimals: asset.Decimals,
-					Name:     asset.Name,
-					Symbol:   asset.Symbol,
-				},
-				Balance:     "",
-				MEXCSymbol:  "",
-				DollarValue: nil,
-				IsDefault:   false,
-			}
-			assetsInfo = append(assetsInfo, completeAsset)
-			includedAddresses[asset.Address] = true
+		// skip if it's already in the list or not in the same chain
+		_, exists := includedAddresses[asset.Address]
+		if *asset.ChainID != int64(chainID) || exists {
+			continue
 		}
+		completeAsset := &AssetInfoWithBalances{
+			AssetInfo: &models.AssetInfo{
+				Address:  asset.Address,
+				Decimals: asset.Decimals,
+				Name:     asset.Name,
+				Symbol:   asset.Symbol,
+				ChainID:  asset.ChainID,
+			},
+			Balance:     "",
+			MEXCSymbol:  "",
+			DollarValue: nil,
+			IsDefault:   false,
+		}
+		assetsInfo = append(assetsInfo, completeAsset)
+		includedAddresses[asset.Address] = true
 	}
 
 	return assetsInfo

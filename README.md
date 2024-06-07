@@ -4,6 +4,13 @@
 
 This is the MassaStation plugin that implements the Massa wallet features.
 
+## Add a token in the wallet
+
+As a developer, you can add a token in the wallet by following these steps:
+
+- Open a pull request in the ui-kit to add the icon [here](https://github.com/massalabs/ui-kit/tree/main/src/components/Icons/Svg/FT) and add a line [here](https://github.com/massalabs/ui-kit/blob/main/src/components/Icons/Svg/FT/tokenIcons.tsx#L100)
+- Open a pull request in this repository to add the token [here](https://github.com/massalabs/station-massa-wallet/blob/4aa5d5b7885d5d5227724f5114de99c409701a6e/pkg/assets/default_assets.go#L121) and update the ui-kit with `npm update @massalabs/react-ui-kit`
+
 ## Developer guide
 
 This section helps developer getting started.
@@ -73,6 +80,4 @@ MassaStation can detect the plugin and launch it.
 
 ### Postman collection
 
-You will find a postman collection in the `/api` directory.
-
-Before testing this API, you must initialize the `baseURL` variable to <127.0.0.1:8080>.
+You can import the swagger file `api/walletApi-V0.yml` into Postman to test the API.

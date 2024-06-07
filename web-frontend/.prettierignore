@@ -7,3 +7,4 @@ public
 *.md
 *.mdx
 package-lock.json
+cypress-visual-report
