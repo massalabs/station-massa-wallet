@@ -53,13 +53,30 @@ func (s *AssetsStore) InitDefault() error {
 		return err
 	}
 
-	if _, err := os.Stat(defaultAssetsJSONPath); os.IsNotExist(err) {
-		if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
+	// if the file does not exist, create the default assets JSON file
+	_, err = os.Stat(defaultAssetsJSONPath)
+	if os.IsNotExist(err) {
+		// Create the default assets JSON file
+		return s.createFileDefault(defaultAssetsJSONPath)
+	}
+
+	// if the file exists, read the content and compare it with the default assets
+	if err == nil {
+		// read the content of the default assets JSON file
+		content, err := os.ReadFile(defaultAssetsJSONPath)
+		if err != nil {
 			return err
+		}
+
+		// if the content is different, overwrite the default assets JSON file
+		if string(content) != assetsJSON {
+			if err := s.createFileDefault(defaultAssetsJSONPath); err != nil {
+				return err
+			}
 		}
 	}
 
-	return nil
+	return err
 }
 
 // getDefaultJSONPath returns the path to the default assets JSON file.
@@ -69,7 +86,14 @@ func getDefaultJSONPath(assetsJSONDir string) (string, error) {
 
 // createFileDefault creates the default assets JSON file with the default assets.
 func (s *AssetsStore) createFileDefault(path string) error {
-	if err := os.WriteFile(path, []byte(`[
+	if err := os.WriteFile(path, []byte(assetsJSON), permissionUrwGrOr); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+const assetsJSON = `[
 	{
 		"address": "AS12k8viVmqPtRuXzCm6rKXjLgpQWqbuMjc37YHhB452KSUUb9FgL",
 		"name": "Sepolia USDC",
@@ -118,10 +142,12 @@ func (s *AssetsStore) createFileDefault(path string) error {
 		"symbol": "WETH.e",
 		"decimals": 18,
 		"MEXCSymbol": "ETHUSDT"
+	},
+	{
+		"address": "AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan",
+		"name": "Purrfect Universe",
+		"symbol": "PUR",
+		"decimals": 18,
+		"MEXCSymbol": ""
 	}
-]`), permissionUrwGrOr); err != nil {
-		return err
-	}
-
-	return nil
-}
+]`

@@ -1,12 +1,5 @@
-import { MAS } from '@/const/assets/assets';
+import { getAssetIcons } from '@massalabs/react-ui-kit';
 
-export const symbolDict = {
-  MAS: MAS,
-  WMAS: 'WMAS',
-  'WETH.e': 'WETH',
-  'WETH.s': 'WETH',
-  'USDC.e': 'USDC',
-  'USDC.s': 'USDC',
-  'DAI.e': 'DAI',
-  'tDAI.s': 'DAI',
-};
+export function tokenIcon(symbol: string, size: number) {
+  return getAssetIcons(symbol, undefined, false, size) as JSX.Element;
+}

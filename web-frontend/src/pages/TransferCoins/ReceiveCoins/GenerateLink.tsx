@@ -8,18 +8,16 @@ import {
   PopupModalHeader,
   Clipboard,
   formatAmount,
-  getAssetIcons,
   Selector,
   Identicon,
 } from '@massalabs/react-ui-kit';
 
-import { useFTTransfer } from '@/custom/smart-contract/useFTTransfer';
 import Intl from '@/i18n/i18n';
 import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
 import { AssetSelector } from '@/pages/TransferCoins/SendCoins/AssetSelector';
 import { parseForm } from '@/utils/';
-import { symbolDict } from '@/utils/tokenIcon';
+import { tokenIcon } from '@/utils/tokenIcon';
 import { SendInputsErrors } from '@/validation/sendInputs';
 
 interface MoneyForm {
@@ -36,8 +34,6 @@ interface GenerateLinkProps {
 
 function GenerateLink(props: GenerateLinkProps) {
   const { account, presetURL, setURL, setModal } = props;
-
-  const { isMainnet } = useFTTransfer();
 
   const [amount, setAmount] = useState<string>('');
   const [link, setLink] = useState('');
@@ -121,17 +117,7 @@ function GenerateLink(props: GenerateLinkProps) {
                 preIcon={<Identicon username={account.nickname} />}
                 content={account.nickname}
                 amount={formattedBalance}
-                posIcon={
-                  getAssetIcons(
-                    symbolDict[
-                      selectedAsset?.symbol as keyof typeof symbolDict
-                    ],
-                    true,
-                    isMainnet,
-                    24,
-                    'mr-3',
-                  ) as JSX.Element
-                }
+                posIcon={tokenIcon(selectedAsset?.symbol || '', 24)}
                 variant="secondary"
               />
             </div>
