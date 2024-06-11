@@ -1,4 +1,4 @@
-import { formatStandard } from '@massalabs/react-ui-kit';
+import { formatAmount } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 
 import Intl from '@/i18n/i18n';
@@ -43,7 +43,7 @@ export function Transaction(props: SignBodyProps) {
       </div>
 
       <AmountBox>
-        {formatStandard(Amount)} {massaToken}
+        {formatAmount(Amount).full} {massaToken}
       </AmountBox>
 
       <hr className="h-0.25 bg-neutral opacity-40 w-full" />

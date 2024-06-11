@@ -47,9 +47,7 @@ export default function Home() {
 
   const unformattedBalance = account?.candidateBalance ?? '0';
   const balance = parseInt(unformattedBalance);
-  const formattedBalance = formatAmount(
-    balance.toString(),
-  ).amountFormattedPreview;
+  const formattedBalance = formatAmount(balance.toString()).preview;
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
