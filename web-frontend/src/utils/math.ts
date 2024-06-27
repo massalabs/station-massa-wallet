@@ -22,5 +22,5 @@ export function handlePercent(
     }
   }
 
-  return formatAmount(newAmount.toString(), decimals).amountFormattedFull;
+  return formatAmount(newAmount.toString(), decimals).full;
 }

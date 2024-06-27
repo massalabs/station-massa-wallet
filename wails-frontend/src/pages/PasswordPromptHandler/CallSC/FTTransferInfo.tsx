@@ -1,5 +1,5 @@
 import { Args } from '@massalabs/massa-web3';
-import { formatFTAmount } from '@massalabs/react-ui-kit';
+import { formatAmount } from '@massalabs/react-ui-kit';
 import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { LogPrint } from '@wailsjs/runtime/runtime';
 
@@ -34,8 +34,7 @@ export function FTTransferInfo(props: FTTransferInfoProps) {
   return (
     <>
       <AmountBox>
-        {formatFTAmount(amount, asset.decimals).amountFormattedFull}{' '}
-        {asset.symbol}
+        {formatAmount(amount, asset.decimals).full} {asset.symbol}
       </AmountBox>
 
       <div className="flex justify-between w-full">

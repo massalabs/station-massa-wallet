@@ -32,7 +32,7 @@ export default function AccountSelect() {
   }, [accounts, navigate, hasAccounts, error, isLoading]);
 
   function getFormattedBalance(account: AccountObject): string {
-    return formatAmount(account.candidateBalance).amountFormattedFull;
+    return formatAmount(account.candidateBalance).full;
   }
 
   return (

@@ -113,7 +113,7 @@ describe('E2E | Acceptance | Home | Send', () => {
 
     it('should render balance and amount should equal account balance', () => {
       navigateToSendForm();
-      cy.get('[data-testid="available-amount"]').contains('1,000.000000000');
+      cy.get('[data-testid="available-amount"]').contains('1,000');
     });
 
     it('should send coins to address', () => {
@@ -136,7 +136,7 @@ describe('E2E | Acceptance | Home | Send', () => {
 
       cy.get('[data-testid="send-confirmation"]').should(
         'contain',
-        '550.123400000 MAS',
+        '550.1234 MAS',
       );
 
       cy.get('[data-testid="send-confirmation-recipient"]').contains(
@@ -153,28 +153,16 @@ describe('E2E | Acceptance | Home | Send', () => {
       navigateToSendForm();
 
       cy.get('[data-testid="send-percent-25"]').click();
-      cy.get('[data-testid="money-field"]').should(
-        'have.value',
-        '250.000000000',
-      );
+      cy.get('[data-testid="money-field"]').should('have.value', '250');
 
       cy.get('[data-testid="send-percent-50"]').click();
-      cy.get('[data-testid="money-field"]').should(
-        'have.value',
-        '500.000000000',
-      );
+      cy.get('[data-testid="money-field"]').should('have.value', '500');
 
       cy.get('[data-testid="send-percent-75"]').click();
-      cy.get('[data-testid="money-field"]').should(
-        'have.value',
-        '750.000000000',
-      );
+      cy.get('[data-testid="money-field"]').should('have.value', '750');
 
       cy.get('[data-testid="send-percent-100"]').click();
-      cy.get('[data-testid="money-field"]').should(
-        'have.value',
-        '999.990000000',
-      );
+      cy.get('[data-testid="money-field"]').should('have.value', '999.99');
       server.trackRequest = false;
     });
 

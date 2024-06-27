@@ -1,4 +1,4 @@
-import { Tooltip, formatStandard } from '@massalabs/react-ui-kit';
+import { Tooltip, formatAmount } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 import { FiAlertTriangle, FiInfo } from 'react-icons/fi';
 
@@ -82,7 +82,7 @@ export function ExecuteSC(props: SignBodyProps) {
           <p>{Intl.t('password-prompt.sign.max-coins')}</p>
         </div>
         <p>
-          {formatStandard(MaxCoins)} {massaToken}
+          {formatAmount(MaxCoins).full} {massaToken}
         </p>
       </div>
 

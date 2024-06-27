@@ -1,4 +1,4 @@
-import { formatStandard } from '@massalabs/react-ui-kit';
+import { formatAmount } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 
 import { OPER_BUY_ROLL } from '@/const/operations';
@@ -42,7 +42,7 @@ export function BuySellRoll(props: SignBodyProps) {
       <div className="flex w-full items-center justify-between">
         <p>{Intl.t(label)}</p>
         <p>
-          {formatStandard(Coins)} {massaToken}
+          {formatAmount(Coins).full} {massaToken}
         </p>
       </div>
 

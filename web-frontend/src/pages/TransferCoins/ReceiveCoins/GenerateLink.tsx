@@ -41,8 +41,7 @@ function GenerateLink(props: GenerateLinkProps) {
   const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>();
 
   const formattedBalance = selectedAsset
-    ? formatAmount(selectedAsset.balance || '', selectedAsset.decimals)
-        .amountFormattedFull
+    ? formatAmount(selectedAsset.balance || '', selectedAsset.decimals).full
     : '';
 
   function validate(formObject: MoneyForm) {

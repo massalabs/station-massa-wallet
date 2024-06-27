@@ -174,23 +174,21 @@ const AssetsJSON = `[
 		"decimals": 18,
 		"MEXCSymbol": "USD",
 		"ChainID": 77658366
+	},
+	{
+		"address": "",
+		"name": "Wrapped Ether",
+		"symbol": "WETH.b",
+		"decimals": 18,
+		"MEXCSymbol": "ETHUSDT",
+		"ChainID": 77658377
+	},
+	{
+		"address": "",
+		"name": "Wrapped Binance USD",
+		"symbol": "USDT.b",
+		"decimals": 18,
+		"MEXCSymbol": "USD",
+		"ChainID": 77658377
 	}
 ]`
-
-// TODO: add the following assets with the addresses
-// {
-// 	"address": "",
-// 	"name": "Wrapped Ether",
-// 	"symbol": "WETH.b",
-// 	"decimals": 18,
-// 	"MEXCSymbol": "ETHUSDT",
-// 	"ChainID": 77658377
-// },
-// {
-// 	"address": "",
-// 	"name": "Wrapped Binance USD",
-// 	"symbol": "USDT.b",
-// 	"decimals": 18,
-// 	"MEXCSymbol": "USD",
-// 	"ChainID": 77658377
-// },

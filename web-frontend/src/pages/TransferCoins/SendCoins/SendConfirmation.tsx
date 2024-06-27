@@ -2,7 +2,7 @@ import {
   Balance,
   Button,
   Tooltip,
-  formatFTAmount,
+  formatAmount,
   parseAmount,
   Clipboard,
   Mns,
@@ -43,11 +43,11 @@ export function SendConfirmation(props: SendConfirmationProps) {
   const formattedRecipientAddress = maskAddress(recipientAddress);
   // amount is the value given by the Money input component
   // we convert to the smallest unit with parseAmount
-  // and then format it with formatFTAmount
-  const formattedAmount = formatFTAmount(
+  // and then format it with formatAmount
+  const formattedAmount = formatAmount(
     parseAmount(amount, data.asset.decimals),
     decimals,
-  ).amountFormattedFull;
+  ).full;
 
   let selectedFees;
 
