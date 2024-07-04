@@ -176,7 +176,7 @@ const AssetsJSON = `[
 		"ChainID": 77658366
 	},
 	{
-		"address": "",
+		"address": "AS125oPLYRTtfVjpWisPZVTLjBhCFfQ1jDsi75XNtRm1NZux54eCj",
 		"name": "Wrapped Ether",
 		"symbol": "WETH.b",
 		"decimals": 18,
@@ -184,7 +184,7 @@ const AssetsJSON = `[
 		"ChainID": 77658377
 	},
 	{
-		"address": "",
+		"address": "AS12LKs9txoSSy8JgFJgV96m8k5z9pgzjYMYSshwN67mFVuj3bdUV",
 		"name": "Wrapped Binance USD",
 		"symbol": "USDT.b",
 		"decimals": 18,
