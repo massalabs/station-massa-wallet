@@ -73,7 +73,7 @@ func getExpectedAssetsCount(t *testing.T) int {
 	counter := 0
 
 	for _, asset := range defaultAssets {
-		if asset.ChainID == 77658377 {
+		if asset.ChainID == 77658366 {
 			counter += 1
 		}
 	}
