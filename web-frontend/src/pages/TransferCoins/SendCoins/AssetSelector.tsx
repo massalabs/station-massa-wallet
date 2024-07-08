@@ -42,7 +42,7 @@ export function AssetSelector(props: AssetSelectorProps) {
       const formattedBalance = formatAmount(
         asset.balance || '',
         asset.decimals,
-      ).amountFormattedFull;
+      ).full;
       return {
         itemPreview: asset.symbol,
         item: (

@@ -7,7 +7,7 @@ import {
   InlineMoney,
   Tooltip,
 } from '@massalabs/react-ui-kit';
-import { formatStandard } from '@massalabs/react-ui-kit';
+import { formatAmount } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 import BigNumber from 'bignumber.js';
 import {
@@ -132,7 +132,7 @@ export function OperationCost(props: OperationCostProps) {
       <div className="flex w-full justify-between pb-2">
         <p>{Intl.t('password-prompt.sign.operation-const')}</p>
         <p>
-          {formatStandard(operationCost)} {massaToken}
+          {formatAmount(operationCost).full} {massaToken}
         </p>
       </div>
 
@@ -200,7 +200,7 @@ export function OperationCost(props: OperationCostProps) {
                   <InlineMoney
                     customClass="mas-caption"
                     disabled
-                    value={formatStandard(coins)}
+                    value={formatAmount(coins).full}
                   />
                 </div>
               )}

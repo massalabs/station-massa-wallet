@@ -50,10 +50,7 @@ function AccountSelect(props: ContactListProps) {
               posIcon={<MassaLogo size={24} />}
               content={maskNickname(filteredAccount.nickname)}
               variant="secondary"
-              amount={
-                formatAmount(filteredAccount.candidateBalance)
-                  .amountFormattedFull
-              }
+              amount={formatAmount(filteredAccount.candidateBalance).full}
               onClick={() => handleSetRecipient(filteredAccount)}
             />
           ))}

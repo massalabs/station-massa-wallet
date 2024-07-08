@@ -167,12 +167,7 @@ export function SendForm(props: SendFormProps) {
   }
 
   const formattedBalance = selectedAsset?.balance ? (
-    <u>
-      {
-        formatAmount(selectedAsset.balance, selectedAsset.decimals)
-          .amountFormattedFull
-      }
-    </u>
+    <u>{formatAmount(selectedAsset.balance, selectedAsset.decimals).full}</u>
   ) : (
     <Spinner size={12} customClass="inline-block" />
   );
