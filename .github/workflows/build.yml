@@ -31,7 +31,7 @@ jobs:
             ldflags: "-H windowsgui"
 
           # The second combination is Ubuntu running on an AMD64 processor, building for Linux.
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             arch: amd64
             target: linux
 
