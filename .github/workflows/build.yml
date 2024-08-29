@@ -71,7 +71,11 @@ jobs:
         if: matrix.target != 'darwin'
         shell: bash
         run: |
-          go build -tags desktop,production -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
+          TAGS="desktop,production"
+          if [ "${{ matrix.target }}" == "linux" ]; then
+            TAGS="$TAGS,webkit2_41"
+          fi
+          go build -tags "$TAGS" -ldflags "-w -s ${{ matrix.ldflags }}" -o $TARGET_NAME${{ matrix.ext }} main.go
 
       - name: Build binary for MacOS ${{ matrix.arch }}
         if: matrix.target == 'darwin'
@@ -93,7 +97,7 @@ jobs:
           GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.TARGET_NAME }}
           path: |
