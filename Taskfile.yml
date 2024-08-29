@@ -4,7 +4,7 @@ tasks:
   install:
     cmds:
       - echo "Installing dependencies"
-      - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.0-dev
+      - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.1-dev
         platforms: [linux]
         ignore_error: true
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
