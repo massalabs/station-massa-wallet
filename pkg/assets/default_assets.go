@@ -190,5 +190,13 @@ const AssetsJSON = `[
 		"decimals": 18,
 		"MEXCSymbol": "USD",
 		"ChainID": 77658377
+	},
+	{
+		"address": "AS1nqHKXpnFXqhDExTskXmBbbVpVpUbCQVtNSXLCqUDSUXihdWRq",
+		"name": "PepeOnMassa",
+		"symbol": "POM",
+		"decimals": 18,
+		"MEXCSymbol": "",
+		"ChainID": 77658377
 	}
 ]`
