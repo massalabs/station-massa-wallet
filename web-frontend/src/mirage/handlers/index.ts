@@ -188,6 +188,87 @@ const otherDomainHandlers = (server: Server) => {
       };
     }
 
+    if (method === 'get_status') {
+      return {
+        jsonrpc: '2.0',
+        result: {
+          node_id: 'N12sNdL7YwSawpnJrk9XCWDjKbgfNamAobp62AX5qfkgpBkGh2wC',
+          node_ip: '149.202.84.39',
+          version: 'DEVN.28.3',
+          current_time: 1732005865705,
+          current_cycle: 13533,
+          current_cycle_time: 1732005384000,
+          next_cycle_time: 1732007432000,
+          connected_nodes: {
+            N1DZb3ao8BEtdsYP1KYyWacpTENHDrQboxGaYDL4U8MQppaxvzo: [
+              '::ffff:149.202.65.130',
+              false,
+            ],
+            N1NnuSW48GKGaYZamAVKXfXbbnt3StxWoHpYtBZSJvY9e8U1BTC: [
+              '37.187.156.118',
+              true,
+            ],
+            N1kKfgrCveVnosUkxTzaBw5cf9f2cbTvK3R5Ssb2Pf76au8xwmH: [
+              '149.202.84.7',
+              true,
+            ],
+          },
+          last_slot: {
+            period: 1732254,
+            thread: 3,
+          },
+          next_slot: {
+            period: 1732254,
+            thread: 4,
+          },
+          consensus_stats: {
+            start_timespan: 1732005805705,
+            end_timespan: 1732005865705,
+            final_block_count: 120,
+            stale_block_count: 0,
+            clique_count: 1,
+          },
+          pool_stats: [0, 0],
+          network_stats: {
+            in_connection_count: 1,
+            out_connection_count: 2,
+            known_peer_count: 9,
+            banned_peer_count: 0,
+            active_node_count: 3,
+          },
+          execution_stats: {
+            time_window_start: 1732005805705,
+            time_window_end: 1732005865705,
+            final_block_count: 120,
+            final_executed_operations_count: 3,
+            active_cursor: {
+              period: 1732253,
+              thread: 31,
+            },
+            final_cursor: {
+              period: 1732252,
+              thread: 2,
+            },
+          },
+          config: {
+            genesis_timestamp: 1704289800000,
+            end_timestamp: null,
+            thread_count: 32,
+            t0: 16000,
+            delta_f0: 1088,
+            operation_validity_periods: 10,
+            periods_per_cycle: 128,
+            block_reward: '1.02',
+            roll_price: '100',
+            max_block_size: 300000,
+          },
+          chain_id: 77658366,
+          minimal_fees: '0.01',
+        },
+        id: 0,
+      };
+    }
+
     return {
       jsonrpc: '2.0',
       result: [],

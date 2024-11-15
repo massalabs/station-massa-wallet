@@ -1,16 +1,15 @@
 import { useCallback, useState } from 'react';
 
-import { Args } from '@massalabs/massa-web3';
-import { bytesToStr } from '@massalabs/web3-utils';
+import { Args, bytesToStr, SmartContract } from '@massalabs/massa-web3';
 
-import { useMassaWeb3Store } from '@/store/store';
+import { useProvider } from './useProvider';
 import { contracts } from '@/utils/const';
 
 export function useMNS() {
-  const { defaultClient: client, isMainnet } = useMassaWeb3Store();
-
   const [targetMnsAddress, setTargetMnsAddress] = useState<string>('');
   const [domainNameList, setDomainNameList] = useState<string[]>([]);
+
+  const { provider, isMainnet } = useProvider();
 
   const targetContractAddress = isMainnet
     ? contracts.mainnet.mnsContract
@@ -18,14 +17,18 @@ export function useMNS() {
 
   const reverseResolveDns = useCallback(
     async (targetAddress: string) => {
-      if (!client || !targetAddress) return;
+      if (!provider) {
+        return;
+      }
       try {
-        const result = await client.smartContracts().readSmartContract({
-          targetAddress: targetContractAddress,
-          targetFunction: 'dnsReverseResolve',
-          parameter: new Args().addString(targetAddress).serialize(),
-        });
-        const domains = bytesToStr(result.returnValue).split(',');
+        const mnsContract = new SmartContract(provider, targetContractAddress);
+        const res = await mnsContract.read(
+          'dnsReverseResolve',
+          new Args().addString(targetAddress),
+        );
+        const domains = bytesToStr(res.value)
+          .split(',')
+          .filter((d) => !!d.length);
 
         setDomainNameList(domains);
         return domains;
@@ -34,35 +37,35 @@ export function useMNS() {
         console.error(e);
       }
     },
-    [client, targetContractAddress],
+    [provider, targetContractAddress],
   );
 
   const resolveDns = useCallback(
     async (domain: string): Promise<string | undefined> => {
+      if (!provider) {
+        return;
+      }
       try {
-        if (!client) return;
-        const result = await client.smartContracts().readSmartContract({
-          targetAddress: targetContractAddress,
-          targetFunction: 'dnsResolve',
-          parameter: new Args().addString(domain).serialize(),
-        });
+        const mnsContract = new SmartContract(provider, targetContractAddress);
 
-        const targetAddress = bytesToStr(result.returnValue);
-        setTargetMnsAddress(bytesToStr(result.returnValue));
+        const res = await mnsContract.read(
+          'dnsResolve',
+          new Args().addString(domain),
+        );
+        const targetAddress = bytesToStr(res.value);
+        setTargetMnsAddress(targetAddress);
         return targetAddress;
       } catch (e) {
         console.error(e);
         setTargetMnsAddress('');
-        return '';
       }
     },
-    [client, targetContractAddress],
+    [provider, targetContractAddress],
   );
 
-  function resetTargetMnsAddress() {
+  const resetTargetMnsAddress = useCallback(() => {
     setTargetMnsAddress('');
-  }
-
+  }, []);
   const resetDomainList = useCallback(() => {
     setDomainNameList([]);
   }, []);

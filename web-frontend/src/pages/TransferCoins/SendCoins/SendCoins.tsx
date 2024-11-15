@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { fromMAS } from '@massalabs/massa-web3';
+import { Mas } from '@massalabs/massa-web3';
 import { toast } from '@massalabs/react-ui-kit';
 import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -92,6 +92,9 @@ export default function SendCoins(props: SendCoinsProps) {
       setSubmit(false);
     } else if (data) {
       if (data.asset.symbol !== MAS && data.asset.address) {
+        if (!transferFT) {
+          return;
+        }
         transferFT(
           data.recipientAddress,
           data.asset.address,
@@ -102,9 +105,9 @@ export default function SendCoins(props: SendCoinsProps) {
       } else {
         setErrorToastId(null);
         transferMAS({
-          fee: fromMAS(data.fees).toString(),
+          fee: Mas.fromString(data.fees).toString(),
           recipientAddress: data.recipientAddress,
-          amount: fromMAS(data.amount).toString(),
+          amount: Mas.fromString(data.amount).toString(),
         });
       }
     }
@@ -118,7 +121,7 @@ export default function SendCoins(props: SendCoinsProps) {
         <SendConfirmation
           data={data}
           handleConfirm={handleConfirm}
-          isLoading={transferMASLoading || transferFTLoading}
+          isLoading={transferMASLoading || !!transferFTLoading}
         />
       ) : (
         <SendForm
