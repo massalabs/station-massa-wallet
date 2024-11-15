@@ -30,12 +30,14 @@ export default function Home() {
   } = useResource<AccountObject>(`accounts/${nickname}`);
 
   const { reverseResolveDns, domainNameList, resetDomainList } = useMNS();
-  const accountAddress = account?.address ?? '';
+  const accountAddress = account?.address;
 
   useEffect(() => {
-    resetDomainList();
-    reverseResolveDns(accountAddress);
-  }, [reverseResolveDns, accountAddress, resetDomainList]);
+    if (!isLoading && accountAddress) {
+      resetDomainList();
+      reverseResolveDns(accountAddress);
+    }
+  }, [reverseResolveDns, accountAddress, resetDomainList, isLoading]);
 
   useEffect(() => {
     if (error) {
@@ -46,8 +48,7 @@ export default function Home() {
   }, [account, navigate, error, isLoading]);
 
   const unformattedBalance = account?.candidateBalance ?? '0';
-  const balance = parseInt(unformattedBalance);
-  const formattedBalance = formatAmount(balance.toString()).preview;
+  const formattedBalance = formatAmount(unformattedBalance).preview;
 
   return (
     <WalletLayout menuItem={MenuItem.Home}>
@@ -91,17 +92,19 @@ export default function Home() {
             <p className="mas-body text-f-primary mb-6">
               {Intl.t('home.title-account-address')}
             </p>
-            <div className="flex w-full justify-between items-center">
-              <Clipboard
-                displayedContent={accountAddress}
-                rawContent={accountAddress}
-                error={Intl.t('errors.no-content-to-copy')}
-                className="flex flex-row items-center mas-body2 justify-between
+            {accountAddress && (
+              <div className="flex w-full justify-between items-center">
+                <Clipboard
+                  displayedContent={accountAddress}
+                  rawContent={accountAddress}
+                  error={Intl.t('errors.no-content-to-copy')}
+                  className="flex flex-row items-center mas-body2 justify-between
               w-full h-12 px-3 rounded bg-primary cursor-pointer"
-              />
-            </div>
+                />
+              </div>
+            )}
           </div>
-          {domainNameList.length > 0 && (
+          {domainNameList && domainNameList.length > 0 && (
             <div className="bg-secondary rounded-2xl w-full max-w-lg p-10 gap-6 flex flex-col justify-between">
               <div className="flex flex-col">
                 <p className="mas-body text-f-primary">

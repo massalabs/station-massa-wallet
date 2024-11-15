@@ -8,8 +8,7 @@ import { Address } from '@massalabs/massa-web3/';
 
 export function checkAddressFormat(recipient: string): boolean {
   try {
-    // eslint-disable-next-line no-new
-    new Address(recipient);
+    Address.fromString(recipient);
   } catch (error) {
     return false;
   }

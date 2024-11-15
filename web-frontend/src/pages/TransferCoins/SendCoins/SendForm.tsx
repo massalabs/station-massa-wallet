@@ -6,7 +6,7 @@ import {
   ChangeEvent,
 } from 'react';
 
-import { fromMAS } from '@massalabs/massa-web3';
+import { Mas } from '@massalabs/massa-web3';
 import {
   Button,
   Money,
@@ -87,6 +87,9 @@ export function SendForm(props: SendFormProps) {
     } else {
       if (sendOpData.recipientDomainName) {
         setRecipient(sendOpData.recipientDomainName + mnsExtension);
+        if (!resolveDns) {
+          return;
+        }
         resolveDns(sendOpData.recipientDomainName);
       } else {
         setRecipient(sendOpData.recipientAddress);
@@ -119,7 +122,7 @@ export function SendForm(props: SendFormProps) {
     }
 
     if (selectedAsset.symbol === MAS) {
-      if (fromMAS(amount) + fromMAS(fees) > balance) {
+      if (Mas.fromString(amount) + Mas.fromString(fees) > balance) {
         setError({
           amount: Intl.t('errors.send-coins.amount-plus-fees-to-high'),
         });
@@ -153,6 +156,9 @@ export function SendForm(props: SendFormProps) {
       };
     } else {
       setMnsAddressCorrelation(false);
+      if (!resetTargetMnsAddress) {
+        return;
+      }
       resetTargetMnsAddress();
     }
 
@@ -180,11 +186,17 @@ export function SendForm(props: SendFormProps) {
       setError((error) => ({ ...error, recipient: '' }));
       if (value !== '' && mnsExtensionRegex.test(value)) {
         const inputMns = value.replace(mnsExtension, '');
+        if (!resolveDns) {
+          return;
+        }
         const targetAddress = await resolveDns(inputMns);
         if (targetAddress && checkAddressFormat(targetAddress)) {
           setMnsAddressCorrelation(true);
         } else {
           setMnsAddressCorrelation(false);
+          if (!resetTargetMnsAddress) {
+            return;
+          }
           resetTargetMnsAddress();
         }
       }
@@ -221,7 +233,7 @@ export function SendForm(props: SendFormProps) {
                       handlePercent(
                         balance,
                         25n,
-                        fromMAS(fees),
+                        Mas.fromString(fees),
                         balance,
                         selectedAsset?.decimals || 9,
                         selectedAsset?.symbol || '',
@@ -239,7 +251,7 @@ export function SendForm(props: SendFormProps) {
                       handlePercent(
                         balance,
                         50n,
-                        fromMAS(fees),
+                        Mas.fromString(fees),
                         balance,
                         selectedAsset?.decimals || 9,
                         selectedAsset?.symbol || '',
@@ -257,7 +269,7 @@ export function SendForm(props: SendFormProps) {
                       handlePercent(
                         balance,
                         75n,
-                        fromMAS(fees),
+                        Mas.fromString(fees),
                         balance,
                         selectedAsset?.decimals || 9,
                         selectedAsset?.symbol || '',
@@ -275,7 +287,7 @@ export function SendForm(props: SendFormProps) {
                       handlePercent(
                         balance,
                         100n,
-                        fromMAS(fees),
+                        Mas.fromString(fees),
                         balance,
                         selectedAsset?.decimals || 9,
                         selectedAsset?.symbol || '',
@@ -315,7 +327,7 @@ export function SendForm(props: SendFormProps) {
               mnsAddressCorrelation
                 ? Intl.t('send-coins.mns.mns-correlation', {
                     mns: recipient,
-                    address: targetMnsAddress,
+                    address: targetMnsAddress ?? '',
                   })
                 : ''
             }
