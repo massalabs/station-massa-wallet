@@ -2,7 +2,7 @@ package prompt
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"math/rand"
 	"strconv"
 
@@ -62,7 +62,7 @@ func WakeUpPrompt(
 ) (interface{}, error) {
 	if prompterApp.IsListening() {
 		logger.Warn(AlreadyListeningErr)
-		return nil, fmt.Errorf(AlreadyListeningErr)
+		return nil, errors.New(AlreadyListeningErr)
 	}
 
 	prompterApp.Lock()

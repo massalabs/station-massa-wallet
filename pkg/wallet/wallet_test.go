@@ -141,7 +141,6 @@ func TestWallet(t *testing.T) {
 	t.Run("Get Account: new file added manually", func(t *testing.T) {
 		// User can add an account file in the account folder by its own,
 		// we want to wallet to be able to manage this account.
-
 		accountPath, err := w.AccountPath(sampleNicknameUnitTest)
 		assert.NoError(t, err)
 
