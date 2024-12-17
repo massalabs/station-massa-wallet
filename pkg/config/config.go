@@ -60,6 +60,7 @@ func Load() *Config {
 			log.Fatalf("Error unmarshaling config: %v", err)
 		}
 	})
+
 	return cfg
 }
 
@@ -67,6 +68,7 @@ func Get() *Config {
 	if cfg == nil {
 		log.Fatal("Config not loaded. Call Load() first.")
 	}
+
 	return cfg
 }
 
@@ -85,6 +87,7 @@ func createDefaultConfigFile(filePath string, defaultConfig *Config) {
 
 	encoder := jsonStd.NewEncoder(file)
 	encoder.SetIndent("", "  ") // Pretty-print JSON
+
 	if err := encoder.Encode(defaultConfig); err != nil {
 		log.Fatalf("failed to write default config to file: %v", err)
 	}

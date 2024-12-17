@@ -234,7 +234,6 @@ func Test_walletSign_Handle(t *testing.T) {
 		resp = signTransaction(t, api, nickname, transactionDataBatch)
 
 		verifyStatusCode(t, resp, http.StatusOK) // remove this line when enabling batch signing
-
 		// Uncomment the code below when enabling batch signing:
 		// var bodyError operations.SignInternalServerError
 		// err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
