@@ -97,8 +97,10 @@ func webAppMiddleware(handler http.Handler) http.Handler {
 			responder := html.HandleWebApp(params)
 			// Handle the successful response
 			responder.WriteResponse(w, runtime.JSONProducer())
+
 			return
 		}
+
 		handler.ServeHTTP(w, r)
 	})
 }
