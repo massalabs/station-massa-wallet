@@ -46,8 +46,10 @@ func (w *walletExportFile) Handle(params operations.ExportAccountFileParams) mid
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		w.Header().Set("Content-Type", "application/octet-stream")
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", filepath.Base(file.Name())))
+
 		if _, err := io.Copy(w, file); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

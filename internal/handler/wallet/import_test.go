@@ -87,6 +87,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
 		assert.NoError(t, err)
+
 		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
@@ -131,6 +132,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		data := []byte(walletFile)
 		err = os.WriteFile(filePath, data, 0o644)
 		assert.NoError(t, err)
+
 		defer os.Remove(filePath)
 
 		testResult := make(chan walletapp.EventData)
