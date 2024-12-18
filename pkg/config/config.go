@@ -2,6 +2,7 @@ package config
 
 import (
 	jsonStd "encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -14,17 +15,17 @@ import (
 )
 
 type SignRule struct {
-	Contract           string `json:"contract"`
-	PasswordPrompt     bool   `json:"passwordPrompt"`
-	ConfirmationBypass bool   `json:"confirmationBypass"`
+	Contract       string `json:"contract"`
+	PasswordPrompt bool   `json:"passwordPrompt"`
+	AutoSign       bool   `json:"autoSign"`
 }
 
-type Account struct {
+type AccountCfg struct {
 	SignRules []SignRule `json:"signRules"`
 }
 
 type Config struct {
-	Accounts map[string]Account `json:"accounts"`
+	Accounts map[string]AccountCfg `json:"accounts"`
 }
 
 var (
@@ -72,9 +73,20 @@ func Get() *Config {
 	return cfg
 }
 
+func GetAccountConfig(accountName string) (*AccountCfg, error) {
+	cfg := Get()
+
+	account, exists := cfg.Accounts[accountName]
+	if !exists {
+		return nil, fmt.Errorf("account '%s' not found in configuration", accountName)
+	}
+
+	return &account, nil
+}
+
 func defaultConfig() *Config {
 	return &Config{
-		Accounts: map[string]Account{},
+		Accounts: map[string]AccountCfg{},
 	}
 }
 

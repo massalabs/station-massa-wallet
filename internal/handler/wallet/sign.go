@@ -2,10 +2,8 @@ package wallet
 
 import (
 	"crypto/ed25519"
-	cryptorand "crypto/rand"
 	"encoding/binary"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -33,8 +31,9 @@ import (
 )
 
 const (
-	defaultExpirationTime = time.Second * 60 * 10
+	defaultExpirationTime = time.Hour * 24 * 30
 	RollPrice             = 100
+	cacheKeyPrefix        = "pkey"
 )
 
 type PromptRequestSignData struct {
@@ -80,18 +79,17 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorSignDecodeMessage, http.StatusBadRequest)
 	}
 
-	var correlationID *memguard.LockedBuffer
 	var privateKey *memguard.LockedBuffer
 
-	const disableBatchSigning = true
+	// accountCfg, err := config.GetAccountConfig(params.Nickname)
 
-	if params.Body.CorrelationID != nil && !disableBatchSigning {
-		correlationID = memguard.NewBufferFromBytes(params.Body.CorrelationID)
-
-		pk, err := w.privateKeyFromCache(acc, correlationID)
+	if err != nil {
+		// todo
+		// todo: handle cache expired error
+		pk, err := w.privateKeyFromCache(acc)
 		if err != nil {
-			if errors.Is(err, utils.ErrCorrelationIDNotFound) {
-				return newErrorResponse(err.Error(), errorSignCorrelationIDNotFound, http.StatusNotFound)
+			if errors.Is(err, errors.New("errtodo")) {
+				return newErrorResponse(err.Error(), "errtodo", http.StatusNotFound)
 			}
 
 			return newErrorResponse(err.Error(), errorSign, http.StatusInternalServerError)
@@ -118,14 +116,11 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		privateKey = pk
 
-		if params.Body.Batch {
-			cID, err := w.CacheAccount(acc, privateKey)
+		if false { // todo
+			err := w.CacheAccount(acc, privateKey)
 			if err != nil {
-				return newErrorResponse(err.Error(), errorSignCorrelationIDNotFound, http.StatusInternalServerError)
+				return newErrorResponse(err.Error(), "errtodo", http.StatusInternalServerError)
 			}
-			correlationID = cID
-		} else {
-			correlationID = memguard.NewBufferFromBytes([]byte{})
 		}
 	}
 
@@ -140,7 +135,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		return newErrorResponse("Error: signature verification failed", "errorSignVerifySignature", http.StatusInternalServerError)
 	}
 
-	return w.Success(acc, signature, correlationID, operation)
+	return w.Success(acc, signature, operation)
 }
 
 func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.PromptRequest) (*walletapp.SignPromptOutput, error) {
@@ -160,17 +155,14 @@ func (w *walletSign) PromptPassword(acc *account.Account, promptRequest *prompt.
 	return output, nil
 }
 
-func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
-	correlationID, err := generateCorrelationID()
-	if err != nil {
-		return nil, fmt.Errorf("Error cannot generate correlation id: %w", err)
-	}
+func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.LockedBuffer) error {
+	cacheKey := cacheKeyPrefix + acc.Nickname
 
-	key := CacheKey(correlationID.Bytes())
+	key := KeyHash([]byte(cacheKey))
 
-	cipheredPrivateKey, err := Xor(privateKey, correlationID)
+	cipheredPrivateKey, err := Xor(privateKey, key)
 	if err != nil {
-		return nil, fmt.Errorf("Error cannot XOR correlation id: %w", err)
+		return fmt.Errorf("Error cannot XOR private key: %w", err)
 	}
 
 	cacheValue := make([]byte, ed25519.PrivateKeySize)
@@ -179,13 +171,13 @@ func (w *walletSign) CacheAccount(acc *account.Account, privateKey *memguard.Loc
 
 	err = w.gc.SetWithExpire(key, cacheValue, expirationDuration())
 	if err != nil {
-		return nil, fmt.Errorf("Error set correlation id in cache: %w", err)
+		return fmt.Errorf("Error set private key in cache: %w", err)
 	}
 
-	return correlationID, nil
+	return nil
 }
 
-func (w *walletSign) Success(acc *account.Account, signature []byte, correlationId *memguard.LockedBuffer, operation []byte) middleware.Responder {
+func (w *walletSign) Success(acc *account.Account, signature []byte, operation []byte) middleware.Responder {
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
@@ -193,10 +185,9 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, correlation
 
 	return operations.NewSignOK().WithPayload(
 		&models.SignResponse{
-			PublicKey:     string(publicKeyBytes),
-			Signature:     signature,
-			CorrelationID: correlationId.Bytes(),
-			Operation:     operation,
+			PublicKey: string(publicKeyBytes),
+			Signature: signature,
+			Operation: operation,
 		})
 }
 
@@ -362,14 +353,14 @@ func (w *walletSign) getTransactionPromptData(
 // privateKeyFromCache return the private key from the cache or an error.
 func (w *walletSign) privateKeyFromCache(
 	acc *account.Account,
-	correlationID *memguard.LockedBuffer,
 ) (*memguard.LockedBuffer, error) {
-	key := CacheKey(correlationID.Bytes())
+	cacheKey := cacheKeyPrefix + acc.Nickname
+	keyHash := KeyHash([]byte(cacheKey))
 
-	value, err := w.gc.Get(key)
+	value, err := w.gc.Get(keyHash)
 	if err != nil {
 		if err.Error() == gcache.KeyNotFoundError.Error() {
-			return nil, fmt.Errorf("%w: %w", utils.ErrCorrelationIDNotFound, err)
+			return nil, fmt.Errorf("%w: %w", utils.ErrPrivateKeyCache, err)
 		}
 
 		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
@@ -389,35 +380,33 @@ func (w *walletSign) privateKeyFromCache(
 
 	cipheredPrivateKey := memguard.NewBufferFromBytes(cacheValue)
 
-	privateKey, err := Xor(cipheredPrivateKey, correlationID)
+	privateKey, err := Xor(cipheredPrivateKey, keyHash)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", utils.ErrCache, err)
 	}
 
 	cipheredPrivateKey.Destroy()
-	correlationID.Destroy()
 
 	return privateKey, nil
 }
 
-func Xor(bufferA, bufferB *memguard.LockedBuffer) (*memguard.LockedBuffer, error) {
-	a := bufferA.Bytes()
-	b := bufferB.Bytes()
+func Xor(pkey *memguard.LockedBuffer, cacheKeyHash [32]byte) (*memguard.LockedBuffer, error) {
+	a := pkey.Bytes()
 
-	if len(a) != len(b) {
-		return nil, fmt.Errorf("length of two arrays must be same, %d and %d", len(a), len(b))
+	if len(a) != len(cacheKeyHash) {
+		return nil, fmt.Errorf("length of two arrays must be same, %d and %d", len(a), len(cacheKeyHash))
 	}
 	result := make([]byte, len(a))
 
 	for i := 0; i < len(a); i++ {
-		result[i] = a[i] ^ b[i]
+		result[i] = a[i] ^ cacheKeyHash[i]
 	}
 
 	return memguard.NewBufferFromBytes(result), nil
 }
 
-func CacheKey(correlationID models.CorrelationID) [32]byte {
-	return blake3.Sum256(correlationID)
+func KeyHash(cacheKeyHash []byte) [32]byte {
+	return blake3.Sum256(cacheKeyHash)
 }
 
 func expirationDuration() time.Duration {
@@ -433,17 +422,6 @@ func expirationDuration() time.Duration {
 	}
 
 	return duration
-}
-
-func generateCorrelationID() (*memguard.LockedBuffer, error) {
-	rand := cryptorand.Reader
-
-	correlationId := make([]byte, ed25519.PrivateKeySize)
-	if _, err := io.ReadFull(rand, correlationId); err != nil {
-		return nil, err
-	}
-
-	return memguard.NewBufferFromBytes(correlationId), nil
 }
 
 func convertAssetsToModel(assetsWithBalance []*assets.AssetInfoWithBalances) []models.AssetInfo {

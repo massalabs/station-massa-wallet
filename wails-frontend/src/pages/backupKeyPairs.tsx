@@ -97,7 +97,7 @@ function BackupKeyPairs() {
     const { password } = formObject;
 
     EventsOnce(events.promptResult, handleResult);
-    await SendPromptInput(password, req.CorrelationID);
+    await SendPromptInput(password);
   }
 
   return (

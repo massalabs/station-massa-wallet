@@ -12,10 +12,10 @@ export function IsNicknameValid(arg1:string):Promise<boolean>;
 
 export function SelectAccountFile():Promise<walletapp.selectFileResult>;
 
-export function SendPKeyPromptInput(arg1:string,arg2:string,arg3:string,arg4:string):Promise<void>;
+export function SendPKeyPromptInput(arg1:string,arg2:string,arg3:string):Promise<void>;
 
-export function SendPromptInput(arg1:string,arg2:string):Promise<void>;
+export function SendPromptInput(arg1:string):Promise<void>;
 
-export function SendSignPromptInput(arg1:string,arg2:string,arg3:string):Promise<void>;
+export function SendSignPromptInput(arg1:string,arg2:string):Promise<void>;
 
 export function Show():Promise<void>;

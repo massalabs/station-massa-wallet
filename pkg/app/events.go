@@ -36,20 +36,12 @@ const (
 
 // User input interfaces for the channel
 
-// CorrelationIdentifier interface that all message types will implement
-type CorrelationIdentifier interface {
-	GetCorrelationID() string
-}
+// EventInterface interface that all message types will implement
+// Unused for now
+type EventInterface interface{}
 
-// BaseMessage contains the common CorrelationID attribute
-type BaseMessage struct {
-	CorrelationID string
-}
-
-// GetCorrelationID retrieves the CorrelationID from the BaseMessage struct
-func (m *BaseMessage) GetCorrelationID() string {
-	return m.CorrelationID
-}
+// BaseMessage contains the common attribute
+type BaseMessage struct{}
 
 type StringPromptInput struct {
 	BaseMessage
