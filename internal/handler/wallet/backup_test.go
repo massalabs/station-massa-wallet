@@ -51,7 +51,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 		go func() {
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.YamlFileBackup),
 			}
 			testResult <- (<-resChan)
@@ -69,7 +69,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		go func() {
 			// send backup method
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.PrivateKeyBackup),
 			}
 			prompterApp.App().CtrlChan <- walletapp.Cancel
@@ -85,12 +85,12 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		go func() {
 			// send backup method
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.PrivateKeyBackup),
 			}
 			// send password
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     "wrong password",
 			}
 
@@ -100,7 +100,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 
 			// send password
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     password,
 			}
 			testResult <- (<-resChan)
@@ -127,12 +127,12 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		go func() {
 			// send backup method
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.PrivateKeyBackup),
 			}
 			// send password
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     "wrong password",
 			}
 
@@ -153,12 +153,12 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 		go func() {
 			// send backup method
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.PrivateKeyBackup),
 			}
 			// send password
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     password,
 			}
 

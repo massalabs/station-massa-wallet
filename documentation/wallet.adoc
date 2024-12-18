@@ -666,11 +666,7 @@ NOTE: For hands-on testing and examples, refer to the provided Swagger documenta
 
 The 'sign' endpoint serves the purpose of signing all five operation 
 types, including Transaction, Roll buy/sell, CallSC, and 
-ExecuteSC. It provides the capability to batch operation requests by 
-utilizing the correlationID parameter. No user interaction is required once first operation processing is underway. 
-Batching operation requests in Massa Wallet does not entail processing the operations as a group. 
-Instead, it enhances the user experience by allowing users to, sequentially, sign multiple operations 
-after being prompted to provide a password once.
+ExecuteSC.
 
 ===== Parameters
 
@@ -680,23 +676,17 @@ after being prompted to provide a password once.
 | `nickname` | Identifier for the account. | Required | String
 | `description` | Text describing the signing intent. | Optional | String (Default: "", Max: 280 characters)
 | `operation` | Serialized attributes for signing. | Required | Byte array
-| `batch` | Specifies if the operation is part of a batch. | Optional | Boolean (Default: `false`)
-| `correlationId` | Identifier for correlating multiple requests. | Optional | String (Default: "")
 |===
 
 
-IMPORTANT: To ensure security, the `correlationId` should be sent in the request body, not in the query string.
-
 ===== Response
 
-The correlationId will be included if the batch parameter is set to true.
 
 [%header,cols="1,3,1"]
 |===
 | Name | Description  | Format
 | `signature` | The signature of the signed message | String
 | `publicKey` | The public key of the account | String
-| `correlationId` | Correlation id of the operation batch | String
 |===
 
 
@@ -726,7 +716,6 @@ calls with the same data will initiate separate executions.
 | Name | Description  | Format
 | `signature` | The signature of the signed message | String
 | `publicKey` | The public key of the account | String
-| `correlationId` | Correlation id of the operation batch | String
 |===
 
 ==== Create Account

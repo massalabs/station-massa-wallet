@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/internal/handler"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station/pkg/logger"
@@ -19,6 +20,8 @@ func StartServer(app *walletApp.WalletApp) {
 	gc := gcache.New(20).
 		LRU().
 		Build()
+
+	config.Load()
 
 	massaClient := network.NewNodeFetcher()
 

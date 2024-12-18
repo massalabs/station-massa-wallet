@@ -24,6 +24,7 @@ func DollarValue(balance, MEXCSymbol, symbol string, decimals int64) (*float64, 
 	} else {
 		err := error(nil)
 		price, err = DollarPrice(MEXCSymbol)
+		//nolint:wsl
 		if err != nil {
 			return nil, fmt.Errorf("Error getting dollar price: %s\n", err)
 		}
