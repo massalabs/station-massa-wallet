@@ -44,7 +44,6 @@ func SendOperation(
 
 	operationDataToSign := utils.PrepareSignData(uint64(chainID), append(publicKey, operationData...))
 
-	// TODO: we do not implement the handling of the correlation id for now
 	signature, err := acc.Sign(password, operationDataToSign)
 	if err != nil {
 		return nil, fmt.Errorf("Error while signing operation: %w", err)
@@ -62,5 +61,5 @@ func SendOperation(
 		return nil, fmt.Errorf("Error during RPC call: %w", err)
 	}
 
-	return &sendOperation.OperationResponse{CorrelationID: "", OperationID: resp[0]}, nil
+	return &sendOperation.OperationResponse{OperationID: resp[0]}, nil
 }

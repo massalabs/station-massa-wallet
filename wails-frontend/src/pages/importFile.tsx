@@ -53,7 +53,7 @@ const ImportFile = () => {
         events.promptResult,
         handleApplyResult(nav, req, setErrorMsg, true),
       );
-      await SendPromptInput(account.filePath, req.CorrelationID);
+      await SendPromptInput(account.filePath);
     }
   };
 
