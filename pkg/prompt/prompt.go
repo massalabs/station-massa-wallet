@@ -3,8 +3,6 @@ package prompt
 import (
 	"context"
 	"errors"
-	"math/rand"
-	"strconv"
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -15,11 +13,10 @@ import (
 )
 
 type PromptRequest struct {
-	Action        walletapp.PromptRequestAction
-	Msg           string
-	Data          interface{}
-	CodeMessage   string
-	CorrelationID string
+	Action      walletapp.PromptRequestAction
+	Msg         string
+	Data        interface{}
+	CodeMessage string
 }
 
 // WalletPrompter is a struct that wraps a Wails GUI application and implements the WalletPrompterInterface interface.
@@ -68,8 +65,6 @@ func WakeUpPrompt(
 	prompterApp.Lock()
 	defer prompterApp.Unlock()
 
-	correlationId := strconv.FormatUint(rand.Uint64(), 10)
-	req.CorrelationID = correlationId
 	prompterApp.PromptRequest(req)
 
 	ctxTimeout, cancel := context.WithTimeout(context.Background(), TIMEOUT)
@@ -80,15 +75,6 @@ func WakeUpPrompt(
 	for {
 		select {
 		case input := <-prompterApp.App().PromptInput:
-			receivedCorrelationId := input.GetCorrelationID()
-			// In test environnement we can't provide the correlation id,
-			// so here we continue only if the correlation id is not the same as the one we sent,
-			// and if the correlation id is not 1 (which is the test value for correlation id).
-			if receivedCorrelationId != "1" && receivedCorrelationId != correlationId {
-				logger.Warn("Received a prompt input with a different correlation id")
-				continue
-			}
-
 			var keepListening bool
 			var err error
 

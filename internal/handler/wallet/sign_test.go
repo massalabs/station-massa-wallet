@@ -1,15 +1,12 @@
 package wallet
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 
-	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -72,7 +69,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "14400",
 			}
@@ -94,7 +91,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
 			}
@@ -121,7 +118,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		go func(res chan walletapp.EventData) {
 			// Send wrong password to prompter app and wait for result
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    "this is not the password",
 				Fees:        "1000",
 			}
@@ -132,7 +129,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 			// Send password to prompter app to unlock the handler
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
 			}
@@ -154,7 +151,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		go func() {
 			// Send wrong password to prompter app and wait for result
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    "this is not the password",
 				Fees:        "1000",
 			}
@@ -169,75 +166,5 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		resp := signTransaction(t, api, nickname, transactionData)
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
-	})
-
-	t.Run("sign transaction batch", func(t *testing.T) {
-		transactionDataBatch := fmt.Sprintf(`{"chainId": `+strconv.FormatUint(ChainIDUnitTests, 10)+`, "operation":"%s","batch":true}`, callSCString)
-		testResult := make(chan walletapp.EventData)
-
-		// Send password to prompter app and wait for result
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
-				Password:    password,
-				Fees:        "1000",
-			}
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
-
-		resp := signTransaction(t, api, nickname, transactionDataBatch)
-		verifyStatusCode(t, resp, http.StatusOK)
-
-		result := <-testResult
-
-		checkResultChannel(t, result, true, "")
-
-		var body models.SignResponse
-		err = json.Unmarshal(resp.Body.Bytes(), &body)
-		assert.NoError(t, err)
-
-		correlationId := base64.StdEncoding.EncodeToString(body.CorrelationID)
-
-		transactionDataBatch = fmt.Sprintf(`{"chainId": `+strconv.FormatUint(ChainIDUnitTests, 10)+`, "operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
-		// Send new transaction without password prompt
-		// ---
-		// No, we disable batch signing, so send password prompt:
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
-				Password:    password,
-				Fees:        "1000",
-			}
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
-		// ---
-		resp = signTransaction(t, api, nickname, transactionDataBatch)
-		verifyStatusCode(t, resp, http.StatusOK)
-
-		// Send new transaction with incorrect correlation id
-		correlationId = base64.StdEncoding.EncodeToString([]byte("wrong correlation id"))
-		transactionDataBatch = fmt.Sprintf(`{"chainId": `+strconv.FormatUint(ChainIDUnitTests, 10)+`, "operation":"%s","correlationId":"%s"}`, callSCString, correlationId)
-
-		// We disable batch signing, so send password prompt:
-		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
-				Password:    password,
-				Fees:        "1000",
-			}
-			// forward test result to test goroutine
-			res <- (<-resChan)
-		}(testResult)
-
-		resp = signTransaction(t, api, nickname, transactionDataBatch)
-
-		verifyStatusCode(t, resp, http.StatusOK) // remove this line when enabling batch signing
-		// Uncomment the code below when enabling batch signing:
-		// var bodyError operations.SignInternalServerError
-		// err = json.Unmarshal(resp.Body.Bytes(), &bodyError)
-		// assert.NoError(t, err)
-		// verifyStatusCode(t, resp, http.StatusNotFound)
 	})
 }

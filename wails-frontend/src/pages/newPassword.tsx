@@ -88,13 +88,8 @@ function NewPassword() {
     );
 
     return isImportAction
-      ? SendPKeyPromptInput(
-          state.privateKey,
-          state.nickname,
-          password,
-          req.CorrelationID,
-        )
-      : SendPromptInput(password, req.CorrelationID);
+      ? SendPKeyPromptInput(state.privateKey, state.nickname, password)
+      : SendPromptInput(password);
   }
 
   async function handleSubmit(e: SyntheticEvent) {
