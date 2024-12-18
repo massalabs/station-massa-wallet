@@ -26,11 +26,11 @@ function BackupMethods() {
       handleApplyResult(navigate, req, setErrorMsg, true),
     );
 
-    await SendPromptInput(backupMethods.ymlFileBackup, req.CorrelationID);
+    await SendPromptInput(backupMethods.ymlFileBackup);
   }
 
   async function handleKeyPairs() {
-    await SendPromptInput(backupMethods.privateKeyBackup, req.CorrelationID);
+    await SendPromptInput(backupMethods.privateKeyBackup);
 
     navigate('/backup-pkey', { state: { req } });
   }

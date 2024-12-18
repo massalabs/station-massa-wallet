@@ -235,7 +235,7 @@ paths:
   /api/accounts/{nickname}/sign:
     post:
       operationId: Sign
-      description: Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.
+      description: Sign an operation or a message using the account associated with the provided nickname in the path.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -255,7 +255,7 @@ paths:
         - application/json
       responses:
         200:
-          description: Returns the signature, public key, and correlationId (if provided).
+          description: Returns the signature, public key.
           schema:
             $ref: "#/definitions/SignResponse"
         400:
@@ -263,7 +263,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         401:
-          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         404:
@@ -565,11 +565,6 @@ definitions:
         description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
         type: string
         format: byte
-      batch:
-        description: A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.
-        type: boolean
-      correlationId:
-        $ref: "#/definitions/CorrelationId"
       chainId:
         type: integer
         description: The chain id of the network to which the operation will be sent.
@@ -659,12 +654,6 @@ definitions:
         format: byte
         x-nullable: false
         readOnly: true
-      correlationId:
-        $ref: "#/definitions/CorrelationId"
-  CorrelationId:
-    description: Correlation id of the operation batch
-    type: string
-    format: byte
   Nickname:
     description: Account's short name.
     type: string

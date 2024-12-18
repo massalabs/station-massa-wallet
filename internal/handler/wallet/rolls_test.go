@@ -85,7 +85,7 @@ func Test_traderolls_handler(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
 			}
@@ -112,7 +112,7 @@ func Test_traderolls_handler(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
 			}

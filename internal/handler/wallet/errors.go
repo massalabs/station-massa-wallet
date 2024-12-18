@@ -16,8 +16,6 @@ const (
 	errorSignDecodeMessage
 	errorSign
 	errorSignLoadCache
-	errorSignCorrelationIDNotFound
-	errorSignGenerateCorrelationID
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
 	errorImportWallet

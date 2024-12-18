@@ -17,9 +17,9 @@ func (e *envPrompter) PromptRequest(req PromptRequest) {
 
 		switch req.Action {
 		case walletapp.Sign:
-			e.PromptApp.PromptInput <- &walletapp.SignPromptInput{BaseMessage: walletapp.BaseMessage{CorrelationID: req.CorrelationID}, Password: password, Fees: "10000000"}
+			e.PromptApp.PromptInput <- &walletapp.SignPromptInput{Password: password, Fees: "10000000"}
 		case walletapp.Delete, walletapp.NewPassword, walletapp.Unprotect:
-			e.PromptApp.PromptInput <- &walletapp.StringPromptInput{BaseMessage: walletapp.BaseMessage{CorrelationID: req.CorrelationID}, Message: password}
+			e.PromptApp.PromptInput <- &walletapp.StringPromptInput{Message: password}
 		}
 	}()
 }

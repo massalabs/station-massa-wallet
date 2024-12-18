@@ -590,7 +590,7 @@ func init() {
     },
     "/api/accounts/{nickname}/sign": {
       "post": {
-        "description": "Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.",
+        "description": "Sign an operation or a message using the account associated with the provided nickname in the path.",
         "produces": [
           "application/json"
         ],
@@ -619,7 +619,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Returns the signature, public key, and correlationId (if provided).",
+            "description": "Returns the signature, public key.",
             "schema": {
               "$ref": "#/definitions/SignResponse"
             }
@@ -631,7 +631,7 @@ func init() {
             }
           },
           "401": {
-            "description": "Unauthorized - The request requires user authentication. Only if no correlationId is provided.",
+            "description": "Unauthorized - The request requires user authentication.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -904,11 +904,6 @@ func init() {
         }
       ]
     },
-    "CorrelationId": {
-      "description": "Correlation id of the operation batch",
-      "type": "string",
-      "format": "byte"
-    },
     "Error": {
       "description": "Error object.",
       "type": "object",
@@ -1029,16 +1024,9 @@ func init() {
         "chainId"
       ],
       "properties": {
-        "batch": {
-          "description": "A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.",
-          "type": "boolean"
-        },
         "chainId": {
           "description": "The chain id of the network to which the operation will be sent.",
           "type": "integer"
-        },
-        "correlationId": {
-          "$ref": "#/definitions/CorrelationId"
         },
         "description": {
           "description": "Description text of what is being signed (optional)",
@@ -1056,9 +1044,6 @@ func init() {
       "description": "Signature of a sent operation.",
       "type": "object",
       "properties": {
-        "correlationId": {
-          "$ref": "#/definitions/CorrelationId"
-        },
         "operation": {
           "description": "The modified operation (usr can change the fees).",
           "type": "string",
@@ -1757,7 +1742,7 @@ func init() {
     },
     "/api/accounts/{nickname}/sign": {
       "post": {
-        "description": "Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.",
+        "description": "Sign an operation or a message using the account associated with the provided nickname in the path.",
         "produces": [
           "application/json"
         ],
@@ -1791,7 +1776,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Returns the signature, public key, and correlationId (if provided).",
+            "description": "Returns the signature, public key.",
             "schema": {
               "$ref": "#/definitions/SignResponse"
             }
@@ -1803,7 +1788,7 @@ func init() {
             }
           },
           "401": {
-            "description": "Unauthorized - The request requires user authentication. Only if no correlationId is provided.",
+            "description": "Unauthorized - The request requires user authentication.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -2088,11 +2073,6 @@ func init() {
         }
       ]
     },
-    "CorrelationId": {
-      "description": "Correlation id of the operation batch",
-      "type": "string",
-      "format": "byte"
-    },
     "Error": {
       "description": "Error object.",
       "type": "object",
@@ -2213,16 +2193,9 @@ func init() {
         "chainId"
       ],
       "properties": {
-        "batch": {
-          "description": "A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.",
-          "type": "boolean"
-        },
         "chainId": {
           "description": "The chain id of the network to which the operation will be sent.",
           "type": "integer"
-        },
-        "correlationId": {
-          "$ref": "#/definitions/CorrelationId"
         },
         "description": {
           "description": "Description text of what is being signed (optional)",
@@ -2240,9 +2213,6 @@ func init() {
       "description": "Signature of a sent operation.",
       "type": "object",
       "properties": {
-        "correlationId": {
-          "$ref": "#/definitions/CorrelationId"
-        },
         "operation": {
           "description": "The modified operation (usr can change the fees).",
           "type": "string",

@@ -32,7 +32,7 @@ func NewSign(ctx *middleware.Context, handler SignHandler) *Sign {
 /*
 	Sign swagger:route POST /api/accounts/{nickname}/sign sign
 
-Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.
+Sign an operation or a message using the account associated with the provided nickname in the path.
 */
 type Sign struct {
 	Context *middleware.Context

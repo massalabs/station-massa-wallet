@@ -16,7 +16,7 @@ import (
 const SignOKCode int = 200
 
 /*
-SignOK Returns the signature, public key, and correlationId (if provided).
+SignOK Returns the signature, public key.
 
 swagger:response signOK
 */
@@ -106,7 +106,7 @@ func (o *SignBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.
 const SignUnauthorizedCode int = 401
 
 /*
-SignUnauthorized Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+SignUnauthorized Unauthorized - The request requires user authentication.
 
 swagger:response signUnauthorized
 */
