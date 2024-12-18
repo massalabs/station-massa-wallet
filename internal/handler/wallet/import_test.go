@@ -59,7 +59,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     filePath,
 			}
 			// forward test result to test goroutine
@@ -96,7 +96,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		go func(res chan walletapp.EventData) {
 			// Send invalid file to prompter app and wait for result
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     filePath,
 			}
 			failRes := <-resChan
@@ -141,7 +141,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		go func(res chan walletapp.EventData) {
 			// Send invalid filename to prompter app and wait for result
 			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     filePath,
 			}
 			failRes := <-resChan
@@ -202,7 +202,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 			go func(res chan walletapp.EventData) {
 				prompterApp.App().PromptInput <- &walletapp.ImportPKeyPromptInput{
-					BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+					BaseMessage: walletapp.BaseMessage{},
 					PrivateKey:  tt.privateKey,
 					Nickname:    tt.nickname,
 					Password:    tt.password,
