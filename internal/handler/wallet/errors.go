@@ -31,4 +31,5 @@ const (
 	errorDeleteAssetJSON
 	errorAssetNotFound
 	errorTradeRoll
+	internalError
 )

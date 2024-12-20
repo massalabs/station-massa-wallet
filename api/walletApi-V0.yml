@@ -42,6 +42,21 @@ paths:
           description: Resource not found.
           schema:
             $ref: "#/definitions/Error"
+  /api/config:
+    get:
+      operationId: GetConfig
+      description: Get wallet config
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Config retrieved.
+          schema:
+            $ref: "#/definitions/Config"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
   /api/accounts:
     get:
       operationId: AccountList
@@ -749,3 +764,39 @@ definitions:
             type: boolean
           dollarValue:
             type: string
+
+  SignRule:
+    type: object
+    description: Account Sign rule.
+    properties:
+      contract:
+        type: string
+      passwordPrompt:
+        type: boolean
+      autoSign:
+        type: boolean
+    required:
+      - contract
+      - passwordPrompt
+      - autoSign
+
+  AccountConfig:
+    type: object
+    description: Wallet Account Config.
+    properties:
+      signRules:
+        type: array
+        items:
+          $ref: "#/definitions/SignRule"
+    required:
+      - signRules
+
+  Config:
+    type: object
+    description: Wallet Config.
+    properties:
+      accounts:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/AccountConfig"
+    x-nullable: false
