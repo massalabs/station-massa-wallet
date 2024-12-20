@@ -37,6 +37,7 @@ func AppendEndpoints(api *operations.MassaWalletAPI, prompterApp prompt.WalletPr
 	api.AddAssetHandler = NewAddAsset(AssetsStore, massaClient)
 	api.GetAllAssetsHandler = NewGetAllAssets(prompterApp.App().Wallet, AssetsStore, massaClient)
 	api.DeleteAssetHandler = NewDeleteAsset(AssetsStore)
+	api.GetConfigHandler = NewGetConfig()
 }
 
 // loadAccount loads a wallet from the file system or returns an error.
