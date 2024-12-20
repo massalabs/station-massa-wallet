@@ -83,6 +83,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		GetAllAssetsHandler: GetAllAssetsHandlerFunc(func(params GetAllAssetsParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetAllAssets has not yet been implemented")
 		}),
+		GetConfigHandler: GetConfigHandlerFunc(func(params GetConfigParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetConfig has not yet been implemented")
+		}),
 		ImportAccountHandler: ImportAccountHandlerFunc(func(params ImportAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation ImportAccount has not yet been implemented")
 		}),
@@ -177,6 +180,8 @@ type MassaWalletAPI struct {
 	GetAccountHandler GetAccountHandler
 	// GetAllAssetsHandler sets the operation handler for the get all assets operation
 	GetAllAssetsHandler GetAllAssetsHandler
+	// GetConfigHandler sets the operation handler for the get config operation
+	GetConfigHandler GetConfigHandler
 	// ImportAccountHandler sets the operation handler for the import account operation
 	ImportAccountHandler ImportAccountHandler
 	// SignHandler sets the operation handler for the sign operation
@@ -311,6 +316,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.GetAllAssetsHandler == nil {
 		unregistered = append(unregistered, "GetAllAssetsHandler")
+	}
+	if o.GetConfigHandler == nil {
+		unregistered = append(unregistered, "GetConfigHandler")
 	}
 	if o.ImportAccountHandler == nil {
 		unregistered = append(unregistered, "ImportAccountHandler")
@@ -472,6 +480,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/api/accounts/{nickname}/assets"] = NewGetAllAssets(o.context, o.GetAllAssetsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/api/config"] = NewGetConfig(o.context, o.GetConfigHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

@@ -779,6 +779,29 @@ func init() {
         }
       }
     },
+    "/api/config": {
+      "get": {
+        "description": "Get wallet config",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetConfig",
+        "responses": {
+          "200": {
+            "description": "Config retrieved.",
+            "schema": {
+              "$ref": "#/definitions/Config"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/web-app/{resource}": {
       "get": {
         "description": "Route for the ReactJS front-end web application (in /web-frontend)",
@@ -851,6 +874,21 @@ func init() {
         }
       }
     },
+    "AccountConfig": {
+      "description": "Wallet Account Config.",
+      "type": "object",
+      "required": [
+        "signRules"
+      ],
+      "properties": {
+        "signRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SignRule"
+          }
+        }
+      }
+    },
     "Address": {
       "description": "Account's address.",
       "type": "string",
@@ -903,6 +941,19 @@ func init() {
           }
         }
       ]
+    },
+    "Config": {
+      "description": "Wallet Config.",
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AccountConfig"
+          }
+        }
+      },
+      "x-nullable": false
     },
     "Error": {
       "description": "Error object.",
@@ -1063,6 +1114,26 @@ func init() {
           "format": "byte",
           "x-nullable": false,
           "readOnly": true
+        }
+      }
+    },
+    "SignRule": {
+      "description": "Account Sign rule.",
+      "type": "object",
+      "required": [
+        "contract",
+        "passwordPrompt",
+        "autoSign"
+      ],
+      "properties": {
+        "autoSign": {
+          "type": "boolean"
+        },
+        "contract": {
+          "type": "string"
+        },
+        "passwordPrompt": {
+          "type": "boolean"
         }
       }
     },
@@ -1946,6 +2017,29 @@ func init() {
         }
       }
     },
+    "/api/config": {
+      "get": {
+        "description": "Get wallet config",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "GetConfig",
+        "responses": {
+          "200": {
+            "description": "Config retrieved.",
+            "schema": {
+              "$ref": "#/definitions/Config"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/web-app/{resource}": {
       "get": {
         "description": "Route for the ReactJS front-end web application (in /web-frontend)",
@@ -2018,6 +2112,21 @@ func init() {
         }
       }
     },
+    "AccountConfig": {
+      "description": "Wallet Account Config.",
+      "type": "object",
+      "required": [
+        "signRules"
+      ],
+      "properties": {
+        "signRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SignRule"
+          }
+        }
+      }
+    },
     "Address": {
       "description": "Account's address.",
       "type": "string",
@@ -2072,6 +2181,19 @@ func init() {
           }
         }
       ]
+    },
+    "Config": {
+      "description": "Wallet Config.",
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AccountConfig"
+          }
+        }
+      },
+      "x-nullable": false
     },
     "Error": {
       "description": "Error object.",
@@ -2232,6 +2354,26 @@ func init() {
           "format": "byte",
           "x-nullable": false,
           "readOnly": true
+        }
+      }
+    },
+    "SignRule": {
+      "description": "Account Sign rule.",
+      "type": "object",
+      "required": [
+        "contract",
+        "passwordPrompt",
+        "autoSign"
+      ],
+      "properties": {
+        "autoSign": {
+          "type": "boolean"
+        },
+        "contract": {
+          "type": "string"
+        },
+        "passwordPrompt": {
+          "type": "boolean"
         }
       }
     },
