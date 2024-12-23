@@ -97,6 +97,13 @@
   "settings": {
     "title-profile": "Account profile",
     "title-security": "Account security",
+    "title-global": "Global settings",
+    "title-auto-sign": "Auto sign",
+    "auto-sign": {
+      "description": "Auto sign allows you to sign multiple transactions to a specific address without having to enter your password each time.",
+      "address": "Address",
+      "actions": "Actions"
+    },
     "inputs": {
       "nickname": "Account name"
     },
