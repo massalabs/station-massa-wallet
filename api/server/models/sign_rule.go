@@ -25,6 +25,12 @@ type SignRule struct {
 	// enabled
 	Enabled *bool `json:"enabled,omitempty"`
 
+	// id
+	ID *string `json:"id,omitempty"`
+
+	// name
+	Name *string `json:"name,omitempty"`
+
 	// rule type
 	// Required: true
 	RuleType RuleType `json:"ruleType"`

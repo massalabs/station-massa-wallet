@@ -956,6 +956,12 @@ definitions:
     type: object
     description: Account Sign rule.
     properties:
+      id:
+        type: string
+        x-nullable: true
+      name:
+        type: string
+        x-nullable: true
       contract:
         type: string
         x-nullable: true

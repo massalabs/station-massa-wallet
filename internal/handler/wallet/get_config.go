@@ -35,6 +35,8 @@ func newConfigModel(cfg *config.Config) (*models.Config, error) {
 		modelSignRules := make([]*models.SignRule, len(accountConfig.SignRules))
 		for i, rule := range accountConfig.SignRules {
 			modelSignRules[i] = &models.SignRule{
+				ID:       &rule.ID,
+				Name:     &rule.Name,
 				Contract: &rule.Contract,
 				Enabled:  &rule.Enabled,
 				RuleType: (models.RuleType)(rule.RuleType),
