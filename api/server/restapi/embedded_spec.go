@@ -1347,6 +1347,14 @@ func init() {
           "type": "boolean",
           "default": true
         },
+        "id": {
+          "type": "string",
+          "x-nullable": true
+        },
+        "name": {
+          "type": "string",
+          "x-nullable": true
+        },
         "ruleType": {
           "$ref": "#/definitions/RuleType"
         }
@@ -2874,6 +2882,14 @@ func init() {
         "enabled": {
           "type": "boolean",
           "default": true
+        },
+        "id": {
+          "type": "string",
+          "x-nullable": true
+        },
+        "name": {
+          "type": "string",
+          "x-nullable": true
         },
         "ruleType": {
           "$ref": "#/definitions/RuleType"
