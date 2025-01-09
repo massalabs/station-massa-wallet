@@ -13,10 +13,11 @@ import (
 )
 
 type PromptRequest struct {
-	Action      walletapp.PromptRequestAction
-	Msg         string
-	Data        interface{}
-	CodeMessage string
+	Action           walletapp.PromptRequestAction
+	Msg              string
+	Data             interface{}
+	CodeMessage      string
+	PasswordRequired bool
 }
 
 // WalletPrompter is a struct that wraps a Wails GUI application and implements the WalletPrompterInterface interface.
@@ -79,10 +80,10 @@ func WakeUpPrompt(
 			var err error
 
 			switch req.Action {
-			case walletapp.Delete, walletapp.Unprotect:
+			case walletapp.Delete, walletapp.Unprotect, walletapp.AddSignRule, walletapp.UpdateSignRule, walletapp.DeleteSignRule:
 				output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)
 			case walletapp.Sign:
-				output, keepListening, err = handleSignPrompt(prompterApp, input, acc)
+				output, keepListening, err = handleSignPrompt(prompterApp, req, input, acc)
 			case walletapp.NewPassword:
 				output, keepListening, err = handleNewPasswordPrompt(prompterApp, input)
 			case walletapp.Import:
