@@ -23,14 +23,14 @@ func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 }
 
 func Test_walletDelete_Handle(t *testing.T) {
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	testResult := make(chan walletapp.EventData)
 
 	nickname := "walletToDelete"
 	password := "zePassword"
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := deleteWallet(t, api, "toto")
@@ -40,7 +40,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("invalid password", func(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     "invalid password",
 			}
@@ -50,7 +50,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
 		}()
 
 		resp := deleteWallet(t, api, nickname)
@@ -60,7 +60,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("canceled by user", func(t *testing.T) {
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     "this is not the password",
 			}
@@ -70,21 +70,21 @@ func Test_walletDelete_Handle(t *testing.T) {
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
 		}()
 
 		resp := deleteWallet(t, api, nickname)
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 
-		_, err = prompterApp.App().Wallet.GetAccount(nickname)
+		_, err = prompterAppMock.App().Wallet.GetAccount(nickname)
 		assert.NoError(t, err)
 	})
 
 	t.Run("delete success", func(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     password,
 			}
@@ -100,7 +100,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		checkResultChannel(t, result, true, "")
 
-		_, err = prompterApp.App().Wallet.GetAccount(nickname)
+		_, err = prompterAppMock.App().Wallet.GetAccount(nickname)
 
 		assert.Error(t, err, "Wallet should have been deleted")
 	})

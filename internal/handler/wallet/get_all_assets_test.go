@@ -15,12 +15,12 @@ import (
 )
 
 func TestGetAllAssetsHandler(t *testing.T) {
-	api, prompterApp, _, _, err := MockAPI()
+	api, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
 	password := "zePassword"
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	// Get the assetsWithBalance
 	assetsWithBalance := getAssets(t, api, nickname)
@@ -66,7 +66,7 @@ func getExpectedAssetsCount(t *testing.T) int {
 	tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
 	assert.NoError(t, err)
 	nodeFetcher := network.NewNodeFetcher()
-	store, err := assets.NewAssetsStore(tempDir, nodeFetcher)
+	store, err := assets.InitAssetsStore(tempDir, nodeFetcher)
 	assert.NoError(t, err)
 	defaultAssets, err := store.Default()
 	assert.NoError(t, err)

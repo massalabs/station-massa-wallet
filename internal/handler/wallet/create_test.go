@@ -14,7 +14,7 @@ import (
 )
 
 func Test_walletCreate_Handle(t *testing.T) {
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +41,9 @@ func Test_walletCreate_Handle(t *testing.T) {
 			go func(res chan walletapp.EventData) {
 				if test.password == "cancel" {
 					// Send cancel to prompter app to unlock the handler
-					prompterApp.App().CtrlChan <- walletapp.Cancel
+					prompterAppMock.App().CtrlChan <- walletapp.Cancel
 				} else {
-					prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+					prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 						BaseMessage: walletapp.BaseMessage{},
 						Message:     test.password,
 					}
@@ -60,7 +60,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 
 			checkResultChannel(t, result, true, "")
 
-			assertWallet(t, prompterApp.App().Wallet, nickname)
+			assertWallet(t, prompterAppMock.App().Wallet, nickname)
 		}
 	}
 }

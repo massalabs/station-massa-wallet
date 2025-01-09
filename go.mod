@@ -14,7 +14,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	github.com/wailsapp/wails/v2 v2.9.1
 	golang.org/x/crypto v0.23.0
 	gopkg.in/yaml.v2 v2.4.0
