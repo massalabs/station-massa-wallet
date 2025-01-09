@@ -175,7 +175,6 @@ func init() {
             "$ref": "#/parameters/nickname"
           },
           {
-            "x-nullable": false,
             "name": "body",
             "in": "body",
             "required": true,
@@ -718,6 +717,173 @@ func init() {
         }
       }
     },
+    "/api/accounts/{nickname}/signrules": {
+      "post": {
+        "description": "Create a new sign rule for the account associated with the provided nickname.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddSignRule",
+        "parameters": [
+          {
+            "$ref": "#/parameters/nickname"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddSignRule"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "signRule Id.",
+            "schema": {
+              "$ref": "#/definitions/AddSignRuleResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/{nickname}/signrules/{ruleId}": {
+      "put": {
+        "description": "Update an existing sign rule for the account associated with the provided nickname by its ID.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "UpdateSignRule",
+        "parameters": [
+          {
+            "$ref": "#/parameters/nickname"
+          },
+          {
+            "$ref": "#/parameters/ruleId"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateSignRule"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sign rule updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/UpdateSignRuleResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account or Rule Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a sign rule for the account associated with the provided nickname by its ID.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "DeleteSignRule",
+        "parameters": [
+          {
+            "$ref": "#/parameters/nickname"
+          },
+          {
+            "$ref": "#/parameters/ruleId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sign rule deleted successfully."
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account or Rule Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{nickname}/transfer": {
       "post": {
         "description": "Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.",
@@ -889,6 +1055,46 @@ func init() {
         }
       }
     },
+    "AddSignRule": {
+      "type": "object",
+      "required": [
+        "ruleType",
+        "contract",
+        "enabled"
+      ],
+      "properties": {
+        "contract": {
+          "description": "The contract to which the rule applies.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description text of what is being done (optional)",
+          "type": "string",
+          "maxLength": 280
+        },
+        "enabled": {
+          "description": "Whether the rule is enabled or not.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name of the rule.",
+          "type": "string"
+        },
+        "ruleType": {
+          "$ref": "#/definitions/RuleType"
+        }
+      }
+    },
+    "AddSignRuleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-nullable": false,
+          "readOnly": true
+        }
+      }
+    },
     "Address": {
       "description": "Account's address.",
       "type": "string",
@@ -1049,6 +1255,15 @@ func init() {
         }
       }
     },
+    "RuleType": {
+      "description": "An enumeration of the different types of rules.",
+      "type": "string",
+      "enum": [
+        "disable_password_prompt",
+        "auto_sign"
+      ],
+      "x-nullable": false
+    },
     "SignMessageRequest": {
       "type": "object",
       "properties": {
@@ -1121,19 +1336,23 @@ func init() {
       "description": "Account Sign rule.",
       "type": "object",
       "required": [
-        "contract",
-        "passwordPrompt",
-        "autoSign"
+        "ruleType"
       ],
       "properties": {
-        "autoSign": {
-          "type": "boolean"
-        },
         "contract": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
-        "passwordPrompt": {
-          "type": "boolean"
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "ruleType": {
+          "type": "string",
+          "enum": [
+            "password_prompt",
+            "auto_sign"
+          ]
         }
       }
     },
@@ -1179,6 +1398,46 @@ func init() {
           "$ref": "#/definitions/Nickname"
         }
       }
+    },
+    "UpdateSignRule": {
+      "type": "object",
+      "required": [
+        "ruleType",
+        "contract",
+        "enabled"
+      ],
+      "properties": {
+        "contract": {
+          "description": "The contract to which the rule applies. Use wildcard (*) to apply the rule for contracts.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description text of what is being updated (optional)",
+          "type": "string",
+          "maxLength": 280
+        },
+        "enabled": {
+          "description": "Whether the rule is enabled or not.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name of the rule.",
+          "type": "string"
+        },
+        "ruleType": {
+          "$ref": "#/definitions/RuleType"
+        }
+      }
+    },
+    "UpdateSignRuleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-nullable": false,
+          "readOnly": true
+        }
+      }
     }
   },
   "parameters": {
@@ -1195,6 +1454,14 @@ func init() {
       "x-nullable": false,
       "description": "Account's short name.",
       "name": "nickname",
+      "in": "path",
+      "required": true
+    },
+    "ruleId": {
+      "type": "string",
+      "x-nullable": false,
+      "description": "The ID of the sign rule",
+      "name": "ruleId",
       "in": "path",
       "required": true
     }
@@ -1373,7 +1640,6 @@ func init() {
             "required": true
           },
           {
-            "x-nullable": false,
             "name": "body",
             "in": "body",
             "required": true,
@@ -1951,6 +2217,198 @@ func init() {
         }
       }
     },
+    "/api/accounts/{nickname}/signrules": {
+      "post": {
+        "description": "Create a new sign rule for the account associated with the provided nickname.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "AddSignRule",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Account's short name.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddSignRule"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "signRule Id.",
+            "schema": {
+              "$ref": "#/definitions/AddSignRuleResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/api/accounts/{nickname}/signrules/{ruleId}": {
+      "put": {
+        "description": "Update an existing sign rule for the account associated with the provided nickname by its ID.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "UpdateSignRule",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Account's short name.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "The ID of the sign rule",
+            "name": "ruleId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateSignRule"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sign rule updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/UpdateSignRuleResponse"
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account or Rule Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a sign rule for the account associated with the provided nickname by its ID.",
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "DeleteSignRule",
+        "parameters": [
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "Account's short name.",
+            "name": "nickname",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "x-nullable": false,
+            "description": "The ID of the sign rule",
+            "name": "ruleId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sign rule deleted successfully."
+          },
+          "400": {
+            "description": "Bad request.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized - The request requires user authentication.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Account or Rule Not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/api/accounts/{nickname}/transfer": {
       "post": {
         "description": "Transfer coins from the account associated with the provided nickname in the path. Will ask the user to enter its account password.",
@@ -2127,6 +2585,46 @@ func init() {
         }
       }
     },
+    "AddSignRule": {
+      "type": "object",
+      "required": [
+        "ruleType",
+        "contract",
+        "enabled"
+      ],
+      "properties": {
+        "contract": {
+          "description": "The contract to which the rule applies.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description text of what is being done (optional)",
+          "type": "string",
+          "maxLength": 280
+        },
+        "enabled": {
+          "description": "Whether the rule is enabled or not.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name of the rule.",
+          "type": "string"
+        },
+        "ruleType": {
+          "$ref": "#/definitions/RuleType"
+        }
+      }
+    },
+    "AddSignRuleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-nullable": false,
+          "readOnly": true
+        }
+      }
+    },
     "Address": {
       "description": "Account's address.",
       "type": "string",
@@ -2289,6 +2787,15 @@ func init() {
         }
       }
     },
+    "RuleType": {
+      "description": "An enumeration of the different types of rules.",
+      "type": "string",
+      "enum": [
+        "disable_password_prompt",
+        "auto_sign"
+      ],
+      "x-nullable": false
+    },
     "SignMessageRequest": {
       "type": "object",
       "properties": {
@@ -2361,19 +2868,23 @@ func init() {
       "description": "Account Sign rule.",
       "type": "object",
       "required": [
-        "contract",
-        "passwordPrompt",
-        "autoSign"
+        "ruleType"
       ],
       "properties": {
-        "autoSign": {
-          "type": "boolean"
-        },
         "contract": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
-        "passwordPrompt": {
-          "type": "boolean"
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "ruleType": {
+          "type": "string",
+          "enum": [
+            "password_prompt",
+            "auto_sign"
+          ]
         }
       }
     },
@@ -2419,6 +2930,46 @@ func init() {
           "$ref": "#/definitions/Nickname"
         }
       }
+    },
+    "UpdateSignRule": {
+      "type": "object",
+      "required": [
+        "ruleType",
+        "contract",
+        "enabled"
+      ],
+      "properties": {
+        "contract": {
+          "description": "The contract to which the rule applies. Use wildcard (*) to apply the rule for contracts.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description text of what is being updated (optional)",
+          "type": "string",
+          "maxLength": 280
+        },
+        "enabled": {
+          "description": "Whether the rule is enabled or not.",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The name of the rule.",
+          "type": "string"
+        },
+        "ruleType": {
+          "$ref": "#/definitions/RuleType"
+        }
+      }
+    },
+    "UpdateSignRuleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-nullable": false,
+          "readOnly": true
+        }
+      }
     }
   },
   "parameters": {
@@ -2435,6 +2986,14 @@ func init() {
       "x-nullable": false,
       "description": "Account's short name.",
       "name": "nickname",
+      "in": "path",
+      "required": true
+    },
+    "ruleId": {
+      "type": "string",
+      "x-nullable": false,
+      "description": "The ID of the sign rule",
+      "name": "ruleId",
       "in": "path",
       "required": true
     }

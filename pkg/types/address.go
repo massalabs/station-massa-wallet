@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/massalabs/station-massa-wallet/pkg/types/object"
 	"lukechampine.com/blake3"
 )
@@ -54,6 +56,16 @@ func (a *Address) MarshalText() ([]byte, error) {
 	}
 
 	return a.Object.MarshalText()
+}
+
+// String returns the Address as a string by marshaling it to text.
+func (a *Address) String() (string, error) {
+	data, err := a.MarshalText()
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal address: %w", err)
+	}
+
+	return string(data), nil
 }
 
 // UnmarshalText overloads the TextUnmarshaler interface for Address.

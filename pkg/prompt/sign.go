@@ -5,13 +5,38 @@ import (
 	"strconv"
 
 	"github.com/awnumar/memguard"
+	"github.com/massalabs/station-massa-wallet/api/server/models"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 )
 
+type PromptRequestSignData struct {
+	Description       string
+	Fees              string
+	MinFees           string
+	OperationType     int
+	Coins             string
+	Address           string
+	Function          string
+	MaxCoins          string
+	WalletAddress     string
+	Nickname          string
+	RollCount         uint64
+	RecipientAddress  string
+	RecipientNickname string
+	Amount            string
+	PlainText         string
+	AllowFeeEdition   bool
+	ChainID           int64
+	Assets            []models.AssetInfo
+	Parameters        []byte
+	EnabledSignRule   *config.RuleType
+}
+
 // handleSignPrompt returns the password as a LockedBuffer, or an error if the input is not a string.
-func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, acc *account.Account) (*walletapp.SignPromptOutput, bool, error) {
+func handleSignPrompt(prompterApp WalletPrompterInterface, req PromptRequest, input interface{}, acc *account.Account) (*walletapp.SignPromptOutput, bool, error) {
 	inputObject, ok := input.(*walletapp.SignPromptInput)
 	if !ok {
 		return nil, true, InputTypeError(prompterApp)
@@ -23,6 +48,15 @@ func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, ac
 			walletapp.EventData{Success: false, CodeMessage: utils.InvalidFees})
 
 		return nil, true, fmt.Errorf("failed to parse fees: %w", err)
+	}
+
+	data, ok := req.Data.(PromptRequestSignData)
+
+	if ok && data.EnabledSignRule != nil && !req.PasswordRequired {
+		// if sign rule is enabled, we don't need to check password
+		return &walletapp.SignPromptOutput{
+			Fees: fees,
+		}, false, nil
 	}
 
 	inputString := inputObject.Password
@@ -42,8 +76,10 @@ func handleSignPrompt(prompterApp WalletPrompterInterface, input interface{}, ac
 	}
 
 	output := &walletapp.SignPromptOutput{
-		Password: passwordReturned,
-		Fees:     fees,
+		PasswordPromptOutput: walletapp.PasswordPromptOutput{
+			Password: passwordReturned,
+		},
+		Fees: fees,
 	}
 
 	return output, false, nil

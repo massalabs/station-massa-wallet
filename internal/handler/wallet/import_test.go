@@ -27,7 +27,7 @@ func importWallet(t *testing.T, api *operations.MassaWalletAPI) *httptest.Respon
 }
 
 func Test_walletImport_Handle(t *testing.T) {
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	t.Run("import wallet file", func(t *testing.T) {
@@ -58,7 +58,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     filePath,
 			}
@@ -74,7 +74,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 
 		checkResultChannel(t, result, true, "")
 
-		assertWallet(t, prompterApp.App().Wallet, nickname)
+		assertWallet(t, prompterAppMock.App().Wallet, nickname)
 
 		os.Remove(filePath)
 	})
@@ -95,7 +95,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			// Send invalid file to prompter app and wait for result
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     filePath,
 			}
@@ -140,7 +140,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 		// Send filepath to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
 			// Send invalid filename to prompter app and wait for result
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     filePath,
 			}
@@ -201,7 +201,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			testResult := make(chan walletapp.EventData)
 
 			go func(res chan walletapp.EventData) {
-				prompterApp.App().PromptInput <- &walletapp.ImportPKeyPromptInput{
+				prompterAppMock.App().PromptInput <- &walletapp.ImportPKeyPromptInput{
 					BaseMessage: walletapp.BaseMessage{},
 					PrivateKey:  tt.privateKey,
 					Nickname:    tt.nickname,
@@ -217,7 +217,7 @@ PublicKey: [0, 164, 243, 44, 155, 204, 6, 20, 131, 218, 97, 32, 58, 224, 189, 41
 			checkResultChannel(t, result, tt.wantResult.Success, tt.wantResult.CodeMessage)
 
 			if tt.wantResult.Success {
-				assertWallet(t, prompterApp.App().Wallet, tt.nickname)
+				assertWallet(t, prompterAppMock.App().Wallet, tt.nickname)
 			}
 		})
 	}

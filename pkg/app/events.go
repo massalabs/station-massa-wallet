@@ -32,6 +32,9 @@ const (
 	Backup
 	TradeRolls
 	Unprotect
+	AddSignRule
+	DeleteSignRule
+	UpdateSignRule
 )
 
 // User input interfaces for the channel
@@ -63,7 +66,11 @@ type ImportPKeyPromptInput struct {
 
 // Output interface for the caller of the prompt
 
-type SignPromptOutput struct {
+type PasswordPromptOutput struct {
 	Password *memguard.LockedBuffer
-	Fees     uint64
+}
+
+type SignPromptOutput struct {
+	PasswordPromptOutput
+	Fees uint64
 }
