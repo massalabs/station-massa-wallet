@@ -6,10 +6,12 @@ import (
 	"strconv"
 
 	"github.com/awnumar/memguard"
+	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -18,13 +20,14 @@ import (
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
 
-func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
-	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient}
+func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface, gc gcache.Cache) operations.TransferCoinHandler {
+	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient, gc: gc}
 }
 
 type transferCoin struct {
 	prompterApp prompt.WalletPrompterInterface
 	massaClient network.NodeFetcherInterface
+	gc          gcache.Cache
 }
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
@@ -68,7 +71,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Data: PromptRequestSignData{
+		Data: prompt.PromptRequestSignData{
 			Fees:              strconv.FormatUint(fee, 10),
 			MinFees:           minimalFees,
 			WalletAddress:     address,
@@ -106,6 +109,15 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true})
+
+	cfg := config.Get()
+
+	if cfg.HasEnabledRule(acc.Nickname) {
+		err = CachePrivateKey(t.gc, acc, output.Password)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
+		}
+	}
 
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{

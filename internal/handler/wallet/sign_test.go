@@ -1,20 +1,25 @@
 package wallet
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 
+	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
-	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
 	"github.com/stretchr/testify/assert"
 )
 
-const callSCString = "AKT4CASAzuTNAqCNBgEAXBwUw39NBQYix8Ovph0TUiJuDDEnlFYUPgsbeMbrA4cLZm9yd2FyZEJ1cm7FAQDgfY7fLW7qpwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAAAAweGZDRERBRTI1MTAwNjIxYTViQzg4MTlkQzlEMzg0MjUzNEQ3QmY0NzYAAAAANQAAAEFTMTJUUm9TY01kd0xLOFlwdDZOQkFwcHl6Q0Z3N1FlRzVlM3hGdnhwQ0FuQW5ZTGZ1TVVUKgAAADB4NTM4NDRGOTU3N0MyMzM0ZTU0MUFlYzdEZjcxNzRFQ2U1ZEYxZkNmMKc2qgAAAAAA"
+const (
+	callSCString = "AKT4CASAzuTNAqCNBgEAXBwUw39NBQYix8Ovph0TUiJuDDEnlFYUPgsbeMbrA4cLZm9yd2FyZEJ1cm7FAQDgfY7fLW7qpwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAAAAweGZDRERBRTI1MTAwNjIxYTViQzg4MTlkQzlEMzg0MjUzNEQ3QmY0NzYAAAAANQAAAEFTMTJUUm9TY01kd0xLOFlwdDZOQkFwcHl6Q0Z3N1FlRzVlM3hGdnhwQ0FuQW5ZTGZ1TVVUKgAAADB4NTM4NDRGOTU3N0MyMzM0ZTU0MUFlYzdEZjcxNzRFQ2U1ZEYxZkNmMKc2qgAAAAAA"
+	contract     = "AS1hZpUH6TPiRxHtTKqAfXDmZ7Afa7UfS4rtYN7NxVwAaSAphCET"
+)
 
 func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
@@ -36,27 +41,23 @@ func signMessage(t *testing.T, api *operations.MassaWalletAPI, nickname string, 
 	return resp
 }
 
-func TestPrepareOperation(t *testing.T) {
-	acc := account.NewAccount(t)
-	fees := uint64(1000)
-	operationB64 := "AKT4CASAzuTNAqCNBgEAXBwUw39NBQYix8Ovph0TUiJuDDEnlFYUPgsbeMbrA4cLZm9yd2FyZEJ1cm7FAQDgfY7fLW7qpwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoAAAAweGZDRERBRTI1MTAwNjIxYTViQzg4MTlkQzlEMzg0MjUzNEQ3QmY0NzYAAAAANQAAAEFTMTJUUm9TY01kd0xLOFlwdDZOQkFwcHl6Q0Z3N1FlRzVlM3hGdnhwQ0FuQW5ZTGZ1TVVUKgAAADB4NTM4NDRGOTU3N0MyMzM0ZTU0MUFlYzdEZjcxNzRFQ2U1ZEYxZkNmMKc2qgAAAAAA"
-
-	operation, msgToSign, err := prepareOperation(acc, fees, operationB64, ChainIDUnitTests)
+func verifySignResponse(t *testing.T, resp *httptest.ResponseRecorder) {
+	var signResponse models.SignResponse
+	err := json.Unmarshal(resp.Body.Bytes(), &signResponse)
 	assert.NoError(t, err)
-	expected := []byte{0xe8, 0x7, 0xa4, 0xf8, 0x8, 0x4, 0x80, 0xce, 0xe4, 0xcd, 0x2, 0xa0, 0x8d, 0x6, 0x1, 0x0, 0x5c, 0x1c, 0x14, 0xc3, 0x7f, 0x4d, 0x5, 0x6, 0x22, 0xc7, 0xc3, 0xaf, 0xa6, 0x1d, 0x13, 0x52, 0x22, 0x6e, 0xc, 0x31, 0x27, 0x94, 0x56, 0x14, 0x3e, 0xb, 0x1b, 0x78, 0xc6, 0xeb, 0x3, 0x87, 0xb, 0x66, 0x6f, 0x72, 0x77, 0x61, 0x72, 0x64, 0x42, 0x75, 0x72, 0x6e, 0xc5, 0x1, 0x0, 0xe0, 0x7d, 0x8e, 0xdf, 0x2d, 0x6e, 0xea, 0xa7, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2a, 0x0, 0x0, 0x0, 0x30, 0x78, 0x66, 0x43, 0x44, 0x44, 0x41, 0x45, 0x32, 0x35, 0x31, 0x30, 0x30, 0x36, 0x32, 0x31, 0x61, 0x35, 0x62, 0x43, 0x38, 0x38, 0x31, 0x39, 0x64, 0x43, 0x39, 0x44, 0x33, 0x38, 0x34, 0x32, 0x35, 0x33, 0x34, 0x44, 0x37, 0x42, 0x66, 0x34, 0x37, 0x36, 0x0, 0x0, 0x0, 0x0, 0x35, 0x0, 0x0, 0x0, 0x41, 0x53, 0x31, 0x32, 0x54, 0x52, 0x6f, 0x53, 0x63, 0x4d, 0x64, 0x77, 0x4c, 0x4b, 0x38, 0x59, 0x70, 0x74, 0x36, 0x4e, 0x42, 0x41, 0x70, 0x70, 0x79, 0x7a, 0x43, 0x46, 0x77, 0x37, 0x51, 0x65, 0x47, 0x35, 0x65, 0x33, 0x78, 0x46, 0x76, 0x78, 0x70, 0x43, 0x41, 0x6e, 0x41, 0x6e, 0x59, 0x4c, 0x66, 0x75, 0x4d, 0x55, 0x54, 0x2a, 0x0, 0x0, 0x0, 0x30, 0x78, 0x35, 0x33, 0x38, 0x34, 0x34, 0x46, 0x39, 0x35, 0x37, 0x37, 0x43, 0x32, 0x33, 0x33, 0x34, 0x65, 0x35, 0x34, 0x31, 0x41, 0x65, 0x63, 0x37, 0x44, 0x66, 0x37, 0x31, 0x37, 0x34, 0x45, 0x43, 0x65, 0x35, 0x64, 0x46, 0x31, 0x66, 0x43, 0x66, 0x30, 0xa7, 0x36, 0xaa, 0x0, 0x0, 0x0, 0x0, 0x0}
-	assert.Equal(t, expected, operation)
-	expectedMsg := []byte{0x0, 0x0, 0x0, 0x0, 0x4, 0xa0, 0xf8, 0xfe, 0x0, 0x2d, 0x96, 0xbc, 0xda, 0xcb, 0xbe, 0x41, 0x38, 0x2c, 0xa2, 0x3e, 0x52, 0xe3, 0xd2, 0x19, 0x6c, 0xba, 0x65, 0xe7, 0xa1, 0xac, 0xd2, 0x9, 0xdf, 0xc9, 0x5c, 0x6b, 0x32, 0xb6, 0xa1, 0x8a, 0x93, 0xe8, 0x7, 0xa4, 0xf8, 0x8, 0x4, 0x80, 0xce, 0xe4, 0xcd, 0x2, 0xa0, 0x8d, 0x6, 0x1, 0x0, 0x5c, 0x1c, 0x14, 0xc3, 0x7f, 0x4d, 0x5, 0x6, 0x22, 0xc7, 0xc3, 0xaf, 0xa6, 0x1d, 0x13, 0x52, 0x22, 0x6e, 0xc, 0x31, 0x27, 0x94, 0x56, 0x14, 0x3e, 0xb, 0x1b, 0x78, 0xc6, 0xeb, 0x3, 0x87, 0xb, 0x66, 0x6f, 0x72, 0x77, 0x61, 0x72, 0x64, 0x42, 0x75, 0x72, 0x6e, 0xc5, 0x1, 0x0, 0xe0, 0x7d, 0x8e, 0xdf, 0x2d, 0x6e, 0xea, 0xa7, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2a, 0x0, 0x0, 0x0, 0x30, 0x78, 0x66, 0x43, 0x44, 0x44, 0x41, 0x45, 0x32, 0x35, 0x31, 0x30, 0x30, 0x36, 0x32, 0x31, 0x61, 0x35, 0x62, 0x43, 0x38, 0x38, 0x31, 0x39, 0x64, 0x43, 0x39, 0x44, 0x33, 0x38, 0x34, 0x32, 0x35, 0x33, 0x34, 0x44, 0x37, 0x42, 0x66, 0x34, 0x37, 0x36, 0x0, 0x0, 0x0, 0x0, 0x35, 0x0, 0x0, 0x0, 0x41, 0x53, 0x31, 0x32, 0x54, 0x52, 0x6f, 0x53, 0x63, 0x4d, 0x64, 0x77, 0x4c, 0x4b, 0x38, 0x59, 0x70, 0x74, 0x36, 0x4e, 0x42, 0x41, 0x70, 0x70, 0x79, 0x7a, 0x43, 0x46, 0x77, 0x37, 0x51, 0x65, 0x47, 0x35, 0x65, 0x33, 0x78, 0x46, 0x76, 0x78, 0x70, 0x43, 0x41, 0x6e, 0x41, 0x6e, 0x59, 0x4c, 0x66, 0x75, 0x4d, 0x55, 0x54, 0x2a, 0x0, 0x0, 0x0, 0x30, 0x78, 0x35, 0x33, 0x38, 0x34, 0x34, 0x46, 0x39, 0x35, 0x37, 0x37, 0x43, 0x32, 0x33, 0x33, 0x34, 0x65, 0x35, 0x34, 0x31, 0x41, 0x65, 0x63, 0x37, 0x44, 0x66, 0x37, 0x31, 0x37, 0x34, 0x45, 0x43, 0x65, 0x35, 0x64, 0x46, 0x31, 0x66, 0x43, 0x66, 0x30, 0xa7, 0x36, 0xaa, 0x0, 0x0, 0x0, 0x0, 0x0}
-	assert.Equal(t, expectedMsg, msgToSign)
+	assert.NotEmpty(t, signResponse.Signature)
+	assert.NotEmpty(t, signResponse.Operation)
+	assert.NotEmpty(t, signResponse.PublicKey)
 }
 
 func Test_walletSign_Handle(t *testing.T) {
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	transactionData := fmt.Sprintf(`{"chainId": `+strconv.FormatUint(ChainIDUnitTests, 10)+`, "operation":"%s"}`, callSCString)
 	nickname := "walletToDelete"
 	password := "zePassword"
-	createAccount(password, nickname, t, prompterApp)
+	account := createAccount(password, nickname, t, prompterAppMock)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := signTransaction(t, api, "Johnny", transactionData)
@@ -68,7 +69,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "14400",
@@ -83,6 +84,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		result := <-testResult
 
 		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
 	})
 
 	t.Run("sign a plain text message", func(t *testing.T) {
@@ -90,7 +92,7 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
@@ -108,6 +110,12 @@ func Test_walletSign_Handle(t *testing.T) {
 		result := <-testResult
 
 		checkResultChannel(t, result, true, "")
+
+		var signResponse models.SignResponse
+		err := json.Unmarshal(resp.Body.Bytes(), &signResponse)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, signResponse.Signature)
+		assert.NotEmpty(t, signResponse.PublicKey)
 	})
 
 	// The handler will not return until a the good password is sent or the action is canceled
@@ -117,7 +125,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		//nolint:staticcheck
 		go func(res chan walletapp.EventData) {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    "this is not the password",
 				Fees:        "1000",
@@ -128,7 +136,7 @@ func Test_walletSign_Handle(t *testing.T) {
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send password to prompter app to unlock the handler
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
@@ -144,13 +152,14 @@ func Test_walletSign_Handle(t *testing.T) {
 		result := <-testResult
 
 		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
 	})
 
 	t.Run("invalid password try, then action canceled by user", func(t *testing.T) {
 		//nolint:staticcheck
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    "this is not the password",
 				Fees:        "1000",
@@ -161,10 +170,319 @@ func Test_walletSign_Handle(t *testing.T) {
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
 		}()
 
 		resp := signTransaction(t, api, nickname, transactionData)
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
+	})
+
+	t.Run("Auto Sign", func(t *testing.T) {
+		cfg := config.Get()
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test",
+			Contract: contract,
+			RuleType: config.RuleTypeAutoSign,
+			Enabled:  true,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		// check that privateKey is cached
+		pkey, err := privateKeyFromCache(testCache, account)
+		assert.NoError(t, err)
+		assert.NotNil(t, pkey)
+
+		// sign again, should not prompt for password
+		resp = signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Auto Sign with enabled rule", func(t *testing.T) {
+		// Clean cache
+		testCache.Purge()
+
+		cfg := config.Get()
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test",
+			Contract: "AnotherContract",
+			RuleType: config.RuleTypeAutoSign,
+			Enabled:  true,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		// check that privateKey is cached
+		pkey, err := privateKeyFromCache(testCache, account)
+		assert.NoError(t, err)
+		assert.NotNil(t, pkey)
+
+		// sign again, should prompt for password
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp = signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result = <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Disable Password Prompt for contract", func(t *testing.T) {
+		// Clean cache
+		testCache.Purge()
+
+		cfg := config.Get()
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test",
+			Contract: contract,
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		fmt.Println(">>>>Sign transaction password needed")
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		// check that privateKey is cached
+		pkey, err := privateKeyFromCache(testCache, account)
+		assert.NoError(t, err)
+		assert.NotNil(t, pkey)
+
+		// sign again, should prompt for user confirmation, no password needed
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Fees:        "12345",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		fmt.Println(">>>>Sign transaction password NOT needed")
+
+		resp = signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result = <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Disable Password Prompt enabled for another contract", func(t *testing.T) {
+		// Clean cache
+		testCache.Purge()
+
+		cfg := config.Get()
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test",
+			Contract: "DummyContract",
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		// check that privateKey is cached
+		pkey, err := privateKeyFromCache(testCache, account)
+		assert.NoError(t, err)
+		assert.NotNil(t, pkey)
+
+		// sign again, should prompt for user confirmation, password is needed
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp = signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result = <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Disable Password Prompt enabled for all contract.", func(t *testing.T) {
+		// Clean cache
+		testCache.Purge()
+
+		cfg := config.Get()
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test",
+			Contract: "*",
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		// check that privateKey is cached
+		pkey, err := privateKeyFromCache(testCache, account)
+		assert.NoError(t, err)
+		assert.NotNil(t, pkey)
+
+		// sign again, should prompt for user confirmation, password is not needed
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		resp = signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result = <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
 	})
 }

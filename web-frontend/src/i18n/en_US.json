@@ -44,7 +44,7 @@
       "placeholder": "Token Address",
       "import-button": "Import token",
       "import-title": "Import a Fungible Token",
-      "import-subtitle": "Input the FT1 token’s address",
+      "import-subtitle": "Input the MRC20 token’s address",
       "success": "Token successfully added",
       "success-screen": {
         "success-message": "{name} ({symbol}) token is added to your wallet.",
