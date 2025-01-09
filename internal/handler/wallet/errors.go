@@ -32,4 +32,9 @@ const (
 	errorAssetNotFound
 	errorTradeRoll
 	internalError
+	errorAddSignRule
+	errorDeleteSignRule
+	errorUpdateSignRule
+	errorCachePrivateKey
+	errorGetAccountConfig
 )

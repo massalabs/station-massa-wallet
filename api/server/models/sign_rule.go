@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -19,32 +20,23 @@ import (
 // swagger:model SignRule
 type SignRule struct {
 
-	// auto sign
-	// Required: true
-	AutoSign *bool `json:"autoSign"`
-
 	// contract
-	// Required: true
-	Contract *string `json:"contract"`
+	Contract *string `json:"contract,omitempty"`
 
-	// password prompt
+	// enabled
+	Enabled *bool `json:"enabled,omitempty"`
+
+	// rule type
 	// Required: true
-	PasswordPrompt *bool `json:"passwordPrompt"`
+	// Enum: ["password_prompt","auto_sign"]
+	RuleType *string `json:"ruleType"`
 }
 
 // Validate validates this sign rule
 func (m *SignRule) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateAutoSign(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateContract(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePasswordPrompt(formats); err != nil {
+	if err := m.validateRuleType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -54,27 +46,43 @@ func (m *SignRule) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *SignRule) validateAutoSign(formats strfmt.Registry) error {
+var signRuleTypeRuleTypePropEnum []interface{}
 
-	if err := validate.Required("autoSign", "body", m.AutoSign); err != nil {
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["password_prompt","auto_sign"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		signRuleTypeRuleTypePropEnum = append(signRuleTypeRuleTypePropEnum, v)
+	}
+}
+
+const (
+
+	// SignRuleRuleTypePasswordPrompt captures enum value "password_prompt"
+	SignRuleRuleTypePasswordPrompt string = "password_prompt"
+
+	// SignRuleRuleTypeAutoSign captures enum value "auto_sign"
+	SignRuleRuleTypeAutoSign string = "auto_sign"
+)
+
+// prop value enum
+func (m *SignRule) validateRuleTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, signRuleTypeRuleTypePropEnum, true); err != nil {
 		return err
 	}
-
 	return nil
 }
 
-func (m *SignRule) validateContract(formats strfmt.Registry) error {
+func (m *SignRule) validateRuleType(formats strfmt.Registry) error {
 
-	if err := validate.Required("contract", "body", m.Contract); err != nil {
+	if err := validate.Required("ruleType", "body", m.RuleType); err != nil {
 		return err
 	}
 
-	return nil
-}
-
-func (m *SignRule) validatePasswordPrompt(formats strfmt.Registry) error {
-
-	if err := validate.Required("passwordPrompt", "body", m.PasswordPrompt); err != nil {
+	// value enum
+	if err := m.validateRuleTypeEnum("ruleType", "body", *m.RuleType); err != nil {
 		return err
 	}
 

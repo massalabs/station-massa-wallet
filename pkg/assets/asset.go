@@ -55,10 +55,12 @@ type assetData struct {
 	ChainID         int64  `json:"chainID"`
 }
 
+var Store *AssetsStore
+
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
 // If assetsJSONDir is empty, it will use the default wallet path.
-func NewAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
-	store := &AssetsStore{
+func InitAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
+	Store = &AssetsStore{
 		Assets:      make(map[string]Assets),
 		massaClient: massaClient,
 	}
@@ -68,21 +70,21 @@ func NewAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*As
 		if err != nil {
 			return nil, errors.Wrap(err, "Failed to get AssetsStore JSON file")
 		}
-		store.assetsJSONDir = assetsJSONDir
+		Store.assetsJSONDir = assetsJSONDir
 	} else {
-		store.assetsJSONDir = assetsJSONDir
+		Store.assetsJSONDir = assetsJSONDir
 	}
 
-	if err := store.loadAccountsStore(); err != nil {
+	if err := Store.loadAccountsStore(); err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
-	err := store.InitDefault()
+	err := Store.InitDefault()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create AssetsStore")
 	}
 
-	return store, nil
+	return Store, nil
 }
 
 // loadAccountsStore loads the data from the assets JSON file into the AssetsStore.
