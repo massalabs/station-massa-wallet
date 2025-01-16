@@ -15,7 +15,10 @@ export function ExecuteSC(props: SignBodyProps) {
     Nickname,
     Description: description,
     children,
+    DeployedByteCodeSize,
   } = props;
+
+  const isDeploySC = DeployedByteCodeSize > 0;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -27,19 +30,32 @@ export function ExecuteSC(props: SignBodyProps) {
         <p>{Intl.t('password-prompt.sign.operation-type')}</p>
         <div className="flex items-center">
           <p>
-            {Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}
+            {isDeploySC
+              ? Intl.t('password-prompt.sign.deploy-sc-pseudo-operation-type')
+              : Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}
           </p>
           <Tooltip
             customClass="mas-caption !w-7/12 left-0  !ml-28"
             body={
-              <>
-                {Intl.t('password-prompt.sign.execute-sc-tooltip.1')}
-                <br />
-                {Intl.t('password-prompt.sign.execute-sc-tooltip.2')}
-                <br />
-                <br />
-                {Intl.t('password-prompt.sign.execute-sc-tooltip.3')}
-              </>
+              isDeploySC ? (
+                <>
+                  {Intl.t('password-prompt.sign.deploy-sc-tooltip.1')}
+                  <br />
+                  <br />
+                  {Intl.t('password-prompt.sign.deploy-sc-tooltip.2')}
+                  <br />
+                  {Intl.t('password-prompt.sign.deploy-sc-tooltip.3')}
+                </>
+              ) : (
+                <>
+                  {Intl.t('password-prompt.sign.execute-sc-tooltip.1')}
+                  <br />
+                  {Intl.t('password-prompt.sign.execute-sc-tooltip.2')}
+                  <br />
+                  <br />
+                  {Intl.t('password-prompt.sign.execute-sc-tooltip.3')}
+                </>
+              )
             }
           >
             <FiInfo size={16} />
@@ -54,9 +70,21 @@ export function ExecuteSC(props: SignBodyProps) {
           strokeWidth="2"
         />
         <p className="mas-caption">
-          {Intl.t('password-prompt.sign.execute-sc-warning.1')}
-          <br />
-          {Intl.t('password-prompt.sign.execute-sc-warning.2')}
+          {isDeploySC ? (
+            <>
+              {Intl.t('password-prompt.sign.deploy-sc-warning.1')}
+              <br />
+              {Intl.t('password-prompt.sign.deploy-sc-warning.2')}
+              <br />
+              {Intl.t('password-prompt.sign.deploy-sc-warning.3')}
+            </>
+          ) : (
+            <>
+              {Intl.t('password-prompt.sign.execute-sc-warning.1')}
+              <br />
+              {Intl.t('password-prompt.sign.execute-sc-warning.2')}
+            </>
+          )}
         </p>
       </div>
 
@@ -64,27 +92,33 @@ export function ExecuteSC(props: SignBodyProps) {
 
       <Description text={description} />
 
-      <div className="flex w-full items-center justify-between pb-2">
-        <div className="flex items-center">
-          <Tooltip
-            className="w-fit pl-0 pr-2 hover:cursor-pointer"
-            customClass="mas-caption !w-7/12"
-            body={
-              <>
-                {Intl.t('password-prompt.sign.execute-sc-max-coins-tooltip.1')}
-                <br />
-                {Intl.t('password-prompt.sign.execute-sc-max-coins-tooltip.2')}
-              </>
-            }
-          >
-            <FiInfo size={18} />
-          </Tooltip>
-          <p>{Intl.t('password-prompt.sign.max-coins')}</p>
+      {!isDeploySC && (
+        <div className="flex w-full items-center justify-between pb-2">
+          <div className="flex items-center">
+            <Tooltip
+              className="w-fit pl-0 pr-2 hover:cursor-pointer"
+              customClass="mas-caption !w-7/12"
+              body={
+                <>
+                  {Intl.t(
+                    'password-prompt.sign.execute-sc-max-coins-tooltip.1',
+                  )}
+                  <br />
+                  {Intl.t(
+                    'password-prompt.sign.execute-sc-max-coins-tooltip.2',
+                  )}
+                </>
+              }
+            >
+              <FiInfo size={18} />
+            </Tooltip>
+            <p>{Intl.t('password-prompt.sign.max-coins')}</p>
+          </div>
+          <p>
+            {formatAmount(MaxCoins).full} {massaToken}
+          </p>
         </div>
-        <p>
-          {formatAmount(MaxCoins).full} {massaToken}
-        </p>
-      </div>
+      )}
 
       {children}
     </div>

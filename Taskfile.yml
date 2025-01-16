@@ -90,10 +90,12 @@ tasks:
 
   wails-dev:
     cmds:
-      - cmd: wails dev
+      - cmd: wails dev -tags webkit2_41
     env:
       STANDALONE: 1
 
+  # This task is used to install the plugin in the MassaStation plugins directory.
+  # This allow to use the plugin with MassaStation.
   install-plugin:
     cmds:
       - cmd: mkdir -p /usr/local/share/massastation/plugins/wallet-plugin
@@ -132,11 +134,15 @@ tasks:
       - task: build-wails
       - task: build
 
+# This task build and run the plugin as a standalone application, WITHOUT any connection to MassaStation
   build-run:
     cmds:
       - task: build-standalone
       - task: run
 
+  # This is the task to run for building and using the station-massa-wallet plugin with MassaStation
+  # It build the plugin and then install it in the MassaStation plugins directory. 
+  # Hence, when massaStation is launched, it will detect the plugin and use it normaly
   build-install-plugin:
     cmds:
       - task: generate

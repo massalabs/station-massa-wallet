@@ -1,13 +1,19 @@
-import { SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import {
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-import { fromMAS, toMAS } from '@massalabs/massa-web3';
+import { Mas, StorageCost } from '@massalabs/massa-web3';
 import {
   AccordionCategory,
   AccordionContent,
   InlineMoney,
   Tooltip,
+  formatAmount,
 } from '@massalabs/react-ui-kit';
-import { formatAmount } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
 import BigNumber from 'bignumber.js';
 import {
@@ -33,26 +39,38 @@ export interface OperationCostProps {
   isEditing?: boolean;
   setIsEditing: (isEditing: boolean) => void;
   allowFeeEdition: boolean;
+  DeployedByteCodeSize: number; // for executeSC of type deploySC
+  DeployedCoins: number; // for executeSC of type deploySC, in nanoMAS
 }
 
 export function OperationCost(props: OperationCostProps) {
   const hideCoins = props.coins === undefined;
+  const hideByteCodeCost = props.DeployedByteCodeSize === 0;
+  const hideDeployedCoins = props.DeployedCoins === 0;
 
-  const coins = toMAS(props.coins || 0).toFixed(9);
+  const coins = Mas.toString(BigInt(props.coins || 0n), Mas.NB_DECIMALS); // to MAS
+  const byteCodeStorageCost = Mas.toString(
+    props.DeployedByteCodeSize
+      ? StorageCost.smartContract(props.DeployedByteCodeSize)
+      : 0n,
+    Mas.NB_DECIMALS,
+  ); // to MAS
+  const deployedCoins = Mas.toString(
+    BigInt(props.DeployedCoins || 0),
+    Mas.NB_DECIMALS,
+  ); // to MAS
   const { fees, setFees, minFees, isEditing, setIsEditing, allowFeeEdition } =
     props;
 
-  const [operationCost, setOperationCost] = useState(
-    new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9),
-  );
   const [error, setError] = useState<string>();
 
+  /* Compute fees*/
   function getDefaultFees(): string {
     if (fees === '') {
       return minFees;
     }
 
-    if (fromMAS(fees) < fromMAS(minFees)) {
+    if (Mas.fromString(fees) < Mas.fromString(minFees)) {
       return minFees;
     }
 
@@ -63,24 +81,38 @@ export function OperationCost(props: OperationCostProps) {
   const defaultFees = useMemo(getDefaultFees, [minFees]);
 
   if (fees === '') setFees(defaultFees);
-  if (fromMAS(fees) < fromMAS(minFees)) setFees(minFees);
+  if (Mas.fromString(fees) < Mas.fromString(minFees)) setFees(minFees);
+
+  /* Handle operation cost*/
+  const computeOperationCost = useCallback(() => {
+    return new BigNumber(coins)
+      .plus(
+        new BigNumber(fees)
+          .plus(new BigNumber(deployedCoins))
+          .plus(new BigNumber(byteCodeStorageCost)),
+      )
+      .toFixed(9);
+  }, [fees, coins, deployedCoins, byteCodeStorageCost]);
+
+  const [operationCost, setOperationCost] = useState(computeOperationCost());
 
   useEffect(() => {
-    setOperationCost(new BigNumber(coins).plus(new BigNumber(fees)).toFixed(9));
-  }, [fees, coins]);
+    setOperationCost(computeOperationCost());
+  }, [computeOperationCost]);
 
+  /* handleConfirmTemplate callback functions*/
   function handleEdit(e: SyntheticEvent) {
     e.preventDefault();
     setIsEditing(true);
   }
 
   function validate(): boolean {
-    if (fromMAS(fees) < fromMAS(minFees)) {
+    if (Mas.fromString(fees) < Mas.fromString(minFees)) {
       setError(Intl.t('password-prompt.sign.fees-to-low'));
       return false;
     }
 
-    if (fromMAS(fees) >= MAX_FEES) {
+    if (Mas.fromString(fees) >= MAX_FEES) {
       setError(Intl.t('password-prompt.sign.fees-to-high'));
       return false;
     }
@@ -104,6 +136,7 @@ export function OperationCost(props: OperationCostProps) {
     setFees(defaultFees);
   }
 
+  /* Set fee edition button if fee edition is allowed */
   const feeEditionButtonsRow = allowFeeEdition ? (
     <div className="flex justify-end gap-1">
       {isEditing ? (
@@ -201,6 +234,66 @@ export function OperationCost(props: OperationCostProps) {
                     customClass="mas-caption"
                     disabled
                     value={formatAmount(coins).full}
+                  />
+                </div>
+              )}
+              {!hideDeployedCoins && (
+                <div className="flex justify-between pb-2">
+                  <p className="flex mas-caption">
+                    <Tooltip
+                      className="mr-1"
+                      body={
+                        <>
+                          {Intl.t(
+                            'password-prompt.sign.deployed-coins-tooltip.1',
+                          )}
+                          <br />
+                          {Intl.t(
+                            'password-prompt.sign.deployed-coins-tooltip.2',
+                          )}
+                          <br />
+                          {Intl.t(
+                            'password-prompt.sign.deployed-coins-tooltip.3',
+                          )}
+                        </>
+                      }
+                    >
+                      <FiInfo size={16} />
+                    </Tooltip>
+                    {Intl.t('password-prompt.sign.deployed-coins')}
+                  </p>
+                  <InlineMoney
+                    customClass="mas-caption"
+                    disabled
+                    value={formatAmount(deployedCoins).full}
+                  />
+                </div>
+              )}
+              {!hideByteCodeCost && (
+                <div className="flex justify-between pb-2">
+                  <p className="flex mas-caption">
+                    <Tooltip
+                      className="mr-1"
+                      body={
+                        <>
+                          {Intl.t(
+                            'password-prompt.sign.deployed-bytecode-cost-tooltip.1',
+                          )}
+                          <br />
+                          {Intl.t(
+                            'password-prompt.sign.deployed-bytecode-cost-tooltip.2',
+                          )}
+                        </>
+                      }
+                    >
+                      <FiInfo size={16} />
+                    </Tooltip>
+                    {Intl.t('password-prompt.sign.deployed-bytecode-cost')}
+                  </p>
+                  <InlineMoney
+                    customClass="mas-caption"
+                    disabled
+                    value={formatAmount(byteCodeStorageCost).full}
                   />
                 </div>
               )}
