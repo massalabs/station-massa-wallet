@@ -963,10 +963,7 @@ definitions:
         type: boolean
         default: true
       ruleType:
-        type: string
-        enum:
-          - password_prompt
-          - auto_sign
+        $ref: "#/definitions/RuleType"
     required:
       - ruleType
 

@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -28,8 +27,7 @@ type SignRule struct {
 
 	// rule type
 	// Required: true
-	// Enum: ["password_prompt","auto_sign"]
-	RuleType *string `json:"ruleType"`
+	RuleType RuleType `json:"ruleType"`
 }
 
 // Validate validates this sign rule
@@ -46,51 +44,49 @@ func (m *SignRule) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-var signRuleTypeRuleTypePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["password_prompt","auto_sign"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		signRuleTypeRuleTypePropEnum = append(signRuleTypeRuleTypePropEnum, v)
-	}
-}
-
-const (
-
-	// SignRuleRuleTypePasswordPrompt captures enum value "password_prompt"
-	SignRuleRuleTypePasswordPrompt string = "password_prompt"
-
-	// SignRuleRuleTypeAutoSign captures enum value "auto_sign"
-	SignRuleRuleTypeAutoSign string = "auto_sign"
-)
-
-// prop value enum
-func (m *SignRule) validateRuleTypeEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, signRuleTypeRuleTypePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (m *SignRule) validateRuleType(formats strfmt.Registry) error {
 
-	if err := validate.Required("ruleType", "body", m.RuleType); err != nil {
+	if err := validate.Required("ruleType", "body", RuleType(m.RuleType)); err != nil {
 		return err
 	}
 
-	// value enum
-	if err := m.validateRuleTypeEnum("ruleType", "body", *m.RuleType); err != nil {
+	if err := m.RuleType.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("ruleType")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("ruleType")
+		}
 		return err
 	}
 
 	return nil
 }
 
-// ContextValidate validates this sign rule based on context it is used
+// ContextValidate validate this sign rule based on the context it is used
 func (m *SignRule) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateRuleType(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *SignRule) contextValidateRuleType(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := m.RuleType.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("ruleType")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("ruleType")
+		}
+		return err
+	}
+
 	return nil
 }
 

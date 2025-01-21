@@ -37,7 +37,7 @@ func newConfigModel(cfg *config.Config) (*models.Config, error) {
 			modelSignRules[i] = &models.SignRule{
 				Contract: &rule.Contract,
 				Enabled:  &rule.Enabled,
-				RuleType: (*string)(&rule.RuleType),
+				RuleType: (models.RuleType)(rule.RuleType),
 			}
 		}
 		modelAccounts[nickname] = models.AccountConfig{

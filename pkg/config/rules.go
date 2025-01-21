@@ -41,35 +41,36 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 	return rule.ID, nil
 }
 
+func (c *Config) findRuleIndex(accountConfig AccountCfg, ruleID string) (int, error) {
+	for i, rule := range accountConfig.SignRules {
+		if rule.ID == ruleID {
+			return i, nil
+		}
+	}
+
+	return -1, fmt.Errorf("rule not found: %s", ruleID)
+}
+
 func (c *Config) DeleteSignRule(accountName, ruleID string) error {
 	configManager.mu.Lock()
 	defer configManager.mu.Unlock()
 
 	// Check if the account exists
-	account, exists := c.Accounts[accountName]
+	accountConfig, exists := c.Accounts[accountName]
 	if !exists {
 		return fmt.Errorf("account not found: %s", accountName)
 	}
 
-	// Find the index of the rule to delete
-	index := -1
-
-	for i, rule := range account.SignRules {
-		if rule.ID == ruleID {
-			index = i
-			break
-		}
-	}
-
-	if index == -1 {
-		return fmt.Errorf("rule not found: %s", ruleID)
+	index, err := c.findRuleIndex(accountConfig, ruleID)
+	if err != nil {
+		return fmt.Errorf("deleting sign rule: %w", err)
 	}
 
 	// Remove the rule from the slice
-	account.SignRules = append(account.SignRules[:index], account.SignRules[index+1:]...)
-	c.Accounts[accountName] = account
+	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
+	c.Accounts[accountName] = accountConfig
 
-	err := saveConfigUnsafe(c)
+	err = saveConfigUnsafe(c)
 	if err != nil {
 		return fmt.Errorf("error saving configuration: %v", err)
 	}
@@ -82,35 +83,26 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 	defer configManager.mu.Unlock()
 
 	// Check if the account exists
-	account, exists := c.Accounts[accountName]
+	accountConfig, exists := c.Accounts[accountName]
 	if !exists {
 		return "", fmt.Errorf("account not found: %s", accountName)
 	}
 
-	// Find the index of the rule to update
-	index := -1
-
-	for i, rule := range account.SignRules {
-		if rule.ID == ruleID {
-			index = i
-			break
-		}
-	}
-
-	if index == -1 {
-		return "", fmt.Errorf("rule not found: %s", ruleID)
+	index, err := c.findRuleIndex(accountConfig, ruleID)
+	if err != nil {
+		return "", fmt.Errorf("updating sign rule: %w", err)
 	}
 
 	// Delete the existing rule
-	account.SignRules = append(account.SignRules[:index], account.SignRules[index+1:]...)
-	c.Accounts[accountName] = account
+	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
+	c.Accounts[accountName] = accountConfig
 
 	// Add the new rule
 	newRule.ID = generateRuleID(accountName, newRule)
-	account.SignRules = append(account.SignRules, newRule)
-	c.Accounts[accountName] = account
+	accountConfig.SignRules = append(accountConfig.SignRules, newRule)
+	c.Accounts[accountName] = accountConfig
 
-	err := saveConfigUnsafe(c)
+	err = saveConfigUnsafe(c)
 	if err != nil {
 		return "", fmt.Errorf("error saving configuration: %v", err)
 	}
