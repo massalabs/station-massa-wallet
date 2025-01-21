@@ -62,7 +62,7 @@ var (
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
 // If assetsJSONDir is empty, it will use the default wallet path.
-func InitAssetsStore(massaClient *network.NodeFetcher) (*AssetsStore, error) {
+func InitAssetsStore(massaClient *network.NodeFetcher) *AssetsStore {
 	Store = &AssetsStore{
 		Assets:      make(map[string]Assets),
 		massaClient: massaClient,
@@ -73,21 +73,21 @@ func InitAssetsStore(massaClient *network.NodeFetcher) (*AssetsStore, error) {
 	} else {
 		assetsJSONDir, err := wallet.Path()
 		if err != nil {
-			return nil, errors.Wrap(err, "Failed to get AssetsStore JSON file")
+			logger.Fatalf("Failed to create AssetsStore: Failed to get AssetsStore JSON file", err)
 		}
 		Store.assetsJSONDir = assetsJSONDir
 	}
 
 	if err := Store.loadAccountsStore(); err != nil {
-		return nil, errors.Wrap(err, "failed to create AssetsStore")
+		logger.Fatalf("Failed to create AssetsStore:", err)
 	}
 
 	err := Store.InitDefault()
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create AssetsStore")
+		logger.Fatalf("Failed to create AssetsStore:", err)
 	}
 
-	return Store, nil
+	return Store
 }
 
 // Used by unit test

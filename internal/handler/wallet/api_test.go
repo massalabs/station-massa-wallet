@@ -80,10 +80,7 @@ func MockAPI() (*operations.MassaWalletAPI, chan walletapp.EventData, error) {
 
 	assets.SetFileDirOverride(walletPath)
 
-	testAssetStore, err = assets.InitAssetsStore(nodeFetcher)
-	if err != nil {
-		log.Fatalf("Failed to create AssetsStore: %v", err)
-	}
+	testAssetStore = assets.InitAssetsStore(nodeFetcher)
 
 	massaNodeMock := NewNodeFetcherMock()
 

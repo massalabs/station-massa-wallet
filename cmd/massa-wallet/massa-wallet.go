@@ -27,10 +27,7 @@ func StartServer(app *walletApp.WalletApp) {
 
 	cache.Init()
 
-	_, err := assets.InitAssetsStore(massaClient)
-	if err != nil {
-		logger.Fatalf("Failed to create AssetsStore: %v", err)
-	}
+	assets.InitAssetsStore(massaClient)
 
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
