@@ -15,17 +15,15 @@ import (
 	"github.com/massalabs/station/pkg/logger"
 )
 
-func NewGetAllAssets(wallet *wallet.Wallet, AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
+func NewGetAllAssets(wallet *wallet.Wallet, massaClient network.NodeFetcherInterface) operations.GetAllAssetsHandler {
 	return &getAllAssets{
 		wallet:      wallet,
-		AssetsStore: AssetsStore,
 		massaClient: massaClient,
 	}
 }
 
 type getAllAssets struct {
 	wallet      *wallet.Wallet
-	AssetsStore *assets.AssetsStore
 	massaClient network.NodeFetcherInterface
 }
 
@@ -124,7 +122,7 @@ func (g *getAllAssets) getMASAsset(acc *account.Account) (*assets.AssetInfoWithB
 // getAssetsData fetches the balance and dollar value for each asset in the account.
 // If user has asset that are deployed on another network, it will not be included.
 func (g *getAllAssets) getAssetsData(acc *account.Account, chainID int) []*assets.AssetInfoWithBalances {
-	assetsInfo := g.AssetsStore.All(acc.Nickname, chainID)
+	assetsInfo := assets.Store.All(acc.Nickname, chainID)
 
 	assetsWithBalance := make([]*assets.AssetInfoWithBalances, 0)
 	var wg sync.WaitGroup
