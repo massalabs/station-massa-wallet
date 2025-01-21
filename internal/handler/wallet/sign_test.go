@@ -11,6 +11,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
 	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/stretchr/testify/assert"
@@ -211,7 +212,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, "")
 
 		// check that privateKey is cached
-		pkey, err := privateKeyFromCache(testCache, account)
+		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(t, err)
 		assert.NotNil(t, pkey)
 
@@ -262,7 +263,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, "")
 
 		// check that privateKey is cached
-		pkey, err := privateKeyFromCache(testCache, account)
+		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(t, err)
 		assert.NotNil(t, pkey)
 
@@ -319,7 +320,6 @@ func Test_walletSign_Handle(t *testing.T) {
 			res <- (<-resChan)
 		}(testResult)
 
-		fmt.Println(">>>>Sign transaction password needed")
 		resp := signTransaction(t, api, nickname, transactionData)
 		verifyStatusCode(t, resp, http.StatusOK)
 
@@ -328,7 +328,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, "")
 
 		// check that privateKey is cached
-		pkey, err := privateKeyFromCache(testCache, account)
+		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(t, err)
 		assert.NotNil(t, pkey)
 
@@ -341,8 +341,6 @@ func Test_walletSign_Handle(t *testing.T) {
 			// forward test result to test goroutine
 			res <- (<-resChan)
 		}(testResult)
-
-		fmt.Println(">>>>Sign transaction password NOT needed")
 
 		resp = signTransaction(t, api, nickname, transactionData)
 		verifyStatusCode(t, resp, http.StatusOK)
@@ -394,7 +392,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, "")
 
 		// check that privateKey is cached
-		pkey, err := privateKeyFromCache(testCache, account)
+		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(t, err)
 		assert.NotNil(t, pkey)
 
@@ -459,7 +457,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		checkResultChannel(t, result, true, "")
 
 		// check that privateKey is cached
-		pkey, err := privateKeyFromCache(testCache, account)
+		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(t, err)
 		assert.NotNil(t, pkey)
 

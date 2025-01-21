@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
 	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -23,13 +23,12 @@ type SignRulePromptData struct {
 	SignRule      config.SignRule
 }
 
-func NewAddSignRuleHandler(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.AddSignRuleHandler {
-	return &addSignRuleHandler{gc: gc, prompterApp: prompterApp}
+func NewAddSignRuleHandler(prompterApp prompt.WalletPrompterInterface) operations.AddSignRuleHandler {
+	return &addSignRuleHandler{prompterApp: prompterApp}
 }
 
 type addSignRuleHandler struct {
 	prompterApp prompt.WalletPrompterInterface
-	gc          gcache.Cache
 }
 
 func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middleware.Responder {
@@ -68,7 +67,7 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 	}
 
 	if cfg.HasEnabledRule(acc.Nickname) {
-		err = CachePrivateKeyFromPassword(w.gc, acc, password)
+		err = cache.CachePrivateKeyFromPassword(acc, password)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
 		}

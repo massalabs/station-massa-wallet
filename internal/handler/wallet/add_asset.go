@@ -13,15 +13,13 @@ type AssetInfoListResponse struct {
 	Assets []models.AssetInfo `json:"assets"`
 }
 
-func NewAddAsset(AssetsStore *assets.AssetsStore, massaClient network.NodeFetcherInterface) operations.AddAssetHandler {
+func NewAddAsset(massaClient network.NodeFetcherInterface) operations.AddAssetHandler {
 	return &addAsset{
-		AssetsStore: AssetsStore,
 		massaClient: massaClient,
 	}
 }
 
 type addAsset struct {
-	AssetsStore *assets.AssetsStore
 	massaClient network.NodeFetcherInterface
 }
 
@@ -41,7 +39,7 @@ func (a *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Check if the address exists in the loaded JSON
-	if a.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
+	if assets.Store.AssetExists(params.Nickname, params.AssetAddress) {
 		// Return that the asset already exists
 		errorMsg := "Asset with the provided address already exists."
 		return operations.NewAddAssetBadRequest().WithPayload(&models.Error{Code: errorAssetExists, Message: errorMsg})
@@ -56,7 +54,7 @@ func (a *addAsset) Handle(params operations.AddAssetParams) middleware.Responder
 	}
 
 	// Add Asset and persist in JSON file.
-	if err := a.AssetsStore.AddAsset(params.Nickname, *assetInfoFromSC); err != nil {
+	if err := assets.Store.AddAsset(params.Nickname, *assetInfoFromSC); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to add the asset to the JSON file."
 		return operations.NewAddAssetInternalServerError().WithPayload(&models.Error{Code: errorAddAssetJSON, Message: errorMsg})
