@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/awnumar/memguard"
-	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
 	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
@@ -20,14 +20,13 @@ import (
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 )
 
-func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface, gc gcache.Cache) operations.TransferCoinHandler {
-	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient, gc: gc}
+func NewTransferCoin(prompterApp prompt.WalletPrompterInterface, massaClient network.NodeFetcherInterface) operations.TransferCoinHandler {
+	return &transferCoin{prompterApp: prompterApp, massaClient: massaClient}
 }
 
 type transferCoin struct {
 	prompterApp prompt.WalletPrompterInterface
 	massaClient network.NodeFetcherInterface
-	gc          gcache.Cache
 }
 
 func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.Responder {
@@ -113,7 +112,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	cfg := config.Get()
 
 	if cfg.HasEnabledRule(acc.Nickname) {
-		err = CachePrivateKey(t.gc, acc, output.Password)
+		err = cache.CachePrivateKey(acc, output.Password)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
 		}
