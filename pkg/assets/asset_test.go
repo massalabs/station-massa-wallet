@@ -42,7 +42,10 @@ func TestLoadAccountsStore(t *testing.T) {
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	nodeFetcher := network.NewNodeFetcher()
-	_, err = InitAssetsStore(tempDir, nodeFetcher)
+
+	SetFileDirOverride(tempDir)
+
+	_, err = InitAssetsStore(nodeFetcher)
 	assert.NoError(t, err)
 
 	// Validate the loaded data
@@ -64,7 +67,10 @@ func TestAssetExists(t *testing.T) {
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	nodeFetcher := network.NewNodeFetcher()
-	_, err = InitAssetsStore(tempDir, nodeFetcher)
+
+	SetFileDirOverride(tempDir)
+
+	_, err = InitAssetsStore(nodeFetcher)
 	assert.NoError(t, err)
 
 	// Test case 1: Check for an existing asset
@@ -109,7 +115,10 @@ func TestAddAndDeleteAsset(t *testing.T) {
 
 	// Create a new instance of AssetsStore and load data from the testing file
 	nodeFetcher := network.NewNodeFetcher()
-	_, err = InitAssetsStore(tempDir, nodeFetcher)
+
+	SetFileDirOverride(tempDir)
+
+	_, err = InitAssetsStore(nodeFetcher)
 	assert.NoError(t, err)
 
 	// Test case 1: Add an asset and check if it's saved to JSON

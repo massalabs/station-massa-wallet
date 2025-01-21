@@ -19,7 +19,7 @@ var (
 	once  sync.Once
 )
 
-func Get() gcache.Cache {
+func Init() gcache.Cache {
 	once.Do(func() {
 		cache = gcache.New(cacheSize).
 			LRU().
