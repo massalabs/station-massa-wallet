@@ -1348,11 +1348,7 @@ func init() {
           "default": true
         },
         "ruleType": {
-          "type": "string",
-          "enum": [
-            "password_prompt",
-            "auto_sign"
-          ]
+          "$ref": "#/definitions/RuleType"
         }
       }
     },
@@ -2880,11 +2876,7 @@ func init() {
           "default": true
         },
         "ruleType": {
-          "type": "string",
-          "enum": [
-            "password_prompt",
-            "auto_sign"
-          ]
+          "$ref": "#/definitions/RuleType"
         }
       }
     },
