@@ -36,13 +36,13 @@ const (
 	cacheSize             = 100
 )
 
-func CachePrivateKeyFromPassword(gc gcache.Cache, account *account.Account, password *memguard.LockedBuffer) error {
+func CachePrivateKeyFromPassword(account *account.Account, password *memguard.LockedBuffer) error {
 	privateKey, err := account.PrivateKeyBytesInClear(password)
 	if err != nil {
 		return fmt.Errorf("error caching private key: %w", err)
 	}
 
-	err = CachePrivateKey(gc, account, privateKey)
+	err = CachePrivateKey(account, privateKey)
 	if err != nil {
 		return fmt.Errorf("error caching private key: %w", err)
 	}
@@ -50,7 +50,7 @@ func CachePrivateKeyFromPassword(gc gcache.Cache, account *account.Account, pass
 	return nil
 }
 
-func CachePrivateKey(gc gcache.Cache, account *account.Account, privateKey *memguard.LockedBuffer) error {
+func CachePrivateKey(account *account.Account, privateKey *memguard.LockedBuffer) error {
 	cacheKey, err := privateKeyCacheKey(account)
 	if err != nil {
 		return fmt.Errorf("%w: %w", utils.ErrPrivateKeyCache, err)
@@ -71,7 +71,7 @@ func CachePrivateKey(gc gcache.Cache, account *account.Account, privateKey *memg
 	copy(cacheValue, cipheredPrivateKey.Bytes())
 	cipheredPrivateKey.Destroy()
 
-	err = gc.SetWithExpire(key, cacheValue, expirationDuration())
+	err = cache.SetWithExpire(key, cacheValue, expirationDuration())
 	if err != nil {
 		return fmt.Errorf("error set private key in cache: %w", err)
 	}
@@ -81,7 +81,6 @@ func CachePrivateKey(gc gcache.Cache, account *account.Account, privateKey *memg
 
 // privateKeyFromCache return the private key from the cache or an error.
 func PrivateKeyFromCache(
-	gc gcache.Cache,
 	acc *account.Account,
 ) (*memguard.LockedBuffer, error) {
 	cacheKey, err := privateKeyCacheKey(acc)
@@ -91,7 +90,7 @@ func PrivateKeyFromCache(
 
 	keyHash := KeyHash([]byte(cacheKey))
 
-	value, err := gc.Get(keyHash)
+	value, err := cache.Get(keyHash)
 	if err != nil {
 		if err.Error() == gcache.KeyNotFoundError.Error() {
 			return nil, fmt.Errorf("%w: %w", utils.ErrPrivateKeyCache, err)
