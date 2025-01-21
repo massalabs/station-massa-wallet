@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
@@ -15,13 +14,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func NewDeleteSignRuleHandler(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.DeleteSignRuleHandler {
-	return &deleteSignRuleHandler{gc: gc, prompterApp: prompterApp}
+func NewDeleteSignRuleHandler(prompterApp prompt.WalletPrompterInterface) operations.DeleteSignRuleHandler {
+	return &deleteSignRuleHandler{prompterApp: prompterApp}
 }
 
 type deleteSignRuleHandler struct {
 	prompterApp prompt.WalletPrompterInterface
-	gc          gcache.Cache
 }
 
 func (w *deleteSignRuleHandler) Handle(params operations.DeleteSignRuleParams) middleware.Responder {
