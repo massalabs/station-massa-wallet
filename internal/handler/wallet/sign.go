@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/awnumar/memguard"
-	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -33,14 +32,12 @@ const (
 	RollPrice = 100
 )
 
-func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache, AssetsStore *assets.AssetsStore) operations.SignHandler {
-	return &walletSign{gc: gc, prompterApp: prompterApp, AssetsStore: AssetsStore}
+func NewSign(prompterApp prompt.WalletPrompterInterface) operations.SignHandler {
+	return &walletSign{prompterApp: prompterApp}
 }
 
 type walletSign struct {
 	prompterApp prompt.WalletPrompterInterface
-	gc          gcache.Cache
-	AssetsStore *assets.AssetsStore
 }
 
 func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
@@ -69,7 +66,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	if enabledRule != nil {
 		// at this point, we have a rule enabled for the contract, if private key is cached, we don't need to prompt for password
-		privateKey, err = cache.PrivateKeyFromCache(w.gc, acc)
+		privateKey, err = cache.PrivateKeyFromCache(acc)
 		if err != nil {
 			logger.Warn("error retriving private key from cache: ", err)
 		} else if privateKey != nil {
@@ -107,7 +104,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 
 		if cfg.HasEnabledRule(acc.Nickname) {
-			err = cache.CachePrivateKey(w.gc, acc, privateKey)
+			err = cache.CachePrivateKey(acc, privateKey)
 			if err != nil {
 				return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
 			}
@@ -224,7 +221,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.OperationType = int(opType)
 	data.AllowFeeEdition = *params.AllowFeeEdition
 	data.ChainID = *params.Body.ChainID
-	data.Assets = convertAssetsToModel(w.AssetsStore.All(acc.Nickname, int(data.ChainID)))
+	data.Assets = convertAssetsToModel(assets.Store.All(acc.Nickname, int(data.ChainID)))
 
 	promptRequest := prompt.PromptRequest{
 		Action:           walletapp.Sign,

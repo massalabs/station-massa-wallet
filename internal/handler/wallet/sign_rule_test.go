@@ -8,6 +8,7 @@ import (
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
 	assertLib "github.com/stretchr/testify/assert"
 )
 
@@ -62,7 +63,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotEmpty(addRuleResponse.ID)
 
 		// check that privateKey is cached
-		pkey, err := privateKeyFromCache(testCache, account)
+		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(err)
 		assert.NotNil(pkey)
 	})
