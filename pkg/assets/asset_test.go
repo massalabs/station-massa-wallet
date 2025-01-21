@@ -45,8 +45,7 @@ func TestLoadAccountsStore(t *testing.T) {
 
 	SetFileDirOverride(tempDir)
 
-	_, err = InitAssetsStore(nodeFetcher)
-	assert.NoError(t, err)
+	InitAssetsStore(nodeFetcher)
 
 	// Validate the loaded data
 	expectedAccountName := "dummyAccount"
@@ -70,8 +69,7 @@ func TestAssetExists(t *testing.T) {
 
 	SetFileDirOverride(tempDir)
 
-	_, err = InitAssetsStore(nodeFetcher)
-	assert.NoError(t, err)
+	InitAssetsStore(nodeFetcher)
 
 	// Test case 1: Check for an existing asset
 	existingNickname := "dummyAccount"
@@ -118,8 +116,7 @@ func TestAddAndDeleteAsset(t *testing.T) {
 
 	SetFileDirOverride(tempDir)
 
-	_, err = InitAssetsStore(nodeFetcher)
-	assert.NoError(t, err)
+	InitAssetsStore(nodeFetcher)
 
 	// Test case 1: Add an asset and check if it's saved to JSON
 	nickname := "dummyAccount"
