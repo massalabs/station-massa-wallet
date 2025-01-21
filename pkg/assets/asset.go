@@ -55,23 +55,26 @@ type assetData struct {
 	ChainID         int64  `json:"chainID"`
 }
 
-var Store *AssetsStore
+var (
+	Store            *AssetsStore
+	filePathOverride string
+)
 
 // NewAssetsStore creates and initializes a new instance of AssetsStore.
 // If assetsJSONDir is empty, it will use the default wallet path.
-func InitAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*AssetsStore, error) {
+func InitAssetsStore(massaClient *network.NodeFetcher) (*AssetsStore, error) {
 	Store = &AssetsStore{
 		Assets:      make(map[string]Assets),
 		massaClient: massaClient,
 	}
 
-	if assetsJSONDir == "" {
+	if filePathOverride != "" {
+		Store.assetsJSONDir = filePathOverride
+	} else {
 		assetsJSONDir, err := wallet.Path()
 		if err != nil {
 			return nil, errors.Wrap(err, "Failed to get AssetsStore JSON file")
 		}
-		Store.assetsJSONDir = assetsJSONDir
-	} else {
 		Store.assetsJSONDir = assetsJSONDir
 	}
 
@@ -85,6 +88,11 @@ func InitAssetsStore(assetsJSONDir string, massaClient *network.NodeFetcher) (*A
 	}
 
 	return Store, nil
+}
+
+// Used by unit test
+func SetFileDirOverride(path string) {
+	filePathOverride = path
 }
 
 // loadAccountsStore loads the data from the assets JSON file into the AssetsStore.

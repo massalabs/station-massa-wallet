@@ -240,22 +240,27 @@ func (c *Config) GetEnabledRuleForContract(accountName string, contract *string)
 		return nil
 	}
 
+	var ruleType *RuleType = nil
+
 	// Check if there is any enabled rule that applies to the contract
 	for _, rule := range account.SignRules {
 		if rule.Enabled {
 			switch rule.RuleType {
 			case RuleTypeAutoSign:
 				if contract != nil && rule.Contract == *contract {
-					return &rule.RuleType
+					ruleType = &rule.RuleType
 				}
 
 			case RuleTypeDisablePasswordPrompt:
 				if rule.Contract == "*" || (contract != nil && rule.Contract == *contract) {
-					return &rule.RuleType
+					if ruleType == nil {
+						// If there are multiple rules that apply to the contract, the rule with the highest priority is used (AutoSign)
+						ruleType = &rule.RuleType
+					}
 				}
 			}
 		}
 	}
 
-	return nil
+	return ruleType
 }
