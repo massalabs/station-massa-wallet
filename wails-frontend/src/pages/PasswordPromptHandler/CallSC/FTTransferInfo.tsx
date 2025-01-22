@@ -1,4 +1,4 @@
-import { Args, strToBytes } from '@massalabs/massa-web3';
+import { Args } from '@massalabs/massa-web3';
 import { formatAmount } from '@massalabs/react-ui-kit';
 import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { LogPrint } from '@wailsjs/runtime/runtime';
@@ -6,6 +6,7 @@ import { LogPrint } from '@wailsjs/runtime/runtime';
 import Intl from '@/i18n/i18n';
 import { AmountBox } from '@/pages/PasswordPromptHandler/AmountBox';
 import { AssetInfo } from '@/pages/PasswordPromptHandler/Sign';
+import { base64ToArray } from '@/utils/parameters';
 
 interface FTTransferInfoProps {
   targetFunction: string;
@@ -23,7 +24,7 @@ export function FTTransferInfo(props: FTTransferInfoProps) {
   let amount = 0n;
   let recipient = '';
   try {
-    const args = new Args(strToBytes(parameters));
+    const args = new Args(base64ToArray(parameters));
     recipient = args.nextString();
     amount = args.nextU256();
   } catch (error) {

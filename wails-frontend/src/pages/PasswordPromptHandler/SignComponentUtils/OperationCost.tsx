@@ -15,7 +15,6 @@ import {
   formatAmount,
 } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
-import BigNumber from 'bignumber.js';
 import {
   FiCheck,
   FiChevronDown,
@@ -48,17 +47,14 @@ export function OperationCost(props: OperationCostProps) {
   const hideByteCodeCost = props.DeployedByteCodeSize === 0;
   const hideDeployedCoins = props.DeployedCoins === 0;
 
-  const coins = Mas.toString(BigInt(props.coins || 0n), Mas.NB_DECIMALS); // to MAS
-  const byteCodeStorageCost = Mas.toString(
+  const coins = BigInt(props.coins ?? 0);
+  const byteCodeStorageCost =
     props.DeployedByteCodeSize
       ? StorageCost.smartContract(props.DeployedByteCodeSize)
-      : 0n,
-    Mas.NB_DECIMALS,
-  ); // to MAS
-  const deployedCoins = Mas.toString(
-    BigInt(props.DeployedCoins || 0),
-    Mas.NB_DECIMALS,
-  ); // to MAS
+      : 0n;
+
+  const deployedCoins = BigInt(props.DeployedCoins ?? 0);
+
   const { fees, setFees, minFees, isEditing, setIsEditing, allowFeeEdition } =
     props;
 
@@ -85,13 +81,7 @@ export function OperationCost(props: OperationCostProps) {
 
   /* Handle operation cost*/
   const computeOperationCost = useCallback(() => {
-    return new BigNumber(coins)
-      .plus(
-        new BigNumber(fees)
-          .plus(new BigNumber(deployedCoins))
-          .plus(new BigNumber(byteCodeStorageCost)),
-      )
-      .toFixed(9);
+    return coins + Mas.fromString(fees) + deployedCoins + byteCodeStorageCost;
   }, [fees, coins, deployedCoins, byteCodeStorageCost]);
 
   const [operationCost, setOperationCost] = useState(computeOperationCost());

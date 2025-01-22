@@ -19,7 +19,6 @@
   "dependencies": {
     "@massalabs/massa-web3": "^5.1.0",
     "@massalabs/react-ui-kit": "^1.0.2",
-    "bignumber.js": "^9.1.2",
     "currency.js": "^2.0.4",
     "dot-object": "^2.1.4",
     "esbuild": "^0.17.19",
