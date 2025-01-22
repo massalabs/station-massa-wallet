@@ -14,7 +14,7 @@ import {
   Tooltip,
   formatAmount,
 } from '@massalabs/react-ui-kit';
-import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
+import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
 import BigNumber from 'bignumber.js';
 import {
   FiCheck,

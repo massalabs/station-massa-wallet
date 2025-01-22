@@ -334,8 +334,8 @@ func getExecuteSCPromptData(
 		return PromptRequestSignData{}, err
 	}
 
-	deployedContract, success := onchain.DatastoreToDeployedContract(dataStore)
-	if success { // the executeSC is a deploySC
+	deployedContract, isDeployDatastore := onchain.DatastoreToDeployedContract(dataStore)
+	if isDeployDatastore { // the executeSC is a deploySC
 		promptReq.DeployedByteCodeSize = uint(len(deployedContract.ByteCode))
 		promptReq.DeployedCoins = deployedContract.Coins
 	}

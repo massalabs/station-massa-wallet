@@ -1,5 +1,5 @@
 import { formatAmount } from '@massalabs/react-ui-kit';
-import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/const';
+import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
 
 import Intl from '@/i18n/i18n';
 import { AmountBox } from '@/pages/PasswordPromptHandler/AmountBox';
