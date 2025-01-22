@@ -48,10 +48,9 @@ export function OperationCost(props: OperationCostProps) {
   const hideDeployedCoins = props.DeployedCoins === 0;
 
   const coins = BigInt(props.coins ?? 0);
-  const byteCodeStorageCost =
-    props.DeployedByteCodeSize
-      ? StorageCost.smartContract(props.DeployedByteCodeSize)
-      : 0n;
+  const byteCodeStorageCost = props.DeployedByteCodeSize
+    ? StorageCost.smartContract(props.DeployedByteCodeSize)
+    : 0n;
 
   const deployedCoins = BigInt(props.DeployedCoins ?? 0);
 
