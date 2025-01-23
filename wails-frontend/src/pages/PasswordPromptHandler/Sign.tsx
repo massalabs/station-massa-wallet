@@ -62,7 +62,7 @@ export interface SignBodyProps {
   Assets: AssetInfo[];
   Parameters: string; // base64
   DeployedByteCodeSize: number; // for executeSC of type deploySC
-  DeployedCoins: number; // for executeSC of type deploySC
+  DeployedCoins: string; // for executeSC of type deploySC
   children?: React.ReactNode;
 }
 
@@ -89,8 +89,8 @@ export function Sign() {
   const signData = req.Data as SignBodyProps;
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [fees, setFees] = useState<string>( // in MAS
-    Mas.toString(BigInt(signData.Fees || '0')),
+  const [fees, setFees] = useState<Mas.Mas>(
+    BigInt(signData.Fees || 0)
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -102,7 +102,7 @@ export function Sign() {
 
     SendSignPromptInput(
       password,
-      Mas.fromString(fees).toString(),
+      fees.toString(),
       req.CorrelationID,
     );
   }
@@ -142,7 +142,7 @@ export function Sign() {
 
   const operationCostsArgs = {
     fees,
-    minFees: signData.MinFees,
+    minFees: Mas.fromString(signData.MinFees),
     setFees,
     isEditing,
     setIsEditing,

@@ -31,21 +31,21 @@ export const MAX_FEES = 1_000_000_000_000_000_000n; // MASSA total supply
 
 export interface OperationCostProps {
   coins?: string; // in nanoMAS
-  fees: string; // in MAS
-  minFees: string; // in MAS
-  setFees: (fees: string) => void;
+  fees: Mas.Mas;
+  minFees: Mas.Mas;
+  setFees: (fees: Mas.Mas) => void;
   feesError?: string;
   isEditing?: boolean;
   setIsEditing: (isEditing: boolean) => void;
   allowFeeEdition: boolean;
   DeployedByteCodeSize: number; // for executeSC of type deploySC
-  DeployedCoins: number; // for executeSC of type deploySC, in nanoMAS
+  DeployedCoins: string; // for executeSC of type deploySC, in nanoMAS
 }
 
 export function OperationCost(props: OperationCostProps) {
   const hideCoins = props.coins === undefined;
   const hideByteCodeCost = props.DeployedByteCodeSize === 0;
-  const hideDeployedCoins = props.DeployedCoins === 0;
+  const hideDeployedCoins = props.DeployedCoins === undefined;
 
   const coins = BigInt(props.coins ?? 0);
   const byteCodeStorageCost = props.DeployedByteCodeSize
@@ -60,12 +60,12 @@ export function OperationCost(props: OperationCostProps) {
   const [error, setError] = useState<string>();
 
   /* Compute fees*/
-  function getDefaultFees(): string {
-    if (fees === '') {
+  function getDefaultFees(): Mas.Mas {
+    if (fees === 0n) {
       return minFees;
     }
 
-    if (Mas.fromString(fees) < Mas.fromString(minFees)) {
+    if (fees < minFees) {
       return minFees;
     }
 
@@ -75,12 +75,12 @@ export function OperationCost(props: OperationCostProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultFees = useMemo(getDefaultFees, [minFees]);
 
-  if (fees === '') setFees(defaultFees);
-  if (Mas.fromString(fees) < Mas.fromString(minFees)) setFees(minFees);
+  if (fees === 0n) setFees(defaultFees);
+  if (fees < minFees) setFees(minFees);
 
   /* Handle operation cost*/
   const computeOperationCost = useCallback(() => {
-    return coins + Mas.fromString(fees) + deployedCoins + byteCodeStorageCost;
+    return coins + fees + deployedCoins + byteCodeStorageCost;
   }, [fees, coins, deployedCoins, byteCodeStorageCost]);
 
   const [operationCost, setOperationCost] = useState(computeOperationCost());
@@ -96,12 +96,12 @@ export function OperationCost(props: OperationCostProps) {
   }
 
   function validate(): boolean {
-    if (Mas.fromString(fees) < Mas.fromString(minFees)) {
+    if (fees < minFees) {
       setError(Intl.t('password-prompt.sign.fees-to-low'));
       return false;
     }
 
-    if (Mas.fromString(fees) >= MAX_FEES) {
+    if (fees >= MAX_FEES) {
       setError(Intl.t('password-prompt.sign.fees-to-high'));
       return false;
     }
@@ -123,6 +123,10 @@ export function OperationCost(props: OperationCostProps) {
     setIsEditing(false);
     setError('');
     setFees(defaultFees);
+  }
+
+  function handleFeesChange(event: NumberFormatValues) {
+    setFees(Mas.fromString(event.value));
   }
 
   /* Set fee edition button if fee edition is allowed */
@@ -193,10 +197,8 @@ export function OperationCost(props: OperationCostProps) {
                 <InlineMoney
                   customClass="mas-caption"
                   disabled={!isEditing}
-                  value={fees}
-                  onValueChange={(event: NumberFormatValues) =>
-                    setFees(event.value)
-                  }
+                  value={Mas.toString(fees)}
+                  onValueChange={handleFeesChange}
                 />
               </div>
               {error && (
