@@ -1,15 +1,13 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
-import { Button, Password } from '@massalabs/react-ui-kit';
-import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { Button, Password, maskAddress } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { ruleRequestData } from './types';
-import { walletapp } from '../../../wailsjs/go/models';
-import { signRuleActionStr } from '../../i18n/types';
+import { ruleRequestData, signRuleActionStr } from './types';
 import { Account } from '../PasswordPromptHandler/components/account';
 import { CopyClip } from '../PasswordPromptHandler/components/clipBoardCopy';
 import { promptRequest, promptResult } from '@/events';

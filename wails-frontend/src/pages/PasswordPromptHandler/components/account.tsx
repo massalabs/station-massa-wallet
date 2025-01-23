@@ -1,7 +1,4 @@
-import {
-  maskAddress,
-  maskNickname,
-} from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { maskAddress, maskNickname } from '@massalabs/react-ui-kit';
 
 import { CopyClip } from './clipBoardCopy';
 import Intl from '@/i18n/i18n';

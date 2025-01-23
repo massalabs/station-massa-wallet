@@ -1,12 +1,11 @@
 import { useState } from 'react';
 
-import { Button } from '@massalabs/react-ui-kit';
-import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { Button, maskNickname } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { walletapp } from '../../wailsjs/go/models';
 import { backupMethods, promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';

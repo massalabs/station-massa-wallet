@@ -1,8 +1,8 @@
+import { walletapp } from '@wailsjs/go/models';
 import { useLocation } from 'react-router-dom';
 
 import { Delete } from './Delete';
 import { Sign } from './Sign';
-import { walletapp } from '../../../wailsjs/go/models';
 import { SignRule } from '../SignRuleHandler/signRulePrompt';
 import { promptRequest } from '@/events';
 

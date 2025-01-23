@@ -134,7 +134,7 @@ func doTransfer(
 ) (*sendOperation.OperationResponse, error) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
-		return nil, fmt.Errorf("Error during transaction creation: %w", err)
+		return nil, fmt.Errorf("error during transaction creation: %w", err)
 	}
 
 	return network.SendOperation(acc, password, massaClient, operation, fee, chainID)

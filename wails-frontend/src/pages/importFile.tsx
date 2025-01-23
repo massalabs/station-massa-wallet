@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { Button } from '@massalabs/react-ui-kit';
-import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { Button, maskNickname } from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
 import {
   SendPromptInput,

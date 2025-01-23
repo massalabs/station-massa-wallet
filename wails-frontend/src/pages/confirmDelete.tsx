@@ -1,10 +1,10 @@
 import { Button } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { FiAlertTriangle, FiTrash2 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { walletapp } from '../../wailsjs/go/models';
 import { promptRequest } from '@/events';
 import { Layout } from '@/layouts/Layout/Layout';
 import { handleApplyResult, handleCancel } from '@/utils';

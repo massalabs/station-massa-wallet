@@ -1,7 +1,7 @@
+import { walletapp } from '@wailsjs/go/models';
 import { FiCheck } from 'react-icons/fi';
 import { useLocation } from 'react-router';
 
-import { walletapp } from '../../wailsjs/go/models';
 import { promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';

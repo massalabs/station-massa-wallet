@@ -1,7 +1,4 @@
-import {
-  maskAddress,
-  maskNickname,
-} from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { maskAddress, maskNickname } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 
 import { CopyClip } from '../components/clipBoardCopy';

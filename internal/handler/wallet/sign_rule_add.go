@@ -37,13 +37,6 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 		return errResp
 	}
 
-	contract := *params.Body.Contract
-
-	if contract != "*" && !utils.IsValidAddress(contract) {
-		errorMsg := "Invalid address format"
-		return operations.NewAddSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
-	}
-
 	newRule := config.SignRule{
 		Name:     params.Body.Name,
 		Contract: *params.Body.Contract,
@@ -55,6 +48,10 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 
 	if exists := cfg.IsExistingRule(acc.Nickname, newRule); exists {
 		return newErrorResponse("Rule already exists", errorAddSignRule, http.StatusBadRequest)
+	}
+
+	if err := config.ValidateRule(newRule); err != nil {
+		return operations.NewAddSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: err.Error()})
 	}
 
 	promptRequest, err := w.getPromptRequest(params, acc)

@@ -1,4 +1,4 @@
-import { walletapp } from '../../wailsjs/go/models';
+import { walletapp } from '@wailsjs/go/models';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type promptResult<T = null> = {

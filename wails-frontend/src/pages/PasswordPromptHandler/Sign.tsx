@@ -2,6 +2,7 @@ import { SyntheticEvent, useRef, useState } from 'react';
 
 import { Mas } from '@massalabs/massa-web3';
 import { Button, Password } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendSignPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiLock } from 'react-icons/fi';
@@ -14,7 +15,6 @@ import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
 import { Transaction } from './Transaction/Transaction';
-import { walletapp } from '../../../wailsjs/go/models';
 import {
   OPER_BUY_ROLL,
   OPER_CALL_SC,

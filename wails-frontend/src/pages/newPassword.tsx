@@ -1,6 +1,7 @@
 import { useState, useRef, SyntheticEvent } from 'react';
 
 import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import {
   SendPKeyPromptInput,
   SendPromptInput,
@@ -9,7 +10,6 @@ import { EventsOnce } from '@wailsjs/runtime';
 import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { walletapp } from '../../wailsjs/go/models';
 import { promptRequest } from '@/events';
 import { Layout } from '@/layouts/Layout/Layout';
 import {

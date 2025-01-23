@@ -39,13 +39,12 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 
 	cfg := config.Get()
 
-	if newRule.Contract != "*" && !utils.IsValidAddress(newRule.Contract) {
-		errorMsg := "Invalid address format"
-		return operations.NewAddSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
-	}
-
 	if signRule := cfg.GetSignRule(acc.Nickname, params.RuleID); signRule == nil {
 		return newErrorResponse(fmt.Sprintf("Rule ID %s not found", params.RuleID), errorUpdateSignRule, http.StatusInternalServerError)
+	}
+
+	if err := config.ValidateRule(newRule); err != nil {
+		return operations.NewUpdateSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: err.Error()})
 	}
 
 	promptRequest, err := w.getPromptRequest(acc, &newRule)

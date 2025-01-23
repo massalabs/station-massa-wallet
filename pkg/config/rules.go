@@ -4,10 +4,12 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+
+	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
 func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) {
-	if err := validateRule(rule); err != nil {
+	if err := ValidateRule(rule); err != nil {
 		return "", fmt.Errorf("invalid rule: %v", err)
 	}
 
@@ -78,6 +80,10 @@ func (c *Config) DeleteSignRule(accountName, ruleID string) error {
 }
 
 func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (string, error) {
+	if err := ValidateRule(newRule); err != nil {
+		return "", fmt.Errorf("invalid rule: %v", err)
+	}
+
 	configManager.mu.Lock()
 	defer configManager.mu.Unlock()
 
@@ -109,7 +115,11 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 	return newRule.ID, nil
 }
 
-func validateRule(rule SignRule) error {
+func ValidateRule(rule SignRule) error {
+	if rule.Contract != "*" && !utils.IsValidContract(rule.Contract) {
+		return fmt.Errorf("invalid contract address: %s", rule.Contract)
+	}
+
 	switch rule.RuleType {
 	case RuleTypeDisablePasswordPrompt:
 		return nil

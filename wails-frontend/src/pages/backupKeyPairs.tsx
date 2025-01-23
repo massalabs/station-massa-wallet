@@ -1,12 +1,12 @@
 import { useState, useRef, SyntheticEvent } from 'react';
 
 import { Password, Button, Clipboard } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { ClipboardSetText, EventsOnce } from '@wailsjs/runtime';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { walletapp } from '../../wailsjs/go/models';
 import { promptRequest, promptResult } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
