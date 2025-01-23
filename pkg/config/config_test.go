@@ -94,8 +94,7 @@ func TestDeleteSignRule(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Verify the rule was deleted
-	deletedRule, err := cfg.GetSignRule(accountName, ruleID)
-	assert.Error(t, err, "rule not found")
+	deletedRule := cfg.GetSignRule(accountName, ruleID)
 	assert.Nil(t, deletedRule)
 }
 
@@ -124,8 +123,8 @@ func TestUpdateSignRule(t *testing.T) {
 	assert.NotEqual(t, ruleID, newRuleID)
 
 	// Verify the rule was updated
-	updatedRule, err := cfg.GetSignRule(accountName, newRuleID)
-	assert.NoError(t, err)
+	updatedRule := cfg.GetSignRule(accountName, newRuleID)
+	assert.NotNil(t, updatedRule)
 	assert.Equal(t, newRuleID, updatedRule.ID)
 	assert.Equal(t, newRule.Name, updatedRule.Name)
 	assert.Equal(t, newRule.Contract, updatedRule.Contract)
@@ -133,8 +132,7 @@ func TestUpdateSignRule(t *testing.T) {
 	assert.Equal(t, newRule.Enabled, updatedRule.Enabled)
 
 	// Verify previous rule is deleted
-	deletedRule, err := cfg.GetSignRule(accountName, ruleID)
-	assert.Error(t, err, "rule not found")
+	deletedRule := cfg.GetSignRule(accountName, ruleID)
 	assert.Nil(t, deletedRule)
 }
 

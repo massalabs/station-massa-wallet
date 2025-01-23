@@ -14,6 +14,7 @@ import { ExecuteSC } from './ExecuteSC.tsx/ExecuteSc';
 import { PlainText } from './PlainText/PlainText';
 import { OperationCost } from './SignComponentUtils/OperationCost';
 import { Transaction } from './Transaction/Transaction';
+import { walletapp } from '../../../wailsjs/go/models';
 import {
   OPER_BUY_ROLL,
   OPER_CALL_SC,
@@ -22,7 +23,7 @@ import {
   OPER_SELL_ROLL,
   OPER_TRANSACTION,
 } from '@/const/operations';
-import { events, promptRequest, promptResult } from '@/events/events';
+import { promptRequest, promptResult } from '@/events';
 import Intl from '@/i18n/i18n';
 import { SignLayout } from '@/layouts/Layout/SignLayout';
 import {
@@ -92,11 +93,13 @@ export function Sign() {
   const [fees, setFees] = useState<Mas.Mas>(BigInt(signData.Fees || 0));
   const [isEditing, setIsEditing] = useState(false);
 
+  const { EventType } = walletapp;
+
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
     const { password } = form;
 
-    EventsOnce(events.promptResult, handleResult);
+    EventsOnce(EventType.promptResult, handleResult);
 
     SendSignPromptInput(password, fees.toString());
   }

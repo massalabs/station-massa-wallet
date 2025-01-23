@@ -24,8 +24,8 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 	}
 
 	// check if the rule already exists
-	_, err := c.getSignRuleUnsafe(accountName, rule.ID)
-	if err == nil {
+	existingRule := c.getSignRuleUnsafe(accountName, rule.ID)
+	if existingRule != nil {
 		return "", fmt.Errorf("rule %s already exists", rule.ID)
 	}
 
@@ -33,8 +33,7 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 	account.SignRules = append(account.SignRules, rule)
 	c.Accounts[accountName] = account
 
-	err = saveConfigUnsafe(c)
-	if err != nil {
+	if err := saveConfigUnsafe(c); err != nil {
 		return "", fmt.Errorf("error saving configuration: %v", err)
 	}
 
@@ -178,24 +177,24 @@ func (c *Config) validateAllRuleIDs() error {
 	return nil
 }
 
-func (c *Config) getSignRuleUnsafe(accountName, ruleID string) (*SignRule, error) {
+func (c *Config) getSignRuleUnsafe(accountName, ruleID string) *SignRule {
 	// Check if the account exists
 	account, exists := c.Accounts[accountName]
 	if !exists {
-		return nil, fmt.Errorf("account not found: %s", accountName)
+		return nil
 	}
 
 	// Search for the rule by ID
 	for _, rule := range account.SignRules {
 		if rule.ID == ruleID {
-			return &rule, nil
+			return &rule
 		}
 	}
 
-	return nil, fmt.Errorf("rule not found: %s", ruleID)
+	return nil
 }
 
-func (c *Config) GetSignRule(accountName, ruleID string) (*SignRule, error) {
+func (c *Config) GetSignRule(accountName, ruleID string) *SignRule {
 	configManager.mu.RLock()
 	defer configManager.mu.RUnlock()
 
@@ -255,4 +254,16 @@ func (c *Config) GetEnabledRuleForContract(accountName string, contract *string)
 	}
 
 	return ruleType
+}
+
+func (c *Config) IsExistingRule(accountName string, rule SignRule) bool {
+	configManager.mu.RLock()
+	defer configManager.mu.RUnlock()
+
+	// Generate the expected ID based on the rule's parameters
+	expectedID := generateRuleID(accountName, rule)
+
+	rulePtr := c.getSignRuleUnsafe(accountName, expectedID)
+
+	return rulePtr != nil
 }

@@ -24,9 +24,7 @@ type addAsset struct {
 }
 
 func (a *addAsset) Handle(params operations.AddAssetParams) middleware.Responder {
-	// Check if the address is valid
-	if !utils.IsValidAddress(params.AssetAddress) {
-		// Return an error indicating the address is not valid
+	if !utils.IsValidContract(params.AssetAddress) {
 		errorMsg := "Invalid address format"
 		return operations.NewAddAssetUnprocessableEntity().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: errorMsg})
 	}

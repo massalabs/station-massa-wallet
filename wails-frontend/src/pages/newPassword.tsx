@@ -9,7 +9,8 @@ import { EventsOnce } from '@wailsjs/runtime';
 import { FiLock } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { events, promptAction, promptRequest } from '@/events/events';
+import { walletapp } from '../../wailsjs/go/models';
+import { promptRequest } from '@/events';
 import { Layout } from '@/layouts/Layout/Layout';
 import {
   parseForm,
@@ -26,12 +27,14 @@ function NewPassword() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
 
-  const { newPasswordReq, importReq } = promptAction;
+  const { EventType } = walletapp;
+
+  const { newPassword, import: importReq } = walletapp.PromptRequestAction;
   const isImportAction = req.Action === importReq;
 
   function getButtonLabel() {
     switch (req.Action) {
-      case newPasswordReq:
+      case newPassword:
         return 'Define';
       case importReq:
         return 'Define and import';
@@ -42,7 +45,7 @@ function NewPassword() {
 
   function getSubtitle() {
     switch (req.Action) {
-      case newPasswordReq:
+      case newPassword:
         return 'Enter a secure password';
       case importReq:
         return 'Define a new password';
@@ -83,7 +86,7 @@ function NewPassword() {
     const { password } = form;
 
     EventsOnce(
-      events.promptResult,
+      EventType.promptResult,
       handleApplyResult(navigate, req, setError, isImportAction),
     );
 

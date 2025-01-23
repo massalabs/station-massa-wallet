@@ -4,6 +4,7 @@ import {
 } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
 import { FiArrowRight } from 'react-icons/fi';
 
+import { CopyClip } from '../components/clipBoardCopy';
 import Intl from '@/i18n/i18n';
 
 interface FromToProps {
@@ -46,7 +47,12 @@ export function FromTo(props: FromToProps) {
             </p>
           ) : null}
         </div>
-        <p className="mas-caption">{maskAddress(recipientAddress)}</p>
+        <div className="flex items-center">
+          <p className="mas-caption">{maskAddress(recipientAddress)}</p>
+          <div className="ml-2">
+            <CopyClip data={recipientAddress} />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,8 @@ import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { backupMethods, events, promptRequest } from '@/events/events';
+import { walletapp } from '../../wailsjs/go/models';
+import { backupMethods, promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { handleApplyResult } from '@/utils';
@@ -20,9 +21,11 @@ function BackupMethods() {
   const req: promptRequest = state.req;
   const walletName: string = req.Msg;
 
+  const { EventType } = walletapp;
+
   async function handleDownloadYaml() {
     EventsOnce(
-      events.promptResult,
+      EventType.promptResult,
       handleApplyResult(navigate, req, setErrorMsg, true),
     );
 
