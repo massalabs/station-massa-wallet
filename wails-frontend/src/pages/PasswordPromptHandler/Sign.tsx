@@ -89,9 +89,7 @@ export function Sign() {
   const signData = req.Data as SignBodyProps;
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [fees, setFees] = useState<Mas.Mas>(
-    BigInt(signData.Fees || 0)
-  );
+  const [fees, setFees] = useState<Mas.Mas>(BigInt(signData.Fees || 0));
   const [isEditing, setIsEditing] = useState(false);
 
   function save(e: SyntheticEvent) {
@@ -100,11 +98,7 @@ export function Sign() {
 
     EventsOnce(events.promptResult, handleResult);
 
-    SendSignPromptInput(
-      password,
-      fees.toString(),
-      req.CorrelationID,
-    );
+    SendSignPromptInput(password, fees.toString(), req.CorrelationID);
   }
 
   function handleResult(result: promptResult) {
