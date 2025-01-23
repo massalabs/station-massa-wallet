@@ -16,9 +16,7 @@ export function NetworkName({ chainId }: NetworkNameProps) {
 
   let networkName: undefined | string | networkNameEnum =
     getNetworkNameByChainId(BigInt(chainId));
-  let networkIsKnown = false;
   if (networkName) {
-    networkIsKnown = true;
     if (networkName === networkNameEnum.Mainnet) {
       primaryColor = '#FF0000';
       secondaryColor = '#FFFFFF';
@@ -38,7 +36,7 @@ export function NetworkName({ chainId }: NetworkNameProps) {
       className="flex justify-between items-center bg-tertiary mas-caption
         rounded-full w-fit px-3 py-1 text-f-primary mb-4"
     >
-      {networkIsKnown ? (
+      {networkName ? (
         <MassaLogo
           size={16}
           primaryColor={primaryColor}
