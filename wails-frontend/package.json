@@ -17,9 +17,8 @@
     "prepare": "cd .. && husky install wails-frontend/.husky"
   },
   "dependencies": {
-    "@massalabs/massa-web3": "^4.0.2-dev",
-    "@massalabs/react-ui-kit": "^0.0.5-dev",
-    "bignumber": "^1.1.0",
+    "@massalabs/massa-web3": "^5.1.0",
+    "@massalabs/react-ui-kit": "^1.0.2",
     "currency.js": "^2.0.4",
     "dot-object": "^2.1.4",
     "esbuild": "^0.17.19",

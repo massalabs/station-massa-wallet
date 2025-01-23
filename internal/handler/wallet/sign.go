@@ -28,6 +28,7 @@ import (
 	"github.com/massalabs/station/pkg/node/sendoperation/executesc"
 	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
+	onchain "github.com/massalabs/station/pkg/onchain"
 	"github.com/pkg/errors"
 	"lukechampine.com/blake3"
 )
@@ -38,25 +39,27 @@ const (
 )
 
 type PromptRequestSignData struct {
-	Description       string
-	Fees              string
-	MinFees           string
-	OperationType     int
-	Coins             string
-	Address           string
-	Function          string
-	MaxCoins          string
-	WalletAddress     string
-	Nickname          string
-	RollCount         uint64
-	RecipientAddress  string
-	RecipientNickname string
-	Amount            string
-	PlainText         string
-	AllowFeeEdition   bool
-	ChainID           int64
-	Assets            []models.AssetInfo
-	Parameters        []byte
+	Description          string
+	Fees                 string
+	MinFees              string
+	OperationType        int
+	Coins                string
+	Address              string
+	Function             string
+	MaxCoins             string // for ExecuteSC
+	WalletAddress        string
+	Nickname             string
+	RollCount            uint64
+	RecipientAddress     string
+	RecipientNickname    string
+	Amount               string
+	PlainText            string
+	AllowFeeEdition      bool
+	ChainID              int64
+	Assets               []models.AssetInfo
+	Parameters           []byte
+	DeployedByteCodeSize uint   // for executeSC of type deploySC
+	DeployedCoins        uint64 // for executeSC of type DeploySC; the number of coins sent to the deployed contract
 }
 
 func NewSign(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache, AssetsStore *assets.AssetsStore) operations.SignHandler {
@@ -316,9 +319,28 @@ func getExecuteSCPromptData(
 		return PromptRequestSignData{}, err
 	}
 
-	return PromptRequestSignData{
+	promptReq := PromptRequestSignData{
 		MaxCoins: strconv.FormatUint(msg.MaxCoins, 10),
-	}, nil
+	}
+
+	// Check the datastore to know whether the ExecuteSC is a DeploySC or not
+
+	if msg.DataStore == nil { // the executeSC is not a deploySC
+		return promptReq, nil
+	}
+
+	dataStore, err := onchain.DeSerializeDatastore(msg.DataStore)
+	if err != nil {
+		return PromptRequestSignData{}, err
+	}
+
+	deployedContract, isDeployDatastore := onchain.DatastoreToDeployedContract(dataStore)
+	if isDeployDatastore { // the executeSC is a deploySC
+		promptReq.DeployedByteCodeSize = uint(len(deployedContract.ByteCode))
+		promptReq.DeployedCoins = deployedContract.Coins
+	}
+
+	return promptReq, nil
 }
 
 func getRollPromptData(

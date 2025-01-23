@@ -1,6 +1,6 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
-import { fromMAS, toMAS } from '@massalabs/massa-web3';
+import { Mas } from '@massalabs/massa-web3';
 import { Button, Password } from '@massalabs/react-ui-kit';
 import { SendSignPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
@@ -61,6 +61,8 @@ export interface SignBodyProps {
   ChainID: number;
   Assets: AssetInfo[];
   Parameters: string; // base64
+  DeployedByteCodeSize: number; // for executeSC of type deploySC
+  DeployedCoins: string; // for executeSC of type deploySC
   children?: React.ReactNode;
 }
 
@@ -87,9 +89,7 @@ export function Sign() {
   const signData = req.Data as SignBodyProps;
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [fees, setFees] = useState<string>(
-    toMAS(signData.Fees || '0').toString(),
-  );
+  const [fees, setFees] = useState<Mas.Mas>(BigInt(signData.Fees || 0));
   const [isEditing, setIsEditing] = useState(false);
 
   function save(e: SyntheticEvent) {
@@ -98,7 +98,7 @@ export function Sign() {
 
     EventsOnce(events.promptResult, handleResult);
 
-    SendSignPromptInput(password, fromMAS(fees).toString(), req.CorrelationID);
+    SendSignPromptInput(password, fees.toString(), req.CorrelationID);
   }
 
   function handleResult(result: promptResult) {
@@ -136,11 +136,13 @@ export function Sign() {
 
   const operationCostsArgs = {
     fees,
-    minFees: signData.MinFees,
+    minFees: Mas.fromString(signData.MinFees),
     setFees,
     isEditing,
     setIsEditing,
     allowFeeEdition: signData.AllowFeeEdition,
+    DeployedByteCodeSize: signData.DeployedByteCodeSize,
+    DeployedCoins: signData.DeployedCoins,
   };
 
   return (

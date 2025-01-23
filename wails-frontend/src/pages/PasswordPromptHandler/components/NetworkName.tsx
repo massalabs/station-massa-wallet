@@ -1,25 +1,23 @@
-import { CHAIN_ID_TO_NETWORK_NAME, MAINNET } from '@massalabs/massa-web3';
+import {
+  getNetworkNameByChainId,
+  NetworkName as networkNameEnum,
+} from '@massalabs/massa-web3';
 import { InterrogationPoint, MassaLogo } from '@massalabs/react-ui-kit';
 
 import Intl from '@/i18n/i18n';
-
-type ChainId = keyof typeof CHAIN_ID_TO_NETWORK_NAME;
 
 export interface NetworkNameProps {
   chainId: number;
 }
 
 export function NetworkName({ chainId }: NetworkNameProps) {
-  let networkName: string;
-  let networkIsKnown = false;
-
   let secondaryColor = undefined;
   let primaryColor = undefined;
 
-  if (chainId in CHAIN_ID_TO_NETWORK_NAME) {
-    networkName = CHAIN_ID_TO_NETWORK_NAME[chainId as ChainId];
-    networkIsKnown = true;
-    if (networkName === MAINNET) {
+  let networkName: undefined | string | networkNameEnum =
+    getNetworkNameByChainId(BigInt(chainId));
+  if (networkName) {
+    if (networkName === networkNameEnum.Mainnet) {
       primaryColor = '#FF0000';
       secondaryColor = '#FFFFFF';
     } else {
@@ -38,7 +36,7 @@ export function NetworkName({ chainId }: NetworkNameProps) {
       className="flex justify-between items-center bg-tertiary mas-caption
         rounded-full w-fit px-3 py-1 text-f-primary mb-4"
     >
-      {networkIsKnown ? (
+      {networkName ? (
         <MassaLogo
           size={16}
           primaryColor={primaryColor}
