@@ -30,14 +30,24 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		return errResp
 	}
 
-	cfg := config.Get()
-
-	signRule, err := cfg.GetSignRule(acc.Nickname, params.RuleID)
-	if err != nil {
-		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorUpdateSignRule, http.StatusInternalServerError)
+	newRule := config.SignRule{
+		Name:     params.Body.Name,
+		Contract: *params.Body.Contract,
+		RuleType: config.RuleType(params.Body.RuleType),
+		Enabled:  *params.Body.Enabled,
 	}
 
-	promptRequest, err := w.getPromptRequest(acc, signRule)
+	cfg := config.Get()
+
+	if signRule := cfg.GetSignRule(acc.Nickname, params.RuleID); signRule == nil {
+		return newErrorResponse(fmt.Sprintf("Rule ID %s not found", params.RuleID), errorUpdateSignRule, http.StatusInternalServerError)
+	}
+
+	if err := config.ValidateRule(newRule); err != nil {
+		return operations.NewUpdateSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: err.Error()})
+	}
+
+	promptRequest, err := w.getPromptRequest(acc, &newRule)
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorUpdateSignRule, http.StatusBadRequest)
 	}
@@ -50,13 +60,6 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		}
 
 		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
-	}
-
-	newRule := config.SignRule{
-		Name:     params.Body.Name,
-		Contract: *params.Body.Contract,
-		RuleType: config.RuleType(params.Body.RuleType),
-		Enabled:  *params.Body.Enabled,
 	}
 
 	ruleID, err := cfg.UpdateSignRule(acc.Nickname, params.RuleID, newRule)

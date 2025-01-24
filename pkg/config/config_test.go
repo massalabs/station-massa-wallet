@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -30,7 +29,7 @@ func TestMain(m *testing.M) {
 func TestAddSignRule(t *testing.T) {
 	rule := SignRule{
 		Name:     "Test Rule",
-		Contract: "test_contract",
+		Contract: "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9",
 		RuleType: RuleTypeAutoSign,
 		Enabled:  true,
 	}
@@ -48,7 +47,7 @@ func TestAddSignRule(t *testing.T) {
 	// Add another rule
 	rule2 := SignRule{
 		Name:     "Test Rule 2",
-		Contract: "test_contract_2",
+		Contract: "AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan",
 		RuleType: RuleTypeDisablePasswordPrompt,
 		Enabled:  false,
 	}
@@ -76,7 +75,7 @@ func TestAddSignRule(t *testing.T) {
 }
 
 func TestDeleteSignRule(t *testing.T) {
-	contract := "test_delete_contract"
+	contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
 
 	rule := SignRule{
 		Name:     "Test Rule",
@@ -85,8 +84,6 @@ func TestDeleteSignRule(t *testing.T) {
 		Enabled:  true,
 	}
 
-	fmt.Println("TestDeleteSignRule: adding rule", rule)
-
 	ruleID, err := cfg.AddSignRule(accountName, rule)
 	assert.NoError(t, err)
 
@@ -94,14 +91,13 @@ func TestDeleteSignRule(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Verify the rule was deleted
-	deletedRule, err := cfg.GetSignRule(accountName, ruleID)
-	assert.Error(t, err, "rule not found")
+	deletedRule := cfg.GetSignRule(accountName, ruleID)
 	assert.Nil(t, deletedRule)
 }
 
 func TestUpdateSignRule(t *testing.T) {
 	accountName := "test_account"
-	contract := "test_update_contract"
+	contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
 	rule := SignRule{
 		Name:     "Test Rule",
 		Contract: contract,
@@ -114,7 +110,7 @@ func TestUpdateSignRule(t *testing.T) {
 
 	newRule := SignRule{
 		Name:     "Updated Rule",
-		Contract: "updated_contract",
+		Contract: "AS125oPLYRTtfVjpWisPZVTLjBhCFfQ1jDsi75XNtRm1NZux54eCj",
 		RuleType: RuleTypeDisablePasswordPrompt,
 		Enabled:  false,
 	}
@@ -124,8 +120,8 @@ func TestUpdateSignRule(t *testing.T) {
 	assert.NotEqual(t, ruleID, newRuleID)
 
 	// Verify the rule was updated
-	updatedRule, err := cfg.GetSignRule(accountName, newRuleID)
-	assert.NoError(t, err)
+	updatedRule := cfg.GetSignRule(accountName, newRuleID)
+	assert.NotNil(t, updatedRule)
 	assert.Equal(t, newRuleID, updatedRule.ID)
 	assert.Equal(t, newRule.Name, updatedRule.Name)
 	assert.Equal(t, newRule.Contract, updatedRule.Contract)
@@ -133,15 +129,14 @@ func TestUpdateSignRule(t *testing.T) {
 	assert.Equal(t, newRule.Enabled, updatedRule.Enabled)
 
 	// Verify previous rule is deleted
-	deletedRule, err := cfg.GetSignRule(accountName, ruleID)
-	assert.Error(t, err, "rule not found")
+	deletedRule := cfg.GetSignRule(accountName, ruleID)
 	assert.Nil(t, deletedRule)
 }
 
 func TestValidateRuleID(t *testing.T) {
 	rule := SignRule{
 		Name:     "Test Rule",
-		Contract: "test_contract",
+		Contract: "AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ",
 		RuleType: RuleTypeAutoSign,
 		Enabled:  true,
 	}
@@ -158,7 +153,7 @@ func TestValidateRuleID(t *testing.T) {
 
 func TestHasEnabledRule(t *testing.T) {
 	accountName := "test_account"
-	contract := "test_hasEnable_contract"
+	contract := "AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY"
 	rule := SignRule{
 		Name:     "Test Rule",
 		Contract: contract,

@@ -233,7 +233,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		cfg := config.Get()
 		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
 			Name:     "test",
-			Contract: "AnotherContract",
+			Contract: "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
 			RuleType: config.RuleTypeAutoSign,
 			Enabled:  true,
 		})
@@ -362,7 +362,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		cfg := config.Get()
 		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
 			Name:     "test",
-			Contract: "DummyContract",
+			Contract: "AS12LKs9txoSSy8JgFJgV96m8k5z9pgzjYMYSshwN67mFVuj3bdUV",
 			RuleType: config.RuleTypeDisablePasswordPrompt,
 			Enabled:  true,
 		})

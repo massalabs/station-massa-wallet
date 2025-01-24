@@ -2,12 +2,6 @@ package walletapp
 
 import "github.com/awnumar/memguard"
 
-const (
-	PromptResultEvent  string = "promptResult"
-	PromptDataEvent    string = "promptData"
-	PromptRequestEvent string = "promptRequest"
-)
-
 // Events
 
 type EventData struct {
@@ -20,21 +14,6 @@ type PromptCtrl int
 
 const (
 	Cancel PromptCtrl = iota
-)
-
-type PromptRequestAction int
-
-const (
-	Delete PromptRequestAction = iota
-	NewPassword
-	Sign
-	Import
-	Backup
-	TradeRolls
-	Unprotect
-	AddSignRule
-	DeleteSignRule
-	UpdateSignRule
 )
 
 // User input interfaces for the channel

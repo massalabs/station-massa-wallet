@@ -128,7 +128,7 @@ func SaveConfig(config *Config) error {
 func saveConfigUnsafe(config *Config) error {
 	// Check for duplicate IDs
 	if err := config.ensureUniqueRuleIDs(); err != nil {
-		return fmt.Errorf("duplicate SignRule IDs found: %v", err)
+		return err
 	}
 
 	path := configFilePath()
