@@ -30,9 +30,9 @@ func (w *deleteSignRuleHandler) Handle(params operations.DeleteSignRuleParams) m
 
 	cfg := config.Get()
 
-	signRule, err := cfg.GetSignRule(acc.Nickname, params.RuleID)
-	if err != nil {
-		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorDeleteSignRule, http.StatusInternalServerError)
+	signRule := cfg.GetSignRule(acc.Nickname, params.RuleID)
+	if signRule == nil {
+		return newErrorResponse(fmt.Sprintf("Rule ID %s not found", params.RuleID), errorDeleteSignRule, http.StatusInternalServerError)
 	}
 
 	promptRequest, err := w.getPromptRequest(acc, signRule)

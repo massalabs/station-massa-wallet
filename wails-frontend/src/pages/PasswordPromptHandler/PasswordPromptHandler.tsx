@@ -1,8 +1,10 @@
+import { walletapp } from '@wailsjs/go/models';
 import { useLocation } from 'react-router-dom';
 
 import { Delete } from './Delete';
 import { Sign } from './Sign';
-import { promptAction, promptRequest } from '@/events/events';
+import { SignRule } from '../SignRuleHandler/signRulePrompt';
+import { promptRequest } from '@/events';
 
 export interface PromptRequestDeleteData {
   Nickname: string;
@@ -12,16 +14,21 @@ export interface PromptRequestDeleteData {
 export default function PasswordPromptHandler() {
   const { state } = useLocation();
   const req: promptRequest = state.req;
-  const { deleteReq, signReq } = promptAction;
+
+  const { PromptRequestAction } = walletapp;
 
   return (
     <>
       {(() => {
         switch (req.Action) {
-          case deleteReq:
+          case PromptRequestAction.delete:
             return <Delete />;
-          case signReq:
+          case PromptRequestAction.sign:
             return <Sign />;
+          case PromptRequestAction.addSignRule:
+          case PromptRequestAction.updateSignRule:
+          case PromptRequestAction.deleteSignRule:
+            return <SignRule />;
         }
       })()}
     </>
