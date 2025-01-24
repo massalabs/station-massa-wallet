@@ -1,7 +1,8 @@
+import { walletapp } from '@wailsjs/go/models';
 import { FiCheck } from 'react-icons/fi';
 import { useLocation } from 'react-router';
 
-import { promptAction, promptRequest } from '@/events/events';
+import { promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 
@@ -9,17 +10,19 @@ function Success() {
   const { state } = useLocation();
   const { req } = state;
 
+  const { PromptRequestAction } = walletapp;
+
   function successMsg(req: promptRequest) {
     switch (req.Action) {
-      case promptAction.deleteReq:
+      case PromptRequestAction.delete:
         return Intl.t('success.delete');
-      case promptAction.newPasswordReq:
+      case PromptRequestAction.newPassword:
         return Intl.t('success.new-password');
-      case promptAction.importReq:
+      case PromptRequestAction.import:
         return Intl.t('success.import');
-      case promptAction.signReq:
+      case PromptRequestAction.sign:
         return Intl.t('success.sign');
-      case promptAction.backupReq:
+      case PromptRequestAction.backup:
         return Intl.t('success.backup');
       default:
         return Intl.t('success.success');

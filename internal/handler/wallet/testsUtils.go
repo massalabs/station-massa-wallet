@@ -13,8 +13,7 @@ import (
 )
 
 const (
-	ChainIDUnitTests        = 77658366 // Buildnet
-	PromptCorrelationTestId = "1"
+	ChainIDUnitTests = 77658366 // Buildnet
 )
 
 func createAccount(password, nickname string, t *testing.T, prompterApp prompt.WalletPrompterInterface) *account.Account {

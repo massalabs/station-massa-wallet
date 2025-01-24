@@ -1,6 +1,7 @@
 package prompt
 
 import (
+	"errors"
 	"fmt"
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
@@ -39,7 +40,7 @@ func handleImportFile(prompterApp WalletPrompterInterface, filePath string) (*ac
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 
-		return nil, false, fmt.Errorf(msg)
+		return nil, false, errors.New(msg)
 	}
 
 	return acc, false, nil
@@ -62,7 +63,7 @@ func handleImportPrivateKey(prompterApp WalletPrompterInterface, walletInfo wall
 		prompterApp.EmitEvent(walletapp.PromptResultEvent,
 			walletapp.EventData{Success: false, CodeMessage: utils.WailsErrorCode(err)})
 
-		return nil, false, fmt.Errorf(msg)
+		return nil, false, errors.New(msg)
 	}
 
 	return acc, false, nil

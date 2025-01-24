@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { Button } from '@massalabs/react-ui-kit';
-import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { Button, maskNickname } from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
 import {
   SendPromptInput,
@@ -10,7 +9,7 @@ import {
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { events, promptRequest } from '@/events/events';
+import { promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { handleApplyResult, handleCancel } from '@/utils';
@@ -25,6 +24,8 @@ const ImportFile = () => {
 
   const { state } = useLocation();
   const req: promptRequest = state.req;
+
+  const { EventType } = walletapp;
 
   const accountStyleSuccess = 'mas-body text-s-success pb-4';
   const accountStyleNormal = 'mas-body text-neutral pb-4';
@@ -50,10 +51,10 @@ const ImportFile = () => {
       setAccount(res);
     } else {
       EventsOnce(
-        events.promptResult,
+        EventType.promptResult,
         handleApplyResult(nav, req, setErrorMsg, true),
       );
-      await SendPromptInput(account.filePath, req.CorrelationID);
+      await SendPromptInput(account.filePath);
     }
   };
 

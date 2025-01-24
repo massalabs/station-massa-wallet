@@ -200,6 +200,7 @@ func (w *Wallet) GetAccountFromAddress(needle string) (*account.Account, error) 
 				return false
 			}
 		}
+
 		return true
 	})
 
@@ -243,6 +244,7 @@ func (w *Wallet) AllAccounts() []*account.Account {
 		if ok {
 			accounts = append(accounts, acc)
 		}
+
 		return true
 	})
 

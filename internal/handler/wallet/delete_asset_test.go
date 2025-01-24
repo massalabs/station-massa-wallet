@@ -10,12 +10,12 @@ import (
 )
 
 func TestAddGetDeleteAsset(t *testing.T) {
-	api, prompterApp, _, _, err := MockAPI()
+	api, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
 	password := "zePassword"
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	// Create the test wallet first
 

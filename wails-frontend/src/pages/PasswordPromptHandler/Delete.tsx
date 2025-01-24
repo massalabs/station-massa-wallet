@@ -1,12 +1,13 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
 import { Button, Password } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { FiTrash2 } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { events, promptRequest, promptResult } from '@/events/events';
+import { promptRequest, promptResult } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { PromptRequestDeleteData } from '@/pages/PasswordPromptHandler/PasswordPromptHandler';
@@ -29,13 +30,15 @@ export function Delete() {
   const req: promptRequest = state.req;
   const data: PromptRequestDeleteData = req.Data;
 
+  const { EventType } = walletapp;
+
   function save(e: SyntheticEvent) {
     const form = parseForm(e);
     const { password } = form;
 
-    EventsOnce(events.promptResult, handleResult);
+    EventsOnce(EventType.promptResult, handleResult);
 
-    SendPromptInput(password, req.CorrelationID);
+    SendPromptInput(password);
   }
 
   function handleResult(result: promptResult) {

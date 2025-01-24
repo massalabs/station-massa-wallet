@@ -1,12 +1,13 @@
 import { useState, useRef, SyntheticEvent } from 'react';
 
 import { Password, Button, Clipboard } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { ClipboardSetText, EventsOnce } from '@wailsjs/runtime';
 import { FiCopy, FiArrowRight } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { events, promptRequest, promptResult } from '@/events/events';
+import { promptRequest, promptResult } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { ErrorCode, IErrorObject, handleCancel } from '@/utils';
@@ -59,6 +60,8 @@ function BackupKeyPairs() {
 
   const [error, setError] = useState<IErrorObject | null>(null);
 
+  const { EventType } = walletapp;
+
   function validate(e: SyntheticEvent) {
     const formObject = parseForm(e);
     const { password } = formObject;
@@ -96,8 +99,8 @@ function BackupKeyPairs() {
     const formObject = parseForm(e);
     const { password } = formObject;
 
-    EventsOnce(events.promptResult, handleResult);
-    await SendPromptInput(password, req.CorrelationID);
+    EventsOnce(EventType.promptResult, handleResult);
+    await SendPromptInput(password);
   }
 
   return (
