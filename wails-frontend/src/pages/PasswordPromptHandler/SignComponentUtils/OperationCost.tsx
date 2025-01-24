@@ -233,11 +233,9 @@ export function OperationCost(props: OperationCostProps) {
                   <p className="flex mas-caption">
                     <Tooltip
                       className="mr-1"
-                      body={
-                        Intl.t(
-                          'password-prompt.sign.deployed-coins-tooltip',
-                        )
-                      }
+                      body={Intl.t(
+                        'password-prompt.sign.deployed-coins-tooltip',
+                      )}
                     >
                       <FiInfo size={16} />
                     </Tooltip>
@@ -255,11 +253,9 @@ export function OperationCost(props: OperationCostProps) {
                   <p className="flex mas-caption">
                     <Tooltip
                       className="mr-1"
-                      body={
-                        Intl.t(
-                          'password-prompt.sign.deployed-bytecode-cost-tooltip',
-                        )
-                      }
+                      body={Intl.t(
+                        'password-prompt.sign.deployed-bytecode-cost-tooltip',
+                      )}
                     >
                       <FiInfo size={16} />
                     </Tooltip>
