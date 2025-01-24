@@ -34,8 +34,34 @@ func Test_signrule_Handlers(t *testing.T) {
 
 	cfg := config.Get()
 
+	t.Run("Add sign rule with invalid contract", func(t *testing.T) {
+		contract := "Invalid Contract"
+		ruleType := config.RuleTypeAutoSign
+		ruleName := "Test Rule"
+		enabled := true
+		body := fmt.Sprintf(`{
+			"name": "%s",
+			"contract": "%s",
+			"ruleType": "%s",
+			"enabled": %t,
+			"description": "Test Description"
+		}`, ruleName, contract, ruleType, enabled)
+
+		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body)
+		assert.NoError(err)
+
+		verifyStatusCode(t, resp, http.StatusBadRequest)
+
+		// check rule is not added
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		assert.Nil(rulePtr)
+
+		hasRule := cfg.HasEnabledRule(account.Nickname)
+		assert.False(hasRule)
+	})
+
 	t.Run("Add sign rule", func(t *testing.T) {
-		contract := "TestAddContract"
+		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
 		ruleType := config.RuleTypeAutoSign
 		ruleName := "Test Rule"
 		enabled := true
@@ -61,7 +87,6 @@ func Test_signrule_Handlers(t *testing.T) {
 
 		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body)
 		assert.NoError(err)
-		fmt.Println(resp)
 
 		verifyStatusCode(t, resp, http.StatusOK)
 
@@ -83,8 +108,8 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.True(hasRule)
 
 		// check rule contains expected fields
-		rule, err := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
-		assert.NoError(err)
+		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NotNil(rule)
 		assert.Equal(rule.Name, ruleName)
 		assert.Equal(rule.Contract, contract)
 		assert.Equal(rule.RuleType, ruleType)
@@ -162,8 +187,8 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotEmpty(updateRuleResponse.ID)
 
 		// Check rule is updated
-		rule, err := cfg.GetSignRule(account.Nickname, updateRuleResponse.ID)
-		assert.NoError(err)
+		rule := cfg.GetSignRule(account.Nickname, updateRuleResponse.ID)
+		assert.NotNil(rule)
 		assert.Equal(rule.Name, updatedRuleName)
 		assert.Equal(rule.Contract, contract)
 		assert.Equal(rule.RuleType, ruleType)
@@ -176,7 +201,7 @@ func Test_signrule_Handlers(t *testing.T) {
 	})
 
 	t.Run("Delete sign rule", func(t *testing.T) {
-		contract := "TestDeleteContract"
+		contract := "AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ"
 		ruleType := config.RuleTypeAutoSign
 		ruleName := "Test Rule"
 		enabled := true
@@ -184,8 +209,7 @@ func Test_signrule_Handlers(t *testing.T) {
 			"name": "%s",
 			"contract": "%s",
 			"ruleType": "%s",
-			"enabled": %t,
-			"description": "Test Description"
+			"enabled": %t
 		}`, ruleName, contract, ruleType, enabled)
 
 		testResult := make(chan walletapp.EventData)
@@ -203,6 +227,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		// Add a sign rule first
 		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body)
 		assert.NoError(err)
+
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		var addRuleResponse models.AddSignRuleResponse
