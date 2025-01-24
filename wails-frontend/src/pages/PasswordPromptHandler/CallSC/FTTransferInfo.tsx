@@ -1,6 +1,5 @@
 import { Args } from '@massalabs/massa-web3';
-import { formatAmount } from '@massalabs/react-ui-kit';
-import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { formatAmount, maskAddress } from '@massalabs/react-ui-kit';
 import { LogPrint } from '@wailsjs/runtime/runtime';
 
 import Intl from '@/i18n/i18n';

@@ -13,8 +13,8 @@ import {
   InlineMoney,
   Tooltip,
   formatAmount,
+  massaToken,
 } from '@massalabs/react-ui-kit';
-import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
 import { LogPrint } from '@wailsjs/runtime/runtime';
 import {
   FiCheck,

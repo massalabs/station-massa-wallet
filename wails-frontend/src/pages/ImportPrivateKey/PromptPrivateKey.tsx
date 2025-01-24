@@ -4,7 +4,7 @@ import { Password, Button, Stepper } from '@massalabs/react-ui-kit';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IMPORT_STEPS } from '@/const/stepper';
-import { promptRequest } from '@/events/events';
+import { promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { IErrorObject, parseForm, handleCancel } from '@/utils';

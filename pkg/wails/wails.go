@@ -24,5 +24,9 @@ func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application 
 		Bind: []interface{}{
 			app,
 		},
+		EnumBind: []interface{}{
+			wApp.PromptRequest,
+			wApp.EventTypes,
+		},
 	})
 }

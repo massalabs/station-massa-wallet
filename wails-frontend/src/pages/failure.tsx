@@ -1,7 +1,7 @@
 import { FiX } from 'react-icons/fi';
 import { useLocation } from 'react-router';
 
-import { promptRequest } from '@/events/events';
+import { promptRequest } from '@/events';
 import { Layout } from '@/layouts/Layout/Layout';
 
 const Failure = () => {
