@@ -38,14 +38,7 @@ export function ExecuteSC(props: SignBodyProps) {
             customClass="mas-caption !w-7/12 left-0  !ml-28"
             body={
               isDeploySC ? (
-                <>
-                  {Intl.t('password-prompt.sign.deploy-sc-tooltip.1')}
-                  <br />
-                  <br />
-                  {Intl.t('password-prompt.sign.deploy-sc-tooltip.2')}
-                  <br />
-                  {Intl.t('password-prompt.sign.deploy-sc-tooltip.3')}
-                </>
+                  Intl.t('password-prompt.sign.deploy-sc-tooltip')
               ) : (
                 <>
                   {Intl.t('password-prompt.sign.execute-sc-tooltip.1')}
@@ -75,8 +68,6 @@ export function ExecuteSC(props: SignBodyProps) {
               {Intl.t('password-prompt.sign.deploy-sc-warning.1')}
               <br />
               {Intl.t('password-prompt.sign.deploy-sc-warning.2')}
-              <br />
-              {Intl.t('password-prompt.sign.deploy-sc-warning.3')}
             </>
           ) : (
             <>

@@ -234,19 +234,9 @@ export function OperationCost(props: OperationCostProps) {
                     <Tooltip
                       className="mr-1"
                       body={
-                        <>
-                          {Intl.t(
-                            'password-prompt.sign.deployed-coins-tooltip.1',
-                          )}
-                          <br />
-                          {Intl.t(
-                            'password-prompt.sign.deployed-coins-tooltip.2',
-                          )}
-                          <br />
-                          {Intl.t(
-                            'password-prompt.sign.deployed-coins-tooltip.3',
-                          )}
-                        </>
+                        Intl.t(
+                          'password-prompt.sign.deployed-coins-tooltip',
+                        )
                       }
                     >
                       <FiInfo size={16} />
@@ -266,15 +256,9 @@ export function OperationCost(props: OperationCostProps) {
                     <Tooltip
                       className="mr-1"
                       body={
-                        <>
-                          {Intl.t(
-                            'password-prompt.sign.deployed-bytecode-cost-tooltip.1',
-                          )}
-                          <br />
-                          {Intl.t(
-                            'password-prompt.sign.deployed-bytecode-cost-tooltip.2',
-                          )}
-                        </>
+                        Intl.t(
+                          'password-prompt.sign.deployed-bytecode-cost-tooltip',
+                        )
                       }
                     >
                       <FiInfo size={16} />
