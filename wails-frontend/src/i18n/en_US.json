@@ -62,26 +62,14 @@
       "coins-tooltip": "The amount of coins locked for",
       "coins-tooltip-2": "storage space on the ledger.",
       "deployed-coins": "Deployed contract coins",
-      "deployed-coins-tooltip": {
-        "1": "The amount of coins sent to the contract being deployed.",
-        "2": "Allow it to use storage space on the ledger.",
-        "3": "Should be non null if constructor need to write to storage."
-      },
+      "deployed-coins-tooltip": "The amount of coins sent to the deploying contract.",
       "deployed-bytecode-cost": "Deployed bytecode cost",
-      "deployed-bytecode-cost-tooltip": {
-        "1": "The amount of coins locked for the storage space",
-        "2": "used for storing the bytecode of the contract being deployed."
-      },
+      "deployed-bytecode-cost-tooltip": "The amount of coins locked for storage space used to store the deployed contract.",
       "deploy-sc-warning": {
-        "1": "Deploying a smart contract consist in fact in an ExecuteSC operation",
-        "2": "This operation can spend coins and tokens from your account.",
-        "3": "Proceed only if it originates from a trusted source."
+        "1": "DeploySC operation can spend coins and tokens from your account.",
+        "2": "Only proceed if it comes from a trusted source."
       },
-      "deploy-sc-tooltip": {
-        "1": "DeploySC allows you to deploy a smart contract on the Massa network.",
-        "2": "It's in fact a pseudo operation since in background it consist in",
-        "3": "an ExecuteSC operation that runs a deployer code that deploys your contract."
-      },
+      "deploy-sc-tooltip": "DeploySC lets you deploy a smart contract on the Massa network.",
       "edit-fees": "edit fees",
       "confirm-fees": "confirm change",
       "reset-fees": "reset to default",
@@ -104,8 +92,8 @@
         "3": "Proceed only if it originates from a trusted source."
       },
       "execute-sc-warning": {
-        "1": "Proceed only if it originates from a trusted source.",
-        "2": "This operation is like a smart contract and can spend coins and tokens from your account."
+        "1": "ExecuteSC operation can spend coins and tokens from your account.",
+        "2": "Only proceed if it comes from a trusted source."
       },
       "execute-sc-max-coins-tooltip": {
         "1": "Most similar concept is Giving Allowance on EVM chains.",
