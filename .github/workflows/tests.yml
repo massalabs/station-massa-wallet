@@ -14,10 +14,6 @@ jobs:
         with:
           go-version: 1.21
           cache: true
-      - name: fill frontend dist with dummy file
-        run: |
-          mkdir internal/handler/html/dist && touch internal/handler/html/dist/yolo
-          mkdir wails-frontend/dist && touch wails-frontend/dist/yolo
       - name: Run coverage tests
         run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
       - name: Upload coverage to Codecov
