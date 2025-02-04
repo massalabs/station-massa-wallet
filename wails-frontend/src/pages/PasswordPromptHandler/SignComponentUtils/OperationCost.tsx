@@ -15,6 +15,7 @@ import {
   formatAmount,
 } from '@massalabs/react-ui-kit';
 import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
+import { LogPrint } from '@wailsjs/runtime/runtime';
 import {
   FiCheck,
   FiChevronDown,
@@ -43,9 +44,18 @@ export interface OperationCostProps {
 }
 
 export function OperationCost(props: OperationCostProps) {
-  const hideCoins = props.coins === undefined;
+  const hideCoins = props.coins ? props.coins === '0' : true;
   const hideByteCodeCost = props.DeployedByteCodeSize === 0;
-  const hideDeployedCoins = props.DeployedCoins === undefined;
+  const hideDeployedCoins = props.DeployedCoins
+    ? props.DeployedCoins === '0'
+    : true;
+
+  LogPrint(
+    '\nOperationCost props DeployedByteCodeSize:' + props.DeployedByteCodeSize,
+  );
+  LogPrint('\nOperationCost props DeployedCoins:' + props.DeployedCoins);
+  LogPrint('\nOperationCost hideByteCodeCost:' + hideByteCodeCost);
+  LogPrint('\nOperationCost hideDeployedCoins:' + hideDeployedCoins);
 
   const coins = BigInt(props.coins ?? 0);
   const byteCodeStorageCost = props.DeployedByteCodeSize
