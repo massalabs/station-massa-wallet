@@ -1,3 +1,12 @@
+export namespace config {
+	
+	export enum RuleType {
+	    disable_password_prompt = "DISABLE_PASSWORD_PROMPT",
+	    auto_sign = "AUTO_SIGN",
+	}
+
+}
+
 export namespace walletapp {
 	
 	export enum PromptRequestAction {

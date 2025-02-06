@@ -13,11 +13,11 @@ import (
 )
 
 type PromptRequest struct {
-	Action           walletapp.PromptRequestAction
-	Msg              string
-	Data             interface{}
-	CodeMessage      string
-	PasswordRequired bool
+	Action          walletapp.PromptRequestAction
+	Msg             string
+	Data            interface{}
+	CodeMessage     string
+	DisablePassword bool
 }
 
 // WalletPrompter is a struct that wraps a Wails GUI application and implements the WalletPrompterInterface interface.
