@@ -65,22 +65,27 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	var privateKey *memguard.LockedBuffer
 
+	skipPrompt := false
+
 	if enabledRule != nil {
+		promptData.EnabledSignRule = enabledRule
+
 		// at this point, we have a rule enabled for the contract, if private key is cached, we don't need to prompt for password
 		privateKey, err = cache.PrivateKeyFromCache(acc)
 		if err != nil {
 			logger.Warn("error retriving private key from cache: ", err)
 		} else if privateKey != nil {
 			// If privatekey is cached, we don't need to prompt for password
-			promptRequest.PasswordRequired = false
-		}
+			promptRequest.DisablePassword = true
 
+			// If the rule is AutoSign, we don't need to open wails prompt
+			if *enabledRule == config.RuleTypeAutoSign {
+				skipPrompt = true
+			}
+		}
 	}
 
-	isDisablePasswordRuleEnabled := enabledRule != nil && *enabledRule == config.RuleTypeDisablePasswordPrompt
-
-	if promptRequest.PasswordRequired || isDisablePasswordRuleEnabled {
-		promptData.EnabledSignRule = enabledRule
+	if !skipPrompt {
 		promptRequest.Data = promptData
 
 		output, err := PromptForOperation(w.prompterApp, acc, promptRequest)
@@ -225,9 +230,9 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.Assets = convertAssetsToModel(assets.Store.All(acc.Nickname, int(data.ChainID)))
 
 	promptRequest := prompt.PromptRequest{
-		Action:           walletapp.Sign,
-		Data:             data,
-		PasswordRequired: true,
+		Action:          walletapp.Sign,
+		Data:            data,
+		DisablePassword: false,
 	}
 
 	return &promptRequest, fees, nil

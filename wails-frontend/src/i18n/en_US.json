@@ -25,8 +25,8 @@
       "title": "Delete a signature rule"
     },
     "behavior": {
-      "disable_password_prompt": "You are allowing the wallet to remember your password and enable one click sign for the selected contract(s)",
-      "auto_sign": "You are allowing the wallet to sign transactions without asking for confirmation for the selected contract"
+      "DISABLE_PASSWORD_PROMPT": "You are allowing the wallet to remember your password and enable one click sign for the selected contract",
+      "AUTO_SIGN": "You are allowing the wallet to sign transactions without asking for confirmation for the selected contract"
     },
     "description": "Description from the requesting dApp",
     "details": "Rule details",
@@ -35,8 +35,8 @@
     "ruleType": "Rule type",
     "enabled": "Enable",
     "rulesTypeDesc": {
-      "auto_sign": "Auto sign",
-      "disable_password_prompt": "Remember password"
+      "AUTO_SIGN": "Auto sign",
+      "DISABLE_PASSWORD_PROMPT": "Remember password"
     }
   },
   "password-prompt": {

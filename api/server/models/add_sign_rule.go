@@ -32,6 +32,7 @@ type AddSignRule struct {
 	Enabled *bool `json:"enabled"`
 
 	// The name of the rule.
+	// Max Length: 100
 	Name string `json:"name,omitempty"`
 
 	// rule type
@@ -52,6 +53,10 @@ func (m *AddSignRule) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateEnabled(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateName(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -89,6 +94,18 @@ func (m *AddSignRule) validateDescription(formats strfmt.Registry) error {
 func (m *AddSignRule) validateEnabled(formats strfmt.Registry) error {
 
 	if err := validate.Required("enabled", "body", m.Enabled); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *AddSignRule) validateName(formats strfmt.Registry) error {
+	if swag.IsZero(m.Name) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("name", "body", m.Name, 100); err != nil {
 		return err
 	}
 

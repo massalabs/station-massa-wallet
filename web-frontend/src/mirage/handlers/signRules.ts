@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Response, Server } from 'miragejs';
 
+import { RuleType, SignRule } from '../../models/ConfigModel';
 import { AppSchema } from '../types';
-import { SignRule } from '@/models/ConfigModel';
 
 export function routesForSignRules(server: Server) {
   server.post('accounts/:nickname/signrules', (schema: AppSchema, request) => {
@@ -34,7 +34,9 @@ export function routesForSignRules(server: Server) {
       );
     }
 
-    if (!['disable_password_prompt', 'auto_sign'].includes(ruleType)) {
+    if (
+      ![RuleType.AutoSign, RuleType.DisablePasswordPrompt].includes(ruleType)
+    ) {
       return new Response(
         422,
         {},
@@ -144,7 +146,9 @@ export function routesForSignRules(server: Server) {
         );
       }
 
-      if (!['disable_password_prompt', 'auto_sign'].includes(ruleType)) {
+      if (
+        ![RuleType.AutoSign, RuleType.DisablePasswordPrompt].includes(ruleType)
+      ) {
         return new Response(
           422,
           {},
