@@ -72,7 +72,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	cfg := config.Get()
 
 	if cfg.HasEnabledRule(acc.Nickname) {
-		err = cache.CachePrivateKey(acc, output.Password)
+		err = cache.CachePrivateKeyFromPassword(acc, output.Password)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
 		}

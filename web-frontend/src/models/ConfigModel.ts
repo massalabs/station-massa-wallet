@@ -1,6 +1,6 @@
 export enum RuleType {
-  DisablePasswordPrompt = 'disable_password_prompt',
-  AutoSign = 'auto_sign',
+  DisablePasswordPrompt = 'DISABLE_PASSWORD_PROMPT',
+  AutoSign = 'AUTO_SIGN',
 }
 
 export interface SignRule {

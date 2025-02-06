@@ -30,11 +30,11 @@ func (m RuleType) Pointer() *RuleType {
 
 const (
 
-	// RuleTypeDisablePasswordPrompt captures enum value "disable_password_prompt"
-	RuleTypeDisablePasswordPrompt RuleType = "disable_password_prompt"
+	// RuleTypeDISABLEPASSWORDPROMPT captures enum value "DISABLE_PASSWORD_PROMPT"
+	RuleTypeDISABLEPASSWORDPROMPT RuleType = "DISABLE_PASSWORD_PROMPT"
 
-	// RuleTypeAutoSign captures enum value "auto_sign"
-	RuleTypeAutoSign RuleType = "auto_sign"
+	// RuleTypeAUTOSIGN captures enum value "AUTO_SIGN"
+	RuleTypeAUTOSIGN RuleType = "AUTO_SIGN"
 )
 
 // for schema
@@ -42,7 +42,7 @@ var ruleTypeEnum []interface{}
 
 func init() {
 	var res []RuleType
-	if err := json.Unmarshal([]byte(`["disable_password_prompt","auto_sign"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["DISABLE_PASSWORD_PROMPT","AUTO_SIGN"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
