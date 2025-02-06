@@ -98,11 +98,16 @@
     "title-profile": "Account profile",
     "title-security": "Account security",
     "title-global": "Global settings",
-    "title-auto-sign": "Auto sign",
-    "auto-sign": {
-      "description": "Auto sign allows you to sign multiple transactions to a specific address without having to enter your password each time.",
-      "address": "Address",
-      "actions": "Actions"
+    "title-sign-rules": "Sign Rules",
+    "sign-rules": {
+      "description": "Sign Rules allow you to sign operations in a simpler way by defining rules specific to a Smart Contract.",
+      "contract-address": "Contract address",
+      "rule-type": "Type",
+      "name": "Name",
+      "add": "Add",
+      "actions": "Actions",
+      "auto-sign": "Auto",
+      "disable-password-prompt": "No Password"
     },
     "inputs": {
       "nickname": "Account name"
