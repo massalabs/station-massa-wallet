@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+import { faker } from '@faker-js/faker';
 import { createServer, Response } from 'miragejs';
 
 import { factories } from './factories';
@@ -16,6 +17,11 @@ const serverData = {
     const accounts: AccountObject[] = server.createList('account', 5);
     accounts.forEach((account: AccountObject) => {
       server.createList('asset', 3, { account });
+
+      const numRules = faker.number.int({ min: 0, max: 8 });
+      server.createList('signRule', numRules, {
+        accountNickname: account.nickname,
+      });
     });
   },
 };
