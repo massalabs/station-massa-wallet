@@ -1,7 +1,4 @@
-export enum RuleType {
-  disablePasswordPrompt = 'disable_password_prompt',
-  autoSign = 'auto_sign',
-}
+import { config } from '@wailsjs/go/models';
 
 // Used in i18n
 export enum signRuleActionStr {
@@ -17,7 +14,7 @@ export interface ruleRequestData {
   SignRule: {
     Name: string;
     Contract: string;
-    RuleType: RuleType;
+    RuleType: config.RuleType;
     Enabled: boolean;
     ID: string;
   };

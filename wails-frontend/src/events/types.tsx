@@ -12,6 +12,7 @@ export type promptRequest = {
   Msg: string;
   Data: any;
   CodeMessage: string;
+  DisablePassword: boolean | null;
 };
 
 export const backupMethods = {

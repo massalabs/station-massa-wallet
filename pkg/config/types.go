@@ -2,12 +2,37 @@ package config
 
 import "sync"
 
+type EventType string
+
+const (
+	PromptResultEvent  string = "PROMPT_RESULT"
+	PromptDataEvent    string = "PROMPT_DATA"
+	PromptRequestEvent string = "PROMPT_REQUEST"
+)
+
+var EventTypes = []struct {
+	Value  EventType
+	TSName string
+}{
+	{EventType(PromptResultEvent), "promptResult"},
+	{EventType(PromptDataEvent), "promptData"},
+	{EventType(PromptRequestEvent), "promptRequest"},
+}
+
 type RuleType string
 
 const (
-	RuleTypeDisablePasswordPrompt RuleType = "disable_password_prompt"
-	RuleTypeAutoSign              RuleType = "auto_sign"
+	RuleTypeDisablePasswordPrompt RuleType = "DISABLE_PASSWORD_PROMPT"
+	RuleTypeAutoSign              RuleType = "AUTO_SIGN"
 )
+
+var RuleTypes = []struct {
+	Value  RuleType
+	TSName string
+}{
+	{RuleTypeDisablePasswordPrompt, "disable_password_prompt"},
+	{RuleTypeAutoSign, "auto_sign"},
+}
 
 type SignRule struct {
 	Name     string   `koanf:"name"`

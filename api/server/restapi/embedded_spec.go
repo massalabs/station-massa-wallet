@@ -1078,7 +1078,8 @@ func init() {
         },
         "name": {
           "description": "The name of the rule.",
-          "type": "string"
+          "type": "string",
+          "maxLength": 100
         },
         "ruleType": {
           "$ref": "#/definitions/RuleType"
@@ -1259,8 +1260,8 @@ func init() {
       "description": "An enumeration of the different types of rules.",
       "type": "string",
       "enum": [
-        "disable_password_prompt",
-        "auto_sign"
+        "DISABLE_PASSWORD_PROMPT",
+        "AUTO_SIGN"
       ],
       "x-nullable": false
     },
@@ -1426,7 +1427,8 @@ func init() {
         },
         "name": {
           "description": "The name of the rule.",
-          "type": "string"
+          "type": "string",
+          "maxLength": 100
         },
         "ruleType": {
           "$ref": "#/definitions/RuleType"
@@ -2612,7 +2614,8 @@ func init() {
         },
         "name": {
           "description": "The name of the rule.",
-          "type": "string"
+          "type": "string",
+          "maxLength": 100
         },
         "ruleType": {
           "$ref": "#/definitions/RuleType"
@@ -2795,8 +2798,8 @@ func init() {
       "description": "An enumeration of the different types of rules.",
       "type": "string",
       "enum": [
-        "disable_password_prompt",
-        "auto_sign"
+        "DISABLE_PASSWORD_PROMPT",
+        "AUTO_SIGN"
       ],
       "x-nullable": false
     },
@@ -2962,7 +2965,8 @@ func init() {
         },
         "name": {
           "description": "The name of the rule.",
-          "type": "string"
+          "type": "string",
+          "maxLength": 100
         },
         "ruleType": {
           "$ref": "#/definitions/RuleType"

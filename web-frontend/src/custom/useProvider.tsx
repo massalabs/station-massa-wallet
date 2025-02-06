@@ -10,7 +10,7 @@ export function useProvider() {
   const [isMainnet, setIsMainnet] = useState<boolean>();
 
   useEffect(() => {
-    getWallet(WalletName.MassaStation).then((wallet) => {
+    getWallet(WalletName.MassaWallet).then((wallet) => {
       if (!wallet) {
         return;
       }

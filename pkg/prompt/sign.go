@@ -52,9 +52,9 @@ func handleSignPrompt(prompterApp WalletPrompterInterface, req PromptRequest, in
 		return nil, true, fmt.Errorf("failed to parse fees: %w", err)
 	}
 
-	data, ok := req.Data.(PromptRequestSignData)
+	_, ok = req.Data.(PromptRequestSignData)
 
-	if ok && data.EnabledSignRule != nil && !req.PasswordRequired {
+	if ok && req.DisablePassword {
 		// if sign rule is enabled, we don't need to check password
 		return &walletapp.SignPromptOutput{
 			Fees: fees,
