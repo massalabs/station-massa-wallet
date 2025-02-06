@@ -1,9 +1,9 @@
-import { Button, Identicon, Input, Tabs } from '@massalabs/react-ui-kit';
+import { Button, Identicon, Input } from '@massalabs/react-ui-kit';
 import { FiEdit } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import SettingsAutoSign from './SettingsAutoSign';
 import { SettingsOption } from './SettingsOption';
+import SettingsSignRules from './SettingsSignRule';
 import Intl from '@/i18n/i18n';
 import { WalletLayout, MenuItem } from '@/layouts/WalletLayout/WalletLayout';
 import { routeFor } from '@/utils';
@@ -12,10 +12,9 @@ export default function Settings() {
   const navigate = useNavigate();
   const { nickname } = useParams();
 
-  const tabs = [
-    {
-      label: `${nickname} settings`,
-      content: (
+  return (
+    <WalletLayout menuItem={MenuItem.Settings}>
+      <div className="w-full max-h-screen overflow-y-auto p-10">
         <div className="flex flex-col justify-center items-center gap-9">
           <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
             <p className="mas-body text-f-primary pb-5">
@@ -41,24 +40,11 @@ export default function Settings() {
             <Button disabled>{Intl.t('settings.buttons.update')}</Button>
           </div>
           <SettingsOption nickname={nickname || 'username'} />
-        </div>
-      ),
-    },
-    {
-      label: 'Global settings',
-      content: (
-        <div className="flex flex-col justify-center items-center gap-9">
           <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
-            <SettingsAutoSign nickname={nickname || 'username'} />
+            <SettingsSignRules nickname={nickname || 'username'} />
           </div>
         </div>
-      ),
-    },
-  ];
-
-  return (
-    <WalletLayout menuItem={MenuItem.Settings}>
-      <Tabs tabsConfig={tabs} />
+      </div>
     </WalletLayout>
   );
 }
