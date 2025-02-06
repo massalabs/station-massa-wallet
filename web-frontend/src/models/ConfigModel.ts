@@ -1,7 +1,14 @@
+export enum RuleType {
+  DisablePasswordPrompt = 'disable_password_prompt',
+  AutoSign = 'auto_sign',
+}
+
 export interface SignRule {
+  id: string;
+  ruleType: RuleType;
+  name?: string;
   contract: string;
-  passwordPrompt: boolean;
-  autoSign: boolean;
+  enabled: boolean;
 }
 
 export interface AccountConfig {
