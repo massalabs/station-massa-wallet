@@ -1,4 +1,6 @@
 import { maskAddress, maskNickname } from '@massalabs/react-ui-kit';
+import { Clipboard } from '@massalabs/react-ui-kit/src/components/Clipboard';
+
 
 import Intl from '@/i18n/i18n';
 
@@ -13,9 +15,13 @@ export function From(props: FromProps) {
   return (
     <div className="flex w-full justify-between">
       <p>{Intl.t('password-prompt.sign.from')}</p>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-2">
         <p className="mas-menu-default truncate">{maskNickname(nickname)}</p>
-        <p className="mas-caption">{maskAddress(walletAddress)}</p>
+        <Clipboard
+          customClass="h-8 w-10"
+          rawContent={walletAddress}
+          displayedContent={maskAddress(walletAddress)}
+        />
       </div>
     </div>
   );

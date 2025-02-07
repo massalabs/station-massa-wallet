@@ -23,19 +23,23 @@ export function FromTo(props: FromToProps) {
 
   return (
     <div className="flex w-full items-center justify-between">
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-2">
         <div className="flex gap-2">
           <p className="mas-menu-active">
             {Intl.t('password-prompt.sign.from')}
           </p>
           <p className="mas-menu-default">{maskNickname(nickname)}</p>
         </div>
-        <p className="mas-caption">{maskAddress(walletAddress)}</p>
+        <Clipboard
+          customClass="h-8 w-10"
+          rawContent={walletAddress}
+          displayedContent={maskAddress(walletAddress)}
+        />
       </div>
       <div className="h-8 w-8 rounded-full flex items-center justify-center bg-neutral">
         <FiArrowRight size={24} className="text-primary" />
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-y-2">
         <div className="flex gap-2">
           <p className="mas-menu-active">{Intl.t(label)}</p>
           {recipientNickname ? (
@@ -44,12 +48,11 @@ export function FromTo(props: FromToProps) {
             </p>
           ) : null}
         </div>
-        <div className="flex items-center">
-          <p className="mas-caption">{maskAddress(recipientAddress)}</p>
-          <div className="ml-2">
-            <CopyClip data={recipientAddress} />
-          </div>
-        </div>
+        <Clipboard
+          customClass="h-8 w-10"
+          rawContent={recipientAddress}
+          displayedContent={maskAddress(recipientAddress)}
+        />
       </div>
     </div>
   );
