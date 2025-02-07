@@ -97,6 +97,18 @@
   "settings": {
     "title-profile": "Account profile",
     "title-security": "Account security",
+    "title-global": "Global settings",
+    "title-sign-rules": "Sign Rules",
+    "sign-rules": {
+      "description": "Sign Rules allow you to sign operations in a simpler way by defining rules specific to a Smart Contract.",
+      "contract-address": "Contract address",
+      "rule-type": "Type",
+      "name": "Name",
+      "add": "Add",
+      "actions": "Actions",
+      "auto-sign": "Auto",
+      "disable-password-prompt": "No Password"
+    },
     "inputs": {
       "nickname": "Account name"
     },
