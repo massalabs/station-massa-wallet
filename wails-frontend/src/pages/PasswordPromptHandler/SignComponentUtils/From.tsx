@@ -1,6 +1,4 @@
-import { maskAddress, maskNickname } from '@massalabs/react-ui-kit';
-import { Clipboard } from '@massalabs/react-ui-kit/src/components/Clipboard';
-
+import { maskAddress, maskNickname, Clipboard } from '@massalabs/react-ui-kit';
 
 import Intl from '@/i18n/i18n';
 

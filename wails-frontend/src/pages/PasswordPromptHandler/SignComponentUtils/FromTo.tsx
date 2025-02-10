@@ -1,7 +1,6 @@
-import { maskAddress, maskNickname } from '@massalabs/react-ui-kit';
+import { maskAddress, maskNickname, Clipboard } from '@massalabs/react-ui-kit';
 import { FiArrowRight } from 'react-icons/fi';
 
-import { CopyClip } from '../components/clipBoardCopy';
 import Intl from '@/i18n/i18n';
 
 interface FromToProps {
