@@ -1,6 +1,5 @@
-import { maskAddress, maskNickname } from '@massalabs/react-ui-kit';
+import { Clipboard, maskAddress, maskNickname } from '@massalabs/react-ui-kit';
 
-import { CopyClip } from './clipBoardCopy';
 import Intl from '@/i18n/i18n';
 
 interface FromProps {
@@ -17,10 +16,11 @@ export function Account(props: FromProps) {
       <div className="flex flex-col">
         <p className="mas-menu-default truncate">{maskNickname(nickname)}</p>
         <div className="flex items-center">
-          <p className="mas-caption">{maskAddress(walletAddress)}</p>
-          <div className="ml-2">
-            <CopyClip data={walletAddress} />
-          </div>
+          <Clipboard
+            customClass="h-8 w-10"
+            rawContent={walletAddress}
+            displayedContent={maskAddress(walletAddress)}
+          />
         </div>
       </div>
     </div>
