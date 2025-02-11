@@ -136,7 +136,7 @@ export function Sign() {
 
   const operationCostsArgs = {
     fees,
-    minFees: Mas.fromString(signData.MinFees),
+    minFees: Mas.fromString(signData.MinFees || '0'),
     setFees,
     isEditing,
     setIsEditing,
