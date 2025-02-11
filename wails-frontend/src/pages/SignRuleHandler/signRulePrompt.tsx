@@ -1,6 +1,11 @@
 import { SyntheticEvent, useRef, useState } from 'react';
 
-import { Button, Password, maskAddress } from '@massalabs/react-ui-kit';
+import {
+  Button,
+  Clipboard,
+  Password,
+  maskAddress,
+} from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
@@ -9,7 +14,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ruleRequestData, signRuleActionStr } from './types';
 import { Account } from '../PasswordPromptHandler/components/account';
-import { CopyClip } from '../PasswordPromptHandler/components/clipBoardCopy';
 import { promptRequest, promptResult } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
@@ -94,13 +98,6 @@ export function SignRule() {
 
   const isAllContract = data.SignRule.Contract === '*';
 
-  const renderContract = () => {
-    if (isAllContract) {
-      return 'All';
-    }
-    return maskAddress(data.SignRule.Contract, 10);
-  };
-
   return (
     <Layout>
       <form ref={form} onSubmit={handleSubmitPassword}>
@@ -128,28 +125,35 @@ export function SignRule() {
         )}
 
         <div className="bg-secondary p-2 mt-4 rounded-md">
-          {/* <div className="flex items-center justify-center">
-            <h2 >{Intl.t('signRule.details')}:</h2>
-            </div> */}
-          <p>
-            <strong>{Intl.t('signRule.name')}:</strong> {data.SignRule.Name}
-          </p>
-          <div className="flex items-center">
-            <p>
-              <strong>{Intl.t('signRule.contract')}:</strong> {renderContract()}
-            </p>
-            {!isAllContract && (
-              <div className="ml-2">
-                <CopyClip data={data.SignRule.Contract} />
+          <div className="flex-row">
+            <p className="flex justify-between">
+              <strong>{Intl.t('signRule.name')}:</strong>
+              <div className="flex flex-row justify-right">
+                {' '}
+                {data.SignRule.Name}
               </div>
-            )}
+            </p>
+          </div>
+          <div className="flex-row items-center">
+            <p className="flex justify-between">
+              <strong>{Intl.t('signRule.contract')}:</strong>
+              {isAllContract ? (
+                'All'
+              ) : (
+                <Clipboard
+                  customClass="flex h-6 pl-20 ml-20"
+                  rawContent={data.SignRule.Contract}
+                  displayedContent={maskAddress(data.SignRule.Contract, 6)}
+                />
+              )}
+            </p>
           </div>
 
-          <p>
+          <p className="flex justify-between">
             <strong>{Intl.t('signRule.ruleType')}:</strong>{' '}
             {Intl.t(`signRule.rulesTypeDesc.${data.SignRule.RuleType}`)}
           </p>
-          <p>
+          <p className="flex justify-between">
             <strong>{Intl.t('signRule.enabled')}:</strong>{' '}
             {data.SignRule.Enabled ? 'Yes' : 'No'}
           </p>
