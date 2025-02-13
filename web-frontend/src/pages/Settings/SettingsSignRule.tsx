@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Button,
@@ -19,6 +19,7 @@ import {
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 import { SignRuleModal } from './SignRuleAddEditModal';
+import { useProvider } from '@/custom/useProvider';
 import Intl from '@/i18n/i18n';
 
 interface SettingsSignRulesProps {
@@ -36,11 +37,11 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
   const [config, setConfig] = useState<Config>();
   const [isLoading, setIsLoading] = useState(true);
 
-  const msWallet = useMemo(() => new MassaStationWallet(), []);
+  const { wallet } = useProvider();
 
   const fetchConfig = async () => {
     try {
-      const walletConfig = await msWallet.getConfig();
+      const walletConfig = await wallet.getConfig();
       setConfig(walletConfig as Config);
     } catch (error) {
       console.error('Error fetching config:', error);
@@ -54,7 +55,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
     if (!isAddEditRuleModalOpen) {
       fetchConfig();
     }
-  }, [msWallet, isAddEditRuleModalOpen]);
+  }, [wallet, isAddEditRuleModalOpen]);
 
   const signRules = config?.accounts?.[nickname]?.signRules ?? [];
 
@@ -148,7 +149,7 @@ interface SignRuleListItemProps {
 
 function SignRuleListItem(props: SignRuleListItemProps) {
   const { rule, nickname, setEditingRule, refreshConfig } = props;
-  const msWallet = useMemo(() => new MassaStationWallet(), []);
+  const { wallet } = useProvider();
   const [_isUpdating, setIsUpdating] = useState(false);
   const [_isDeleting, setIsDeleting] = useState(false);
 
@@ -158,7 +159,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
       if (!rule.id) {
         throw new Error('Rule ID is required');
       }
-      await msWallet.editSignRule(
+      await wallet.editSignRule(
         nickname,
         {
           ...rule,
@@ -182,7 +183,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
       if (!rule.id) {
         throw new Error('Rule ID is required');
       }
-      await msWallet.deleteSignRule(nickname, rule.id);
+      await wallet.deleteSignRule(nickname, rule.id);
       toast.success(Intl.t('settings.sign-rules.success.delete'));
     } catch (error) {
       console.error('Error deleting sign rule:', error);
