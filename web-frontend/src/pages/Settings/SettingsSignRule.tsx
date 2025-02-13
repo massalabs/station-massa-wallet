@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   Button,
@@ -10,12 +10,16 @@ import {
   Tooltip,
 } from '@massalabs/react-ui-kit';
 import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { MassaStationWallet } from '@massalabs/wallet-provider';
+import {
+  Config,
+  RuleType,
+  SignRule,
+} from '@massalabs/wallet-provider/dist/esm/massaStation/types';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 import { SignRuleModal } from './SignRuleAddEditModal';
-import { useDelete, usePut, useResource } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { Config, RuleType, SignRule } from '@/models/ConfigModel';
 
 interface SettingsSignRulesProps {
   nickname: string;
@@ -29,16 +33,28 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
   );
   const [isAddEditRuleModalOpen, setIsAddEditRuleModalOpen] = useState(false);
 
-  const {
-    data: config,
-    isLoading: isConfigLoading,
-    error: configError,
-  } = useResource<Config>('config', true);
+  const [config, setConfig] = useState<Config>();
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (configError) {
-    console.error('Error fetching config:', configError);
-    toast.error('Error fetching config');
-  }
+  const msWallet = useMemo(() => new MassaStationWallet(), []);
+
+  const fetchConfig = async () => {
+    try {
+      const walletConfig = await msWallet.getConfig();
+      setConfig(walletConfig as Config);
+    } catch (error) {
+      console.error('Error fetching config:', error);
+      toast.error('Error fetching config');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isAddEditRuleModalOpen) {
+      fetchConfig();
+    }
+  }, [msWallet, isAddEditRuleModalOpen]);
 
   const signRules = config?.accounts?.[nickname]?.signRules ?? [];
 
@@ -94,7 +110,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
           </tr>
         </thead>
         <tbody>
-          {isConfigLoading ? (
+          {isLoading ? (
             <FetchingLine />
           ) : (
             signRules.map((rule, index) => (
@@ -103,6 +119,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
                   rule={rule}
                   nickname={nickname}
                   setEditingRule={handleEdit}
+                  refreshConfig={fetchConfig}
                 />
               </tr>
             ))
@@ -126,62 +143,54 @@ interface SignRuleListItemProps {
   setEditingRule: (rule: SignRule) => void;
   rule: SignRule;
   nickname: string;
+  refreshConfig: () => void;
 }
 
 function SignRuleListItem(props: SignRuleListItemProps) {
-  const { rule, nickname, setEditingRule } = props;
+  const { rule, nickname, setEditingRule, refreshConfig } = props;
+  const msWallet = useMemo(() => new MassaStationWallet(), []);
+  const [_isUpdating, setIsUpdating] = useState(false);
+  const [_isDeleting, setIsDeleting] = useState(false);
 
-  const {
-    mutate: updateSignRule,
-    isSuccess: updateSignRuleSuccess,
-    error: updateSignRuleError,
-    reset: resetUpdateError,
-  } = usePut(`accounts/${nickname}/signrules/${rule.id}`);
-
-  const {
-    mutate: deleteSignRule,
-    isSuccess: deleteSignRuleSuccess,
-    error: deleteSignRuleError,
-    reset: resetDeleteError,
-  } = useDelete(`accounts/${nickname}/signrules/${rule.id}`);
-
-  useEffect(() => {
-    if (updateSignRuleError) {
-      console.error('Error updating sign rule:', updateSignRuleError);
-      toast.error(Intl.t('settings.sign-rules.errors.toggle'));
-      resetUpdateError();
-    }
-  }, [updateSignRuleError, resetUpdateError]);
-
-  useEffect(() => {
-    if (deleteSignRuleError) {
-      console.error('Error deleting sign rule:', deleteSignRuleError);
-      toast.error(Intl.t('settings.sign-rules.errors.delete'));
-      resetDeleteError();
-    }
-  }, [deleteSignRuleError, resetDeleteError]);
-
-  useEffect(() => {
-    if (updateSignRuleSuccess) {
+  const handleToggle = async () => {
+    try {
+      setIsUpdating(true);
+      if (!rule.id) {
+        throw new Error('Rule ID is required');
+      }
+      await msWallet.editSignRule(
+        nickname,
+        {
+          ...rule,
+          enabled: !rule.enabled,
+        },
+        `Turn ${rule.enabled ? 'off' : 'on'} sign rule ${rule.name}`,
+      );
       toast.success(Intl.t('settings.sign-rules.success.toggle'));
-    } else if (deleteSignRuleSuccess) {
-      toast.success(Intl.t('settings.sign-rules.success.delete'));
+    } catch (error) {
+      console.error('Error updating sign rule:', error);
+      toast.error(Intl.t('settings.sign-rules.errors.toggle'));
+    } finally {
+      setIsUpdating(false);
+      refreshConfig();
     }
-  }, [updateSignRuleSuccess, deleteSignRuleSuccess]);
-
-  const handleEdit = () => {
-    setEditingRule(rule);
   };
 
-  const handleToggle = () => {
-    updateSignRule({
-      ...rule,
-      enabled: !rule.enabled,
-    });
-  };
-
-  const handleDelete = () => {
-    deleteSignRule({});
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      if (!rule.id) {
+        throw new Error('Rule ID is required');
+      }
+      await msWallet.deleteSignRule(nickname, rule.id);
+      toast.success(Intl.t('settings.sign-rules.success.delete'));
+    } catch (error) {
+      console.error('Error deleting sign rule:', error);
+      toast.error(Intl.t('settings.sign-rules.errors.delete'));
+    } finally {
+      setIsDeleting(false);
+      refreshConfig();
+    }
   };
 
   return (
@@ -231,7 +240,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
           <ButtonToggle onClick={handleToggle}>
             {rule.enabled ? 'On' : 'Off'}
           </ButtonToggle>
-          <ButtonIcon variant="primary" onClick={handleEdit}>
+          <ButtonIcon variant="primary" onClick={() => setEditingRule(rule)}>
             <FiEdit />
           </ButtonIcon>
           <ButtonIcon variant="primary" onClick={handleDelete}>
