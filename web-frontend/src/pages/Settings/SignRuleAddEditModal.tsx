@@ -49,14 +49,14 @@ export function SignRuleModal(props: SignRuleModalProps) {
       };
 
       if (isEditMode) {
-        await wallet.editSignRule(
+        await wallet?.editSignRule(
           nickname,
           signRuleData,
           `Update sign rule ${name}`,
         );
         onSuccess?.(Intl.t('settings.sign-rules.success.update'));
       } else {
-        await wallet.addSignRule(
+        await wallet?.addSignRule(
           nickname,
           signRuleData,
           `Add sign rule ${name}`,
