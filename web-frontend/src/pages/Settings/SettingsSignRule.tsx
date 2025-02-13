@@ -6,11 +6,10 @@ import {
   ButtonToggle,
   Clipboard,
   FetchingLine,
+  maskAddress,
   toast,
   Tooltip,
 } from '@massalabs/react-ui-kit';
-import { maskAddress } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
-import { MassaStationWallet } from '@massalabs/wallet-provider';
 import {
   Config,
   RuleType,
@@ -34,7 +33,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
   );
   const [isAddEditRuleModalOpen, setIsAddEditRuleModalOpen] = useState(false);
 
-  const [config, setConfig] = useState<Config>();
+  const [config, setConfig] = useState<Config | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
   const { wallet } = useProvider();
@@ -42,7 +41,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
   const fetchConfig = async () => {
     try {
       const walletConfig = await wallet.getConfig();
-      setConfig(walletConfig as Config);
+      setConfig(walletConfig);
     } catch (error) {
       console.error('Error fetching config:', error);
       toast.error('Error fetching config');
