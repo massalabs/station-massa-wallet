@@ -10,11 +10,7 @@ import {
   toast,
   Tooltip,
 } from '@massalabs/react-ui-kit';
-import {
-  Config,
-  RuleType,
-  SignRule,
-} from '@massalabs/wallet-provider/dist/esm/massaStation/types';
+import { Config, RuleType, SignRule } from '@massalabs/wallet-provider';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 import { SignRuleModal } from './SignRuleAddEditModal';
