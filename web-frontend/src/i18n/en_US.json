@@ -107,7 +107,32 @@
       "add": "Add",
       "actions": "Actions",
       "auto-sign": "Auto",
-      "disable-password-prompt": "No Password"
+      "disable-password-prompt": "No Password",
+      "auto-sign-tooltip": "This will automatically sign operations coming from the linked contract address, without asking for your password nor your confirmation.",
+      "disable-password-prompt-tooltip": "This will disable the password prompt for operations coming from the linked contract address, but will still require your confirmation.",
+      "errors": {
+        "add": "An error occurred while adding the sign rule",
+        "delete": "An error occurred while deleting the sign rule",
+        "update": "An error occurred while updating the sign rule",
+        "toggle": "An error occurred while toggling the sign rule"
+      },
+      "success": {
+        "add": "Sign rule added",
+        "toggle": "Sign rule toggled",
+        "update": "Sign rule updated",
+        "delete": "Sign rule deleted"
+      },
+      "modals": {
+        "edit-title": "Edit sign rule",
+        "add-title": "Add sign rule",
+        "name-placeholder": "Enter a name",
+        "contract-placeholder": "Enter a contract address",
+        "rule-type": "Rule type",
+        "auto-sign": "Auto sign",
+        "disable-password-prompt": "Disable password prompt",
+        "update": "Update",
+        "add": "Add"
+      }
     },
     "inputs": {
       "nickname": "Account name"

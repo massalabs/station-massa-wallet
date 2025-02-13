@@ -1,16 +1,21 @@
+import { useEffect, useState } from 'react';
+
 import {
   Button,
   ButtonIcon,
   ButtonToggle,
   Clipboard,
   FetchingLine,
+  maskAddress,
   toast,
+  Tooltip,
 } from '@massalabs/react-ui-kit';
-import { FiTrash2 } from 'react-icons/fi';
+import { Config, RuleType, SignRule } from '@massalabs/wallet-provider';
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
-import { useDelete, usePost, usePut, useResource } from '@/custom/api';
+import { SignRuleModal } from './SignRuleAddEditModal';
+import { useProvider } from '@/custom/useProvider';
 import Intl from '@/i18n/i18n';
-import { Config, RuleType, SignRule } from '@/models/ConfigModel';
 
 interface SettingsSignRulesProps {
   nickname: string;
@@ -19,36 +24,57 @@ interface SettingsSignRulesProps {
 export default function SettingsSignRules(props: SettingsSignRulesProps) {
   const { nickname } = props;
 
-  const {
-    data: config,
-    isLoading: isConfigLoading,
-    error: configError,
-  } = useResource<Config>('config', true);
-
-  const { mutate: addSignRule, error: addSignRuleError } = usePost(
-    `accounts/${nickname}/signrules`,
+  const [editingRule, setEditingRule] = useState<SignRule | undefined>(
+    undefined,
   );
+  const [isAddEditRuleModalOpen, setIsAddEditRuleModalOpen] = useState(false);
 
-  if (configError) {
-    console.error('Error fetching config:', configError);
-    toast.error('Error fetching config');
-  }
+  const [config, setConfig] = useState<Config | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
-  if (addSignRuleError) {
-    console.error('Error adding sign rule:', addSignRuleError);
-    toast.error('Error adding sign rule');
-  }
+  const { wallet } = useProvider();
+
+  const fetchConfig = async () => {
+    try {
+      const walletConfig = await wallet?.getConfig();
+      setConfig(walletConfig);
+    } catch (error) {
+      console.error('Error fetching config:', error);
+      toast.error('Error fetching config');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isAddEditRuleModalOpen) {
+      fetchConfig();
+    }
+  }, [wallet, isAddEditRuleModalOpen]);
 
   const signRules = config?.accounts?.[nickname]?.signRules ?? [];
 
-  // TODO: move to a proper modal
   const handleAdd = () => {
-    addSignRule({
-      ruleType: RuleType.AutoSign,
-      name: 'New Rule',
-      contract: 'AS1BsB34Hq7VGpGG26cudgFr15nshSeJfAkkf6WGY8JcXbG6kzUg',
-      enabled: true,
-    });
+    setIsAddEditRuleModalOpen(true);
+  };
+
+  const handleEdit = (rule: SignRule) => {
+    setEditingRule(rule);
+    setIsAddEditRuleModalOpen(true);
+  };
+
+  const handleAddEditModalClose = () => {
+    setEditingRule(undefined);
+    setIsAddEditRuleModalOpen(false);
+  };
+
+  const handleAddEditModalSuccess = (message: string) => {
+    toast.success(message);
+    handleAddEditModalClose();
+  };
+
+  const handleAddEditModalError = (message: string) => {
+    toast.error(message);
   };
 
   return (
@@ -57,7 +83,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
         <p className="mas-body text-f-primary">
           {Intl.t('settings.title-sign-rules')}
         </p>
-        <Button customClass="w-fit" onClick={handleAdd}>
+        <Button customClass="w-fit max-h-[2.5rem]" onClick={handleAdd}>
           {Intl.t('settings.sign-rules.add')}
         </Button>
       </div>
@@ -80,77 +106,139 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
           </tr>
         </thead>
         <tbody>
-          {isConfigLoading ? (
+          {isLoading ? (
             <FetchingLine />
           ) : (
             signRules.map((rule, index) => (
-              <tr key={index}>
-                <SignRuleListItem rule={rule} nickname={nickname} />
+              <tr key={index} className="align-baseline">
+                <SignRuleListItem
+                  rule={rule}
+                  nickname={nickname}
+                  setEditingRule={handleEdit}
+                  refreshConfig={fetchConfig}
+                />
               </tr>
             ))
           )}
         </tbody>
       </table>
+      {isAddEditRuleModalOpen && (
+        <SignRuleModal
+          rule={editingRule}
+          nickname={nickname}
+          onClose={handleAddEditModalClose}
+          onSuccess={handleAddEditModalSuccess}
+          onError={handleAddEditModalError}
+        />
+      )}
     </>
   );
 }
 
 interface SignRuleListItemProps {
+  setEditingRule: (rule: SignRule) => void;
   rule: SignRule;
   nickname: string;
+  refreshConfig: () => void;
 }
 
 function SignRuleListItem(props: SignRuleListItemProps) {
-  const { rule, nickname } = props;
+  const { rule, nickname, setEditingRule, refreshConfig } = props;
+  const { wallet } = useProvider();
+  const [_isUpdating, setIsUpdating] = useState(false);
+  const [_isDeleting, setIsDeleting] = useState(false);
 
-  const { mutate: updateSignRule, error: updateSignRuleError } = usePut(
-    `accounts/${nickname}/signrules/${rule.id}`,
-  );
-
-  if (updateSignRuleError) {
-    toast.error(Intl.t('assets.delete.bad-request'));
-  }
-
-  const { mutate: deleteSignRule, error: deleteSignRuleError } = useDelete(
-    `accounts/${nickname}/signrules/${rule.id}`,
-  );
-
-  if (deleteSignRuleError) {
-    toast.error(Intl.t('settings.signRules.deleteModal.error'));
-    return;
-  }
-
-  const handleToggle = () => {
-    updateSignRule({
-      ...rule,
-      enabled: !rule.enabled,
-    });
+  const handleToggle = async () => {
+    try {
+      setIsUpdating(true);
+      if (!rule.id) {
+        throw new Error('Rule ID is required');
+      }
+      await wallet?.editSignRule(
+        nickname,
+        {
+          ...rule,
+          enabled: !rule.enabled,
+        },
+        `Turn ${rule.enabled ? 'off' : 'on'} sign rule ${rule.name}`,
+      );
+      toast.success(Intl.t('settings.sign-rules.success.toggle'));
+    } catch (error) {
+      console.error('Error updating sign rule:', error);
+      toast.error(Intl.t('settings.sign-rules.errors.toggle'));
+    } finally {
+      setIsUpdating(false);
+      refreshConfig();
+    }
   };
 
-  const handleDelete = () => {
-    deleteSignRule({});
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      if (!rule.id) {
+        throw new Error('Rule ID is required');
+      }
+      await wallet?.deleteSignRule(nickname, rule.id);
+      toast.success(Intl.t('settings.sign-rules.success.delete'));
+    } catch (error) {
+      console.error('Error deleting sign rule:', error);
+      toast.error(Intl.t('settings.sign-rules.errors.delete'));
+    } finally {
+      setIsDeleting(false);
+      refreshConfig();
+    }
   };
 
   return (
     <>
-      <td className="max-w-xs truncate whitespace-nowrap">{rule.name}</td>
-      <td className="max-w-xs truncate whitespace-nowrap">
-        <div className="flex items-center gap-2 relative">
-          {rule.ruleType === RuleType.AutoSign ? (
-            <span>{Intl.t('settings.sign-rules.auto-sign')}</span>
-          ) : (
-            <span>{Intl.t('settings.sign-rules.disable-password-prompt')}</span>
-          )}
-        </div>
+      <td className="max-w-[128px] truncate">
+        {rule.name && rule.name.length > 0 && (
+          <Tooltip
+            body={rule.name}
+            placement="right"
+            triggerClassName="truncate w-full"
+            tooltipClassName="mas-caption"
+          >
+            {rule.name}
+          </Tooltip>
+        )}
       </td>
       <td className="max-w-xs truncate whitespace-nowrap">
-        <Clipboard rawContent={rule.contract} className="text-sm p-2 flex" />
+        {rule.ruleType === RuleType.AutoSign ? (
+          <Tooltip
+            body={Intl.t('settings.sign-rules.auto-sign-tooltip')}
+            placement="top"
+            triggerClassName="truncate w-full"
+            tooltipClassName="mas-caption"
+          >
+            <span>{Intl.t('settings.sign-rules.auto-sign')}</span>
+          </Tooltip>
+        ) : (
+          <Tooltip
+            body={Intl.t('settings.sign-rules.disable-password-prompt-tooltip')}
+            placement="top"
+            triggerClassName="truncate w-full"
+            tooltipClassName="mas-caption"
+          >
+            <span>{Intl.t('settings.sign-rules.disable-password-prompt')}</span>
+          </Tooltip>
+        )}
+      </td>
+      <td className="max-w-xs truncate whitespace-nowrap">
+        <Clipboard
+          rawContent={rule.contract}
+          displayedContent={maskAddress(rule.contract, 6)}
+          className="text-sm p-2 flex"
+        />
       </td>
       <td className="text-right">
         <div className="flex justify-end items-center space-x-2">
           <ButtonToggle onClick={handleToggle}>
             {rule.enabled ? 'On' : 'Off'}
           </ButtonToggle>
+          <ButtonIcon variant="primary" onClick={() => setEditingRule(rule)}>
+            <FiEdit />
+          </ButtonIcon>
           <ButtonIcon variant="primary" onClick={handleDelete}>
             <FiTrash2 />
           </ButtonIcon>
