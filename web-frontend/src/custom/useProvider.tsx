@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { CHAIN_ID, Provider } from '@massalabs/massa-web3';
-import { getWallet, WalletName } from '@massalabs/wallet-provider';
+import {
+  getWallet,
+  MassaStationWallet,
+  WalletName,
+} from '@massalabs/wallet-provider';
 import { useParams } from 'react-router-dom';
 
 export function useProvider() {
   const { nickname } = useParams();
   const [provider, setProvider] = useState<Provider | undefined>();
   const [isMainnet, setIsMainnet] = useState<boolean>();
+  const wallet = useMemo(() => new MassaStationWallet(), []);
 
   useEffect(() => {
     getWallet(WalletName.MassaWallet).then((wallet) => {
@@ -34,5 +39,5 @@ export function useProvider() {
     });
   }, [nickname, setProvider, setIsMainnet]);
 
-  return { provider, isMainnet };
+  return { provider, isMainnet, wallet };
 }
