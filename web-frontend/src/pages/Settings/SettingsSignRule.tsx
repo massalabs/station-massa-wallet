@@ -40,7 +40,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
 
   const fetchConfig = async () => {
     try {
-      const walletConfig = await wallet.getConfig();
+      const walletConfig = await wallet?.getConfig();
       setConfig(walletConfig);
     } catch (error) {
       console.error('Error fetching config:', error);
@@ -158,7 +158,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
       if (!rule.id) {
         throw new Error('Rule ID is required');
       }
-      await wallet.editSignRule(
+      await wallet?.editSignRule(
         nickname,
         {
           ...rule,
@@ -182,7 +182,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
       if (!rule.id) {
         throw new Error('Rule ID is required');
       }
-      await wallet.deleteSignRule(nickname, rule.id);
+      await wallet?.deleteSignRule(nickname, rule.id);
       toast.success(Intl.t('settings.sign-rules.success.delete'));
     } catch (error) {
       console.error('Error deleting sign rule:', error);
