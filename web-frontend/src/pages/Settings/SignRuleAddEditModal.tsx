@@ -8,10 +8,7 @@ import {
   PopupModalContent,
   PopupModalHeader,
 } from '@massalabs/react-ui-kit';
-import {
-  RuleType,
-  SignRule,
-} from '@massalabs/wallet-provider/dist/esm/massaStation/types';
+import { RuleType, SignRule } from '@massalabs/wallet-provider';
 
 import { useProvider } from '@/custom/useProvider';
 import Intl from '@/i18n/i18n';
