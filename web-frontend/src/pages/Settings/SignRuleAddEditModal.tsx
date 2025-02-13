@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   Button,
@@ -8,10 +8,13 @@ import {
   PopupModalContent,
   PopupModalHeader,
 } from '@massalabs/react-ui-kit';
+import { MassaStationWallet } from '@massalabs/wallet-provider';
+import {
+  RuleType,
+  SignRule,
+} from '@massalabs/wallet-provider/dist/esm/massaStation/types';
 
-import { usePost, usePut } from '@/custom/api';
 import Intl from '@/i18n/i18n';
-import { RuleType, SignRule } from '@/models/ConfigModel';
 
 interface SignRuleModalProps {
   onClose: () => void;
@@ -23,6 +26,8 @@ interface SignRuleModalProps {
 
 export function SignRuleModal(props: SignRuleModalProps) {
   const { onClose, rule, nickname, onSuccess, onError } = props;
+  const msWallet = useMemo(() => new MassaStationWallet(), []);
+  const [_isSubmitting, setIsSubmitting] = useState(false);
 
   const [name, setName] = useState(rule?.name || '');
   const [contract, setContract] = useState(rule?.contract || '');
@@ -32,53 +37,39 @@ export function SignRuleModal(props: SignRuleModalProps) {
 
   const isEditMode = !!rule;
 
-  const {
-    mutate: addSignRule,
-    isSuccess: addSignRuleSuccess,
-    error: addSignRuleError,
-    reset: resetAddSignRuleError,
-  } = usePost(`accounts/${nickname}/signrules`);
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const signRuleData: SignRule = {
+        id: rule?.id || '',
+        name,
+        contract,
+        ruleType,
+        enabled: rule?.enabled || true,
+      };
 
-  const {
-    mutate: updateSignRule,
-    isSuccess: updateSignRuleSuccess,
-    error: updateSignRuleError,
-    reset: resetUpdateSignRuleError,
-  } = usePut(`accounts/${nickname}/signrules/${rule?.id}`);
-
-  useEffect(() => {
-    if (addSignRuleError) {
-      console.log('addSignRuleError', addSignRuleError);
-      onError?.(Intl.t('settings.sign-rules.errors.add'));
-      resetAddSignRuleError();
-    } else if (updateSignRuleError) {
-      console.log('updateSignRuleError', updateSignRuleError);
-      onError?.(Intl.t('settings.sign-rules.errors.update'));
-      resetUpdateSignRuleError();
-    }
-  }, [addSignRuleError, updateSignRuleError]);
-
-  useEffect(() => {
-    if (addSignRuleSuccess) {
-      onSuccess?.(Intl.t('settings.sign-rules.success.add'));
-    } else if (updateSignRuleSuccess) {
-      onSuccess?.(Intl.t('settings.sign-rules.success.update'));
-    }
-  }, [addSignRuleSuccess, updateSignRuleSuccess]);
-
-  const handleSubmit = () => {
-    const signRuleData: SignRule = {
-      id: rule?.id || '',
-      name,
-      contract,
-      ruleType,
-      enabled: rule?.enabled || true,
-    };
-
-    if (isEditMode) {
-      updateSignRule(signRuleData);
-    } else {
-      addSignRule(signRuleData);
+      if (isEditMode) {
+        await msWallet.editSignRule(
+          nickname,
+          signRuleData,
+          `Update sign rule ${name}`,
+        );
+        onSuccess?.(Intl.t('settings.sign-rules.success.update'));
+      } else {
+        await msWallet.addSignRule(
+          nickname,
+          signRuleData,
+          `Add sign rule ${name}`,
+        );
+        onSuccess?.(Intl.t('settings.sign-rules.success.add'));
+      }
+    } catch (error) {
+      console.error('Error submitting sign rule:', error);
+      onError?.(
+        Intl.t(`settings.sign-rules.errors.${isEditMode ? 'update' : 'add'}`),
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
