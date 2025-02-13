@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import {
   Button,
@@ -8,12 +8,12 @@ import {
   PopupModalContent,
   PopupModalHeader,
 } from '@massalabs/react-ui-kit';
-import { MassaStationWallet } from '@massalabs/wallet-provider';
 import {
   RuleType,
   SignRule,
 } from '@massalabs/wallet-provider/dist/esm/massaStation/types';
 
+import { useProvider } from '@/custom/useProvider';
 import Intl from '@/i18n/i18n';
 
 interface SignRuleModalProps {
@@ -26,7 +26,7 @@ interface SignRuleModalProps {
 
 export function SignRuleModal(props: SignRuleModalProps) {
   const { onClose, rule, nickname, onSuccess, onError } = props;
-  const msWallet = useMemo(() => new MassaStationWallet(), []);
+  const { wallet } = useProvider();
   const [_isSubmitting, setIsSubmitting] = useState(false);
 
   const [name, setName] = useState(rule?.name || '');
@@ -49,14 +49,14 @@ export function SignRuleModal(props: SignRuleModalProps) {
       };
 
       if (isEditMode) {
-        await msWallet.editSignRule(
+        await wallet.editSignRule(
           nickname,
           signRuleData,
           `Update sign rule ${name}`,
         );
         onSuccess?.(Intl.t('settings.sign-rules.success.update'));
       } else {
-        await msWallet.addSignRule(
+        await wallet.addSignRule(
           nickname,
           signRuleData,
           `Add sign rule ${name}`,
