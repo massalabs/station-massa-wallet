@@ -7,6 +7,7 @@ import {
   PopupModal,
   PopupModalContent,
   PopupModalHeader,
+  Toggle,
 } from '@massalabs/react-ui-kit';
 import { RuleType, SignRule } from '@massalabs/wallet-provider';
 
@@ -31,6 +32,7 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const [ruleType, setRuleType] = useState(
     rule?.ruleType || RuleType.DisablePasswordPrompt,
   );
+  const [applyToAllContracts, setApplyToAllContracts] = useState(false);
 
   const isEditMode = !!rule;
 
@@ -40,7 +42,7 @@ export function SignRuleModal(props: SignRuleModalProps) {
       const signRuleData: SignRule = {
         id: rule?.id || '',
         name,
-        contract,
+        contract: applyToAllContracts ? '*' : contract,
         ruleType,
         enabled: rule?.enabled || true,
       };
@@ -60,11 +62,17 @@ export function SignRuleModal(props: SignRuleModalProps) {
         );
         onSuccess?.(Intl.t('settings.sign-rules.success.add'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting sign rule:', error);
-      onError?.(
-        Intl.t(`settings.sign-rules.errors.${isEditMode ? 'update' : 'add'}`),
+      let errorMsg = Intl.t(
+        `settings.sign-rules.errors.${isEditMode ? 'update' : 'add'}`,
       );
+
+      if (error?.message === 'Rule already exists') {
+        errorMsg = Intl.t('settings.sign-rules.errors.already-exist');
+      }
+
+      onError?.(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -90,7 +98,7 @@ export function SignRuleModal(props: SignRuleModalProps) {
         </div>
       </PopupModalHeader>
       <PopupModalContent>
-        <div className="mas-body2 pb-10">
+        <div className="mas-body2 pb-10 flex flex-col gap-4">
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -101,10 +109,20 @@ export function SignRuleModal(props: SignRuleModalProps) {
             value={contract}
             onChange={(e) => setContract(e.target.value)}
             name="contract"
-            placeholder={Intl.t(
-              'settings.sign-rules.modals.contract-placeholder',
-            )}
+            placeholder={
+              applyToAllContracts
+                ? 'All'
+                : Intl.t('settings.sign-rules.modals.contract-placeholder')
+            }
+            disabled={applyToAllContracts}
           />
+          <div className="flex items-center gap-2">
+            <Toggle
+              checked={applyToAllContracts}
+              onChange={(e) => setApplyToAllContracts(e.target.checked)}
+            />
+            {Intl.t('settings.sign-rules.modals.apply-to-all-contracts')}
+          </div>
           <Dropdown
             select={selectedRuleType}
             readOnly={false}
@@ -117,7 +135,7 @@ export function SignRuleModal(props: SignRuleModalProps) {
               onClick: () => setRuleType(type),
             }))}
           />
-          <Button customClass="mt-6" onClick={handleSubmit}>
+          <Button customClass="mt-6 self-start" onClick={handleSubmit}>
             {isEditMode
               ? Intl.t('settings.sign-rules.modals.update')
               : Intl.t('settings.sign-rules.modals.add')}

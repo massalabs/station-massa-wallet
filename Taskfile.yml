@@ -15,6 +15,7 @@ tasks:
       - cmd: GOARCH=arm64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
         platforms: [darwin/arm64]
       - cmd: go install github.com/daixiang0/gci@latest
+      - cmd: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 
   generate:
     cmds:
