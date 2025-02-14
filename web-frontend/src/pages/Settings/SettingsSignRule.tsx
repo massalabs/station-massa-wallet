@@ -148,6 +148,8 @@ function SignRuleListItem(props: SignRuleListItemProps) {
   const [_isUpdating, setIsUpdating] = useState(false);
   const [_isDeleting, setIsDeleting] = useState(false);
 
+  const isAllContract = rule.contract === '*';
+
   const handleToggle = async () => {
     try {
       setIsUpdating(true);
@@ -225,11 +227,17 @@ function SignRuleListItem(props: SignRuleListItemProps) {
         )}
       </td>
       <td className="max-w-xs truncate whitespace-nowrap">
-        <Clipboard
-          rawContent={rule.contract}
-          displayedContent={maskAddress(rule.contract, 6)}
-          className="text-sm p-2 flex"
-        />
+        {isAllContract ? (
+          <div className="flex justify-center">
+            <span>All</span>
+          </div>
+        ) : (
+          <Clipboard
+            rawContent={rule.contract}
+            displayedContent={maskAddress(rule.contract, 6)}
+            className="text-sm p-2 flex"
+          />
+        )}
       </td>
       <td className="text-right">
         <div className="flex justify-end items-center space-x-2">
