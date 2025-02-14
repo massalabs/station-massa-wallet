@@ -112,6 +112,7 @@
       "disable-password-prompt-tooltip": "This will disable the password prompt for operations coming from the linked contract address, but will still require your confirmation.",
       "errors": {
         "add": "An error occurred while adding the sign rule",
+        "already-exist": "A similar rule already exists for account",
         "delete": "An error occurred while deleting the sign rule",
         "update": "An error occurred while updating the sign rule",
         "toggle": "An error occurred while toggling the sign rule"
@@ -127,6 +128,7 @@
         "add-title": "Add sign rule",
         "name-placeholder": "Enter a name",
         "contract-placeholder": "Enter a contract address",
+        "apply-to-all-contracts": "Apply to all contracts",
         "rule-type": "Rule type",
         "auto-sign": "Auto sign",
         "disable-password-prompt": "Disable password prompt",
