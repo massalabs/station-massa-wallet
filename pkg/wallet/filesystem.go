@@ -42,7 +42,7 @@ func (w *Wallet) AccountPath(nickname string) (string, error) {
 	return filepath.Join(w.WalletPath, Filename(nickname)), nil
 }
 
-// filename returns the wallet filename based on the given nickname.
+// Filename returns the wallet filename based on the given nickname.
 func Filename(nickname string) string {
 	return fmt.Sprintf("wallet_%s.yaml", nickname)
 }
