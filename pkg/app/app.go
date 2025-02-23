@@ -52,7 +52,7 @@ func IsTestMode() bool {
 	return os.Getenv("WALLET_PASSWORD") != ""
 }
 
-// startup is called when the app starts. The context is saved
+// Startup is called when the app starts. The context is saved
 // so we can call the runtime methods
 func (a *WalletApp) Startup(ctx context.Context) {
 	a.Ctx = ctx

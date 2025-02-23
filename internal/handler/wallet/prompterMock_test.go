@@ -23,7 +23,7 @@ func (w *walletPrompterMock) SelectBackupFilepath(nickname string) (string, erro
 	return WalletBackupFilepath, nil
 }
 
-// NewWalletPrompter creates a new password prompter with the given Fyne GUI application.
+// NewWalletPrompterMock creates a new password prompter with the given Fyne GUI application.
 func NewWalletPrompterMock(app *walletapp.WalletApp, resultChannel chan walletapp.EventData) *walletPrompterMock {
 	return &walletPrompterMock{
 		resultChannel: resultChannel,

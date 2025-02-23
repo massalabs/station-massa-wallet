@@ -60,7 +60,7 @@ func (n *NodeFetcherMock) DatastoreAssetDecimals(contractAddress string) (uint8,
 	return 9, nil
 }
 
-// DatastoreAssetBalanceMock returns a dummy Asset Balance.
+// DatastoreAssetBalance returns a dummy Asset Balance.
 func (n *NodeFetcherMock) DatastoreAssetBalance(assetContractAddress, userAddress string) (string, error) {
 	// Return a balance value of 10000 as a string
 	return "10000", nil
