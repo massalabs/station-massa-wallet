@@ -22,11 +22,11 @@ func DollarValue(balance, MEXCSymbol, symbol string, decimals int64) (*float64, 
 	if MEXCSymbol == "USD" {
 		price = 1.0
 	} else {
-		err := error(nil)
-		price, err = DollarPrice(MEXCSymbol)
+		MEXCQuote, err := DollarPrice(MEXCSymbol)
 		if err != nil {
 			return nil, fmt.Errorf("Error getting dollar price: %s\n", err)
 		}
+		price = MEXCQuote
 	}
 
 	balanceInt, success := new(big.Int).SetString(balance, 10)

@@ -15,10 +15,10 @@ jobs:
           go-version: 1.24
           cache: true
       - name: run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.54
-          args: --timeout=3m
+          version: v1.64
+          args: --timeout=30s
       - name: install gofumpt
         run: go install mvdan.cc/gofumpt@latest
       - name: run gofumpt
