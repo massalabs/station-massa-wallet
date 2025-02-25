@@ -62,6 +62,7 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		if assetsWithBalance[i].AssetInfo.Symbol == "MAS" {
 			return true
 		}
+
 		if assetsWithBalance[j].AssetInfo.Symbol == "MAS" {
 			return false
 		}
@@ -72,9 +73,11 @@ func (g *getAllAssets) Handle(params operations.GetAllAssetsParams) middleware.R
 		if (valueI == nil || *valueI == 0) && (valueJ == nil || *valueJ == 0) {
 			return assetsWithBalance[i].AssetInfo.Symbol < assetsWithBalance[j].AssetInfo.Symbol
 		}
+
 		if valueI == nil || *valueI == 0 {
 			return false
 		}
+
 		if valueJ == nil || *valueJ == 0 {
 			return true
 		}

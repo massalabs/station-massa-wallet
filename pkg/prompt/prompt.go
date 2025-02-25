@@ -62,7 +62,7 @@ func WakeUpPrompt(
 ) (interface{}, error) {
 	if prompterApp.IsListening() {
 		logger.Warn(AlreadyListeningErr)
-		return nil, fmt.Errorf(AlreadyListeningErr)
+		return nil, fmt.Errorf("%s", AlreadyListeningErr)
 	}
 
 	prompterApp.Lock()
