@@ -12,7 +12,6 @@ import (
 	"github.com/massalabs/station/pkg/logger"
 )
 
-//nolint:typecheck,nolintlint
 //go:embed all:wails-frontend/dist
 var wailsAssets embed.FS
 
