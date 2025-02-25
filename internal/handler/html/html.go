@@ -16,7 +16,7 @@ const (
 	basePathWebApp = "dist/"
 )
 
-//nolint:typecheck,nolintlint
+//nolint:typecheck
 //go:embed dist
 var contentWebApp embed.FS
 

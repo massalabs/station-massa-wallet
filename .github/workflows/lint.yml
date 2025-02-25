@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v5
+      - uses: ./.github/actions/install
         with:
-          go-version: 1.24
-          cache: true
+          os: ubuntu-latest
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.64
+          version: v1.64.2
           args: --timeout=30s
       - name: install gofumpt
         run: go install mvdan.cc/gofumpt@latest
