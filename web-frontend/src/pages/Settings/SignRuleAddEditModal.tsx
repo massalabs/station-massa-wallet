@@ -33,7 +33,9 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const [ruleType, setRuleType] = useState(
     rule?.ruleType || RuleType.DisablePasswordPrompt,
   );
-  const [applyToAllContracts, setApplyToAllContracts] = useState(false);
+  const [applyToAllContracts, setApplyToAllContracts] = useState(
+    rule?.contract === '*',
+  );
 
   const isEditMode = !!rule;
 
