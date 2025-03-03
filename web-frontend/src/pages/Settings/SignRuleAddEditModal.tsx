@@ -8,6 +8,7 @@ import {
   PopupModalContent,
   PopupModalHeader,
   Toggle,
+  Tooltip,
 } from '@massalabs/react-ui-kit';
 import { RuleType, SignRule } from '@massalabs/wallet-provider';
 
@@ -129,9 +130,27 @@ export function SignRuleModal(props: SignRuleModalProps) {
             size="md"
             options={Object.values(RuleType).map((type) => ({
               item:
-                type === RuleType.AutoSign
-                  ? Intl.t('settings.sign-rules.auto-sign')
-                  : Intl.t('settings.sign-rules.disable-password-prompt'),
+                type === RuleType.AutoSign ? (
+                  <Tooltip
+                    body={Intl.t('settings.sign-rules.auto-sign-tooltip')}
+                    placement="top"
+                    triggerClassName="truncate w-full"
+                    tooltipClassName="mas-caption max-w-96"
+                  >
+                    {Intl.t('settings.sign-rules.auto-sign')}
+                  </Tooltip>
+                ) : (
+                  <Tooltip
+                    body={Intl.t(
+                      'settings.sign-rules.disable-password-prompt-tooltip',
+                    )}
+                    placement="top"
+                    triggerClassName="truncate w-full"
+                    tooltipClassName="mas-caption max-w-96"
+                  >
+                    {Intl.t('settings.sign-rules.disable-password-prompt')}
+                  </Tooltip>
+                ),
               onClick: () => setRuleType(type),
             }))}
           />
