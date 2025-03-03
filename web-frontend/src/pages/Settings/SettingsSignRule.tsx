@@ -201,7 +201,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
             triggerClassName="truncate w-full"
             tooltipClassName="mas-caption"
           >
-            {rule.name}
+            {rule.name.length === 0 ? '-' : rule.name}
           </Tooltip>
         )}
       </td>
@@ -213,7 +213,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
             triggerClassName="truncate w-full"
             tooltipClassName="mas-caption"
           >
-            <span>{Intl.t('settings.sign-rules.auto-sign')}</span>
+            <span>{Intl.t('settings.sign-rules.auto-sign-short')}</span>
           </Tooltip>
         ) : (
           <Tooltip
@@ -222,7 +222,9 @@ function SignRuleListItem(props: SignRuleListItemProps) {
             triggerClassName="truncate w-full"
             tooltipClassName="mas-caption"
           >
-            <span>{Intl.t('settings.sign-rules.disable-password-prompt')}</span>
+            <span>
+              {Intl.t('settings.sign-rules.disable-password-prompt-short')}
+            </span>
           </Tooltip>
         )}
       </td>

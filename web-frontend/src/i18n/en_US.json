@@ -106,8 +106,10 @@
       "name": "Name",
       "add": "Add",
       "actions": "Actions",
-      "auto-sign": "Auto",
-      "disable-password-prompt": "No Password",
+      "auto-sign": "Auto Sign",
+      "auto-sign-short": "Auto",
+      "disable-password-prompt": "Disable Password Prompt",
+      "disable-password-prompt-short": "No Password",
       "auto-sign-tooltip": "This will automatically sign operations coming from the linked contract address, without asking for your password nor your confirmation.",
       "disable-password-prompt-tooltip": "This will disable the password prompt for operations coming from the linked contract address, but will still require your confirmation.",
       "errors": {
