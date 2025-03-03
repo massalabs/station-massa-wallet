@@ -47,7 +47,7 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		return operations.NewUpdateSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: err.Error()})
 	}
 
-	promptRequest, err := w.getPromptRequest(acc, &newRule)
+	promptRequest, err := w.getPromptRequest(acc, &newRule, params.Body.Description)
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorUpdateSignRule, http.StatusBadRequest)
 	}
@@ -84,7 +84,7 @@ func (w *updateSignRuleHandler) Success(ruleID string) middleware.Responder {
 		})
 }
 
-func (w *updateSignRuleHandler) getPromptRequest(acc *account.Account, signRule *config.SignRule) (*prompt.PromptRequest, error) {
+func (w *updateSignRuleHandler) getPromptRequest(acc *account.Account, signRule *config.SignRule, description string) (*prompt.PromptRequest, error) {
 	address, err := acc.Address.String()
 	if err != nil {
 		return nil, fmt.Errorf("failed to stringify address: %w", err)
@@ -93,6 +93,7 @@ func (w *updateSignRuleHandler) getPromptRequest(acc *account.Account, signRule 
 	promptData := SignRulePromptData{
 		WalletAddress: address,
 		Nickname:      acc.Nickname,
+		Description:   description,
 		SignRule:      *signRule,
 	}
 
