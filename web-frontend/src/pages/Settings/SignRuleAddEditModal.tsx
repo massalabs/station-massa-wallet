@@ -118,7 +118,7 @@ export function SignRuleModal(props: SignRuleModalProps) {
             placeholder={Intl.t('settings.sign-rules.modals.name-placeholder')}
           />
           <Input
-            value={contract}
+            value={applyToAllContracts ? 'All' : contract}
             onChange={(e) => setContract(e.target.value)}
             name="contract"
             placeholder={
