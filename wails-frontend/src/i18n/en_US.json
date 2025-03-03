@@ -16,13 +16,13 @@
   },
   "signRule": {
     "addRule": {
-      "title": "Add a signature rule"
+      "title": "Add sign rule"
     },
     "updateRule": {
-      "title": "Update a signature rule"
+      "title": "Update sign rule"
     },
     "deleteRule": {
-      "title": "Delete a signature rule"
+      "title": "Delete sign rule"
     },
     "behavior": {
       "DISABLE_PASSWORD_PROMPT": "You are allowing the wallet to remember your password and enable one click sign for the selected contract",
