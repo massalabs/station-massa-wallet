@@ -117,7 +117,9 @@
         "already-exist": "A similar rule already exists for account",
         "delete": "An error occurred while deleting the sign rule",
         "update": "An error occurred while updating the sign rule",
-        "toggle": "An error occurred while toggling the sign rule"
+        "toggle": "An error occurred while toggling the sign rule",
+        "invalid-contract-address": "The provided contract address is not valid.",
+        "all-and-auto-sign-error": "Auto sign cannot be applied to all contracts for security reasons."
       },
       "success": {
         "add": "Sign rule added",

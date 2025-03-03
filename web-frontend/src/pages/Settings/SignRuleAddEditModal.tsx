@@ -71,6 +71,12 @@ export function SignRuleModal(props: SignRuleModalProps) {
 
       if (error?.message === 'Rule already exists') {
         errorMsg = Intl.t('settings.sign-rules.errors.already-exist');
+      } else if (error?.message.includes('invalid contract address')) {
+        errorMsg = Intl.t(
+          'settings.sign-rules.errors.invalid-contract-address',
+        );
+      } else if (error?.message.includes('action canceled by user')) {
+        errorMsg = Intl.t('errors.action-canceled');
       }
 
       onError?.(errorMsg);
@@ -82,6 +88,11 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const selectedRuleType = Object.values(RuleType).indexOf(
     ruleType as RuleType,
   );
+
+  const isAllAndAutoSign =
+    applyToAllContracts && ruleType === RuleType.AutoSign;
+  const shouldDisableSubmit =
+    isAllAndAutoSign || !name || (!contract && !applyToAllContracts);
 
   return (
     <PopupModal
@@ -154,7 +165,16 @@ export function SignRuleModal(props: SignRuleModalProps) {
               onClick: () => setRuleType(type),
             }))}
           />
-          <Button customClass="mt-6 self-start" onClick={handleSubmit}>
+          {isAllAndAutoSign && (
+            <p className="mas-caption text-s-error">
+              {Intl.t('settings.sign-rules.errors.all-and-auto-sign-error')}
+            </p>
+          )}
+          <Button
+            customClass="self-start"
+            onClick={handleSubmit}
+            disabled={shouldDisableSubmit}
+          >
             {isEditMode
               ? Intl.t('settings.sign-rules.modals.update')
               : Intl.t('settings.sign-rules.modals.add')}
