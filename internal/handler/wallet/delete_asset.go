@@ -8,15 +8,11 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
 
-func NewDeleteAsset(AssetsStore *assets.AssetsStore) operations.DeleteAssetHandler {
-	return &deleteAsset{
-		AssetsStore: AssetsStore,
-	}
+func NewDeleteAsset() operations.DeleteAssetHandler {
+	return &deleteAsset{}
 }
 
-type deleteAsset struct {
-	AssetsStore *assets.AssetsStore
-}
+type deleteAsset struct{}
 
 func (d *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Responder {
 	// Check if the address is valid
@@ -27,14 +23,14 @@ func (d *deleteAsset) Handle(params operations.DeleteAssetParams) middleware.Res
 	}
 
 	// Check if the asset exists in the loaded JSON
-	if !d.AssetsStore.AssetExists(params.Nickname, params.AssetAddress) {
+	if !assets.Store.AssetExists(params.Nickname, params.AssetAddress) {
 		// Return an error indicating that the asset does not exist
 		errorMsg := "Asset with the provided address does not exist."
 		return operations.NewDeleteAssetBadRequest().WithPayload(&models.Error{Code: errorAssetNotExists, Message: errorMsg})
 	}
 
 	// Delete Asset From the JSON file.
-	if err := d.AssetsStore.DeleteAsset(params.Nickname, params.AssetAddress); err != nil {
+	if err := assets.Store.DeleteAsset(params.Nickname, params.AssetAddress); err != nil {
 		// Return error occurred while persisting the asset
 		errorMsg := "Failed to delete the asset from the JSON file."
 		return operations.NewDeleteAssetInternalServerError().WithPayload(&models.Error{Code: errorDeleteAssetJSON, Message: errorMsg})

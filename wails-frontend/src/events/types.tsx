@@ -1,3 +1,5 @@
+import { walletapp } from '@wailsjs/go/models';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type promptResult<T = null> = {
   Success: boolean;
@@ -5,28 +7,12 @@ export type promptResult<T = null> = {
   Data: T;
 };
 
-export enum promptAction {
-  deleteReq = 0,
-  newPasswordReq = 1,
-  signReq = 2,
-  importReq = 3,
-  backupReq = 4,
-  tradeRollsReq = 6,
-  unprotectReq = 7,
-}
-
 export type promptRequest = {
-  Action: promptAction;
+  Action: walletapp.PromptRequestAction;
   Msg: string;
   Data: any;
   CodeMessage: string;
-  CorrelationID: string;
-};
-
-export const events = {
-  promptResult: 'promptResult',
-  promptData: 'promptData',
-  promptRequest: 'promptRequest',
+  DisablePassword: boolean | null;
 };
 
 export const backupMethods = {

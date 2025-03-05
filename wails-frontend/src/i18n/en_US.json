@@ -14,7 +14,33 @@
       "password": "Password"
     }
   },
+  "signRule": {
+    "addRule": {
+      "title": "Add sign rule"
+    },
+    "updateRule": {
+      "title": "Update sign rule"
+    },
+    "deleteRule": {
+      "title": "Delete sign rule"
+    },
+    "behavior": {
+      "DISABLE_PASSWORD_PROMPT": "You are allowing the wallet to remember your password and enable one click sign for the selected contract",
+      "AUTO_SIGN": "You are allowing the wallet to sign transactions without asking for confirmation for the selected contract"
+    },
+    "description": "Description from the requesting dApp",
+    "details": "Rule details",
+    "contract": "Contract",
+    "name": "Name",
+    "ruleType": "Rule type",
+    "enabled": "Enable",
+    "rulesTypeDesc": {
+      "AUTO_SIGN": "Auto sign",
+      "DISABLE_PASSWORD_PROMPT": "Remember password"
+    }
+  },
   "password-prompt": {
+    "account": "Account:",
     "transfer": {
       "from": "from: ",
       "to": "to: ",
@@ -148,7 +174,11 @@
     "Wallet-0012": "Failed to sign: invalid operation",
     "Wallet-0021": "Failed to sign",
     "transaction": "Failed to process transaction",
-    "delete": "Failed to process delete operation",
-    "default": "Failed to process operation"
+    "delete": "Failed to delete account",
+    "default": "Failed to process operation",
+    "addRule": "Failed to add signature rule",
+    "updateRule": "Failed to update signature rule",
+    "deleteRule": "Failed to delete signature rule",
+    "unknownRuleRequest": "Unknown signature rule request"
   }
 }

@@ -16,8 +16,6 @@ const (
 	errorSignDecodeMessage
 	errorSign
 	errorSignLoadCache
-	errorSignCorrelationIDNotFound
-	errorSignGenerateCorrelationID
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
 	errorImportWallet
@@ -33,4 +31,10 @@ const (
 	errorDeleteAssetJSON
 	errorAssetNotFound
 	errorTradeRoll
+	internalError
+	errorAddSignRule
+	errorDeleteSignRule
+	errorUpdateSignRule
+	errorCachePrivateKey
+	errorGetAccountConfig
 )

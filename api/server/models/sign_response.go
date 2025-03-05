@@ -19,10 +19,6 @@ import (
 // swagger:model SignResponse
 type SignResponse struct {
 
-	// correlation Id
-	// Format: byte
-	CorrelationID CorrelationID `json:"correlationId,omitempty"`
-
 	// The modified operation (usr can change the fees).
 	// Read Only: true
 	// Format: byte
@@ -40,42 +36,12 @@ type SignResponse struct {
 
 // Validate validates this sign response
 func (m *SignResponse) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateCorrelationID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *SignResponse) validateCorrelationID(formats strfmt.Registry) error {
-	if swag.IsZero(m.CorrelationID) { // not required
-		return nil
-	}
-
-	if err := m.CorrelationID.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("correlationId")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("correlationId")
-		}
-		return err
-	}
-
 	return nil
 }
 
 // ContextValidate validate this sign response based on the context it is used
 func (m *SignResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.contextValidateCorrelationID(ctx, formats); err != nil {
-		res = append(res, err)
-	}
 
 	if err := m.contextValidateOperation(ctx, formats); err != nil {
 		res = append(res, err)
@@ -92,24 +58,6 @@ func (m *SignResponse) ContextValidate(ctx context.Context, formats strfmt.Regis
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *SignResponse) contextValidateCorrelationID(ctx context.Context, formats strfmt.Registry) error {
-
-	if swag.IsZero(m.CorrelationID) { // not required
-		return nil
-	}
-
-	if err := m.CorrelationID.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("correlationId")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("correlationId")
-		}
-		return err
-	}
-
 	return nil
 }
 

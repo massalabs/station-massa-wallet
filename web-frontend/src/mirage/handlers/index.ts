@@ -1,10 +1,14 @@
 import { Server } from 'miragejs';
 
 import { routesForAccounts } from './account';
+import { routesForConfig } from './config';
+import { routesForSignRules } from './signRules';
 import { AppSchema } from '../types';
 
 const handlers = {
   accounts: routesForAccounts,
+  signRules: routesForSignRules,
+  config: routesForConfig,
 };
 
 const otherDomainHandlers = (server: Server) => {

@@ -14,10 +14,10 @@ import (
 )
 
 func Test_getWallets_handler(t *testing.T) {
-	api, prompterApp, _, _, err := MockAPI()
+	api, _, err := MockAPI()
 	assert.NoError(t, err)
 
-	wallet.ClearAccounts(t, prompterApp.App().Wallet.WalletPath)
+	wallet.ClearAccounts(t, prompterAppMock.App().Wallet.WalletPath)
 
 	// test empty configuration first.
 	t.Run("Get empty list", func(t *testing.T) {
@@ -38,7 +38,7 @@ func Test_getWallets_handler(t *testing.T) {
 
 	nicknames := []string{"account1", "account2", "account3"}
 	for _, nickname := range nicknames {
-		createAccount(password, nickname, t, prompterApp)
+		createAccount(password, nickname, t, prompterAppMock)
 	}
 
 	t.Run("Get multiple accounts", func(t *testing.T) {
@@ -58,17 +58,17 @@ func Test_getWallets_handler(t *testing.T) {
 		assertAccountsBody(t, resp, true)
 	})
 
-	wallet.ClearAccounts(t, prompterApp.App().Wallet.WalletPath)
+	wallet.ClearAccounts(t, prompterAppMock.App().Wallet.WalletPath)
 }
 
 func Test_getWallet_handler(t *testing.T) {
 	nickname := "trololol"
 	password := "zePassword"
 
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}")
 	assert.True(t, exist, "Endpoint doesn't exist")
@@ -88,7 +88,7 @@ func Test_getWallet_handler(t *testing.T) {
 
 		assertAccountBody(t, resp, nickname, true)
 
-		wallet.ClearAccounts(t, prompterApp.App().Wallet.WalletPath)
+		wallet.ClearAccounts(t, prompterAppMock.App().Wallet.WalletPath)
 	})
 
 	// test with un-ciphered data.
@@ -96,8 +96,8 @@ func Test_getWallet_handler(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     password,
 			}
 			// forward test result to test goroutine

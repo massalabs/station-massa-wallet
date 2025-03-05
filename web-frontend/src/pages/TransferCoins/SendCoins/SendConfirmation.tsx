@@ -108,7 +108,7 @@ export function SendConfirmation(props: SendConfirmationProps) {
         <div className="flex flex-col gap-4 p-4">
           <div className="flex items-center gap-8">
             <div className="flex gap-2 items-center">
-              <Tooltip customClass="p-2" body={content} />
+              <Tooltip triggerClassName="p-2" body={content} />
               <p>{Intl.t('send-coins.fee')}</p>
             </div>
             <Balance amount={fees} symbol="MAS" size="xs" />

@@ -40,6 +40,7 @@ export function AssetsList(props: AssetsListProps) {
                 : undefined
             }
             key={index}
+            address={token.address}
             disable={token?.isDefault}
             onDelete={() => {
               if (token.address) {

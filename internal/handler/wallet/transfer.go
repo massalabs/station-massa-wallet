@@ -10,6 +10,8 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -68,7 +70,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Data: PromptRequestSignData{
+		Data: prompt.PromptRequestSignData{
 			Fees:              strconv.FormatUint(fee, 10),
 			MinFees:           minimalFees,
 			WalletAddress:     address,
@@ -107,6 +109,15 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	t.prompterApp.EmitEvent(walletapp.PromptResultEvent,
 		walletapp.EventData{Success: true})
 
+	cfg := config.Get()
+
+	if cfg.HasEnabledRule(acc.Nickname) {
+		err = cache.CachePrivateKeyFromPassword(acc, output.Password)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
+		}
+	}
+
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,
@@ -123,7 +134,7 @@ func doTransfer(
 ) (*sendOperation.OperationResponse, error) {
 	operation, err := transaction.New(recipientAddress, amount)
 	if err != nil {
-		return nil, fmt.Errorf("Error during transaction creation: %w", err)
+		return nil, fmt.Errorf("error during transaction creation: %w", err)
 	}
 
 	return network.SendOperation(acc, password, massaClient, operation, fee, chainID)

@@ -4,23 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
-	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetAllAssetsHandler(t *testing.T) {
-	api, prompterApp, _, _, err := MockAPI()
+	api, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"
 	password := "zePassword"
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	// Get the assetsWithBalance
 	assetsWithBalance := getAssets(t, api, nickname)
@@ -63,12 +61,12 @@ func assertAssetInfoWithBalanceEqual(t *testing.T, actual, expected *models.Asse
 }
 
 func getExpectedAssetsCount(t *testing.T) int {
-	tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
-	assert.NoError(t, err)
-	nodeFetcher := network.NewNodeFetcher()
-	store, err := assets.NewAssetsStore(tempDir, nodeFetcher)
-	assert.NoError(t, err)
-	defaultAssets, err := store.Default()
+	// tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
+	// assert.NoError(t, err)
+	// nodeFetcher := network.NewNodeFetcher()
+	// store, err := assets.InitAssetsStore(tempDir, nodeFetcher)
+	// assert.NoError(t, err)
+	defaultAssets, err := assets.Store.Default()
 	assert.NoError(t, err)
 	counter := 0
 
