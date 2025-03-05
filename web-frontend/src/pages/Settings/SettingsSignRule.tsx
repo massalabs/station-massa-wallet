@@ -197,15 +197,17 @@ function SignRuleListItem(props: SignRuleListItemProps) {
   return (
     <>
       <td className="max-w-[128px] truncate">
-        {rule.name && rule.name.length > 0 && (
+        {rule.name && rule.name.length > 0 ? (
           <Tooltip
             body={rule.name}
             placement="right"
             triggerClassName="truncate w-full"
             tooltipClassName="mas-caption"
           >
-            {rule.name.length === 0 ? '-' : rule.name}
+            {rule.name}
           </Tooltip>
+        ) : (
+          <span className="text-f-secondary">-</span>
         )}
       </td>
       <td className="max-w-xs truncate whitespace-nowrap">
