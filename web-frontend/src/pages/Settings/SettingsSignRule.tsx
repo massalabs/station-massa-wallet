@@ -79,11 +79,14 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
 
   return (
     <>
-      <div className="w-full flex items-center justify-between">
+      <div className="w-full flex items-center justify-between mb-2">
         <p className="mas-body text-f-primary">
           {Intl.t('settings.title-sign-rules')}
         </p>
-        <Button customClass="w-fit max-h-[2.5rem]" onClick={handleAdd}>
+        <Button
+          customClass="w-fit max-h-[2.5rem] min-h-[2.5rem]"
+          onClick={handleAdd}
+        >
           {Intl.t('settings.sign-rules.add')}
         </Button>
       </div>
@@ -194,7 +197,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
   return (
     <>
       <td className="max-w-[128px] truncate">
-        {rule.name && rule.name.length > 0 && (
+        {rule.name && rule.name.length > 0 ? (
           <Tooltip
             body={rule.name}
             placement="right"
@@ -203,6 +206,8 @@ function SignRuleListItem(props: SignRuleListItemProps) {
           >
             {rule.name}
           </Tooltip>
+        ) : (
+          <span className="text-f-secondary">-</span>
         )}
       </td>
       <td className="max-w-xs truncate whitespace-nowrap">
@@ -211,18 +216,20 @@ function SignRuleListItem(props: SignRuleListItemProps) {
             body={Intl.t('settings.sign-rules.auto-sign-tooltip')}
             placement="top"
             triggerClassName="truncate w-full"
-            tooltipClassName="mas-caption"
+            tooltipClassName="mas-caption max-w-96"
           >
-            <span>{Intl.t('settings.sign-rules.auto-sign')}</span>
+            <span>{Intl.t('settings.sign-rules.auto-sign-short')}</span>
           </Tooltip>
         ) : (
           <Tooltip
             body={Intl.t('settings.sign-rules.disable-password-prompt-tooltip')}
             placement="top"
             triggerClassName="truncate w-full"
-            tooltipClassName="mas-caption"
+            tooltipClassName="mas-caption max-w-96"
           >
-            <span>{Intl.t('settings.sign-rules.disable-password-prompt')}</span>
+            <span>
+              {Intl.t('settings.sign-rules.disable-password-prompt-short')}
+            </span>
           </Tooltip>
         )}
       </td>

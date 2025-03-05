@@ -8,6 +8,7 @@ import {
   PopupModalContent,
   PopupModalHeader,
   Toggle,
+  Tooltip,
 } from '@massalabs/react-ui-kit';
 import { RuleType, SignRule } from '@massalabs/wallet-provider';
 
@@ -32,7 +33,9 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const [ruleType, setRuleType] = useState(
     rule?.ruleType || RuleType.DisablePasswordPrompt,
   );
-  const [applyToAllContracts, setApplyToAllContracts] = useState(false);
+  const [applyToAllContracts, setApplyToAllContracts] = useState(
+    rule?.contract === '*',
+  );
 
   const isEditMode = !!rule;
 
@@ -70,6 +73,12 @@ export function SignRuleModal(props: SignRuleModalProps) {
 
       if (error?.message === 'Rule already exists') {
         errorMsg = Intl.t('settings.sign-rules.errors.already-exist');
+      } else if (error?.message.includes('invalid contract address')) {
+        errorMsg = Intl.t(
+          'settings.sign-rules.errors.invalid-contract-address',
+        );
+      } else if (error?.message.includes('action canceled by user')) {
+        errorMsg = Intl.t('errors.action-canceled');
       }
 
       onError?.(errorMsg);
@@ -81,6 +90,11 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const selectedRuleType = Object.values(RuleType).indexOf(
     ruleType as RuleType,
   );
+
+  const isAllAndAutoSign =
+    applyToAllContracts && ruleType === RuleType.AutoSign;
+  const shouldDisableSubmit =
+    isAllAndAutoSign || !name || (!contract && !applyToAllContracts);
 
   return (
     <PopupModal
@@ -106,7 +120,7 @@ export function SignRuleModal(props: SignRuleModalProps) {
             placeholder={Intl.t('settings.sign-rules.modals.name-placeholder')}
           />
           <Input
-            value={contract}
+            value={applyToAllContracts ? 'All' : contract}
             onChange={(e) => setContract(e.target.value)}
             name="contract"
             placeholder={
@@ -129,13 +143,40 @@ export function SignRuleModal(props: SignRuleModalProps) {
             size="md"
             options={Object.values(RuleType).map((type) => ({
               item:
-                type === RuleType.AutoSign
-                  ? Intl.t('settings.sign-rules.auto-sign')
-                  : Intl.t('settings.sign-rules.disable-password-prompt'),
+                type === RuleType.AutoSign ? (
+                  <Tooltip
+                    body={Intl.t('settings.sign-rules.auto-sign-tooltip')}
+                    placement="top"
+                    triggerClassName="truncate w-full"
+                    tooltipClassName="mas-caption max-w-96"
+                  >
+                    {Intl.t('settings.sign-rules.auto-sign')}
+                  </Tooltip>
+                ) : (
+                  <Tooltip
+                    body={Intl.t(
+                      'settings.sign-rules.disable-password-prompt-tooltip',
+                    )}
+                    placement="top"
+                    triggerClassName="truncate w-full"
+                    tooltipClassName="mas-caption max-w-96"
+                  >
+                    {Intl.t('settings.sign-rules.disable-password-prompt')}
+                  </Tooltip>
+                ),
               onClick: () => setRuleType(type),
             }))}
           />
-          <Button customClass="mt-6 self-start" onClick={handleSubmit}>
+          {isAllAndAutoSign && (
+            <p className="mas-caption text-s-error">
+              {Intl.t('settings.sign-rules.errors.all-and-auto-sign-error')}
+            </p>
+          )}
+          <Button
+            customClass="self-start"
+            onClick={handleSubmit}
+            disabled={shouldDisableSubmit}
+          >
             {isEditMode
               ? Intl.t('settings.sign-rules.modals.update')
               : Intl.t('settings.sign-rules.modals.add')}
