@@ -17,7 +17,7 @@ import (
 type WalletApp struct {
 	Ctx         context.Context
 	CtrlChan    chan PromptCtrl
-	PromptInput chan CorrelationIdentifier
+	PromptInput chan EventInterface
 	Wallet      *wallet.Wallet
 	Shutdown    bool
 	IsListening bool
@@ -37,7 +37,7 @@ func (a *WalletApp) cleanExit() {
 func NewWalletApp(wallet *wallet.Wallet) *WalletApp {
 	app := &WalletApp{
 		CtrlChan:    make(chan PromptCtrl),
-		PromptInput: make(chan CorrelationIdentifier),
+		PromptInput: make(chan EventInterface),
 		Wallet:      wallet,
 		Shutdown:    false,
 		IsListening: false,
@@ -78,25 +78,25 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 
 // Functions to send user input to the backend from the wails frontend
 
-func (a *WalletApp) SendPromptInput(input string, correlationID string) {
+func (a *WalletApp) SendPromptInput(input string) {
 	if !a.IsListening {
 		logger.Warn("Not listening (in SendPromptInput)")
 		return
 	}
 
-	a.PromptInput <- &StringPromptInput{BaseMessage: BaseMessage{CorrelationID: correlationID}, Message: input}
+	a.PromptInput <- &StringPromptInput{BaseMessage: BaseMessage{}, Message: input}
 }
 
-func (a *WalletApp) SendSignPromptInput(password string, fees string, correlationID string) {
+func (a *WalletApp) SendSignPromptInput(password string, fees string) {
 	if !a.IsListening {
 		logger.Warn("Not listening (in SendSignPromptInput)")
 		return
 	}
 
-	a.PromptInput <- &SignPromptInput{BaseMessage: BaseMessage{CorrelationID: correlationID}, Password: password, Fees: fees}
+	a.PromptInput <- &SignPromptInput{BaseMessage: BaseMessage{}, Password: password, Fees: fees}
 }
 
-func (a *WalletApp) SendPKeyPromptInput(privateKeyText string, nickname string, password string, correlationID string) {
+func (a *WalletApp) SendPKeyPromptInput(privateKeyText string, nickname string, password string) {
 	if !a.IsListening {
 		logger.Warn("Not listening (in SendPKeyPromptInput)")
 		return
@@ -105,7 +105,7 @@ func (a *WalletApp) SendPKeyPromptInput(privateKeyText string, nickname string, 
 	guardedPrivateKey := memguard.NewBufferFromBytes([]byte(privateKeyText))
 
 	a.PromptInput <- &ImportPKeyPromptInput{
-		BaseMessage: BaseMessage{CorrelationID: correlationID},
+		BaseMessage: BaseMessage{},
 		PrivateKey:  guardedPrivateKey,
 		Nickname:    nickname,
 		Password:    memguard.NewBufferFromBytes([]byte(password)),

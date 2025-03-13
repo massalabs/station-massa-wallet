@@ -1,5 +1,4 @@
-import { formatAmount } from '@massalabs/react-ui-kit';
-import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
+import { formatAmount, massaToken } from '@massalabs/react-ui-kit';
 
 import { OPER_BUY_ROLL } from '@/const/operations';
 import Intl from '@/i18n/i18n';

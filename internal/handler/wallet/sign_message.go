@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bluele/gcache"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
@@ -28,13 +29,12 @@ type PromptRequestSignMessageData struct {
 	DisplayData   bool
 }
 
-func NewSignMessage(prompterApp prompt.WalletPrompterInterface, gc gcache.Cache) operations.SignMessageHandler {
-	return &walletSignMessage{gc: gc, prompterApp: prompterApp}
+func NewSignMessage(prompterApp prompt.WalletPrompterInterface) operations.SignMessageHandler {
+	return &walletSignMessage{prompterApp: prompterApp}
 }
 
 type walletSignMessage struct {
 	prompterApp prompt.WalletPrompterInterface
-	gc          gcache.Cache
 }
 
 func (w *walletSignMessage) Handle(params operations.SignMessageParams) middleware.Responder {
@@ -49,8 +49,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		return newErrorResponse(err.Error(), errorSignDecodeMessage, http.StatusBadRequest)
 	}
 
-	// Use the prompt-based logic to sign the message
-	promptOutput, err := prompt.WakeUpPrompt(w.prompterApp, *promptRequest, acc)
+	output, err := PromptForOperation(w.prompterApp, acc, promptRequest)
 	if err != nil {
 		msg := fmt.Sprintf("Unable to unprotect wallet: %s", err.Error())
 		if errors.Is(err, utils.ErrWrongPassword) || errors.Is(err, utils.ErrActionCanceled) {
@@ -60,17 +59,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 	}
 
-	output, ok := promptOutput.(*walletapp.SignPromptOutput)
-	if !ok {
-		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrInvalidInputType.Error()), utils.ErrInvalidInputType.Error(), http.StatusInternalServerError)
-	}
-
-	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
-		walletapp.EventData{Success: true})
-
-	password := output.Password
-
-	signature, err := acc.Sign(password, []byte(params.Body.Message))
+	signature, err := acc.Sign(output.Password, []byte(params.Body.Message))
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("unable to sign message: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
 	}
@@ -78,6 +67,15 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	publicKeyBytes, err := acc.PublicKey.MarshalText()
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
+	}
+
+	cfg := config.Get()
+
+	if cfg.HasEnabledRule(acc.Nickname) {
+		err = cache.CachePrivateKeyFromPassword(acc, output.Password)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
+		}
 	}
 
 	// Return the signature and public key as the response

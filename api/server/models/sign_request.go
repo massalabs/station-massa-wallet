@@ -19,16 +19,9 @@ import (
 // swagger:model SignRequest
 type SignRequest struct {
 
-	// A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.
-	Batch bool `json:"batch,omitempty"`
-
 	// The chain id of the network to which the operation will be sent.
 	// Required: true
 	ChainID *int64 `json:"chainId"`
-
-	// correlation Id
-	// Format: byte
-	CorrelationID CorrelationID `json:"correlationId,omitempty"`
 
 	// Description text of what is being signed (optional)
 	// Max Length: 280
@@ -45,10 +38,6 @@ func (m *SignRequest) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateChainID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateCorrelationID(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -69,23 +58,6 @@ func (m *SignRequest) Validate(formats strfmt.Registry) error {
 func (m *SignRequest) validateChainID(formats strfmt.Registry) error {
 
 	if err := validate.Required("chainId", "body", m.ChainID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *SignRequest) validateCorrelationID(formats strfmt.Registry) error {
-	if swag.IsZero(m.CorrelationID) { // not required
-		return nil
-	}
-
-	if err := m.CorrelationID.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("correlationId")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("correlationId")
-		}
 		return err
 	}
 
@@ -113,35 +85,8 @@ func (m *SignRequest) validateOperation(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this sign request based on the context it is used
+// ContextValidate validates this sign request based on context it is used
 func (m *SignRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateCorrelationID(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *SignRequest) contextValidateCorrelationID(ctx context.Context, formats strfmt.Registry) error {
-
-	if swag.IsZero(m.CorrelationID) { // not required
-		return nil
-	}
-
-	if err := m.CorrelationID.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("correlationId")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("correlationId")
-		}
-		return err
-	}
-
 	return nil
 }
 

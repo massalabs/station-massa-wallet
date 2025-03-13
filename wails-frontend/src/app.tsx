@@ -1,44 +1,45 @@
 import { EventsOn } from '@wailsjs/runtime/runtime';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  events,
-  promptAction,
-  promptRequest,
-  promptResult,
-} from './events/events';
+import { promptRequest, promptResult } from './events';
 import Intl from './i18n/i18n';
 import { Loading } from './pages/loading';
 import { useConfigStore } from './store/store';
 import { ErrorCode } from './utils';
+import { walletapp } from '../wailsjs/go/models';
 
 export function App() {
   const navigate = useNavigate();
+
+  const { PromptRequestAction, EventType } = walletapp;
 
   const handlePromptRequest = (req: promptRequest) => {
     clearTimeout(useConfigStore.getState().timeoutId);
 
     switch (req.Action) {
-      case promptAction.deleteReq:
-      case promptAction.signReq:
-      case promptAction.tradeRollsReq:
-      case promptAction.unprotectReq:
+      case PromptRequestAction.delete:
+      case PromptRequestAction.sign:
+      case PromptRequestAction.tradeRolls:
+      case PromptRequestAction.unprotect:
+      case PromptRequestAction.addSignRule:
+      case PromptRequestAction.deleteSignRule:
+      case PromptRequestAction.updateSignRule:
         navigate('/password', { state: { req } });
         return;
-      case promptAction.newPasswordReq:
+      case PromptRequestAction.newPassword:
         navigate('/new-password', { state: { req } });
         return;
-      case promptAction.importReq:
+      case PromptRequestAction.import:
         navigate('/import-methods', { state: { req } });
         return;
-      case promptAction.backupReq:
+      case PromptRequestAction.backup:
         navigate('/backup-methods', { state: { req } });
         return;
       default:
     }
   };
 
-  EventsOn(events.promptResult, (result: promptResult) => {
+  EventsOn(EventType.promptResult, (result: promptResult) => {
     if (!result.Success && result.CodeMessage === ErrorCode.Timeout) {
       const errorMessage = Intl.t(`errors.${result.CodeMessage}`);
       navigate('/failure', {
@@ -47,7 +48,7 @@ export function App() {
     }
   });
 
-  EventsOn(events.promptRequest, handlePromptRequest);
+  EventsOn(EventType.promptRequest, handlePromptRequest);
 
   return <Loading />;
 }

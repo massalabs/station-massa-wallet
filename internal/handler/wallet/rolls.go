@@ -66,7 +66,7 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 
 	promptRequest := prompt.PromptRequest{
 		Action: walletapp.Sign,
-		Data: PromptRequestSignData{
+		Data: prompt.PromptRequestSignData{
 			Fees:            strconv.FormatUint(fee, 10),
 			MinFees:         minimalFees,
 			WalletAddress:   string(addressBytes),

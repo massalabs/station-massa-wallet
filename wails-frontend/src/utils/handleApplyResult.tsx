@@ -3,7 +3,7 @@ import { WindowReloadApp } from '@wailsjs/runtime/runtime';
 import { NavigateFunction } from 'react-router-dom';
 
 import { IErrorObject } from './errors';
-import { promptResult, promptRequest } from '@/events/events';
+import { promptResult, promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { useConfigStore } from '@/store/store';
 

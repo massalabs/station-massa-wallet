@@ -23,14 +23,14 @@ func deleteWallet(t *testing.T, api *operations.MassaWalletAPI, nickname string)
 }
 
 func Test_walletDelete_Handle(t *testing.T) {
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	testResult := make(chan walletapp.EventData)
 
 	nickname := "walletToDelete"
 	password := "zePassword"
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	t.Run("invalid nickname", func(t *testing.T) {
 		resp := deleteWallet(t, api, "toto")
@@ -40,8 +40,8 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("invalid password", func(t *testing.T) {
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     "invalid password",
 			}
 			// forward test result to test goroutine
@@ -50,7 +50,7 @@ func Test_walletDelete_Handle(t *testing.T) {
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
 		}()
 
 		resp := deleteWallet(t, api, nickname)
@@ -60,8 +60,8 @@ func Test_walletDelete_Handle(t *testing.T) {
 	t.Run("canceled by user", func(t *testing.T) {
 		go func() {
 			// Send wrong password to prompter app and wait for result
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     "this is not the password",
 			}
 			// forward test result to test goroutine
@@ -70,48 +70,22 @@ func Test_walletDelete_Handle(t *testing.T) {
 			checkResultChannel(t, failRes, false, utils.WrongPassword)
 
 			// Send cancel to prompter app to unlock the handler
-			prompterApp.App().CtrlChan <- walletapp.Cancel
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
 		}()
 
 		resp := deleteWallet(t, api, nickname)
 
 		verifyStatusCode(t, resp, http.StatusUnauthorized)
 
-		_, err = prompterApp.App().Wallet.GetAccount(nickname)
+		_, err = prompterAppMock.App().Wallet.GetAccount(nickname)
 		assert.NoError(t, err)
 	})
 
-	t.Run("invalid prompt correlation id", func(t *testing.T) {
-		// first send a invalid prompt correlation id and then the correct one
-		go func() {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: "666"},
-				Message:     password,
-			}
-
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
-				Message:     password,
-			}
-			// forward test result to test goroutine
-			testResult <- (<-resChan)
-		}()
-
-		resp := deleteWallet(t, api, nickname)
-		verifyStatusCode(t, resp, http.StatusNoContent)
-		result := <-testResult
-		checkResultChannel(t, result, true, "")
-		_, err = prompterApp.App().Wallet.GetAccount(nickname)
-		assert.Error(t, err, "Wallet should have been deleted")
-	})
-
 	t.Run("delete success", func(t *testing.T) {
-		createAccount(password, nickname, t, prompterApp)
-
 		// Send password to prompter app and wait for result
 		go func() {
-			prompterApp.App().PromptInput <- &walletapp.StringPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
 				Message:     password,
 			}
 			// forward test result to test goroutine
@@ -126,7 +100,8 @@ func Test_walletDelete_Handle(t *testing.T) {
 
 		checkResultChannel(t, result, true, "")
 
-		_, err = prompterApp.App().Wallet.GetAccount(nickname)
+		_, err = prompterAppMock.App().Wallet.GetAccount(nickname)
+
 		assert.Error(t, err, "Wallet should have been deleted")
 	})
 }

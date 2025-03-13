@@ -1,5 +1,4 @@
-import { Tooltip, formatAmount } from '@massalabs/react-ui-kit';
-import { massaToken } from '@massalabs/react-ui-kit/src/lib/massa-react/utils/const';
+import { Tooltip, formatAmount, massaToken } from '@massalabs/react-ui-kit';
 import { FiAlertTriangle, FiInfo } from 'react-icons/fi';
 
 import Intl from '@/i18n/i18n';

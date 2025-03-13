@@ -42,6 +42,21 @@ paths:
           description: Resource not found.
           schema:
             $ref: "#/definitions/Error"
+  /api/config:
+    get:
+      operationId: GetConfig
+      description: Get wallet config
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Config retrieved.
+          schema:
+            $ref: "#/definitions/Config"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
   /api/accounts:
     get:
       operationId: AccountList
@@ -181,7 +196,6 @@ paths:
         - in: body
           name: body
           required: true
-          x-nullable: false
           schema:
             $ref: "#/definitions/UpdateAccountRequest"
       produces:
@@ -232,10 +246,118 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+
+  /api/accounts/{nickname}/signrules:
+    post:
+      operationId: AddSignRule
+      description: Create a new sign rule for the account associated with the provided nickname.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/AddSignRule"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: signRule Id.
+          schema:
+            $ref: "#/definitions/AddSignRuleResponse"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+
+  /api/accounts/{nickname}/signrules/{ruleId}:
+    delete:
+      operationId: DeleteSignRule
+      description: Delete a sign rule for the account associated with the provided nickname by its ID.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/ruleId"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Sign rule deleted successfully.
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account or Rule Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+
+    put:
+      operationId: UpdateSignRule
+      description: Update an existing sign rule for the account associated with the provided nickname by its ID.
+      parameters:
+        - $ref: "#/parameters/nickname"
+        - $ref: "#/parameters/ruleId"
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateSignRule"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Sign rule updated successfully.
+          schema:
+            $ref: "#/definitions/UpdateSignRuleResponse"
+        400:
+          description: Bad request.
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: Unauthorized - The request requires user authentication.
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: Account or Rule Not found.
+          schema:
+            $ref: "#/definitions/Error"
+        422:
+          description: Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal Server Error - The server has encountered a situation it does not know how to handle.
+          schema:
+            $ref: "#/definitions/Error"
+
   /api/accounts/{nickname}/sign:
     post:
       operationId: Sign
-      description: Sign an operation or a message using the account associated with the provided nickname in the path. If no correlationId is provided, the user will be prompted to enter their account password.
+      description: Sign an operation or a message using the account associated with the provided nickname in the path.
       parameters:
         - $ref: "#/parameters/nickname"
         - in: body
@@ -252,10 +374,10 @@ paths:
           description: Whether to allow user to edit the fee value in the sign prompt.
           x-nullable: true
       produces:
-        - application/json
+        - application/json    
       responses:
         200:
-          description: Returns the signature, public key, and correlationId (if provided).
+          description: Returns the signature, public key.
           schema:
             $ref: "#/definitions/SignResponse"
         400:
@@ -263,7 +385,7 @@ paths:
           schema:
             $ref: "#/definitions/Error"
         401:
-          description: Unauthorized - The request requires user authentication. Only if no correlationId is provided.
+          description: Unauthorized - The request requires user authentication.
           schema:
             $ref: "#/definitions/Error"
         404:
@@ -486,6 +608,7 @@ paths:
           description: Internal Server Error - The server has encountered a situation it does not know how to handle.
           schema:
             $ref: "#/definitions/Error"
+
     delete:
       operationId: DeleteAsset
       description: Delete token information from an account.
@@ -535,6 +658,14 @@ parameters:
     default: true
     description: whether to return the data ciphered or not
     x-nullable: true
+  ruleId:
+    name: ruleId
+    in: path
+    required: true
+    type: string
+    description: The ID of the sign rule
+    x-nullable: false
+
 definitions:
   Error:
     type: object
@@ -565,14 +696,81 @@ definitions:
         description: Serialized attributes of the operation to be signed with the key pair corresponding to the given nickname.
         type: string
         format: byte
-      batch:
-        description: A boolean property that indicates whether the sign operation is part of a batch of operations. Set to true if this operation is part of a batch, otherwise set to false.
-        type: boolean
-      correlationId:
-        $ref: "#/definitions/CorrelationId"
       chainId:
         type: integer
         description: The chain id of the network to which the operation will be sent.
+
+  AddSignRule:
+    type: object
+    required:
+      - ruleType
+      - contract
+      - enabled
+    properties:
+      description:
+        type: string
+        maxLength: 280
+        description: Description text of what is being done (optional)
+      ruleType:
+        $ref: "#/definitions/RuleType"
+      name:
+        description: "The name of the rule."
+        type: "string"
+        maxLength: 100
+      contract:
+        description: "The contract to which the rule applies."
+        type: "string"
+      enabled:
+        description: "Whether the rule is enabled or not."
+        type: "boolean"
+
+  RuleType:
+    description: "An enumeration of the different types of rules."
+    type: string
+    enum:
+      - DISABLE_PASSWORD_PROMPT
+      - AUTO_SIGN
+    x-nullable: false
+
+  AddSignRuleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          x-nullable: false
+          readOnly: true
+
+  UpdateSignRule:
+    type: object
+    required:
+      - ruleType
+      - contract
+      - enabled
+    properties:
+      description:
+        type: string
+        maxLength: 280
+        description: Description text of what is being updated (optional)
+      ruleType:
+        $ref: "#/definitions/RuleType"
+      name:
+        description: "The name of the rule."
+        type: "string"
+        maxLength: 100
+      contract:
+        description: "The contract to which the rule applies. Use wildcard (*) to apply the rule for contracts."
+        type: "string"
+      enabled:
+        description: "Whether the rule is enabled or not."
+        type: "boolean"
+
+  UpdateSignRuleResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        x-nullable: false
+        readOnly: true
 
   SignMessageRequest:
     type: object
@@ -659,12 +857,7 @@ definitions:
         format: byte
         x-nullable: false
         readOnly: true
-      correlationId:
-        $ref: "#/definitions/CorrelationId"
-  CorrelationId:
-    description: Correlation id of the operation batch
-    type: string
-    format: byte
+
   Nickname:
     description: Account's short name.
     type: string
@@ -760,3 +953,45 @@ definitions:
             type: boolean
           dollarValue:
             type: string
+
+  SignRule:
+    type: object
+    description: Account Sign rule.
+    properties:
+      id:
+        type: string
+        x-nullable: true
+      name:
+        type: string
+        x-nullable: true
+      contract:
+        type: string
+        x-nullable: true
+      enabled:
+        type: boolean
+        default: true
+      ruleType:
+        $ref: "#/definitions/RuleType"
+    required:
+      - ruleType
+
+  AccountConfig:
+    type: object
+    description: Wallet Account Config.
+    properties:
+      signRules:
+        type: array
+        items:
+          $ref: "#/definitions/SignRule"
+    required:
+      - signRules
+
+  Config:
+    type: object
+    description: Wallet Config.
+    properties:
+      accounts:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/AccountConfig"
+    x-nullable: false
