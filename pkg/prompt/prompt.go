@@ -2,7 +2,7 @@ package prompt
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -60,7 +60,7 @@ func WakeUpPrompt(
 ) (interface{}, error) {
 	if prompterApp.IsListening() {
 		logger.Warn(AlreadyListeningErr)
-		return nil, errors.New(AlreadyListeningErr)
+		return nil, fmt.Errorf("%s", AlreadyListeningErr)
 	}
 
 	prompterApp.Lock()

@@ -42,6 +42,7 @@ func TestAddress_UnmarshalText(t *testing.T) {
 			a := &Address{
 				Object: &object.Object{},
 			}
+
 			if err := a.UnmarshalText(tt.text); err != tt.expectedErr {
 				t.Errorf("Address.UnmarshalText() error = %v, wantErr %v", err, tt.expectedErr)
 			}
@@ -227,6 +228,7 @@ func TestAddress_UnmarshalBinary(t *testing.T) {
 			a := &Address{
 				Object: &object.Object{},
 			}
+
 			if err := a.UnmarshalBinary(tt.data); err != tt.expectedErr {
 				t.Errorf("Address.UnmarshalBinary() error = %v, wantErr %v", err, tt.expectedErr)
 			}

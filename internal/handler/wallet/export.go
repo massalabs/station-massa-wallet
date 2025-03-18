@@ -54,6 +54,7 @@ func (w *walletExportFile) Handle(params operations.ExportAccountFileParams) mid
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		defer file.Close()
 	})
 

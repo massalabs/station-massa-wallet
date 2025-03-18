@@ -8,14 +8,19 @@ tasks:
         platforms: [linux]
         ignore_error: true
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
+      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
         platforms: [linux, windows]
-      - cmd: GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
+      - cmd: GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
         platforms: [darwin/amd64]
-      - cmd: GOARCH=arm64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.9.1
+      - cmd: GOARCH=arm64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
         platforms: [darwin/arm64]
+
+  install-dev:
+    desc: Installs development dependencies (fmt, lint, etc.)
+    cmds:
+      - cmd: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.2
       - cmd: go install github.com/daixiang0/gci@latest
-      - cmd: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
+      - cmd: go install mvdan.cc/gofumpt@latest
 
   generate:
     cmds:

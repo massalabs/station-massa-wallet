@@ -61,6 +61,7 @@ func (w *walletBackupAccount) Handle(params operations.BackupAccountParams) midd
 		}
 	} else {
 		password, _ := promptOutput.(*memguard.LockedBuffer)
+
 		guardedPrivateKey, err := acc.PrivateKeyTextInClear(password)
 		//nolint:wsl
 		if err != nil {
