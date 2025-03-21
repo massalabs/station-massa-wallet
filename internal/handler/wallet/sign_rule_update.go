@@ -39,8 +39,15 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 
 	cfg := config.Get()
 
-	if signRule := cfg.GetSignRule(acc.Nickname, params.RuleID); signRule == nil {
+	signRule := cfg.GetSignRule(acc.Nickname, params.RuleID)
+	if signRule == nil {
 		return newErrorResponse(fmt.Sprintf("Rule ID %s not found", params.RuleID), errorUpdateSignRule, http.StatusInternalServerError)
+	}
+
+	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType {
+		if cfg.IsExistingRule(acc.Nickname, newRule) {
+			return newErrorResponse("A similar rule already exists", errorUpdateSignRule, http.StatusBadRequest)
+		}
 	}
 
 	if err := config.ValidateRule(newRule); err != nil {
