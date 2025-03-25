@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import getCompareSnapshotsPlugin from 'cypress-image-diff-js/dist/plugin';
+import getCompareSnapshotsPlugin from 'cypress-image-diff-js/dist/plugin.js';
 
 export default defineConfig({
   component: {
