@@ -30,9 +30,9 @@
     "prepare": "cd .. && husky install web-frontend/.husky"
   },
   "dependencies": {
-    "@massalabs/massa-web3": "^5.0.1-dev",
-    "@massalabs/react-ui-kit": "^1.0.1-dev",
-    "@massalabs/wallet-provider": "^3.0.1-dev",
+    "@massalabs/massa-web3": "^5.1.1",
+    "@massalabs/react-ui-kit": "^1.0.3-dev",
+    "@massalabs/wallet-provider": "^3.1.2-dev",
     "@tanstack/react-query": "^4.29.5",
     "axios": "^1.6.0",
     "currency.js": "^2.0.4",

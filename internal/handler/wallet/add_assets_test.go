@@ -3,7 +3,6 @@ package wallet
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"testing"
 
@@ -11,16 +10,11 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
-	"github.com/massalabs/station/pkg/logger"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddAssetHandler(t *testing.T) {
-	if err := logger.InitializeGlobal("./unit-test.log"); err != nil {
-		log.Fatalf("while initializing global logger: %s", err.Error())
-	}
-
-	api, _, _, _, err := MockAPI()
+	api, _, err := MockAPI()
 	assert.NoError(t, err)
 
 	nickname := "GoodNickname"

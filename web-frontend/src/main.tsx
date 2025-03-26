@@ -40,6 +40,11 @@ if ([ENV.DEV, ENV.TEST].includes(baseENV)) {
   mockServerWithCypress();
 }
 
+// save the mode in context. It is used in wallet-provider
+window.massaWallet = {
+  standalone: import.meta.env.VITE_ENV === ENV.STANDALONE,
+};
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(

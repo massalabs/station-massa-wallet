@@ -62,6 +62,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		AddAssetHandler: AddAssetHandlerFunc(func(params AddAssetParams) middleware.Responder {
 			return middleware.NotImplemented("operation AddAsset has not yet been implemented")
 		}),
+		AddSignRuleHandler: AddSignRuleHandlerFunc(func(params AddSignRuleParams) middleware.Responder {
+			return middleware.NotImplemented("operation AddSignRule has not yet been implemented")
+		}),
 		BackupAccountHandler: BackupAccountHandlerFunc(func(params BackupAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation BackupAccount has not yet been implemented")
 		}),
@@ -74,6 +77,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		DeleteAssetHandler: DeleteAssetHandlerFunc(func(params DeleteAssetParams) middleware.Responder {
 			return middleware.NotImplemented("operation DeleteAsset has not yet been implemented")
 		}),
+		DeleteSignRuleHandler: DeleteSignRuleHandlerFunc(func(params DeleteSignRuleParams) middleware.Responder {
+			return middleware.NotImplemented("operation DeleteSignRule has not yet been implemented")
+		}),
 		ExportAccountFileHandler: ExportAccountFileHandlerFunc(func(params ExportAccountFileParams) middleware.Responder {
 			return middleware.NotImplemented("operation ExportAccountFile has not yet been implemented")
 		}),
@@ -82,6 +88,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		}),
 		GetAllAssetsHandler: GetAllAssetsHandlerFunc(func(params GetAllAssetsParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetAllAssets has not yet been implemented")
+		}),
+		GetConfigHandler: GetConfigHandlerFunc(func(params GetConfigParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetConfig has not yet been implemented")
 		}),
 		ImportAccountHandler: ImportAccountHandlerFunc(func(params ImportAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation ImportAccount has not yet been implemented")
@@ -100,6 +109,9 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		}),
 		UpdateAccountHandler: UpdateAccountHandlerFunc(func(params UpdateAccountParams) middleware.Responder {
 			return middleware.NotImplemented("operation UpdateAccount has not yet been implemented")
+		}),
+		UpdateSignRuleHandler: UpdateSignRuleHandlerFunc(func(params UpdateSignRuleParams) middleware.Responder {
+			return middleware.NotImplemented("operation UpdateSignRule has not yet been implemented")
 		}),
 		DefaultPageHandler: DefaultPageHandlerFunc(func(params DefaultPageParams) middleware.Responder {
 			return middleware.NotImplemented("operation DefaultPage has not yet been implemented")
@@ -163,6 +175,8 @@ type MassaWalletAPI struct {
 	AccountListHandler AccountListHandler
 	// AddAssetHandler sets the operation handler for the add asset operation
 	AddAssetHandler AddAssetHandler
+	// AddSignRuleHandler sets the operation handler for the add sign rule operation
+	AddSignRuleHandler AddSignRuleHandler
 	// BackupAccountHandler sets the operation handler for the backup account operation
 	BackupAccountHandler BackupAccountHandler
 	// CreateAccountHandler sets the operation handler for the create account operation
@@ -171,12 +185,16 @@ type MassaWalletAPI struct {
 	DeleteAccountHandler DeleteAccountHandler
 	// DeleteAssetHandler sets the operation handler for the delete asset operation
 	DeleteAssetHandler DeleteAssetHandler
+	// DeleteSignRuleHandler sets the operation handler for the delete sign rule operation
+	DeleteSignRuleHandler DeleteSignRuleHandler
 	// ExportAccountFileHandler sets the operation handler for the export account file operation
 	ExportAccountFileHandler ExportAccountFileHandler
 	// GetAccountHandler sets the operation handler for the get account operation
 	GetAccountHandler GetAccountHandler
 	// GetAllAssetsHandler sets the operation handler for the get all assets operation
 	GetAllAssetsHandler GetAllAssetsHandler
+	// GetConfigHandler sets the operation handler for the get config operation
+	GetConfigHandler GetConfigHandler
 	// ImportAccountHandler sets the operation handler for the import account operation
 	ImportAccountHandler ImportAccountHandler
 	// SignHandler sets the operation handler for the sign operation
@@ -189,6 +207,8 @@ type MassaWalletAPI struct {
 	TransferCoinHandler TransferCoinHandler
 	// UpdateAccountHandler sets the operation handler for the update account operation
 	UpdateAccountHandler UpdateAccountHandler
+	// UpdateSignRuleHandler sets the operation handler for the update sign rule operation
+	UpdateSignRuleHandler UpdateSignRuleHandler
 	// DefaultPageHandler sets the operation handler for the default page operation
 	DefaultPageHandler DefaultPageHandler
 	// WebAppHandler sets the operation handler for the web app operation
@@ -291,6 +311,9 @@ func (o *MassaWalletAPI) Validate() error {
 	if o.AddAssetHandler == nil {
 		unregistered = append(unregistered, "AddAssetHandler")
 	}
+	if o.AddSignRuleHandler == nil {
+		unregistered = append(unregistered, "AddSignRuleHandler")
+	}
 	if o.BackupAccountHandler == nil {
 		unregistered = append(unregistered, "BackupAccountHandler")
 	}
@@ -303,6 +326,9 @@ func (o *MassaWalletAPI) Validate() error {
 	if o.DeleteAssetHandler == nil {
 		unregistered = append(unregistered, "DeleteAssetHandler")
 	}
+	if o.DeleteSignRuleHandler == nil {
+		unregistered = append(unregistered, "DeleteSignRuleHandler")
+	}
 	if o.ExportAccountFileHandler == nil {
 		unregistered = append(unregistered, "ExportAccountFileHandler")
 	}
@@ -311,6 +337,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.GetAllAssetsHandler == nil {
 		unregistered = append(unregistered, "GetAllAssetsHandler")
+	}
+	if o.GetConfigHandler == nil {
+		unregistered = append(unregistered, "GetConfigHandler")
 	}
 	if o.ImportAccountHandler == nil {
 		unregistered = append(unregistered, "ImportAccountHandler")
@@ -329,6 +358,9 @@ func (o *MassaWalletAPI) Validate() error {
 	}
 	if o.UpdateAccountHandler == nil {
 		unregistered = append(unregistered, "UpdateAccountHandler")
+	}
+	if o.UpdateSignRuleHandler == nil {
+		unregistered = append(unregistered, "UpdateSignRuleHandler")
 	}
 	if o.DefaultPageHandler == nil {
 		unregistered = append(unregistered, "DefaultPageHandler")
@@ -447,6 +479,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
+	o.handlers["POST"]["/api/accounts/{nickname}/signrules"] = NewAddSignRule(o.context, o.AddSignRuleHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
 	o.handlers["POST"]["/api/accounts/{nickname}/backup"] = NewBackupAccount(o.context, o.BackupAccountHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -460,6 +496,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/api/accounts/{nickname}/assets"] = NewDeleteAsset(o.context, o.DeleteAssetHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/api/accounts/{nickname}/signrules/{ruleId}"] = NewDeleteSignRule(o.context, o.DeleteSignRuleHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -472,6 +512,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/api/accounts/{nickname}/assets"] = NewGetAllAssets(o.context, o.GetAllAssetsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/api/config"] = NewGetConfig(o.context, o.GetConfigHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
@@ -496,6 +540,10 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/api/accounts/{nickname}"] = NewUpdateAccount(o.context, o.UpdateAccountHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/api/accounts/{nickname}/signrules/{ruleId}"] = NewUpdateSignRule(o.context, o.UpdateSignRuleHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

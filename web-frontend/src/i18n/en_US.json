@@ -44,7 +44,7 @@
       "placeholder": "Token Address",
       "import-button": "Import token",
       "import-title": "Import a Fungible Token",
-      "import-subtitle": "Input the FT1 token’s address",
+      "import-subtitle": "Input the MRC20 token’s address",
       "success": "Token successfully added",
       "success-screen": {
         "success-message": "{name} ({symbol}) token is added to your wallet.",
@@ -97,6 +97,49 @@
   "settings": {
     "title-profile": "Account profile",
     "title-security": "Account security",
+    "title-global": "Global settings",
+    "title-sign-rules": "Sign Rules",
+    "sign-rules": {
+      "description": "Sign Rules allow you to sign operations in a simpler way by defining rules specific to a Smart Contract.",
+      "contract-address": "Contract address",
+      "rule-type": "Type",
+      "name": "Name",
+      "add": "Add",
+      "actions": "Actions",
+      "auto-sign": "Auto Sign",
+      "auto-sign-short": "Auto",
+      "disable-password-prompt": "Disable Password Prompt",
+      "disable-password-prompt-short": "No Password",
+      "auto-sign-tooltip": "This will automatically sign operations coming from the linked contract address, without asking for your password nor your confirmation.",
+      "disable-password-prompt-tooltip": "This will disable the password prompt for operations coming from the linked contract address, but will still require your confirmation.",
+      "errors": {
+        "add": "An error occurred while adding the sign rule",
+        "already-exist": "A similar rule already exists for account",
+        "delete": "An error occurred while deleting the sign rule",
+        "update": "An error occurred while updating the sign rule",
+        "toggle": "An error occurred while toggling the sign rule",
+        "invalid-contract-address": "The provided contract address is not valid.",
+        "all-and-auto-sign-error": "Auto sign cannot be applied to all contracts for security reasons."
+      },
+      "success": {
+        "add": "Sign rule added",
+        "toggle": "Sign rule toggled",
+        "update": "Sign rule updated",
+        "delete": "Sign rule deleted"
+      },
+      "modals": {
+        "edit-title": "Edit sign rule",
+        "add-title": "Add sign rule",
+        "name-placeholder": "Enter a name",
+        "contract-placeholder": "Enter a contract address",
+        "apply-to-all-contracts": "Apply to all contracts",
+        "rule-type": "Rule type",
+        "auto-sign": "Auto sign",
+        "disable-password-prompt": "Disable password prompt",
+        "update": "Update",
+        "add": "Add"
+      }
+    },
     "inputs": {
       "nickname": "Account name"
     },

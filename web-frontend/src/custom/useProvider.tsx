@@ -1,38 +1,45 @@
 import { useEffect, useState } from 'react';
 
 import { CHAIN_ID, Provider } from '@massalabs/massa-web3';
-import { getWallet, WalletName } from '@massalabs/wallet-provider';
+import {
+  getWallet,
+  MassaStationWallet,
+  WalletName,
+} from '@massalabs/wallet-provider';
 import { useParams } from 'react-router-dom';
 
 export function useProvider() {
   const { nickname } = useParams();
   const [provider, setProvider] = useState<Provider | undefined>();
   const [isMainnet, setIsMainnet] = useState<boolean>();
+  const [wallet, setWallet] = useState<MassaStationWallet | undefined>();
 
   useEffect(() => {
-    getWallet(WalletName.MassaStation).then((wallet) => {
-      if (!wallet) {
+    getWallet(WalletName.MassaWallet).then((msWallet) => {
+      if (!msWallet) {
         return;
       }
 
-      wallet.networkInfos().then((network) => {
+      setWallet(msWallet as MassaStationWallet);
+
+      msWallet.networkInfos().then((network) => {
         const isMainnet = network.chainId === CHAIN_ID.Mainnet;
         setIsMainnet(isMainnet);
       });
 
       if (nickname) {
-        wallet.accounts().then((accounts) => {
+        msWallet.accounts().then((accounts) => {
           const provider = accounts.find((a) => a.accountName === nickname);
           setProvider(provider);
         });
       }
 
-      wallet.listenNetworkChanges((network) => {
+      msWallet.listenNetworkChanges((network) => {
         const isMainnet = network.chainId === CHAIN_ID.Mainnet;
         setIsMainnet(isMainnet);
       });
     });
   }, [nickname, setProvider, setIsMainnet]);
 
-  return { provider, isMainnet };
+  return { provider, isMainnet, wallet };
 }

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-import { Button } from '@massalabs/react-ui-kit';
-import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils';
+import { Button, maskNickname } from '@massalabs/react-ui-kit';
+import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce } from '@wailsjs/runtime/runtime';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { backupMethods, events, promptRequest } from '@/events/events';
+import { backupMethods, promptRequest } from '@/events';
 import Intl from '@/i18n/i18n';
 import { Layout } from '@/layouts/Layout/Layout';
 import { handleApplyResult } from '@/utils';
@@ -20,17 +20,19 @@ function BackupMethods() {
   const req: promptRequest = state.req;
   const walletName: string = req.Msg;
 
+  const { EventType } = walletapp;
+
   async function handleDownloadYaml() {
     EventsOnce(
-      events.promptResult,
+      EventType.promptResult,
       handleApplyResult(navigate, req, setErrorMsg, true),
     );
 
-    await SendPromptInput(backupMethods.ymlFileBackup, req.CorrelationID);
+    await SendPromptInput(backupMethods.ymlFileBackup);
   }
 
   async function handleKeyPairs() {
-    await SendPromptInput(backupMethods.privateKeyBackup, req.CorrelationID);
+    await SendPromptInput(backupMethods.privateKeyBackup);
 
     navigate('/backup-pkey', { state: { req } });
   }

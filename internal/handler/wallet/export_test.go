@@ -10,7 +10,8 @@ import (
 )
 
 func Test_exportFileWallet_handler(t *testing.T) {
-	api, prompterApp, _, _, err := MockAPI()
+	api, _, err := MockAPI()
+
 	assert.NoError(t, err)
 
 	handler, exist := api.HandlerFor("get", "/api/accounts/{nickname}/exportFile")
@@ -27,7 +28,7 @@ func Test_exportFileWallet_handler(t *testing.T) {
 	t.Run("Export file of created wallet", func(t *testing.T) {
 		nickname := "trololol"
 		password := "zePassword"
-		createAccount(password, nickname, t, prompterApp)
+		createAccount(password, nickname, t, prompterAppMock)
 
 		resp, err := handleHTTPRequest(handler, "GET", fmt.Sprintf("/api/accounts/%s/exportFile", nickname), "")
 		assert.NoError(t, err)

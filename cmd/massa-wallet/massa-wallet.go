@@ -3,22 +3,20 @@ package app
 import (
 	"os"
 
-	"github.com/bluele/gcache"
 	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi"
 	"github.com/massalabs/station-massa-wallet/internal/handler"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/cache"
+	"github.com/massalabs/station-massa-wallet/pkg/config"
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station/pkg/logger"
 )
 
 func StartServer(app *walletApp.WalletApp) {
-	// Initialize cache
-	gc := gcache.New(20).
-		LRU().
-		Build()
+	config.Load()
 
 	massaClient := network.NewNodeFetcher()
 
@@ -27,17 +25,14 @@ func StartServer(app *walletApp.WalletApp) {
 		promptApp = prompt.NewEnvPrompter(app)
 	}
 
-	AssetsStore, err := assets.NewAssetsStore("", massaClient)
-	if err != nil {
-		logger.Fatalf("Failed to create AssetsStore: %v", err)
-	}
+	cache.Init()
+
+	assets.InitAssetsStore(massaClient)
 
 	// Initializes API
 	massaWalletAPI, err := handler.InitializeAPI(
 		promptApp,
 		massaClient,
-		AssetsStore,
-		gc,
 	)
 	if err != nil {
 		logger.Fatalf("Failed to initialize API: %v", err)

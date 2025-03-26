@@ -10,7 +10,7 @@ import (
 )
 
 func Test_transfer_handler(t *testing.T) {
-	api, prompterApp, _, resChan, err := MockAPI()
+	api, resChan, err := MockAPI()
 	assert.NoError(t, err)
 
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/transfer")
@@ -18,7 +18,7 @@ func Test_transfer_handler(t *testing.T) {
 
 	nickname := "wallet1"
 	password := "password"
-	createAccount(password, nickname, t, prompterApp)
+	createAccount(password, nickname, t, prompterAppMock)
 
 	t.Run("Transfer with unprocessable entity", func(t *testing.T) {
 		resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/transfer", "nobody"), "")
@@ -63,8 +63,8 @@ func Test_transfer_handler(t *testing.T) {
 
 		// Send password to prompter app and wait for result
 		go func(res chan walletapp.EventData) {
-			prompterApp.App().PromptInput <- &walletapp.SignPromptInput{
-				BaseMessage: walletapp.BaseMessage{CorrelationID: PromptCorrelationTestId},
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				Fees:        "1000",
 			}

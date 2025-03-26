@@ -22,16 +22,16 @@ export function SelectAccountFile() {
   return window['go']['walletapp']['WalletApp']['SelectAccountFile']();
 }
 
-export function SendPKeyPromptInput(arg1, arg2, arg3, arg4) {
-  return window['go']['walletapp']['WalletApp']['SendPKeyPromptInput'](arg1, arg2, arg3, arg4);
+export function SendPKeyPromptInput(arg1, arg2, arg3) {
+  return window['go']['walletapp']['WalletApp']['SendPKeyPromptInput'](arg1, arg2, arg3);
 }
 
-export function SendPromptInput(arg1, arg2) {
-  return window['go']['walletapp']['WalletApp']['SendPromptInput'](arg1, arg2);
+export function SendPromptInput(arg1) {
+  return window['go']['walletapp']['WalletApp']['SendPromptInput'](arg1);
 }
 
-export function SendSignPromptInput(arg1, arg2, arg3) {
-  return window['go']['walletapp']['WalletApp']['SendSignPromptInput'](arg1, arg2, arg3);
+export function SendSignPromptInput(arg1, arg2) {
+  return window['go']['walletapp']['WalletApp']['SendSignPromptInput'](arg1, arg2);
 }
 
 export function Show() {

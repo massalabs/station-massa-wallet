@@ -34,12 +34,12 @@ const (
 
 // Sentinel errors
 var (
-	ErrCorrelationIDNotFound = errors.New("Correlation ID not found")
-	ErrCache                 = errors.New("Error loading cache")
-	ErrWrongPassword         = errors.New("wrong password")
-	ErrActionCanceled        = errors.New("Action canceled by user")
-	ErrInvalidInputType      = errors.New("invalid prompt input type")
-	ErrTimeout               = errors.New("Password prompt reached timeout")
+	ErrPrivateKeyCache  = errors.New("private key not found in cache")
+	ErrCache            = errors.New("error loading cache")
+	ErrWrongPassword    = errors.New("wrong password")
+	ErrActionCanceled   = errors.New("action canceled by user")
+	ErrInvalidInputType = errors.New("invalid prompt input type")
+	ErrTimeout          = errors.New("password prompt reached timeout")
 )
 
 func WailsErrorCode(err error) string {
