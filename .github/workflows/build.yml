@@ -23,7 +23,7 @@ jobs:
       matrix:
         include:
           # The first combination is Ubuntu running on an AMD64 processor, building for Windows.
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             arch: amd64
             target: windows
             ext: .exe
@@ -31,7 +31,7 @@ jobs:
             ldflags: "-H windowsgui"
 
           # The second combination is Ubuntu running on an AMD64 processor, building for Linux.
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             arch: amd64
             target: linux
 
