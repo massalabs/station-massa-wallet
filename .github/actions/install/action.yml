@@ -1,10 +1,9 @@
 name: Install
 
 inputs:
-  # the input value is the 'runs-on'
   os:
     required: true
-    default: "ubuntu-latest"
+    default: "ubuntu-24.04"
   repo-token:
     description: The token to use to authenticate with the GitHub API
     required: true
