@@ -135,4 +135,4 @@ jobs:
         if: ${{ inputs.tag_name != '' }}
         env:
           AWS3: ${{ vars.MS_S3_BUCKET }}
-        run: aws s3 cp $TARGET_NAME.zip s3://${AWS3}/plugins/wallet/${TAG}/${TARGET_NAME}.zip
+        run: aws s3 cp $TARGET_NAME.zip s3://${AWS3}/plugins/wallet/qa/${TARGET_NAME}.zip
