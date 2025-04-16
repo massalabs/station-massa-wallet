@@ -120,8 +120,8 @@ export function Sign() {
   }
 
   async function handleSubmit(e: SyntheticEvent) {
+    e.preventDefault();
     if (!req.DisablePassword) {
-      e.preventDefault();
       if (!validate(e, setError)) return;
     }
     save(e);
