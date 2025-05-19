@@ -198,5 +198,21 @@ const AssetsJSON = `[
 		"decimals": 18,
 		"MEXCSymbol": "",
 		"ChainID": 77658377
+	},
+	{
+		"address": "AS1ZXy3nvqXAMm2w6viAg7frte6cZfJM8hoMvWf4KoKDzvLzYKqE",
+		"name": "Sepolia WBTC",
+		"symbol": "WBTC.s",
+		"decimals": 8,
+		"MEXCSymbol": "BTCUSDT",
+		"ChainID": 77658366
+	},
+	{
+		"address": "AS12fr54YtBY575Dfhtt7yftpT8KXgXb1ia5Pn1LofoLFLf9WcjGL",
+		"name": "WBTC",
+		"symbol": "WBTC.e",
+		"decimals": 8,
+		"MEXCSymbol": "BTCUSDT",
+		"ChainID": 77658377
 	}
 ]`
