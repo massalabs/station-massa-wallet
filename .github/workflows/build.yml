@@ -112,6 +112,12 @@ jobs:
         if: ${{ (matrix.target == 'darwin') && (inputs.tag_name != '') }}
         run: zip $TARGET_NAME.zip wallet-plugin.app.zip wallet.svg manifest.json
 
+      - name: log zip checksum (to be used in station store)
+        if: ${{ inputs.tag_name != '' }}
+        run: |
+          echo "checksum:"
+          md5sum $TARGET_NAME.zip | cut -d ' ' -f 1
+
       - name: Create release and upload binaries
         if: ${{ inputs.tag_name != '' }}
         uses: softprops/action-gh-release@v1
