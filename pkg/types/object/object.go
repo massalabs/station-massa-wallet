@@ -4,6 +4,7 @@ package object
 
 import (
 	"errors"
+	"slices"
 
 	"github.com/btcsuite/btcutil/base58"
 )
@@ -76,10 +77,8 @@ func (o *Object) Validate(lastVersion byte, expectedKinds ...Kind) error {
 		return ErrUnsupportedVersion
 	}
 
-	for _, kind := range expectedKinds {
-		if o.Kind == kind {
-			return nil
-		}
+	if slices.Contains(expectedKinds, o.Kind) {
+		return nil
 	}
 
 	return ErrInvalidType
