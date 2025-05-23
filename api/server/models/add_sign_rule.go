@@ -19,6 +19,10 @@ import (
 // swagger:model AddSignRule
 type AddSignRule struct {
 
+	// The authorized origin of the rule.
+	// Max Length: 2083
+	AuthorizedOrigin *string `json:"authorizedOrigin,omitempty"`
+
 	// The contract to which the rule applies.
 	// Required: true
 	Contract *string `json:"contract"`
@@ -44,6 +48,10 @@ type AddSignRule struct {
 func (m *AddSignRule) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateAuthorizedOrigin(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateContract(formats); err != nil {
 		res = append(res, err)
 	}
@@ -67,6 +75,18 @@ func (m *AddSignRule) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *AddSignRule) validateAuthorizedOrigin(formats strfmt.Registry) error {
+	if swag.IsZero(m.AuthorizedOrigin) { // not required
+		return nil
+	}
+
+	if err := validate.MaxLength("authorizedOrigin", "body", *m.AuthorizedOrigin, 2083); err != nil {
+		return err
+	}
+
 	return nil
 }
 
