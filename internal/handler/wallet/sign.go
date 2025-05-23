@@ -68,7 +68,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	skipPrompt := false
 
 	if enabledRule != nil {
-		promptData.EnabledSignRule = enabledRule
+		promptData.EnabledSignRule = &enabledRule.RuleType
 
 		// at this point, we have a rule enabled for the contract, if private key is cached, we don't need to prompt for password
 		privateKey, err = cache.PrivateKeyFromCache(acc)
@@ -79,8 +79,13 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			promptRequest.DisablePassword = true
 
 			// If the rule is AutoSign, we don't need to open wails prompt
-			if *enabledRule == config.RuleTypeAutoSign {
-				skipPrompt = true
+			if enabledRule.RuleType == config.RuleTypeAutoSign {
+				if enabledRule.AuthorizedOrigin != nil {
+					origin, err := getOrigin(params.HTTPRequest)
+					if err == nil && *origin == *enabledRule.AuthorizedOrigin {
+						skipPrompt = true
+					}
+				}
 			}
 		}
 	}

@@ -38,11 +38,12 @@ func newConfigModel(cfg *config.Config) (*models.Config, error) {
 			rule := accountConfig.SignRules[i]
 
 			modelSignRules[i] = &models.SignRule{
-				ID:       &rule.ID,
-				Name:     &rule.Name,
-				Contract: &rule.Contract,
-				Enabled:  &rule.Enabled,
-				RuleType: (models.RuleType)(rule.RuleType),
+				ID:               &rule.ID,
+				Name:             &rule.Name,
+				Contract:         &rule.Contract,
+				Enabled:          &rule.Enabled,
+				RuleType:         (models.RuleType)(rule.RuleType),
+				AuthorizedOrigin: rule.AuthorizedOrigin,
 			}
 		}
 

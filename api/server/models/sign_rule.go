@@ -19,6 +19,9 @@ import (
 // swagger:model SignRule
 type SignRule struct {
 
+	// authorized origin
+	AuthorizedOrigin *string `json:"authorizedOrigin,omitempty"`
+
 	// contract
 	Contract *string `json:"contract,omitempty"`
 

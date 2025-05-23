@@ -3,6 +3,7 @@ package wallet
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -36,12 +37,23 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 	if errResp != nil {
 		return errResp
 	}
-
 	newRule := config.SignRule{
 		Name:     params.Body.Name,
 		Contract: *params.Body.Contract,
 		RuleType: config.RuleType(params.Body.RuleType),
 		Enabled:  *params.Body.Enabled,
+	}
+
+	if newRule.RuleType == config.RuleTypeAutoSign {
+		if params.Body.AuthorizedOrigin != nil && len(*params.Body.AuthorizedOrigin) > 0 {
+			newRule.AuthorizedOrigin = params.Body.AuthorizedOrigin
+		} else {
+			origin, err := getOrigin(params.HTTPRequest)
+			if err != nil {
+				return newErrorResponse(err.Error(), errorAddSignRule, http.StatusBadRequest)
+			}
+			newRule.AuthorizedOrigin = origin
+		}
 	}
 
 	cfg := config.Get()
@@ -97,16 +109,23 @@ func (w *addSignRuleHandler) getPromptRequest(params operations.AddSignRuleParam
 		return nil, fmt.Errorf("failed to stringify address: %w", err)
 	}
 
+	ruleType := config.RuleType(params.Body.RuleType)
+	signRule := config.SignRule{
+		Name:     params.Body.Name,
+		Contract: *params.Body.Contract,
+		RuleType: ruleType,
+		Enabled:  *params.Body.Enabled,
+	}
+
+	if ruleType == config.RuleTypeAutoSign {
+		signRule.AuthorizedOrigin = params.Body.AuthorizedOrigin
+	}
+
 	promptData := SignRulePromptData{
 		WalletAddress: address,
 		Nickname:      acc.Nickname,
 		Description:   params.Body.Description,
-		SignRule: config.SignRule{
-			Name:     params.Body.Name,
-			Contract: *params.Body.Contract,
-			RuleType: config.RuleType(params.Body.RuleType),
-			Enabled:  *params.Body.Enabled,
-		},
+		SignRule:      signRule,
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -115,4 +134,36 @@ func (w *addSignRuleHandler) getPromptRequest(params operations.AddSignRuleParam
 	}
 
 	return &promptRequest, nil
+}
+
+const (
+	originHeader     = "Origin"
+	refererHeader    = "Referer"
+	errMissingOrigin = "missing Origin and Referer headers"
+	errInvalidURL    = "invalid URL format"
+	errInvalidOrigin = "origin must only contain scheme, hostname, and optional port"
+)
+
+func getOrigin(r *http.Request) (*string, error) {
+	var urlStr string
+	if origin := r.Header.Get(originHeader); origin != "" {
+		urlStr = origin
+	} else if referer := r.Header.Get(refererHeader); referer != "" {
+		urlStr = referer
+	} else {
+		return nil, errors.New(errMissingOrigin)
+	}
+
+	// Parse and validate the URL format
+	parsedURL, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, errors.Wrap(err, errInvalidURL)
+	}
+
+	// Validate that the URL only contains scheme, hostname, and optional port
+	if parsedURL.Path != "" || parsedURL.RawQuery != "" || parsedURL.Fragment != "" {
+		return nil, errors.New(errInvalidOrigin)
+	}
+
+	return &urlStr, nil
 }
