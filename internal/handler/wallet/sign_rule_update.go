@@ -37,6 +37,12 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		Enabled:  *params.Body.Enabled,
 	}
 
+	if newRule.RuleType == config.RuleTypeAutoSign {
+		if params.Body.AuthorizedOrigin != nil && *params.Body.AuthorizedOrigin != "" {
+			newRule.AuthorizedOrigin = params.Body.AuthorizedOrigin
+		}
+	}
+
 	cfg := config.Get()
 
 	signRule := cfg.GetSignRule(acc.Nickname, params.RuleID)
@@ -44,7 +50,7 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		return newErrorResponse(fmt.Sprintf("Rule ID %s not found", params.RuleID), errorUpdateSignRule, http.StatusInternalServerError)
 	}
 
-	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType {
+	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType || *signRule.AuthorizedOrigin != *newRule.AuthorizedOrigin {
 		if cfg.IsExistingRule(acc.Nickname, newRule) {
 			return newErrorResponse("A similar rule already exists", errorUpdateSignRule, http.StatusBadRequest)
 		}

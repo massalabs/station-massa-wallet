@@ -128,6 +128,9 @@ func ValidateRule(rule SignRule) error {
 		if rule.Contract == "*" {
 			return fmt.Errorf("RuleTypeAutoSign cannot have a wildcard contract")
 		}
+		if rule.AuthorizedOrigin == nil || *rule.AuthorizedOrigin == "" {
+			return fmt.Errorf("RuleTypeAutoSign must have a non-empty AuthorizedOrigin")
+		}
 
 		return nil
 
@@ -140,6 +143,9 @@ func ValidateRule(rule SignRule) error {
 func generateRuleID(accountName string, rule SignRule) string {
 	// Create a string that combines all rule parameters
 	ruleString := fmt.Sprintf("%s:%s:%s", accountName, rule.Contract, string(rule.RuleType))
+	if rule.AuthorizedOrigin != nil {
+		ruleString += fmt.Sprintf(":%s", *rule.AuthorizedOrigin)
+	}
 
 	hash := sha256.Sum256([]byte(ruleString))
 
@@ -178,6 +184,13 @@ func ValidateRuleID(accountName string, rule SignRule) error {
 func (c *Config) validateAllRuleIDs() error {
 	for accountName, account := range c.Accounts {
 		for i, rule := range account.SignRules {
+			// This is a temporary fix to delete rules with empty AuthorizedOrigin
+			if (rule.RuleType == RuleTypeAutoSign) && rule.AuthorizedOrigin == nil {
+				if err := c.DeleteSignRule(accountName, rule.ID); err != nil {
+					return fmt.Errorf("failed to delete rule with empty AuthorizedOrigin: %v", err)
+				}
+				continue
+			}
 			if err := ValidateRuleID(accountName, rule); err != nil {
 				return fmt.Errorf("invalid rule ID in account '%s', rule index %d: %v", accountName, i, err)
 			}
