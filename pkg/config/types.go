@@ -35,11 +35,12 @@ var RuleTypes = []struct {
 }
 
 type SignRule struct {
-	Name     string   `koanf:"name"`
-	ID       string   `koanf:"id"`
-	Contract string   `koanf:"contract"`
-	RuleType RuleType `koanf:"ruleType"`
-	Enabled  bool     `koanf:"enabled"`
+	Name             string   `koanf:"name"`
+	ID               string   `koanf:"id"`
+	Contract         string   `koanf:"contract"`
+	RuleType         RuleType `koanf:"ruleType"`
+	Enabled          bool     `koanf:"enabled"`
+	AuthorizedOrigin *string  `koanf:"authorizedOrigin"`
 }
 
 type AccountCfg struct {
