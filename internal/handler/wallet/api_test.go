@@ -111,13 +111,20 @@ func processHTTPRequest(api *operations.MassaWalletAPI, httpMethod string, endpo
 }
 
 // handleHTTPRequest handles the processing of an HTTP request on the given API.
-func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string, body string) (*httptest.ResponseRecorder, error) {
+func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string, body string, headers ...map[string]string) (*httptest.ResponseRecorder, error) {
 	httpRequest, err := http.NewRequest(httpMethod, endpoint, strings.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 
 	httpRequest.Header.Set("Content-Type", "application/json")
+	httpRequest.Header.Set("Origin", "http://massa.network")
+	// Apply any additional headers if provided
+	if len(headers) > 0 {
+		for key, value := range headers[0] {
+			httpRequest.Header.Set(key, value)
+		}
+	}
 
 	resp := httptest.NewRecorder()
 	handler.ServeHTTP(resp, httpRequest)

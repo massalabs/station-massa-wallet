@@ -22,11 +22,17 @@ const (
 	contract     = "AS1hZpUH6TPiRxHtTKqAfXDmZ7Afa7UfS4rtYN7NxVwAaSAphCET"
 )
 
-func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
+func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string, headers ...map[string]string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
 	assert.True(t, exist)
 
-	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body)
+	// Use provided headers if any, otherwise use empty map
+	headerMap := make(map[string]string)
+	if len(headers) > 0 {
+		headerMap = headers[0]
+	}
+
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body, headerMap)
 	assert.NoError(t, err)
 
 	return resp
@@ -180,11 +186,13 @@ func Test_walletSign_Handle(t *testing.T) {
 
 	t.Run("Auto Sign", func(t *testing.T) {
 		cfg := config.Get()
+		authorizedOrigin := "http://massa.network"
 		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
-			Name:     "test",
-			Contract: contract,
-			RuleType: config.RuleTypeAutoSign,
-			Enabled:  true,
+			Name:             "test",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
 		})
 
 		assert.NoError(t, err)
@@ -226,16 +234,74 @@ func Test_walletSign_Handle(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	// Auto sign failed if origin in header not the same
+	t.Run("Auto Sign failed if origin in header not the same", func(t *testing.T) {
+		cfg := config.Get()
+		authorizedOrigin := "http://massa.network"
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			// forward test result to test goroutine
+			res <- (<-resChan)
+		}(testResult)
+
+		headers := map[string]string{
+			originHeader: "http://other-origin:3000",
+		}
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		// check that privateKey is cached
+		pkey, err := cache.PrivateKeyFromCache(account)
+		assert.NoError(t, err)
+		assert.NotNil(t, pkey)
+
+		// sign again, should not prompt for password
+		resp = signTransaction(t, api, nickname, transactionData)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
 	t.Run("Auto Sign with enabled rule", func(t *testing.T) {
 		// Clean cache
 		testCache.Purge()
 
+		authorizedOrigin := "http://massa.network"
+
 		cfg := config.Get()
 		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
-			Name:     "test",
-			Contract: "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
-			RuleType: config.RuleTypeAutoSign,
-			Enabled:  true,
+			Name:             "test",
+			Contract:         "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
 		})
 
 		assert.NoError(t, err)

@@ -30,18 +30,19 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		return errResp
 	}
 
-	newRule := config.SignRule{
-		Name:     params.Body.Name,
-		Contract: *params.Body.Contract,
-		RuleType: config.RuleType(params.Body.RuleType),
-		Enabled:  *params.Body.Enabled,
-	}
-
 	cfg := config.Get()
 
 	signRule := cfg.GetSignRule(acc.Nickname, params.RuleID)
 	if signRule == nil {
 		return newErrorResponse(fmt.Sprintf("Rule ID %s not found", params.RuleID), errorUpdateSignRule, http.StatusInternalServerError)
+	}
+
+	newRule := config.SignRule{
+		Name:             params.Body.Name,
+		Contract:         *params.Body.Contract,
+		RuleType:         config.RuleType(params.Body.RuleType),
+		Enabled:          *params.Body.Enabled,
+		AuthorizedOrigin: signRule.AuthorizedOrigin,
 	}
 
 	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType {

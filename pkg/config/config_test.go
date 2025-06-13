@@ -27,11 +27,13 @@ func TestMain(m *testing.M) {
 }
 
 func TestAddSignRule(t *testing.T) {
+	authorizedOrigin := "http://localhost:3000"
 	rule := SignRule{
-		Name:     "Test Rule",
-		Contract: "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9",
-		RuleType: RuleTypeAutoSign,
-		Enabled:  true,
+		Name:             "Test Rule",
+		Contract:         "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9",
+		RuleType:         RuleTypeAutoSign,
+		Enabled:          true,
+		AuthorizedOrigin: &authorizedOrigin,
 	}
 
 	ruleID, err := cfg.AddSignRule(accountName, rule)
@@ -76,12 +78,14 @@ func TestAddSignRule(t *testing.T) {
 
 func TestDeleteSignRule(t *testing.T) {
 	contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+	authorizedOrigin := "http://localhost:3000"
 
 	rule := SignRule{
-		Name:     "Test Rule",
-		Contract: contract,
-		RuleType: RuleTypeAutoSign,
-		Enabled:  true,
+		Name:             "Test Rule",
+		Contract:         contract,
+		RuleType:         RuleTypeAutoSign,
+		Enabled:          true,
+		AuthorizedOrigin: &authorizedOrigin,
 	}
 
 	ruleID, err := cfg.AddSignRule(accountName, rule)
@@ -98,11 +102,13 @@ func TestDeleteSignRule(t *testing.T) {
 func TestUpdateSignRule(t *testing.T) {
 	accountName := "test_account"
 	contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+	authorizedOrigin := "http://localhost:3000"
 	rule := SignRule{
-		Name:     "Test Rule",
-		Contract: contract,
-		RuleType: RuleTypeAutoSign,
-		Enabled:  true,
+		Name:             "Test Rule",
+		Contract:         contract,
+		RuleType:         RuleTypeAutoSign,
+		Enabled:          true,
+		AuthorizedOrigin: &authorizedOrigin,
 	}
 
 	ruleID, err := cfg.AddSignRule(accountName, rule)
@@ -154,11 +160,14 @@ func TestValidateRuleID(t *testing.T) {
 func TestHasEnabledRule(t *testing.T) {
 	accountName := "test_account"
 	contract := "AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY"
+	authorizedOrigin := "http://localhost:3000"
+
 	rule := SignRule{
-		Name:     "Test Rule",
-		Contract: contract,
-		RuleType: RuleTypeAutoSign,
-		Enabled:  true,
+		Name:             "Test Rule",
+		Contract:         contract,
+		RuleType:         RuleTypeAutoSign,
+		Enabled:          true,
+		AuthorizedOrigin: &authorizedOrigin,
 	}
 
 	ruleId, err := cfg.AddSignRule(accountName, rule)

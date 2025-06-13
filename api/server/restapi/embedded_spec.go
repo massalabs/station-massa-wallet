@@ -1063,6 +1063,12 @@ func init() {
         "enabled"
       ],
       "properties": {
+        "authorizedOrigin": {
+          "description": "The authorized origin of the rule.",
+          "type": "string",
+          "maxLength": 2083,
+          "x-nullable": true
+        },
         "contract": {
           "description": "The contract to which the rule applies.",
           "type": "string"
@@ -1340,6 +1346,10 @@ func init() {
         "ruleType"
       ],
       "properties": {
+        "authorizedOrigin": {
+          "type": "string",
+          "x-nullable": true
+        },
         "contract": {
           "type": "string",
           "x-nullable": true
@@ -1412,6 +1422,12 @@ func init() {
         "enabled"
       ],
       "properties": {
+        "authorizedOrigin": {
+          "description": "The authorized origin of the rule.",
+          "type": "string",
+          "maxLength": 2083,
+          "x-nullable": true
+        },
         "contract": {
           "description": "The contract to which the rule applies. Use wildcard (*) to apply the rule for contracts.",
           "type": "string"
@@ -2599,6 +2615,12 @@ func init() {
         "enabled"
       ],
       "properties": {
+        "authorizedOrigin": {
+          "description": "The authorized origin of the rule.",
+          "type": "string",
+          "maxLength": 2083,
+          "x-nullable": true
+        },
         "contract": {
           "description": "The contract to which the rule applies.",
           "type": "string"
@@ -2878,6 +2900,10 @@ func init() {
         "ruleType"
       ],
       "properties": {
+        "authorizedOrigin": {
+          "type": "string",
+          "x-nullable": true
+        },
         "contract": {
           "type": "string",
           "x-nullable": true
@@ -2950,6 +2976,12 @@ func init() {
         "enabled"
       ],
       "properties": {
+        "authorizedOrigin": {
+          "description": "The authorized origin of the rule.",
+          "type": "string",
+          "maxLength": 2083,
+          "x-nullable": true
+        },
         "contract": {
           "description": "The contract to which the rule applies. Use wildcard (*) to apply the rule for contracts.",
           "type": "string"

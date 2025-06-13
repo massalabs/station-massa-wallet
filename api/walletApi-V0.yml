@@ -723,6 +723,11 @@ definitions:
       enabled:
         description: "Whether the rule is enabled or not."
         type: "boolean"
+      authorizedOrigin:
+        description: "The authorized origin of the rule."
+        type: "string"
+        maxLength: 2083 # max length of a url in web browser
+        x-nullable: true
 
   RuleType:
     description: "An enumeration of the different types of rules."
@@ -763,6 +768,11 @@ definitions:
       enabled:
         description: "Whether the rule is enabled or not."
         type: "boolean"
+      authorizedOrigin:
+        description: "The authorized origin of the rule."
+        type: "string"
+        maxLength: 2083
+        x-nullable: true
 
   UpdateSignRuleResponse:
     type: object
@@ -972,6 +982,9 @@ definitions:
         default: true
       ruleType:
         $ref: "#/definitions/RuleType"
+      authorizedOrigin:
+        type: string
+        x-nullable: true
     required:
       - ruleType
 
