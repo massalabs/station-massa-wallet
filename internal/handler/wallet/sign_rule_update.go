@@ -38,22 +38,14 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 	}
 
 	newRule := config.SignRule{
-		Name:     params.Body.Name,
-		Contract: *params.Body.Contract,
-		RuleType: config.RuleType(params.Body.RuleType),
-		Enabled:  *params.Body.Enabled,
+		Name:             params.Body.Name,
+		Contract:         *params.Body.Contract,
+		RuleType:         config.RuleType(params.Body.RuleType),
+		Enabled:          *params.Body.Enabled,
+		AuthorizedOrigin: signRule.AuthorizedOrigin,
 	}
 
-	if newRule.RuleType == config.RuleTypeAutoSign {
-		if params.Body.AuthorizedOrigin != nil && *params.Body.AuthorizedOrigin != "" {
-			newRule.AuthorizedOrigin = params.Body.AuthorizedOrigin
-		} else {
-			newRule.AuthorizedOrigin = signRule.AuthorizedOrigin
-		}
-	}
-
-	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType ||
-		(signRule.AuthorizedOrigin != nil && newRule.AuthorizedOrigin != nil && *signRule.AuthorizedOrigin != *newRule.AuthorizedOrigin) {
+	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType {
 		if cfg.IsExistingRule(acc.Nickname, newRule) {
 			return newErrorResponse("A similar rule already exists", errorUpdateSignRule, http.StatusBadRequest)
 		}
