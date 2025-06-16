@@ -148,7 +148,10 @@ export function SignRule() {
               )}
             </p>
           </div>
-
+          <p className="flex justify-between">
+            <strong>{Intl.t('signRule.authorizedOrigin')}:</strong>{' '}
+            {data.SignRule.AuthorizedOrigin}
+          </p>
           <p className="flex justify-between">
             <strong>{Intl.t('signRule.ruleType')}:</strong>{' '}
             {Intl.t(`signRule.rulesTypeDesc.${data.SignRule.RuleType}`)}

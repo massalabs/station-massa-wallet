@@ -36,6 +36,9 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const [applyToAllContracts, setApplyToAllContracts] = useState(
     rule?.contract === '*',
   );
+  const [authorizedOrigin, setAuthorizedOrigin] = useState(
+    rule?.authorizedOrigin || '',
+  );
 
   const isEditMode = !!rule;
 
@@ -48,6 +51,8 @@ export function SignRuleModal(props: SignRuleModalProps) {
         contract: applyToAllContracts ? '*' : contract,
         ruleType,
         enabled: rule?.enabled || true,
+        authorizedOrigin:
+          ruleType === RuleType.AutoSign ? authorizedOrigin : undefined,
       };
 
       if (isEditMode) {
@@ -94,7 +99,10 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const isAllAndAutoSign =
     applyToAllContracts && ruleType === RuleType.AutoSign;
   const shouldDisableSubmit =
-    isAllAndAutoSign || !name || (!contract && !applyToAllContracts);
+    isAllAndAutoSign ||
+    !name ||
+    (!contract && !applyToAllContracts) ||
+    (ruleType === RuleType.AutoSign && !authorizedOrigin);
 
   return (
     <PopupModal
@@ -167,6 +175,37 @@ export function SignRuleModal(props: SignRuleModalProps) {
               onClick: () => setRuleType(type),
             }))}
           />
+          {ruleType === RuleType.AutoSign && (
+            <>
+              <Tooltip
+                body={Intl.t('settings.sign-rules.authorized-origin-tooltip')}
+                placement="top"
+                triggerClassName="truncate w-full"
+                tooltipClassName="mas-caption max-w-96"
+              >
+                <p className="mas-caption text-s-info mb-2">
+                  {Intl.t('settings.sign-rules.modals.authorized-origin-info')}
+                </p>
+              </Tooltip>
+              <Input
+                value={authorizedOrigin}
+                onChange={(e) => setAuthorizedOrigin(e.target.value)}
+                name="authorizedOrigin"
+                placeholder={Intl.t(
+                  'settings.sign-rules.modals.authorized-origin-placeholder',
+                )}
+                required
+                disabled={isEditMode}
+              />
+              {isEditMode && (
+                <p className="mas-caption text-s-info">
+                  {Intl.t(
+                    'settings.sign-rules.modals.authorized-origin-disabled-message',
+                  )}
+                </p>
+              )}
+            </>
+          )}
           {isAllAndAutoSign && (
             <p className="mas-caption text-s-error">
               {Intl.t('settings.sign-rules.errors.all-and-auto-sign-error')}

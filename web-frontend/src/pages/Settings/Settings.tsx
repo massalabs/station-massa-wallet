@@ -17,9 +17,9 @@ export default function Settings() {
       <div className="w-full max-h-screen overflow-y-auto p-10">
         <div className="flex flex-col justify-center items-center gap-9">
           <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
-            <p className="mas-body text-f-primary pb-5">
+            <h2 className="mas-h2 text-f-primary pb-5">
               {Intl.t('settings.title-profile')}
-            </p>
+            </h2>
             <div className="pb-7">
               <Identicon
                 username={nickname || 'username'}
@@ -40,7 +40,7 @@ export default function Settings() {
             <Button disabled>{Intl.t('settings.buttons.update')}</Button>
           </div>
           <SettingsOption nickname={nickname || 'username'} />
-          <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
+          <div className="bg-secondary rounded-2xl w-full max-w-5xl p-10">
             <SettingsSignRules nickname={nickname || 'username'} />
           </div>
         </div>

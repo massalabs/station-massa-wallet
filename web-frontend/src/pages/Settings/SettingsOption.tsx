@@ -29,9 +29,9 @@ export function SettingsOption(props: SettingsOptionProps) {
 
   return (
     <div className="bg-secondary rounded-2xl w-full max-w-2xl p-10">
-      <p className="mas-body text-f-primary pb-5">
+      <h2 className="mas-h2 text-f-primary pb-5">
         {Intl.t('settings.title-security')}
-      </p>
+      </h2>
       <div className="flex gap-5">
         <Button onClick={() => mutableBackup({} as AccountObject)}>
           {Intl.t('settings.buttons.backup')}
