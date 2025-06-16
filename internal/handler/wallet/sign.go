@@ -82,9 +82,14 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 			if enabledRule.RuleType == config.RuleTypeAutoSign {
 				if enabledRule.AuthorizedOrigin != nil {
 					origin, err := getOrigin(params.HTTPRequest)
-					if err == nil && *origin == *enabledRule.AuthorizedOrigin {
-						skipPrompt = true
+					if err != nil || origin == nil || *origin != *enabledRule.AuthorizedOrigin {
+						return newErrorResponse(
+							"Unauthorized origin",
+							"errorUnauthorizedOrigin",
+							http.StatusUnauthorized,
+						)
 					}
+					skipPrompt = true
 				}
 			}
 		}

@@ -118,7 +118,6 @@ func handleHTTPRequest(handler http.Handler, httpMethod string, endpoint string,
 	}
 
 	httpRequest.Header.Set("Content-Type", "application/json")
-	httpRequest.Header.Set("Origin", "http://massa.network")
 	// Apply any additional headers if provided
 	if len(headers) > 0 {
 		for key, value := range headers[0] {
