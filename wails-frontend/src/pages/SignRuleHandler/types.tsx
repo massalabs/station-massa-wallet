@@ -17,5 +17,6 @@ export interface ruleRequestData {
     RuleType: config.RuleType;
     Enabled: boolean;
     ID: string;
+    AuthorizedOrigin: string;
   };
 }

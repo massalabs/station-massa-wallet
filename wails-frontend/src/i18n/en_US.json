@@ -31,6 +31,7 @@
     "description": "Description from the requesting dApp",
     "details": "Rule details",
     "contract": "Contract",
+    "authorizedOrigin": "Authorized origin",
     "name": "Name",
     "ruleType": "Rule type",
     "enabled": "Enable",

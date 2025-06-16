@@ -102,6 +102,7 @@
     "sign-rules": {
       "description": "Sign Rules allow you to sign operations in a simpler way by defining rules specific to a Smart Contract.",
       "contract-address": "Contract address",
+      "authorized-origin": "Authorized origin",
       "rule-type": "Type",
       "name": "Name",
       "add": "Add",
@@ -137,7 +138,10 @@
         "auto-sign": "Auto sign",
         "disable-password-prompt": "Disable password prompt",
         "update": "Update",
-        "add": "Add"
+        "add": "Add",
+        "authorized-origin-placeholder": "Enter an authorized origin",
+        "authorized-origin-info": "Enter the url of the app you want to allow to send auto sign operations.",
+        "authorized-origin-disabled-message": "For security reasons, the authorized origin cannot be modified after creation"
       }
     },
     "inputs": {

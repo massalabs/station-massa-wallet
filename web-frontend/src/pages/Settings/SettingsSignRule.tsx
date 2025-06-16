@@ -79,10 +79,15 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
 
   return (
     <>
-      <div className="w-full flex items-center justify-between mb-2">
-        <p className="mas-body text-f-primary">
-          {Intl.t('settings.title-sign-rules')}
-        </p>
+      <div className="w-full flex items-center justify-between mb-4">
+        <div>
+          <h2 className="mas-h2 text-f-primary mb-2">
+            {Intl.t('settings.title-sign-rules')}
+          </h2>
+          <p className="mas-body2 text-f-primary">
+            {Intl.t('settings.sign-rules.description')}
+          </p>
+        </div>
         <Button
           customClass="w-fit max-h-[2.5rem] min-h-[2.5rem]"
           onClick={handleAdd}
@@ -90,41 +95,57 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
           {Intl.t('settings.sign-rules.add')}
         </Button>
       </div>
-      <p className="mas-body2 text-f-primary pb-5">
-        {Intl.t('settings.sign-rules.description')}
-      </p>
-      <table className="w-full">
-        <thead>
-          <tr>
-            <th className="text-left">{Intl.t('settings.sign-rules.name')}</th>
-            <th className="text-left">
-              {Intl.t('settings.sign-rules.rule-type')}
-            </th>
-            <th className="text-left">
-              {Intl.t('settings.sign-rules.contract-address')}
-            </th>
-            <th className="text-right">
-              {Intl.t('settings.sign-rules.actions')}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading ? (
-            <FetchingLine />
-          ) : (
-            signRules.map((rule, index) => (
-              <tr key={index} className="align-baseline">
-                <SignRuleListItem
-                  rule={rule}
-                  nickname={nickname}
-                  setEditingRule={handleEdit}
-                  refreshConfig={fetchConfig}
-                />
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse min-w-[800px]">
+          <thead>
+            <tr className="border-b border-neutral-100 dark:border-neutral-400">
+              <th className="text-left py-3 px-4">
+                {Intl.t('settings.sign-rules.name')}
+              </th>
+              <th className="text-left py-3 px-4">
+                {Intl.t('settings.sign-rules.rule-type')}
+              </th>
+              <th className="text-left py-3 px-4">
+                {Intl.t('settings.sign-rules.contract-address')}
+              </th>
+              <th className="text-left py-3 px-4">
+                {Intl.t('settings.sign-rules.authorized-origin')}
+              </th>
+              <th className="text-center py-3 px-4">
+                {Intl.t('settings.sign-rules.actions')}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <FetchingLine />
+            ) : (
+              signRules.map((rule, index) => (
+                <tr
+                  key={index}
+                  className={`
+                    align-baseline 
+                    hover:bg-neutral-50 
+                    dark:hover:bg-neutral-800 
+                    transition-colors 
+                    border-b-[1px]
+                    border-neutral-100 
+                    dark:border-neutral-400 
+                    last:border-b-0
+                  `}
+                >
+                  <SignRuleListItem
+                    rule={rule}
+                    nickname={nickname}
+                    setEditingRule={handleEdit}
+                    refreshConfig={fetchConfig}
+                  />
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
       {isAddEditRuleModalOpen && (
         <SignRuleModal
           rule={editingRule}
@@ -136,8 +157,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
       )}
     </>
   );
-}
-
+} // TODO QUESTION: When adding sign rules manually, we should propose origin. Do we want to make origin mandatory? YES
 interface SignRuleListItemProps {
   setEditingRule: (rule: SignRule) => void;
   rule: SignRule;
@@ -196,7 +216,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
 
   return (
     <>
-      <td className="max-w-[128px] truncate">
+      <td className="max-w-[128px] truncate py-3 px-4">
         {rule.name && rule.name.length > 0 ? (
           <Tooltip
             body={rule.name}
@@ -207,18 +227,29 @@ function SignRuleListItem(props: SignRuleListItemProps) {
             {rule.name}
           </Tooltip>
         ) : (
-          <span className="text-f-secondary">-</span>
+          <div className="flex justify-center">
+            <span className="text-f-primary">-</span>
+          </div>
         )}
       </td>
-      <td className="max-w-xs truncate whitespace-nowrap">
+      <td className="max-w-xs truncate whitespace-nowrap py-3 px-4">
         {rule.ruleType === RuleType.AutoSign ? (
           <Tooltip
             body={Intl.t('settings.sign-rules.auto-sign-tooltip')}
             placement="top"
             triggerClassName="truncate w-full"
-            tooltipClassName="mas-caption max-w-96"
+            tooltipClassName="mas-caption max-w-96 cursor-default"
           >
-            <span>{Intl.t('settings.sign-rules.auto-sign-short')}</span>
+            <span
+              className={`
+              inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+              bg-primary-100 text-primary-800
+              dark:bg-primary-800 dark:text-primary-100
+              border border-primary-200 dark:border-primary-700
+            `}
+            >
+              {Intl.t('settings.sign-rules.auto-sign-short')}
+            </span>
           </Tooltip>
         ) : (
           <Tooltip
@@ -227,28 +258,53 @@ function SignRuleListItem(props: SignRuleListItemProps) {
             triggerClassName="truncate w-full"
             tooltipClassName="mas-caption max-w-96"
           >
-            <span>
+            <span
+              className={`
+              inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+              bg-warning-100 text-warning-800
+              dark:bg-warning-800 dark:text-warning-100
+              border border-warning-200 dark:border-warning-700
+              cursor-default
+            `}
+            >
               {Intl.t('settings.sign-rules.disable-password-prompt-short')}
             </span>
           </Tooltip>
         )}
       </td>
-      <td className="max-w-xs truncate whitespace-nowrap">
+      <td className="max-w-xs truncate whitespace-nowrap py-3 px-4">
         {isAllContract ? (
           <div className="flex justify-center">
-            <span>All</span>
+            <span className="text-f-primary">All</span>
           </div>
         ) : (
           <Clipboard
             rawContent={rule.contract}
-            displayedContent={maskAddress(rule.contract, 6)}
-            className="text-sm p-2 flex"
+            displayedContent={maskAddress(rule.contract, 10)}
+            customClass="text-sm p-2 flex cursor-pointer"
           />
         )}
       </td>
-      <td className="text-right">
+      <td className="max-w-xs truncate whitespace-nowrap py-3 px-4">
+        <Tooltip
+          body={rule.authorizedOrigin}
+          placement="top"
+          triggerClassName="truncate w-full"
+          tooltipClassName="mas-caption max-w-96"
+        >
+          <span className="truncate">{rule.authorizedOrigin}</span>
+        </Tooltip>
+      </td>
+      <td className="text-right py-3 px-4">
         <div className="flex justify-end items-center space-x-2">
-          <ButtonToggle onClick={handleToggle}>
+          <ButtonToggle
+            onClick={handleToggle}
+            customClass={`min-w-[60px] ${
+              rule.enabled
+                ? 'bg-primary-100 text-primary-800'
+                : 'bg-warning-100 text-warning-800'
+            }`}
+          >
             {rule.enabled ? 'On' : 'Off'}
           </ButtonToggle>
           <ButtonIcon variant="primary" onClick={() => setEditingRule(rule)}>
