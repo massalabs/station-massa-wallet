@@ -4,6 +4,7 @@ import {
   Button,
   Clipboard,
   Password,
+  Tooltip,
   maskAddress,
 } from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
@@ -107,62 +108,104 @@ export function SignRule() {
             <div className="mas-body pt-4 break-words">
               {Intl.t('signRule.description')}:
             </div>
-            <div className="text-sm break-words text-f-disabled-1">
+            <div className="text-sm break-words text-f-disabled-1 mb-4">
               {data.Description}
             </div>
           </>
         )}
 
-        <Account nickname={data.Nickname} walletAddress={data.WalletAddress} />
+        <div className="mb-4">
+          <Account
+            nickname={data.Nickname}
+            walletAddress={data.WalletAddress}
+          />
+        </div>
 
         {showWarning && (
-          <div className="p-4 flex items-center">
-            <FiAlertTriangle size={42} className="text-s-warning " />
+          <div className="p-4 flex items-center mb-4">
+            <FiAlertTriangle size={42} className="text-s-warning" />
             <div className="ml-2 text-s-warning text-sm">
               <p>{Intl.t(`signRule.behavior.${data.SignRule.RuleType}`)}</p>
             </div>
           </div>
         )}
 
-        <div className="bg-secondary p-2 mt-4 rounded-md">
-          <div className="flex-row">
-            <p className="flex justify-between">
-              <strong>{Intl.t('signRule.name')}:</strong>
-              <div className="flex flex-row justify-right">
-                {' '}
-                {data.SignRule.Name}
-              </div>
-            </p>
+        <div className="bg-secondary p-4 mb-4 rounded-md space-y-4">
+          <div className="flex items-center space-x-2 min-h-8 justify-between">
+            <strong className="min-w-0 flex-shrink-0">
+              {Intl.t('signRule.name')}:
+            </strong>
+            <span className="text-f-primary-1 truncate">
+              {data.SignRule.Name}
+            </span>
           </div>
-          <div className="flex-row items-center">
-            <p className="flex justify-between">
-              <strong>{Intl.t('signRule.contract')}:</strong>
-              {isAllContract ? (
-                'All'
-              ) : (
+
+          <div className="flex items-center space-x-2 justify-between min-h-8">
+            <strong className="min-w-0 flex-shrink-0">
+              {Intl.t('signRule.contract')}:
+            </strong>
+            {isAllContract ? (
+              <span className="text-f-primary-1">All</span>
+            ) : (
+              <Clipboard
+                customClass="flex h-6 px-0"
+                rawContent={data.SignRule.Contract}
+                displayedContent={maskAddress(data.SignRule.Contract, 12)}
+              />
+            )}
+          </div>
+
+          {data.SignRule.AuthorizedOrigin && (
+            <div className="flex items-center space-x-2 justify-between">
+              <strong className="min-w-0 flex-shrink-0">
+                <Tooltip
+                  body={Intl.t('signRule.authorizedOrigin')}
+                  placement="top"
+                  tooltipClassName="mas-caption py-0"
+                  triggerClassName="flex items-center py-0"
+                >
+                  Origin :
+                </Tooltip>
+              </strong>
+              <Tooltip
+                body={data.SignRule.AuthorizedOrigin}
+                placement="top"
+                triggerClassName="flex items-center py-0"
+                tooltipClassName="mas-caption max-w-80 py-0"
+              >
                 <Clipboard
-                  customClass="flex h-6 pl-20 ml-20"
-                  rawContent={data.SignRule.Contract}
-                  displayedContent={maskAddress(data.SignRule.Contract, 6)}
+                  customClass="ml-1 truncate max-w-48 px-0 py-0"
+                  rawContent={data.SignRule.AuthorizedOrigin}
+                  displayedContent={
+                    data.SignRule.AuthorizedOrigin.length > 28
+                      ? data.SignRule.AuthorizedOrigin.slice(0, 26) + '...'
+                      : data.SignRule.AuthorizedOrigin
+                  }
                 />
-              )}
-            </p>
+              </Tooltip>
+            </div>
+          )}
+
+          <div className="flex items-center space-x-2 min-h-8 justify-between">
+            <strong className="min-w-0 flex-shrink-0">
+              {Intl.t('signRule.ruleType')}:
+            </strong>
+            <span className="text-f-primary-1">
+              {Intl.t(`signRule.rulesTypeDesc.${data.SignRule.RuleType}`)}
+            </span>
           </div>
-          <p className="flex justify-between">
-            <strong>{Intl.t('signRule.authorizedOrigin')}:</strong>{' '}
-            {data.SignRule.AuthorizedOrigin}
-          </p>
-          <p className="flex justify-between">
-            <strong>{Intl.t('signRule.ruleType')}:</strong>{' '}
-            {Intl.t(`signRule.rulesTypeDesc.${data.SignRule.RuleType}`)}
-          </p>
-          <p className="flex justify-between">
-            <strong>{Intl.t('signRule.enabled')}:</strong>{' '}
-            {data.SignRule.Enabled ? 'Yes' : 'No'}
-          </p>
+
+          <div className="flex items-center space-x-2 min-h-8 justify-between">
+            <strong className="min-w-0 flex-shrink-0">
+              {Intl.t('signRule.enabled')}:
+            </strong>
+            <span className="text-f-primary-1">
+              {data.SignRule.Enabled ? 'Yes' : 'No'}
+            </span>
+          </div>
         </div>
 
-        <div className="pt-4">
+        <div className="mb-4">
           <Password
             defaultValue=""
             name="password"
@@ -173,7 +216,7 @@ export function SignRule() {
             <p className="mt-2 text-s-error mas-body">{errorMessage}</p>
           )}
         </div>
-        <div className="pt-4 flex gap-4">
+        <div className="flex gap-4">
           <Button variant="secondary" onClick={handleCancel}>
             {Intl.t('password-prompt.buttons.cancel')}
           </Button>

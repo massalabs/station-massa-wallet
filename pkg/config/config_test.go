@@ -176,7 +176,7 @@ func TestHasEnabledRule(t *testing.T) {
 	hasEnabled := cfg.HasEnabledRule(accountName)
 	assert.True(t, hasEnabled)
 
-	rulePtr := cfg.GetEnabledRuleForContract(accountName, &contract)
+	rulePtr := cfg.GetEnabledRuleForContract(accountName, &contract, &authorizedOrigin)
 	assert.NotNil(t, rulePtr)
 
 	// Disable the rule and check again
@@ -184,6 +184,6 @@ func TestHasEnabledRule(t *testing.T) {
 	_, err = cfg.UpdateSignRule(accountName, ruleId, rule)
 	assert.NoError(t, err)
 
-	rulePtr = cfg.GetEnabledRuleForContract(accountName, &contract)
+	rulePtr = cfg.GetEnabledRuleForContract(accountName, &contract, &authorizedOrigin)
 	assert.Nil(t, rulePtr)
 }

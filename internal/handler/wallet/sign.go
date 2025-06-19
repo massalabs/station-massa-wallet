@@ -61,7 +61,13 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		contract = &promptData.Address
 	}
 
-	enabledRule := cfg.GetEnabledRuleForContract(acc.Nickname, contract)
+	origin, err := getOrigin(params.HTTPRequest)
+
+	if err != nil {
+		logger.Warn("error getting origin: ", err)
+	}
+
+	enabledRule := cfg.GetEnabledRuleForContract(acc.Nickname, contract, origin)
 
 	var privateKey *memguard.LockedBuffer
 
@@ -80,17 +86,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 			// If the rule is AutoSign, we don't need to open wails prompt
 			if enabledRule.RuleType == config.RuleTypeAutoSign {
-				if enabledRule.AuthorizedOrigin != nil {
-					origin, err := getOrigin(params.HTTPRequest)
-					if err != nil || origin == nil || *origin != *enabledRule.AuthorizedOrigin {
-						return newErrorResponse(
-							"Unauthorized origin",
-							"errorUnauthorizedOrigin",
-							http.StatusUnauthorized,
-						)
-					}
-					skipPrompt = true
-				}
+				skipPrompt = true
 			}
 		}
 	}

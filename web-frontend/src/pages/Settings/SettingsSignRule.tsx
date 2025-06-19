@@ -285,7 +285,7 @@ function SignRuleListItem(props: SignRuleListItemProps) {
           />
         )}
       </td>
-      <td className="max-w-xs truncate whitespace-nowrap py-3 px-4">
+      <td className="max-w-[200px] truncate whitespace-nowrap py-3 px-4">
         <Tooltip
           body={rule.authorizedOrigin}
           placement="top"

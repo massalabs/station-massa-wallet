@@ -247,7 +247,7 @@ func (c *Config) HasEnabledRule(accountName string) bool {
 	return false
 }
 
-func (c *Config) GetEnabledRuleForContract(accountName string, contract *string) *SignRule {
+func (c *Config) GetEnabledRuleForContract(accountName string, contract *string, origin *string) *SignRule {
 	configManager.mu.RLock()
 	defer configManager.mu.RUnlock()
 
@@ -265,7 +265,9 @@ func (c *Config) GetEnabledRuleForContract(accountName string, contract *string)
 			switch rule.RuleType {
 			case RuleTypeAutoSign:
 				if contract != nil && rule.Contract == *contract {
-					enabledRule = &rule
+					if rule.AuthorizedOrigin != nil && origin != nil && *rule.AuthorizedOrigin == *origin {
+						enabledRule = &rule
+					}
 				}
 
 			case RuleTypeDisablePasswordPrompt:
