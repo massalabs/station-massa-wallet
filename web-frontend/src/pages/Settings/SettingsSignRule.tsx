@@ -157,7 +157,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
       )}
     </>
   );
-} // TODO QUESTION: When adding sign rules manually, we should propose origin. Do we want to make origin mandatory? YES
+}
 interface SignRuleListItemProps {
   setEditingRule: (rule: SignRule) => void;
   rule: SignRule;
