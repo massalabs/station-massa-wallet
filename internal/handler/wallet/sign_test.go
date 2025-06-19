@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
@@ -22,11 +23,17 @@ const (
 	contract     = "AS1hZpUH6TPiRxHtTKqAfXDmZ7Afa7UfS4rtYN7NxVwAaSAphCET"
 )
 
-func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string) *httptest.ResponseRecorder {
+func signTransaction(t *testing.T, api *operations.MassaWalletAPI, nickname string, body string, headers ...map[string]string) *httptest.ResponseRecorder {
 	handler, exist := api.HandlerFor("post", "/api/accounts/{nickname}/sign")
 	assert.True(t, exist)
 
-	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body)
+	// Use provided headers if any, otherwise use empty map
+	headerMap := make(map[string]string)
+	if len(headers) > 0 {
+		headerMap = headers[0]
+	}
+
+	resp, err := handleHTTPRequest(handler, "POST", fmt.Sprintf("/api/accounts/%s/sign", nickname), body, headerMap)
 	assert.NoError(t, err)
 
 	return resp
@@ -180,15 +187,17 @@ func Test_walletSign_Handle(t *testing.T) {
 
 	t.Run("Auto Sign", func(t *testing.T) {
 		cfg := config.Get()
+		authorizedOrigin := "http://massa.network"
+
+		// Add AutoSign rule
 		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
-			Name:     "test",
-			Contract: contract,
-			RuleType: config.RuleTypeAutoSign,
-			Enabled:  true,
+			Name:             "test",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
 		})
-
 		assert.NoError(t, err)
-
 		assert.True(t, cfg.HasEnabledRule(nickname))
 
 		testResult := make(chan walletapp.EventData)
@@ -204,11 +213,14 @@ func Test_walletSign_Handle(t *testing.T) {
 			res <- (<-resChan)
 		}(testResult)
 
-		resp := signTransaction(t, api, nickname, transactionData)
+		// First sign with password prompt
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+		resp := signTransaction(t, api, nickname, transactionData, headers)
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		result := <-testResult
-
 		checkResultChannel(t, result, true, "")
 
 		// check that privateKey is cached
@@ -217,25 +229,86 @@ func Test_walletSign_Handle(t *testing.T) {
 		assert.NotNil(t, pkey)
 
 		// sign again, should not prompt for password
-		resp = signTransaction(t, api, nickname, transactionData)
+		resp = signTransaction(t, api, nickname, transactionData, headers)
 		verifyStatusCode(t, resp, http.StatusOK)
-
 		verifySignResponse(t, resp)
 
+		// Clean up
 		err = cfg.DeleteSignRule(nickname, ruleId)
 		assert.NoError(t, err)
+		// Clear the private key from cache
+		cacheInstance := cache.Init()
+		address, err := account.Address.String()
+		assert.NoError(t, err)
+		cacheKey := "pkey" + address
+		cacheInstance.Remove(cache.KeyHash([]byte(cacheKey)))
+	})
+
+	t.Run("Auto Sign failed if origin in header not the same", func(t *testing.T) {
+		cfg := config.Get()
+		authorizedOrigin := "http://massa.network"
+
+		// Add AutoSign rule
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		// Test with different origin
+		headers := map[string]string{
+			originHeader: "http://not-authorized.com",
+		}
+
+		testResult := make(chan walletapp.EventData)
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		<-testResult // Wait for simulated confirmation
+		verifySignResponse(t, resp)
+
+		// Clean up
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+		// Clear the private key from cache
+		cacheInstance := cache.Init()
+		address, err := account.Address.String()
+		assert.NoError(t, err)
+		cacheKey := "pkey" + address
+		cacheInstance.Remove(cache.KeyHash([]byte(cacheKey)))
 	})
 
 	t.Run("Auto Sign with enabled rule", func(t *testing.T) {
 		// Clean cache
 		testCache.Purge()
 
+		authorizedOrigin := "http://massa.network"
+
 		cfg := config.Get()
 		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
-			Name:     "test",
-			Contract: "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
-			RuleType: config.RuleTypeAutoSign,
-			Enabled:  true,
+			Name:             "test",
+			Contract:         "AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv",
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
 		})
 
 		assert.NoError(t, err)
@@ -285,6 +358,47 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		checkResultChannel(t, result, true, "")
 
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Auto Sign with enabled rule and authorized origin fallback to set password prompt if origin is not the same", func(t *testing.T) {
+		cfg := config.Get()
+		authorizedOrigin := "http://massa.network"
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+
+		assert.NoError(t, err)
+
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		headers := map[string]string{
+			originHeader: "http://other-origin:3000",
+		}
+
+		testResult := make(chan walletapp.EventData)
+
+		// Simulate user entering password
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
 		verifySignResponse(t, resp)
 
 		err = cfg.DeleteSignRule(nickname, ruleId)
@@ -481,6 +595,102 @@ func Test_walletSign_Handle(t *testing.T) {
 		verifySignResponse(t, resp)
 
 		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("AutoSign active, wrong origin, fallback to DisablePasswordPrompt", func(t *testing.T) {
+		cfg := config.Get()
+		// Add an AutoSign rule with a specific origin
+		authorizedOrigin := "http://massa.network"
+		ruleIdAutoSign, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test-autosign",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+		// Add a DisablePasswordPrompt rule for the same contract
+		ruleIdNoPass, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test-nopass",
+			Contract: contract,
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+		assert.NoError(t, err)
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: "http://not-authorized.com",
+		}
+
+		testResult := make(chan walletapp.EventData)
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		<-testResult // Wait for simulated confirmation
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleIdAutoSign)
+		assert.NoError(t, err)
+		err = cfg.DeleteSignRule(nickname, ruleIdNoPass)
+		assert.NoError(t, err)
+	})
+
+	t.Run("AutoSign active, wrong origin, no DisablePasswordPrompt, password required", func(t *testing.T) {
+		cfg := config.Get()
+		// Add an AutoSign rule with a specific origin
+		authorizedOrigin := "http://massa.network"
+		ruleIdAutoSign, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test-autosign",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: "http://not-authorized.com",
+		}
+
+		testResult := make(chan walletapp.EventData)
+		// Password MUST be requested (no DisablePasswordPrompt rule)
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		err = cfg.DeleteSignRule(nickname, ruleIdAutoSign)
 		assert.NoError(t, err)
 	})
 }

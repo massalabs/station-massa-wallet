@@ -53,16 +53,16 @@ func Test_signrule_Handlers(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusBadRequest)
 
 		// check rule is not added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.Nil(rulePtr)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)
 		assert.False(hasRule)
 	})
 
-	t.Run("Add sign rule", func(t *testing.T) {
+	t.Run("Add sign rule type RuleTypeDisablePasswordPrompt", func(t *testing.T) {
 		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
-		ruleType := config.RuleTypeAutoSign
+		ruleType := config.RuleTypeDisablePasswordPrompt
 		ruleName := "Test Rule"
 		enabled := true
 		body := fmt.Sprintf(`{
@@ -100,9 +100,9 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotEmpty(addRuleResponse.ID)
 
 		// check rule is added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.NotNil(rulePtr)
-		assert.Equal(*rulePtr, ruleType)
+		assert.Equal(rulePtr.RuleType, ruleType)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)
 		assert.True(hasRule)
@@ -114,16 +114,21 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.Equal(rule.Contract, contract)
 		assert.Equal(rule.RuleType, ruleType)
 		assert.Equal(rule.Enabled, enabled)
+		assert.Nil(rule.AuthorizedOrigin)
 
 		// check that privateKey is cached
 		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(err)
 		assert.NotNil(pkey)
+
+		// Clean up the rule
+		err = cfg.DeleteSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NoError(err)
 	})
 
-	t.Run("Update sign rule", func(t *testing.T) {
-		contract := "*"
-		ruleType := config.RuleTypeDisablePasswordPrompt
+	t.Run("Fail when adding sign rule with no origin and no referer", func(t *testing.T) {
+		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+		ruleType := config.RuleTypeAutoSign
 		ruleName := "Test Rule"
 		enabled := true
 		body := fmt.Sprintf(`{
@@ -133,6 +138,44 @@ func Test_signrule_Handlers(t *testing.T) {
 			"enabled": %t,
 			"description": "Test Description"
 		}`, ruleName, contract, ruleType, enabled)
+
+		headers := map[string]string{
+			originHeader:  "",
+			refererHeader: "",
+		}
+
+		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body, headers)
+		assert.NoError(err)
+
+		verifyStatusCode(t, resp, http.StatusBadRequest)
+
+		// // TODO: check that the right error message is returned
+
+		// check rule is not added
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
+		assert.Nil(rulePtr)
+
+		hasRule := cfg.HasEnabledRule(account.Nickname)
+		assert.False(hasRule)
+	})
+
+	t.Run("Add sign rule with referer only", func(t *testing.T) {
+		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+		ruleType := config.RuleTypeAutoSign
+		ruleName := "Test Rule"
+		enabled := true
+		body := fmt.Sprintf(`{
+			"name": "%s",
+			"contract": "%s",
+			"ruleType": "%s",
+			"enabled": %t,
+			"description": "Test Description"
+		}`, ruleName, contract, ruleType, enabled)
+
+		headers := map[string]string{
+			originHeader:  "",
+			refererHeader: "http://localhost:3000",
+		}
 
 		testResult := make(chan walletapp.EventData)
 
@@ -146,15 +189,204 @@ func Test_signrule_Handlers(t *testing.T) {
 			res <- (<-resChan)
 		}(testResult)
 
-		// Add a sign rule first
+		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body, headers)
+		assert.NoError(err)
+
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+
+		checkResultChannel(t, result, true, "")
+
+		var addRuleResponse models.AddSignRuleResponse
+		err = json.Unmarshal(resp.Body.Bytes(), &addRuleResponse)
+		assert.NoError(err)
+
+		// check rule contains expected fields
+		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
+		assert.Equal(*rule.AuthorizedOrigin, headers[refererHeader])
+
+		// Clean up the rule
+		err = cfg.DeleteSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NoError(err)
+	})
+
+	t.Run("Add sign rule with origin in body", func(t *testing.T) {
+		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+		ruleType := config.RuleTypeAutoSign
+		ruleName := "Test Rule"
+		enabled := true
+		authorizedOrigin := "http://localhost:3000"
+		body := fmt.Sprintf(`{
+			"name": "%s",
+			"contract": "%s",
+			"ruleType": "%s",
+			"enabled": %t,
+			"description": "Test Description",
+			"authorizedOrigin": "%s"
+		}`, ruleName, contract, ruleType, enabled, authorizedOrigin)
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Message:     password,
+			}
+
+			res <- (<-resChan)
+		}(testResult)
+
 		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body)
 		assert.NoError(err)
 		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
 
 		var addRuleResponse models.AddSignRuleResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &addRuleResponse)
 		assert.NoError(err)
 		assert.NotEmpty(addRuleResponse.ID)
+
+		// check rule is added
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, &authorizedOrigin)
+		assert.NotNil(rulePtr)
+		assert.Equal(rulePtr.RuleType, ruleType)
+
+		// check rule authorized origin
+		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NotNil(rule)
+
+		assert.Equal(*rule.AuthorizedOrigin, authorizedOrigin)
+
+		hasRule := cfg.HasEnabledRule(account.Nickname)
+		assert.True(hasRule)
+
+		// Clean up the rule
+		err = cfg.DeleteSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NoError(err)
+	})
+
+	t.Run("Add sign rule with origin in header", func(t *testing.T) {
+		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+		ruleType := config.RuleTypeAutoSign
+		ruleName := "Test Rule"
+		enabled := true
+		body := fmt.Sprintf(`{
+			"name": "%s",
+			"contract": "%s",
+			"ruleType": "%s",
+			"enabled": %t,
+			"description": "Test Description"
+		}`, ruleName, contract, ruleType, enabled)
+
+		headers := map[string]string{
+			originHeader: "http://localhost:3000",
+		}
+
+		testResult := make(chan walletapp.EventData)
+
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Message:     password,
+			}
+
+			res <- (<-resChan)
+		}(testResult)
+
+		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body, headers)
+		assert.NoError(err)
+
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+
+		var addRuleResponse models.AddSignRuleResponse
+		err = json.Unmarshal(resp.Body.Bytes(), &addRuleResponse)
+		assert.NoError(err)
+		assert.NotEmpty(addRuleResponse.ID)
+
+		// check rule is added
+		origin := headers[originHeader]
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, &origin)
+		assert.NotNil(rulePtr)
+		assert.Equal(rulePtr.RuleType, ruleType)
+
+		hasRule := cfg.HasEnabledRule(account.Nickname)
+		assert.True(hasRule)
+
+		// check rule contains expected fields
+		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NotNil(rule)
+		assert.Equal(rule.Name, ruleName)
+		assert.Equal(rule.Contract, contract)
+		assert.Equal(rule.RuleType, ruleType)
+		assert.Equal(rule.Enabled, enabled)
+		assert.Equal(*rule.AuthorizedOrigin, headers[originHeader])
+
+		// check that privateKey is cached
+		pkey, err := cache.PrivateKeyFromCache(account)
+		assert.NoError(err)
+		assert.NotNil(pkey)
+
+		// Clean up the rule
+		err = cfg.DeleteSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NoError(err)
+	})
+
+	t.Run("Update sign rule", func(t *testing.T) {
+		contract := "AS12UMSUxgpRBB6ArZDJ19arHoxNkkpdfofQGekAiAJqsuE6PEFJy"
+		ruleType := config.RuleTypeAutoSign
+		ruleName := "Test Rule"
+		enabled := true
+		body := fmt.Sprintf(`{
+			"name": "%s",
+			"contract": "%s",
+			"ruleType": "%s",
+			"enabled": %t,
+			"description": "Test Description"
+		}`, ruleName, contract, ruleType, enabled)
+
+		testResult := make(chan walletapp.EventData)
+		// Send password to prompter app and wait for result
+		go func(res chan walletapp.EventData) {
+			prompterAppMock.App().PromptInput <- &walletapp.StringPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Message:     password,
+			}
+
+			res <- (<-resChan)
+		}(testResult)
+
+		headers := map[string]string{
+			originHeader: "http://massa.network",
+		}
+
+		// Add a sign rule first
+		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body, headers)
+		assert.NoError(err)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+
+		var addRuleResponse models.AddSignRuleResponse
+		err = json.Unmarshal(resp.Body.Bytes(), &addRuleResponse)
+		assert.NoError(err)
+		assert.NotEmpty(addRuleResponse.ID)
+
+		// check if rule has authorized origin
+		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NotNil(rule)
+
+		if rule.AuthorizedOrigin != nil {
+			assert.Equal(*rule.AuthorizedOrigin, headers[originHeader])
+		}
 
 		// Update the sign rule
 		updatedRuleName := "Updated Test Rule"
@@ -181,23 +413,31 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NoError(err)
 		verifyStatusCode(t, resp, http.StatusOK)
 
+		result = <-testResult
+		checkResultChannel(t, result, true, "")
+
 		var updateRuleResponse models.UpdateSignRuleResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &updateRuleResponse)
 		assert.NoError(err)
 		assert.NotEmpty(updateRuleResponse.ID)
 
 		// Check rule is updated
-		rule := cfg.GetSignRule(account.Nickname, updateRuleResponse.ID)
+		rule = cfg.GetSignRule(account.Nickname, updateRuleResponse.ID)
 		assert.NotNil(rule)
 		assert.Equal(rule.Name, updatedRuleName)
 		assert.Equal(rule.Contract, contract)
 		assert.Equal(rule.RuleType, ruleType)
 		assert.Equal(rule.Enabled, enabled)
+		assert.Equal(*rule.AuthorizedOrigin, headers[originHeader])
 
 		// Check that privateKey is still cached
 		pkey, err := cache.PrivateKeyFromCache(account)
 		assert.NoError(err)
 		assert.NotNil(pkey)
+
+		// Clean up the rule
+		err = cfg.DeleteSignRule(account.Nickname, addRuleResponse.ID)
+		assert.NoError(err)
 	})
 
 	t.Run("Delete sign rule", func(t *testing.T) {
@@ -224,11 +464,17 @@ func Test_signrule_Handlers(t *testing.T) {
 			res <- (<-resChan)
 		}(testResult)
 
-		// Add a sign rule first
-		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body)
-		assert.NoError(err)
+		headers := map[string]string{
+			originHeader: "http://localhost:3000",
+		}
 
+		// Add a sign rule first
+		resp, err := handleHTTPRequest(addhandler, "POST", fmt.Sprintf("/api/accounts/%s/signrules", nickname), body, headers)
+		assert.NoError(err)
 		verifyStatusCode(t, resp, http.StatusOK)
+
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
 
 		var addRuleResponse models.AddSignRuleResponse
 		err = json.Unmarshal(resp.Body.Bytes(), &addRuleResponse)
@@ -246,16 +492,16 @@ func Test_signrule_Handlers(t *testing.T) {
 		}(testResult)
 
 		// Now delete the sign rule
-		resp, err = handleHTTPRequest(deletehandler, "DELETE", fmt.Sprintf("/api/accounts/%s/signrules/%s", nickname, addRuleResponse.ID), "")
+		resp, err = handleHTTPRequest(deletehandler, "DELETE", fmt.Sprintf("/api/accounts/%s/signrules/%s", nickname, addRuleResponse.ID), "", headers)
 		assert.NoError(err)
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		// Check rule is deleted
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.Nil(rulePtr)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)
-		assert.True(hasRule)
+		assert.False(hasRule)
 
 		// Check that privateKey is still cached
 		pkey, err := cache.PrivateKeyFromCache(account)
