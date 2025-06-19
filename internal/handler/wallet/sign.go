@@ -62,7 +62,6 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	}
 
 	origin, err := getOrigin(params.HTTPRequest)
-
 	if err != nil {
 		logger.Warn("error getting origin: ", err)
 	}

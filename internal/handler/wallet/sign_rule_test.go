@@ -383,6 +383,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		// check if rule has authorized origin
 		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
 		assert.NotNil(rule)
+
 		if rule.AuthorizedOrigin != nil {
 			assert.Equal(*rule.AuthorizedOrigin, headers[originHeader])
 		}
