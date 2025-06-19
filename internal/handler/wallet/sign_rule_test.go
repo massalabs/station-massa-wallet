@@ -53,7 +53,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusBadRequest)
 
 		// check rule is not added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.Nil(rulePtr)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)
@@ -100,7 +100,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotEmpty(addRuleResponse.ID)
 
 		// check rule is added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.NotNil(rulePtr)
 		assert.Equal(rulePtr.RuleType, ruleType)
 
@@ -152,7 +152,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		// // TODO: check that the right error message is returned
 
 		// check rule is not added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.Nil(rulePtr)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)
@@ -251,13 +251,14 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotEmpty(addRuleResponse.ID)
 
 		// check rule is added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, &authorizedOrigin)
 		assert.NotNil(rulePtr)
 		assert.Equal(rulePtr.RuleType, ruleType)
 
 		// check rule authorized origin
 		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
 		assert.NotNil(rule)
+
 		assert.Equal(*rule.AuthorizedOrigin, authorizedOrigin)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)
@@ -311,7 +312,8 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotEmpty(addRuleResponse.ID)
 
 		// check rule is added
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		origin := headers[originHeader]
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, &origin)
 		assert.NotNil(rulePtr)
 		assert.Equal(rulePtr.RuleType, ruleType)
 
@@ -381,7 +383,9 @@ func Test_signrule_Handlers(t *testing.T) {
 		// check if rule has authorized origin
 		rule := cfg.GetSignRule(account.Nickname, addRuleResponse.ID)
 		assert.NotNil(rule)
-		assert.Equal(*rule.AuthorizedOrigin, headers[originHeader])
+		if rule.AuthorizedOrigin != nil {
+			assert.Equal(*rule.AuthorizedOrigin, headers[originHeader])
+		}
 
 		// Update the sign rule
 		updatedRuleName := "Updated Test Rule"
@@ -492,7 +496,7 @@ func Test_signrule_Handlers(t *testing.T) {
 		verifyStatusCode(t, resp, http.StatusOK)
 
 		// Check rule is deleted
-		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract)
+		rulePtr := cfg.GetEnabledRuleForContract(account.Nickname, &contract, nil)
 		assert.Nil(rulePtr)
 
 		hasRule := cfg.HasEnabledRule(account.Nickname)

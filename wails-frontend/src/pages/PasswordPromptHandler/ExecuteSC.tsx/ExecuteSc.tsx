@@ -34,7 +34,7 @@ export function ExecuteSC(props: SignBodyProps) {
               : Intl.t(`password-prompt.sign.operation-types.${OperationType}`)}
           </p>
           <Tooltip
-            customClass="mas-caption !w-7/12 left-0  !ml-28"
+            tooltipClassName="mas-caption !w-7/12 left-0  !ml-28"
             body={
               isDeploySC ? (
                 Intl.t('password-prompt.sign.deploy-sc-tooltip')
@@ -87,7 +87,7 @@ export function ExecuteSC(props: SignBodyProps) {
           <div className="flex items-center">
             <Tooltip
               className="w-fit pl-0 pr-2 hover:cursor-pointer"
-              customClass="mas-caption !w-7/12"
+              tooltipClassName="mas-caption !w-7/12"
               body={
                 <>
                   {Intl.t(

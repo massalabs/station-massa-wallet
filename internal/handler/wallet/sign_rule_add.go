@@ -34,9 +34,11 @@ type addSignRuleHandler struct {
 
 func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middleware.Responder {
 	acc, errResp := loadAccount(w.prompterApp.App().Wallet, params.Nickname)
+
 	if errResp != nil {
 		return errResp
 	}
+
 	newRule := config.SignRule{
 		Name:     params.Body.Name,
 		Contract: *params.Body.Contract,
@@ -45,15 +47,18 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 	}
 
 	if newRule.RuleType == config.RuleTypeAutoSign {
-		if params.Body.AuthorizedOrigin != nil && len(*params.Body.AuthorizedOrigin) > 0 {
-			newRule.AuthorizedOrigin = params.Body.AuthorizedOrigin
-		} else {
-			origin, err := getOrigin(params.HTTPRequest)
+		origin := params.Body.AuthorizedOrigin
+
+		if origin == nil || len(*origin) == 0 {
+			detectedOrigin, err := getOrigin(params.HTTPRequest)
 			if err != nil {
 				return newErrorResponse(err.Error(), errorAddSignRule, http.StatusBadRequest)
 			}
-			newRule.AuthorizedOrigin = origin
+			origin = detectedOrigin
+			params.Body.AuthorizedOrigin = origin
 		}
+
+		newRule.AuthorizedOrigin = origin
 	}
 
 	cfg := config.Get()
@@ -67,6 +72,7 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 	}
 
 	promptRequest, err := w.getPromptRequest(params, acc)
+
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorAddSignRule, http.StatusBadRequest)
 	}
