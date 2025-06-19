@@ -72,7 +72,6 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 	}
 
 	promptRequest, err := w.getPromptRequest(params, acc)
-
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorAddSignRule, http.StatusBadRequest)
 	}
