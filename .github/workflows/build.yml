@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    name: build
+    name: Build binaries
     # The build job has a matrix strategy, which means it will run multiple times with different combinations of the os, arch, and target variables.
     strategy:
       fail-fast: false
@@ -85,18 +85,7 @@ jobs:
           chmod +x build/bin/*/Contents/MacOS/*
           ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
 
-      - name: Sign Windows binary
-        if: matrix.target == 'windows'
-        uses: massalabs/station/.github/actions/sign-file@3dac9091bcbe6db4facec2c0f30292f56c11098e
-        with:
-          file: $TARGET_NAME${{ matrix.ext }}
-          GCP_PEM_KEY: ${{ vars.GCP_PEM_KEY }}
-          GCP_KEYSTORE_ID: ${{ vars.GCP_KEYSTORE_ID }}
-          GCP_KEY_ALIAS: ${{ vars.GCP_KEY_ALIAS }}
-          GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
-
-      - name: Upload artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.TARGET_NAME }}
@@ -105,15 +94,74 @@ jobs:
             wallet.svg
             manifest.json
 
-      - name: Zip binary
-        if: ${{ (matrix.target != 'darwin') && (inputs.tag_name != '') }}
-        run: zip $TARGET_NAME.zip $TARGET_NAME${{ matrix.ext }} wallet.svg manifest.json
-      - name: Zip binary for darwin
-        if: ${{ (matrix.target == 'darwin') && (inputs.tag_name != '') }}
-        run: zip $TARGET_NAME.zip wallet-plugin.app.zip wallet.svg manifest.json
+  sign-windows-binary:
+    name: Sign Windows binary
+    needs: build
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wallet-plugin_windows-amd64
+          path: ./windows-binaries
+
+      - name: Sign Windows binary
+        uses: massalabs/station/.github/actions/sign-file-digicert@7481e2a05af97559568772dad473b923b37fbe34
+        with:
+          file: ./windows-binaries/wallet-plugin_windows-amd64.exe
+          SM_API_KEY: ${{ secrets.SM_API_KEY }}
+          SM_CLIENT_CERT_FILE_B64: ${{ secrets.SM_CLIENT_CERT_FILE_B64 }}
+          SM_CLIENT_CERT_PASSWORD: ${{ secrets.SM_CLIENT_CERT_PASSWORD }}
+          SM_CERT_FINGERPRINT: ${{ secrets.SM_CERT_FINGERPRINT }}
+          SM_HOST: ${{ secrets.SM_HOST }}
+
+      - name: Upload signed Windows binary (overwrite original)
+        uses: actions/upload-artifact@v4
+        with:
+          name: wallet-plugin_windows-amd64
+          path: ./windows-binaries/wallet-plugin_windows-amd64.exe
+          overwrite: true
+
+  package-and-publish-release:
+    name: Package and publish release
+    needs: [build, sign-windows-binary]
+    runs-on: ubuntu-latest
+    if: ${{ inputs.tag_name != '' }}
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wallet-plugin_*
+          merge-multiple: true
+          path: ./binaries
+
+      - name: Download additional files
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            wallet.svg
+            manifest.json
+
+      - name: Create packages
+        run: |
+          cd binaries
+          for file in wallet-plugin_*; do
+            if [[ $file == *.exe ]]; then
+              zip "${file%.exe}.zip" "$file" ../wallet.svg ../manifest.json
+            elif [[ $file == *.app.zip ]]; then
+              zip "${file%.app.zip}.zip" "$file" ../wallet.svg ../manifest.json
+            else
+              zip "${file}.zip" "$file" ../wallet.svg ../manifest.json
+            fi
+          done
 
       - name: Create release and upload binaries
-        if: ${{ inputs.tag_name != '' }}
         uses: softprops/action-gh-release@v1
         with:
           target_commitish: ${{ github.sha }}
@@ -121,18 +169,18 @@ jobs:
           draft: ${{ inputs.draft }}
           prerelease: ${{ inputs.prerelease }}
           generate_release_notes: ${{ inputs.generate_release_notes }}
-          files: ${{ env.TARGET_NAME }}.zip
+          files: binaries/*.zip
 
       - name: Configure AWS credentials
-        if: ${{ inputs.tag_name != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-3
           aws-access-key-id: ${{ secrets.MS_S3_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.MS_S3_SECRET_ACCESS_KEY }}
 
-      - name: s3 Upload
-        if: ${{ inputs.tag_name != '' }}
-        env:
-          AWS3: ${{ vars.MS_S3_BUCKET }}
-        run: aws s3 cp $TARGET_NAME.zip s3://${AWS3}/plugins/wallet/${TAG}/${TARGET_NAME}.zip
+      - name: Upload to S3
+        run: |
+          for file in binaries/*.zip; do
+            filename=$(basename "$file")
+            aws s3 cp "$file" "s3://${{ vars.MS_S3_BUCKET }}/plugins/wallet/${{ inputs.tag_name }}/${filename}"
+          done
