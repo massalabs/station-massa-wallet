@@ -39,7 +39,7 @@ export function SignRule() {
 
   let action = '';
   let showWarning = false;
-
+  let winHeight = 0;
   const { addSignRule, updateSignRule, deleteSignRule } =
     walletapp.PromptRequestAction;
 
@@ -49,21 +49,25 @@ export function SignRule() {
     case addSignRule:
       action = signRuleActionStr.addSignRule;
       showWarning = data.SignRule.Enabled;
+      winHeight = 680;
       break;
     case updateSignRule:
       action = signRuleActionStr.updateSignRule;
       showWarning = data.SignRule.Enabled;
+      winHeight = 570;
       break;
     case deleteSignRule:
       action = signRuleActionStr.deleteSignRule;
+      winHeight = 510;
       break;
     default:
       setErrorMessage(Intl.t(`errors.unknownRuleRequest`));
   }
 
   const winWidth = 460;
-  const winHeight = showWarning ? 650 : 540;
-
+  if (data.SignRule.AuthorizedOrigin) {
+    winHeight += 50;
+  }
   WindowSetSize(winWidth, winHeight);
 
   function handleResult(result: promptResult) {
