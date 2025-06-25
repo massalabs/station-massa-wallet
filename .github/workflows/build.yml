@@ -156,7 +156,9 @@ jobs:
             if [[ $file == *.exe ]]; then
               zip "${file%.exe}.zip" "$file" ../wallet.svg ../manifest.json
             elif [[ $file == *.app.zip ]]; then
-              zip "${file%.app.zip}.zip" "$file" ../wallet.svg ../manifest.json
+              # For Darwin, create separate zip files for amd64 and arm64
+              zip "wallet-plugin_darwin-amd64.zip" "$file" ../wallet.svg ../manifest.json
+              cp wallet-plugin_darwin-amd64.zip wallet-plugin_darwin-arm64.zip
             else
               zip "${file}.zip" "$file" ../wallet.svg ../manifest.json
             fi
