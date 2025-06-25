@@ -83,7 +83,7 @@ jobs:
         run: |
           task build
           chmod +x build/bin/*/Contents/MacOS/*
-          ditto -c -k build/bin/wallet-plugin.app wallet-plugin.app.zip
+          ditto -c -k build/bin/wallet-plugin.app $TARGET_NAME.app.zip
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -157,8 +157,11 @@ jobs:
               zip "${file%.exe}.zip" "$file" ../wallet.svg ../manifest.json
             elif [[ $file == *.app.zip ]]; then
               # For Darwin, create separate zip files for amd64 and arm64
-              zip "wallet-plugin_darwin-amd64.zip" "$file" ../wallet.svg ../manifest.json
-              cp wallet-plugin_darwin-amd64.zip wallet-plugin_darwin-arm64.zip
+              if [[ $file == *"darwin-amd64"* ]]; then
+                zip "${file%.app.zip}.zip" "$file" ../wallet.svg ../manifest.json
+              elif [[ $file == *"darwin-arm64"* ]]; then
+                zip "${file%.app.zip}.zip" "$file" ../wallet.svg ../manifest.json
+              fi
             else
               zip "${file}.zip" "$file" ../wallet.svg ../manifest.json
             fi
