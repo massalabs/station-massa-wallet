@@ -109,7 +109,7 @@ jobs:
           path: ./windows-binaries
 
       - name: Sign Windows binary
-        uses: massalabs/station/.github/actions/sign-file-digicert@7481e2a05af97559568772dad473b923b37fbe34
+        uses: massalabs/station/.github/actions/sign-file-digicert@5df87a2186634dc2553605ef0d3f555d3552705f
         with:
           file: ./windows-binaries/wallet-plugin_windows-amd64.exe
           SM_API_KEY: ${{ secrets.SM_API_KEY }}
@@ -134,12 +134,6 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Download all binaries
-        uses: actions/download-artifact@v4
-        with:
-          pattern: wallet-plugin_*
-          merge-multiple: true
-          path: ./binaries
 
       - name: Download additional files
         uses: actions/checkout@v3
@@ -147,6 +141,13 @@ jobs:
           sparse-checkout: |
             wallet.svg
             manifest.json
+
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wallet-plugin_*
+          merge-multiple: true
+          path: ./binaries
 
       - name: Create packages
         run: |
