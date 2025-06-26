@@ -83,6 +83,29 @@ jobs:
         run: |
           task build
           chmod +x build/bin/*/Contents/MacOS/*
+
+      - name: Sign binary for MacOS ${{ matrix.arch }}
+        uses: massalabs/massa/.github/actions/sign-macos@b4928f8e21e1667cdb8a251d7f3531b9e268b29d
+        if: matrix.target == 'darwin'
+        with:
+          paths: "build/bin/wallet-plugin.app"
+          certificate-p12-base64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          certificate-password: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          signing-identity: ${{ vars.APPLE_DEVELOPER_ID_APPLICATION }}
+
+      - name: Notarize for MacOS ${{ matrix.arch }}
+        uses: massalabs/massa/.github/actions/notarize-macos@b4928f8e21e1667cdb8a251d7f3531b9e268b29d
+        if: matrix.target == 'darwin'
+        with:
+          paths: "build/bin/wallet-plugin.app"
+          apple-id: ${{ secrets.APPLE_ID }}
+          apple-team-id: ${{ secrets.APPLE_TEAM_ID }}
+          apple-app-password: ${{ secrets.APPLE_APP_PASSWORD }}
+
+      - name: Package binary for MacOS ${{ matrix.arch }}
+        if: matrix.target == 'darwin'
+        shell: bash
+        run: |
           ditto -c -k build/bin/wallet-plugin.app $TARGET_NAME.app.zip
 
       - name: Upload build artifacts
@@ -109,9 +132,9 @@ jobs:
           path: ./windows-binaries
 
       - name: Sign Windows binary
-        uses: massalabs/station/.github/actions/sign-file-digicert@5df87a2186634dc2553605ef0d3f555d3552705f
+        uses: massalabs/station/.github/actions/sign-file-digicert@413d4c0bbd042d5e797fbb66bcd2c96be5c3e71a
         with:
-          file: ./windows-binaries/wallet-plugin_windows-amd64.exe
+          files: ./windows-binaries/wallet-plugin_windows-amd64.exe
           SM_API_KEY: ${{ secrets.SM_API_KEY }}
           SM_CLIENT_CERT_FILE_B64: ${{ secrets.SM_CLIENT_CERT_FILE_B64 }}
           SM_CLIENT_CERT_PASSWORD: ${{ secrets.SM_CLIENT_CERT_PASSWORD }}
@@ -151,19 +174,24 @@ jobs:
 
       - name: Create packages
         run: |
+          cp wallet.svg binaries/
+          cp manifest.json binaries/
           cd binaries
           for file in wallet-plugin_*; do
             if [[ $file == *.exe ]]; then
-              zip "${file%.exe}.zip" "$file" ../wallet.svg ../manifest.json
+              zip "${file%.exe}.zip" "$file" wallet.svg manifest.json
             elif [[ $file == *.app.zip ]]; then
+              mv "$file" wallet-plugin.app.zip
               # For Darwin, create separate zip files for amd64 and arm64
               if [[ $file == *"darwin-amd64"* ]]; then
-                zip "${file%.app.zip}.zip" "$file" ../wallet.svg ../manifest.json
+                zip "${file%.app.zip}.zip" wallet-plugin.app.zip wallet.svg manifest.json
               elif [[ $file == *"darwin-arm64"* ]]; then
-                zip "${file%.app.zip}.zip" "$file" ../wallet.svg ../manifest.json
+                zip "${file%.app.zip}.zip" wallet-plugin.app.zip wallet.svg manifest.json
               fi
+              rm wallet-plugin.app.zip
             else
-              zip "${file}.zip" "$file" ../wallet.svg ../manifest.json
+              chmod +x "$file"
+              zip "${file}.zip" "$file" wallet.svg manifest.json
             fi
           done
 
