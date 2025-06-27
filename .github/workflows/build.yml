@@ -85,7 +85,7 @@ jobs:
           chmod +x build/bin/*/Contents/MacOS/*
 
       - name: Sign binary for MacOS ${{ matrix.arch }}
-        uses: massalabs/massa/.github/actions/sign-macos@b4928f8e21e1667cdb8a251d7f3531b9e268b29d
+        uses: massalabs/massa/.github/actions/sign-macos@ccc3f02e34544f722634a6fb7732cc4bb515e90b
         if: matrix.target == 'darwin'
         with:
           paths: "build/bin/wallet-plugin.app"
@@ -94,7 +94,7 @@ jobs:
           signing-identity: ${{ vars.APPLE_DEVELOPER_ID_APPLICATION }}
 
       - name: Notarize for MacOS ${{ matrix.arch }}
-        uses: massalabs/massa/.github/actions/notarize-macos@b4928f8e21e1667cdb8a251d7f3531b9e268b29d
+        uses: massalabs/massa/.github/actions/notarize-macos@ccc3f02e34544f722634a6fb7732cc4bb515e90b
         if: matrix.target == 'darwin'
         with:
           paths: "build/bin/wallet-plugin.app"
