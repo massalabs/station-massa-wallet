@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
@@ -59,6 +60,11 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		return newErrorResponse(msg, errorGetWallets, http.StatusInternalServerError)
 	}
 
+	// Create a copy of the password bytes before the original buffer be destroyed in acc.Sign
+	passwordBytes := make([]byte, len(output.Password.Bytes()))
+	copy(passwordBytes, output.Password.Bytes())
+	passwordBackup := memguard.NewBufferFromBytes(passwordBytes)
+
 	signature, err := acc.Sign(output.Password, []byte(params.Body.Message))
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("unable to sign message: %s", err.Error()), errorGetWallets, http.StatusInternalServerError)
@@ -72,7 +78,7 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 	cfg := config.Get()
 
 	if cfg.HasEnabledRule(acc.Nickname) {
-		err = cache.CachePrivateKeyFromPassword(acc, output.Password)
+		err = cache.CachePrivateKeyFromPassword(acc, passwordBackup)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
 		}
