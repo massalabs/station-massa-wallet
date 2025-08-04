@@ -1,42 +1,10 @@
 import { useCallback } from 'react';
 
-import { Args, bytes, Mas, Provider, strToBytes } from '@massalabs/massa-web3';
+import { Args, Mas, StorageCost } from '@massalabs/massa-web3';
 import { parseAmount, useWriteSmartContract } from '@massalabs/react-ui-kit';
 
 import { useProvider } from '../useProvider';
 import Intl from '@/i18n/i18n';
-
-const BALANCE_KEY_PREFIX = 'BALANCE';
-
-function balanceKey(address: string): Uint8Array {
-  return strToBytes(BALANCE_KEY_PREFIX + address);
-}
-
-async function estimateCoinsCost(
-  provider: Provider,
-  tokenAddress: string,
-  recipient: string,
-): Promise<bigint> {
-  const allKeys = await provider.getStorageKeys(
-    tokenAddress,
-    BALANCE_KEY_PREFIX,
-  );
-  const key = balanceKey(recipient);
-  const foundKey = allKeys.some((k) => {
-    return JSON.stringify(k) === JSON.stringify(key);
-  });
-
-  if (foundKey) {
-    return 0n;
-  }
-
-  const storage =
-    4 + // space of a key/value in the datastore
-    key.length + // key length
-    32; // length of the value of the balance
-
-  return bytes(storage);
-}
 
 export function useFTTransfer() {
   const { provider, isMainnet } = useProvider();
@@ -62,8 +30,12 @@ export function useFTTransfer() {
       }
       const rawAmount = parseAmount(amount, decimals);
       const args = new Args().addString(recipient).addU256(rawAmount);
-      const coins = await estimateCoinsCost(provider, tokenAddress, recipient);
-
+      // eslint-disable-next-line new-cap
+      const coins = await StorageCost.MRC20BalanceCreationCost(
+        provider,
+        tokenAddress,
+        recipient,
+      );
       await callSmartContract(
         'transfer',
         tokenAddress,
