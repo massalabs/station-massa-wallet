@@ -57,6 +57,11 @@ func Load() *ConfigManager {
 			log.Fatalf("Invalid rule IDs found: %v", err)
 		}
 
+		// Delete expired rules
+		if err := configManager.Config.deleteExpiredRules(); err != nil {
+			log.Fatalf("Error deleting expired rules: %v", err)
+		}
+
 		if err := saveConfigUnsafe(configManager.Config); err != nil {
 			log.Fatalf("Error saving config: %v", err)
 		}
@@ -98,7 +103,8 @@ func GetAccountConfig(accountName string) (*AccountCfg, error) {
 
 func defaultConfig() *Config {
 	return &Config{
-		Accounts: map[string]AccountCfg{},
+		DefaultRuleTimeout: 3600 * 24 * 7, // time in seconds: One week
+		Accounts:           map[string]AccountCfg{},
 	}
 }
 

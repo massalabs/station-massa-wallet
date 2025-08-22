@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
@@ -32,6 +33,12 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 	}
 
 	// Add the new rule
+
+	// If the expiration time is not set, set it to the default timeout
+	if rule.ExpireAfter.IsZero() {
+		rule.ExpireAfter = time.Now().Add(time.Duration(c.DefaultRuleTimeout) * time.Second)
+	}
+
 	account.SignRules = append(account.SignRules, rule)
 	c.Accounts[accountName] = account
 
@@ -67,11 +74,15 @@ func (c *Config) DeleteSignRule(accountName, ruleID string) error {
 		return fmt.Errorf("deleting sign rule: %w", err)
 	}
 
+	return c.deleteSignRules(uint(index), accountName, accountConfig)
+}
+
+func (c *Config) deleteSignRules(index uint, accountName string, accountConfig AccountCfg) error {
 	// Remove the rule from the slice
 	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
 	c.Accounts[accountName] = accountConfig
 
-	err = saveConfigUnsafe(c)
+	err := saveConfigUnsafe(c)
 	if err != nil {
 		return fmt.Errorf("error saving configuration: %v", err)
 	}
@@ -98,6 +109,11 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 		return "", fmt.Errorf("updating sign rule: %w", err)
 	}
 
+	// If the expiration time is not set, set it to the default timeout
+	if newRule.ExpireAfter.IsZero() {
+		newRule.ExpireAfter = time.Now().Add(time.Duration(c.DefaultRuleTimeout) * time.Second)
+	}
+
 	// Delete the existing rule
 	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
 	c.Accounts[accountName] = accountConfig
@@ -118,6 +134,10 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 func ValidateRule(rule SignRule) error {
 	if rule.Contract != "*" && !utils.IsValidContract(rule.Contract) {
 		return fmt.Errorf("invalid contract address: %s", rule.Contract)
+	}
+
+	if !rule.ExpireAfter.IsZero() && time.Now().After(rule.ExpireAfter) {
+		return fmt.Errorf("rule's expiration time is in the past: %s", rule.ExpireAfter.Format(time.RFC3339))
 	}
 
 	switch rule.RuleType {
@@ -196,6 +216,18 @@ func (c *Config) validateAllRuleIDs() error {
 
 			if err := ValidateRuleID(accountName, rule); err != nil {
 				return fmt.Errorf("invalid rule ID in account '%s', rule index %d: %v", accountName, i, err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func (c *Config) deleteExpiredRules() error {
+	for accountName, account := range c.Accounts {
+		for id, rule := range account.SignRules {
+			if rule.ExpireAfter.IsZero() || time.Now().After(rule.ExpireAfter) {
+				c.deleteSignRules(uint(id), accountName, account)
 			}
 		}
 	}
