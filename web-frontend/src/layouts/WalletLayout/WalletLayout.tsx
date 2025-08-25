@@ -10,7 +10,6 @@ import {
   FiHome,
   FiList,
   FiArrowUpRight,
-  FiUsers,
   FiDisc,
   FiSettings,
   FiPlus,
@@ -31,7 +30,6 @@ export enum MenuItem {
   Home = 'home',
   TransferCoins = 'transfer-coins',
   Transactions = 'transactions',
-  Contacts = 'contacts',
   Assets = 'assets',
   Settings = 'settings',
   LightTheme = 'light-theme',
@@ -104,13 +102,6 @@ export function WalletLayout(props: IWalletLayoutProps) {
       footer: false,
       onClickItem: () =>
         navigate(routeFor(`${nickname}/${MenuItem.TransferCoins}`)),
-    },
-    {
-      label: Intl.t('menu.contacts'),
-      icon: <FiUsers data-testid="side-menu-contacts-icon" />,
-      active: isActive(MenuItem.Contacts),
-      footer: false,
-      onClickItem: () => navigate(routeFor(`${nickname}/${MenuItem.Contacts}`)),
     },
     {
       label: Intl.t('menu.assets'),

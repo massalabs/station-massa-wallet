@@ -11,13 +11,13 @@ import { maskNickname } from '@massalabs/react-ui-kit/src/lib/massa-react/utils'
 
 import { AccountObject } from '@/models/AccountModel';
 
-interface ContactListProps {
+interface MyAccountsListProps {
   setRecipient: React.Dispatch<string>;
   accounts: AccountObject[];
   onClose: () => void;
 }
 
-function AccountSelect(props: ContactListProps) {
+function MyAccountsList(props: MyAccountsListProps) {
   const { onClose, setRecipient, accounts } = props;
 
   function handleSetRecipient(filteredAccount: AccountObject) {
@@ -60,4 +60,4 @@ function AccountSelect(props: ContactListProps) {
   );
 }
 
-export default AccountSelect;
+export default MyAccountsList;

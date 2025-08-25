@@ -3,7 +3,6 @@
     "home": "Home",
     "transactions": "Transactions",
     "send-receive": "Send/Receive",
-    "contacts": "Contacts",
     "assets": "Assets",
     "settings": "Settings"
   },
@@ -255,8 +254,7 @@
   },
   "placeholder": {
     "teaser-banner": "Our new feature is coming soon",
-    "teaser-transaction-page": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll be able to consult them in a few months!",
-    "teaser-contacts-page": "Managing your contact list for a smoother transaction management."
+    "teaser-transaction-page": "If you're here, it's because you wanted to see your transactions! Don't panic, you'll be able to consult them in a few months!"
   },
   "toast": {
     "explorer": "view in explorer"

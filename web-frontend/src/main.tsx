@@ -18,7 +18,6 @@ import AccountCreate from '@/pages/AccountCreate/AccountCreate.tsx';
 import AccountSelect from '@/pages/AccountSelect/AccountSelect.tsx';
 import Assets from '@/pages/Assets/Assets.tsx';
 import Base from '@/pages/Base/Base.tsx';
-import Contacts from '@/pages/Contacts/Contacts.tsx';
 import StepOne from '@/pages/CreateAccount/StepOne.tsx';
 import StepThree from '@/pages/CreateAccount/StepThree.tsx';
 import StepTwo from '@/pages/CreateAccount/StepTwo.tsx';
@@ -66,7 +65,6 @@ const router = createBrowserRouter(
       <Route path=":nickname/assets" element={<Assets />} />
       <Route path=":nickname/settings" element={<Settings />} />
       <Route path=":nickname/settings/update" element={<SettingsUpdate />} />
-      <Route path=":nickname/contacts" element={<Contacts />} />
 
       {/* routes for errors */}
       <Route path="error" element={<Error />} />
