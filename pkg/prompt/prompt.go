@@ -82,6 +82,8 @@ func WakeUpPrompt(
 			switch req.Action {
 			case walletapp.Delete, walletapp.Unprotect, walletapp.AddSignRule, walletapp.UpdateSignRule, walletapp.DeleteSignRule:
 				output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)
+			case walletapp.ExpiredSignRule:
+				output, keepListening, err = handleExpiredSignRulePrompt(prompterApp, input, *acc)
 			case walletapp.Sign:
 				output, keepListening, err = handleSignPrompt(prompterApp, req, input, acc)
 			case walletapp.NewPassword:

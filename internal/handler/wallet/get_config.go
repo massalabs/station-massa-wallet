@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/config"
@@ -44,6 +45,7 @@ func newConfigModel(cfg *config.Config) (*models.Config, error) {
 				Enabled:          &rule.Enabled,
 				RuleType:         (models.RuleType)(rule.RuleType),
 				AuthorizedOrigin: rule.AuthorizedOrigin,
+				ExpiresAfter:     strfmt.DateTime(rule.ExpireAfter),
 			}
 		}
 

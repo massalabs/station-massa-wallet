@@ -7,6 +7,7 @@ const (
 	errorCanceledAction
 	errorCreateNoNickname
 	errorCreateNoPassword
+	errorNoPassword
 	errorCreateNew
 	errorDeleteNoNickname
 	errorDeleteFile
@@ -37,4 +38,5 @@ const (
 	errorUpdateSignRule
 	errorCachePrivateKey
 	errorGetAccountConfig
+	errorExpiredSignRule
 )

@@ -36,6 +36,12 @@ type SignPromptInput struct {
 	Fees     string
 }
 
+type ExpiredSignRuleInput struct {
+	BaseMessage
+	Password string
+	ToDelete bool
+}
+
 type ImportPKeyPromptInput struct {
 	BaseMessage
 	PrivateKey *memguard.LockedBuffer
@@ -52,4 +58,9 @@ type PasswordPromptOutput struct {
 type SignPromptOutput struct {
 	PasswordPromptOutput
 	Fees uint64
+}
+
+type ExpiredSignRuleOutput struct {
+	PasswordPromptOutput
+	ToDelete bool
 }

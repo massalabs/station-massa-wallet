@@ -34,10 +34,8 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 
 	// Add the new rule
 
-	// If the expiration time is not set, set it to the default timeout
-	if rule.ExpireAfter.IsZero() {
-		rule.ExpireAfter = time.Now().Add(time.Duration(c.DefaultRuleTimeout) * time.Second)
-	}
+	// Set the expiration time of the rule to now + RuleTimeout
+	rule.ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
 
 	account.SignRules = append(account.SignRules, rule)
 	c.Accounts[accountName] = account
@@ -109,10 +107,8 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 		return "", fmt.Errorf("updating sign rule: %w", err)
 	}
 
-	// If the expiration time is not set, set it to the default timeout
-	if newRule.ExpireAfter.IsZero() {
-		newRule.ExpireAfter = time.Now().Add(time.Duration(c.DefaultRuleTimeout) * time.Second)
-	}
+	// Reset the expiration time of the rule to now + RuleTimeout
+	newRule.ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
 
 	// Delete the existing rule
 	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
@@ -134,10 +130,6 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 func ValidateRule(rule SignRule) error {
 	if rule.Contract != "*" && !utils.IsValidContract(rule.Contract) {
 		return fmt.Errorf("invalid contract address: %s", rule.Contract)
-	}
-
-	if !rule.ExpireAfter.IsZero() && time.Now().After(rule.ExpireAfter) {
-		return fmt.Errorf("rule's expiration time is in the past: %s", rule.ExpireAfter.Format(time.RFC3339))
 	}
 
 	switch rule.RuleType {
@@ -205,29 +197,8 @@ func ValidateRuleID(accountName string, rule SignRule) error {
 func (c *Config) validateAllRuleIDs() error {
 	for accountName, account := range c.Accounts {
 		for i, rule := range account.SignRules {
-			// This is a temporary fix to delete rules with empty AuthorizedOrigin
-			if (rule.RuleType == RuleTypeAutoSign) && rule.AuthorizedOrigin == nil {
-				if err := c.DeleteSignRule(accountName, rule.ID); err != nil {
-					return fmt.Errorf("failed to delete rule with empty AuthorizedOrigin: %v", err)
-				}
-
-				continue
-			}
-
 			if err := ValidateRuleID(accountName, rule); err != nil {
 				return fmt.Errorf("invalid rule ID in account '%s', rule index %d: %v", accountName, i, err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func (c *Config) deleteExpiredRules() error {
-	for accountName, account := range c.Accounts {
-		for id, rule := range account.SignRules {
-			if rule.ExpireAfter.IsZero() || time.Now().After(rule.ExpireAfter) {
-				c.deleteSignRules(uint(id), accountName, account)
 			}
 		}
 	}

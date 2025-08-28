@@ -52,8 +52,8 @@ type AccountCfg struct {
 }
 
 type Config struct {
-	DefaultRuleTimeout uint64                `koanf:"defaultRuleTimeout"` // time in seconds
-	Accounts           map[string]AccountCfg `koanf:"accounts"`
+	RuleTimeout uint64                `koanf:"ruleTimeout"` // time in seconds
+	Accounts    map[string]AccountCfg `koanf:"accounts"`
 }
 type ConfigManager struct {
 	mu     sync.RWMutex

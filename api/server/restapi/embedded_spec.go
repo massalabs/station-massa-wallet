@@ -1358,6 +1358,10 @@ func init() {
           "type": "boolean",
           "default": true
         },
+        "expireAfter": {
+          "type": "string",
+          "format": "date-time"
+        },
         "id": {
           "type": "string",
           "x-nullable": true
@@ -2911,6 +2915,10 @@ func init() {
         "enabled": {
           "type": "boolean",
           "default": true
+        },
+        "expireAfter": {
+          "type": "string",
+          "format": "date-time"
         },
         "id": {
           "type": "string",

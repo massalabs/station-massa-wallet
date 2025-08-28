@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
@@ -75,12 +76,24 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if enabledRule != nil {
 		promptData.EnabledSignRule = &enabledRule.RuleType
 
+		// check if the rule is expired. If so, prompt for password to refresh the rule
+		signRuleHasExpired := false
+		if enabledRule.ExpireAfter.Before(time.Now()) {
+			logger.Infof("sign rule %s has expired", enabledRule.ID)
+			refreshed, err := w.handleExpiredSignRule(acc, *enabledRule, cfg)
+			if err != nil {
+				return newErrorResponse(err.Error(), errorExpiredSignRule, http.StatusInternalServerError)
+			}
+
+			signRuleHasExpired = !refreshed
+		}
+
 		// at this point, we have a rule enabled for the contract, if private key is cached, we don't need to prompt for password
 		privateKey, err = cache.PrivateKeyFromCache(acc)
 		if err != nil {
 			logger.Warn("error retriving private key from cache: ", err)
-		} else if privateKey != nil {
-			// If privatekey is cached, we don't need to prompt for password
+		} else if privateKey != nil && !signRuleHasExpired {
+			// if the sign rule has not expired, we don't need to prompt for password
 			promptRequest.DisablePassword = true
 
 			// If the rule is AutoSign, we don't need to open wails prompt
@@ -90,6 +103,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 	}
 
+	// if no auto-sign rule is enabled for this contract, we display the prompt
 	if !skipPrompt {
 		promptRequest.Data = promptData
 
@@ -105,12 +119,15 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		fees = output.Fees
 
+		// if no sign rule enabled for this contract or if the private key is not found in cache, we prompt for password
 		if privateKey == nil {
 			if output.Password != nil {
 				privateKey, err = acc.PrivateKeyBytesInClear(output.Password)
 				if err != nil {
 					return newErrorResponse(err.Error(), errorWrongPassword, http.StatusInternalServerError)
 				}
+			} else {
+				return newErrorResponse("No password provided from prompt", errorNoPassword, http.StatusInternalServerError)
 			}
 		}
 
@@ -148,6 +165,74 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, operation [
 			Signature: signature,
 			Operation: operation,
 		})
+}
+
+/* handleExpiredSignRule prompts the user to refresh or delete the sign rule.
+ * If the sign rule has been refreshed, attempt to put the private key in cache.
+ * Returns true if the sign rule has been refreshed, false otherwise
+ * If the user choose to delete the sign rule, the sign rule is deleted and false is returned
+ */
+func (w *walletSign) handleExpiredSignRule(acc *account.Account, signRule config.SignRule, cfg *config.Config) (bool, error) {
+	address, err := acc.Address.String()
+	if err != nil {
+		return false, fmt.Errorf("failed to stringify address: %w", err)
+	}
+
+	promptRequest := prompt.PromptRequest{
+		Action: walletapp.ExpiredSignRule,
+		Data: SignRulePromptData{
+			Nickname:      acc.Nickname,
+			WalletAddress: address,
+			Description:   "This sign rule could be used to sign this operation but it has expired. Would you like to refresh this sign rule? If you no longer need it you can delete it.",
+			SignRule:      signRule,
+		},
+	}
+
+	// prompt the user to refresh the sign rule or to delete it
+	output, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, acc)
+	if err != nil {
+		if errors.Is(err, utils.ErrActionCanceled) {
+			return false, nil
+		}
+
+		return false, fmt.Errorf("failed to send refresh sign rule prompt: %w", err)
+	}
+
+	expiredSignRuleOutput, ok := output.(*walletapp.ExpiredSignRuleOutput)
+	if !ok {
+		return false, fmt.Errorf("%s: invalid type: %T", utils.ErrInvalidInputType.Error(), output)
+	}
+
+	// if the user wants to delete the sign rule, we delete it and return false
+	if expiredSignRuleOutput.ToDelete {
+		logger.Infof("deleting sign rule %s", signRule.ID)
+		if err := cfg.DeleteSignRule(acc.Nickname, signRule.ID); err != nil {
+			return false, fmt.Errorf("failed to delete sign rule: %w", err)
+		}
+
+		return false, nil
+	}
+
+	// refresh the sign rule
+	logger.Infof("refreshing sign rule %s", signRule.ID)
+	signRule.ExpireAfter = time.Now().Add(time.Duration(cfg.RuleTimeout) * time.Second)
+	if _, err := cfg.UpdateSignRule(acc.Nickname, signRule.ID, signRule); err != nil {
+		return false, fmt.Errorf("failed to refresh sign rule %s: %w", signRule.ID, err)
+	}
+
+	// if the sign rule has been refreshed, we cache the private key
+	privateKey, err := acc.PrivateKeyBytesInClear(expiredSignRuleOutput.Password)
+	if err != nil {
+		logger.Warnf("[expired sign rule handling] could not cache private key, got error whilegetting private key from password: %s", err)
+		return true, nil
+	}
+
+	err = cache.CachePrivateKey(acc, privateKey)
+	if err != nil {
+		logger.Warnf("[expired sign rule handling] could not cache private key, got error while caching private key: %s", err)
+	}
+
+	return true, nil
 }
 
 // prepareOperation prepares the operation to be signed.
