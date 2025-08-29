@@ -10,7 +10,7 @@ import {
 } from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
 import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
-import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
+import { EventsOnce, WindowSetSize, LogDebug } from '@wailsjs/runtime/runtime';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -46,6 +46,9 @@ export function SignRule() {
   const req: promptRequest = state.req;
   const data: ruleRequestData = req.Data;
 
+  LogDebug(`SignRule: ${JSON.stringify(req)}`);
+  LogDebug(`SignRule data: ${JSON.stringify(data)}`);
+
   let action = '';
   let showWarning = false;
   let winHeight = 0;
@@ -71,7 +74,7 @@ export function SignRule() {
       break;
     case expiredSignRule:
       action = signRuleActionStr.expiredSignRule;
-      winHeight = 570;
+      winHeight = 630;
       break;
     default:
       setErrorMessage(Intl.t(`errors.unknownRuleRequest`));
@@ -119,7 +122,7 @@ export function SignRule() {
     
     // Additional validation for expired sign rule
     if (req.Action === expiredSignRule && expiredRuleAction === ExpiredRuleAction.None) {
-      setRefreshDeleteExpiredSignRuleError(Intl.t('signRule.expiredRuleOptions.radioFormNotChecked'));
+      setRefreshDeleteExpiredSignRuleError(Intl.t('signRule.expiredSignRule.radioFormNotChecked'));
       return;
     }
     
@@ -248,9 +251,9 @@ export function SignRule() {
                   className="h-full ml-3 pb-1 cursor-pointer"
                   onClick={() => setExpiredRuleAction(ExpiredRuleAction.Refresh)}
                 >
-                  {Intl.t('signRule.expiredRuleOptions.refreshRule')}
+                  {Intl.t('signRule.expiredSignRule.expiredRuleOptions.refreshRule')}
                 </p>
-              </div>
+              </div>signRule
               <div className="flex items-center">
                 <RadioButton
                   name="expiredRuleAction"
@@ -262,7 +265,7 @@ export function SignRule() {
                   className="h-full ml-3 pb-1 cursor-pointer"
                   onClick={() => setExpiredRuleAction(ExpiredRuleAction.Delete)}
                 >
-                  {Intl.t('signRule.expiredRuleOptions.deleteRule')}
+                  {Intl.t('signRule.expiredSignRule.expiredRuleOptions.deleteRule')}
                 </p>
               </div>
             </div>

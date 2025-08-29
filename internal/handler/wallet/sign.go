@@ -78,9 +78,11 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		// check if the rule is expired. If so, prompt for password to refresh the rule
 		signRuleHasExpired := false
+
 		if enabledRule.ExpireAfter.Before(time.Now()) {
 			logger.Infof("sign rule %s has expired", enabledRule.ID)
 			refreshed, err := w.handleExpiredSignRule(acc, *enabledRule, cfg)
+
 			if err != nil {
 				return newErrorResponse(err.Error(), errorExpiredSignRule, http.StatusInternalServerError)
 			}
@@ -188,6 +190,8 @@ func (w *walletSign) handleExpiredSignRule(acc *account.Account, signRule config
 		},
 	}
 
+	logger.Debugf("promptRequest: %+v", promptRequest)
+
 	// prompt the user to refresh the sign rule or to delete it
 	output, err := prompt.WakeUpPrompt(w.prompterApp, promptRequest, acc)
 	if err != nil {
@@ -206,9 +210,14 @@ func (w *walletSign) handleExpiredSignRule(acc *account.Account, signRule config
 	// if the user wants to delete the sign rule, we delete it and return false
 	if expiredSignRuleOutput.ToDelete {
 		logger.Infof("deleting sign rule %s", signRule.ID)
+
 		if err := cfg.DeleteSignRule(acc.Nickname, signRule.ID); err != nil {
 			return false, fmt.Errorf("failed to delete sign rule: %w", err)
 		}
+
+		w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+			walletapp.EventData{Success: true},
+		)
 
 		return false, nil
 	}
@@ -216,10 +225,14 @@ func (w *walletSign) handleExpiredSignRule(acc *account.Account, signRule config
 	// refresh the sign rule
 	logger.Infof("refreshing sign rule %s", signRule.ID)
 	signRule.ExpireAfter = time.Now().Add(time.Duration(cfg.RuleTimeout) * time.Second)
+
 	if _, err := cfg.UpdateSignRule(acc.Nickname, signRule.ID, signRule); err != nil {
 		return false, fmt.Errorf("failed to refresh sign rule %s: %w", signRule.ID, err)
 	}
 
+	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
+		walletapp.EventData{Success: true},
+	)
 	// if the sign rule has been refreshed, we cache the private key
 	privateKey, err := acc.PrivateKeyBytesInClear(expiredSignRuleOutput.Password)
 	if err != nil {

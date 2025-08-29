@@ -45,7 +45,7 @@ func newConfigModel(cfg *config.Config) (*models.Config, error) {
 				Enabled:          &rule.Enabled,
 				RuleType:         (models.RuleType)(rule.RuleType),
 				AuthorizedOrigin: rule.AuthorizedOrigin,
-				ExpiresAfter:     strfmt.DateTime(rule.ExpireAfter),
+				ExpireAfter:      strfmt.DateTime(rule.ExpireAfter),
 			}
 		}
 

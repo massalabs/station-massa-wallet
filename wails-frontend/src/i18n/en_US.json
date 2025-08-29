@@ -25,6 +25,7 @@
       "title": "Delete sign rule"
     },
     "expiredSignRule": {
+      "title": "Sign rule expired",
       "expiredRuleOptions": {
         "refreshRule": "Refresh rule",
         "deleteRule": "Delete rule"

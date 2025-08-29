@@ -1,4 +1,5 @@
 import { walletapp } from '@wailsjs/go/models';
+import { LogDebug } from '@wailsjs/runtime/runtime';
 import { useLocation } from 'react-router-dom';
 
 import { Delete } from './Delete';
@@ -17,6 +18,8 @@ export default function PasswordPromptHandler() {
 
   const { PromptRequestAction } = walletapp;
 
+  LogDebug(`PasswordPromptHandler: ${JSON.stringify(req)}`);
+
   return (
     <>
       {(() => {
@@ -28,6 +31,7 @@ export default function PasswordPromptHandler() {
           case PromptRequestAction.addSignRule:
           case PromptRequestAction.updateSignRule:
           case PromptRequestAction.deleteSignRule:
+          case PromptRequestAction.expiredSignRule:
             return <SignRule />;
         }
       })()}

@@ -7,6 +7,7 @@ import (
 	walletapp "github.com/massalabs/station-massa-wallet/pkg/app"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 func handleExpiredSignRulePrompt(prompterApp WalletPrompterInterface, input interface{}, acc account.Account) (*walletapp.ExpiredSignRuleOutput, bool, error) {
@@ -14,6 +15,8 @@ func handleExpiredSignRulePrompt(prompterApp WalletPrompterInterface, input inte
 	if !ok {
 		return nil, true, InputTypeError(prompterApp)
 	}
+
+	logger.Debugf("expiredSignRuleObject: %+v", expiredSignRuleObject)
 
 	password := memguard.NewBufferFromBytes([]byte(expiredSignRuleObject.Password))
 

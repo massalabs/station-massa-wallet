@@ -24,8 +24,8 @@ var (
 
 const (
 	fileName           = "wallet_config.json"
-	nanoIDLength       = 10            // Length of NanoID
-	DefaultRuleTimeout = 3600 * 24 * 7 // time in seconds: One week
+	nanoIDLength       = 10                    // Length of NanoID
+	DefaultRuleTimeout = uint64(3600 * 24 * 7) // time in seconds: One week
 )
 
 var configFileDirOverride string
@@ -74,28 +74,38 @@ func Load() *ConfigManager {
 }
 
 // legacyConfigHandling updates legacy config to the new format.
+
 func (c *Config) legacyConfigHandling() error {
 	// if we have a legacy config with no rule timeout, set it to the default.
+
 	if c.RuleTimeout == 0 {
 		c.RuleTimeout = DefaultRuleTimeout
 	}
 
-	for _, account := range c.Accounts {
-		for i, rule := range account.SignRules {
+	for i, account := range c.Accounts {
+		newSignRules := make([]SignRule, 0)
+		for _, rule := range account.SignRules {
 			// If the rule is an legacy AutoSign rule with no authorized origin, delete it.
 			if (rule.RuleType == RuleTypeAutoSign) && rule.AuthorizedOrigin == nil {
-				account.SignRules = append(account.SignRules[:i], account.SignRules[i+1:]...)
 				logger.Infof("Deleted legacy AutoSign rule %s (name: %s) with no authorized origin", rule.ID, rule.Name)
+
 				continue
 			}
 
 			// If it is a legacy rule with no expiration date, add a default expiration date.
 			if rule.ExpireAfter.IsZero() {
-				account.SignRules[i].ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+				rule.ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+
 				logger.Infof("Added default expiration date to legacy rule %s (name: %s)", rule.ID, rule.Name)
 			}
+
+			newSignRules = append(newSignRules, rule)
+
 		}
+		account.SignRules = newSignRules
+		c.Accounts[i] = account
 	}
+
 	return nil
 }
 

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/awnumar/memguard"
 	"github.com/massalabs/station-massa-wallet/api/server/models"
@@ -296,7 +297,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		cacheInstance.Remove(cache.KeyHash([]byte(cacheKey)))
 	})
 
-	t.Run("Auto Sign with enabled rule", func(t *testing.T) {
+	t.Run("Auto Sign with enabled rule but not same contract -> should prompt for password", func(t *testing.T) {
 		// Clean cache
 		testCache.Purge()
 
@@ -692,5 +693,484 @@ func Test_walletSign_Handle(t *testing.T) {
 
 		err = cfg.DeleteSignRule(nickname, ruleIdAutoSign)
 		assert.NoError(t, err)
+	})
+
+	t.Run("auto sign rule expired, user don't refresh (cancel) -> password prompt", func(t *testing.T) {
+		// t.Skip("skipping test")
+
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add AutoSign rule
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test-expired",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// First sign should work with auto sign (password cached)
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign again - rule should be expired
+		testResult2 := make(chan walletapp.EventData)
+		go func(res chan walletapp.EventData) {
+			// Simulate user canceling the refresh prompt
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
+			// Then simulate user entering password
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			res <- (<-resChan)
+		}(testResult2)
+
+		resp = signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		result := <-testResult2
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Clean up
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("sign rule expired, user delete it -> prompt password to sign op and sign rule deleted", func(t *testing.T) {
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add AutoSign rule
+		_, err = cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test-expired-delete",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign - rule should be expired and user chooses to delete
+		testDeleteSignRuleResult := make(chan walletapp.EventData, 1)
+		testOpResult := make(chan walletapp.EventData)
+		go func(resDelete chan walletapp.EventData, resOp chan walletapp.EventData) {
+			// Simulate user choosing to delete the expired rule
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				ToDelete:    true,
+			}
+			resDelete <- (<-resChan)
+			// Then simulate user entering password for signing
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			resOp <- (<-resChan)
+		}(testDeleteSignRuleResult, testOpResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		// result of expire sign rule prompt (delete)
+		result := <-testDeleteSignRuleResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// result of sign op prompt
+		result = <-testOpResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Verify the rule was deleted
+		assert.False(t, cfg.HasEnabledRule(nickname))
+	})
+
+	t.Run("sign rule expired, user refresh it -> no prompt to sign op", func(t *testing.T) {
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add AutoSign rule
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test-expired-refresh",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign - rule should be expired and user chooses to refresh
+		testResult := make(chan walletapp.EventData)
+		go func(res chan walletapp.EventData) {
+			// Simulate user choosing to refresh the expired rule
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				ToDelete:    false,
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Verify the rule still exists and is enabled
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Clean up
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("sign rule expired, no private key in cache, user refresh sign rule -> no prompt to sign op", func(t *testing.T) {
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add AutoSign rule
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:             "test-expired-refresh-no-cache",
+			Contract:         contract,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &authorizedOrigin,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign - rule should be expired and user chooses to refresh
+		testResult := make(chan walletapp.EventData)
+		go func(res chan walletapp.EventData) {
+			// Simulate user choosing to refresh the expired rule (no private key in cache)
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				ToDelete:    false,
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Verify the rule still exists and is enabled
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Clean up
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("no pwd prompt sign rule expired, user don't refresh (cancel) -> password prompt to sign op", func(t *testing.T) {
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add DisablePasswordPrompt rule
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test-no-pwd-expired-cancel",
+			Contract: contract,
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign - rule should be expired and user cancels refresh
+		testResult := make(chan walletapp.EventData)
+		go func(res chan walletapp.EventData) {
+			// Simulate user canceling the refresh prompt
+			prompterAppMock.App().CtrlChan <- walletapp.Cancel
+			// Then simulate user entering password for signing
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			res <- (<-resChan)
+		}(testResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		result := <-testResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Clean up
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+	})
+
+	t.Run("no pwd prompt sign rule expired, user delete it -> password prompt to sign op and sign rule deleted", func(t *testing.T) {
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add DisablePasswordPrompt rule
+		_, err = cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test-no-pwd-expired-delete",
+			Contract: contract,
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign - rule should be expired and user chooses to delete
+		testDeleteSignRuleResult := make(chan walletapp.EventData, 1)
+		testOpResult := make(chan walletapp.EventData)
+		go func(resDelete chan walletapp.EventData, resOp chan walletapp.EventData) {
+			// Simulate user choosing to delete the expired rule
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				ToDelete:    true,
+			}
+			resDelete <- (<-resChan)
+			// Then simulate user entering password for signing
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			resOp <- (<-resChan)
+		}(testDeleteSignRuleResult, testOpResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		// result of expire sign rule prompt (delete)
+		result := <-testDeleteSignRuleResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// result of sign op prompt
+		result = <-testOpResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Verify the rule was deleted
+		assert.False(t, cfg.HasEnabledRule(nickname))
+	})
+
+	t.Run("no pwd prompt sign rule expired, user refresh it -> prompt without password", func(t *testing.T) {
+		testCache.Purge()
+
+		// Set a very short rule timeout for testing (1 second)
+		cfg := config.Get()
+		originalTimeout := cfg.RuleTimeout
+		cfg.RuleTimeout = 1
+
+		// Restore original timeout after test
+		defer func() {
+			cfg.RuleTimeout = originalTimeout
+		}()
+
+		authorizedOrigin := "http://massa.network"
+
+		// Add DisablePasswordPrompt rule
+		ruleId, err := cfg.AddSignRule(nickname, config.SignRule{
+			Name:     "test-no-pwd-expired-refresh",
+			Contract: contract,
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		})
+		assert.NoError(t, err)
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Cache the private key to simulate it being already cached
+		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
+		defer passwordBuffer.Destroy()
+		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
+		assert.NoError(t, err)
+
+		headers := map[string]string{
+			originHeader: authorizedOrigin,
+		}
+
+		// Wait for the rule to expire (1 second + buffer)
+		time.Sleep(2 * time.Second)
+
+		// Now try to sign - rule should be expired and user chooses to delete
+		testRefreshSignRuleResult := make(chan walletapp.EventData, 1)
+		testOpResult := make(chan walletapp.EventData)
+		go func(resRefresh chan walletapp.EventData, resOp chan walletapp.EventData) {
+			// Simulate user choosing to delete the expired rule
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				ToDelete:    false,
+			}
+			resRefresh <- (<-resChan)
+			// Then simulate user entering password for signing
+			prompterAppMock.App().PromptInput <- &walletapp.SignPromptInput{
+				BaseMessage: walletapp.BaseMessage{},
+				Password:    password,
+				Fees:        "14400",
+			}
+			resOp <- (<-resChan)
+		}(testRefreshSignRuleResult, testOpResult)
+
+		resp := signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		// result of expire sign rule prompt (refresh)
+		result := <-testRefreshSignRuleResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// result of sign op prompt
+		result = <-testOpResult
+		checkResultChannel(t, result, true, "")
+		verifySignResponse(t, resp)
+
+		// Verify the rule still exists and is enabled
+		assert.True(t, cfg.HasEnabledRule(nickname))
+
+		// Clean up
+		err = cfg.DeleteSignRule(nickname, ruleId)
+		assert.NoError(t, err)
+		testCache.Purge()
 	})
 }
