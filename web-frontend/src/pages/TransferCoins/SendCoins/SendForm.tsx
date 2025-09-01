@@ -24,7 +24,7 @@ import { AccountObject } from '@/models/AccountModel';
 import { Asset } from '@/models/AssetModel';
 import Advanced, { PRESET_LOW } from '@/pages/TransferCoins/SendCoins/Advanced';
 import { AssetSelector } from '@/pages/TransferCoins/SendCoins/AssetSelector';
-import ContactList from '@/pages/TransferCoins/SendCoins/ContactList';
+import MyAccountsList from '@/pages/TransferCoins/SendCoins/MyAccountsList';
 import { SendConfirmationData } from '@/pages/TransferCoins/SendCoins/SendConfirmation';
 import { Redirect } from '@/pages/TransferCoins/TransferCoins';
 import {
@@ -71,7 +71,8 @@ export function SendForm(props: SendFormProps) {
 
   const [error, setError] = useState<InputsErrors | null>(null);
   const [advancedModal, setAdvancedModal] = useState<boolean>(false);
-  const [ContactListModal, setContactListModal] = useState<boolean>(false);
+  const [MyAccountsListModal, setMyAccountsListModal] =
+    useState<boolean>(false);
   const [mnsAddressCorrelation, setMnsAddressCorrelation] = useState<boolean>();
   const filteredAccounts = accounts?.filter(
     (account: AccountObject) => account?.nickname !== currentAccount?.nickname,
@@ -339,7 +340,7 @@ export function SendForm(props: SendFormProps) {
               <u
                 data-testid="transfer-between-accounts"
                 className="mas-body2"
-                onClick={() => setContactListModal(true)}
+                onClick={() => setMyAccountsListModal(true)}
               >
                 {Intl.t('send-coins.transfer-between-acc')}
               </u>
@@ -369,11 +370,11 @@ export function SendForm(props: SendFormProps) {
           onClose={() => setAdvancedModal(false)}
         />
       )}
-      {ContactListModal && (
-        <ContactList
+      {MyAccountsListModal && (
+        <MyAccountsList
           setRecipient={setRecipient}
           accounts={filteredAccounts}
-          onClose={() => setContactListModal(false)}
+          onClose={() => setMyAccountsListModal(false)}
         />
       )}
     </div>
