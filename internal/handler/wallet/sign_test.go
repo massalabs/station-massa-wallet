@@ -697,7 +697,6 @@ func Test_walletSign_Handle(t *testing.T) {
 
 	t.Run("auto sign rule expired, user don't refresh (cancel) -> password prompt", func(t *testing.T) {
 		// t.Skip("skipping test")
-
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -801,9 +800,10 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Now try to sign - rule should be expired and user chooses to delete
 		testDeleteSignRuleResult := make(chan walletapp.EventData, 1)
 		testOpResult := make(chan walletapp.EventData)
+
 		go func(resDelete chan walletapp.EventData, resOp chan walletapp.EventData) {
 			// Simulate user choosing to delete the expired rule
-			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRulePromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				ToDelete:    true,
@@ -877,7 +877,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 		go func(res chan walletapp.EventData) {
 			// Simulate user choosing to refresh the expired rule
-			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRulePromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				ToDelete:    false,
@@ -936,7 +936,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		testResult := make(chan walletapp.EventData)
 		go func(res chan walletapp.EventData) {
 			// Simulate user choosing to refresh the expired rule (no private key in cache)
-			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRulePromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				ToDelete:    false,
@@ -1062,9 +1062,10 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Now try to sign - rule should be expired and user chooses to delete
 		testDeleteSignRuleResult := make(chan walletapp.EventData, 1)
 		testOpResult := make(chan walletapp.EventData)
+
 		go func(resDelete chan walletapp.EventData, resOp chan walletapp.EventData) {
 			// Simulate user choosing to delete the expired rule
-			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRulePromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				ToDelete:    true,
@@ -1136,9 +1137,10 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Now try to sign - rule should be expired and user chooses to delete
 		testRefreshSignRuleResult := make(chan walletapp.EventData, 1)
 		testOpResult := make(chan walletapp.EventData)
+
 		go func(resRefresh chan walletapp.EventData, resOp chan walletapp.EventData) {
 			// Simulate user choosing to delete the expired rule
-			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRuleInput{
+			prompterAppMock.App().PromptInput <- &walletapp.ExpiredSignRulePromptInput{
 				BaseMessage: walletapp.BaseMessage{},
 				Password:    password,
 				ToDelete:    false,

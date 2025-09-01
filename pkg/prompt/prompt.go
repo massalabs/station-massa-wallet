@@ -79,8 +79,6 @@ func WakeUpPrompt(
 			var keepListening bool
 			var err error
 
-			logger.Debugf("input: %+v", input)
-
 			switch req.Action {
 			case walletapp.Delete, walletapp.Unprotect, walletapp.AddSignRule, walletapp.UpdateSignRule, walletapp.DeleteSignRule:
 				output, keepListening, err = handlePasswordPrompt(prompterApp, input, acc)

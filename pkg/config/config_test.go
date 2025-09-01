@@ -196,6 +196,7 @@ func TestLegacyConfigHandling(t *testing.T) {
 	if err := logger.InitializeGlobal(filepath.Join(tempdir, "unit-test.log")); err != nil {
 		log.Fatalf("while initializing global logger: %s", err.Error())
 	}
+
 	t.Run("set default rule timeout when zero", func(t *testing.T) {
 		legacyConfig := &Config{
 			RuleTimeout: 0, // Legacy config with no timeout
@@ -259,6 +260,7 @@ func TestLegacyConfigHandling(t *testing.T) {
 		for i, rule := range account.SignRules {
 			ruleNames[i] = rule.Name
 		}
+
 		assert.Contains(t, ruleNames, "Valid AutoSign Rule")
 		assert.Contains(t, ruleNames, "Disable Password Rule")
 		assert.NotContains(t, ruleNames, "Legacy AutoSign Rule")
@@ -302,6 +304,7 @@ func TestLegacyConfigHandling(t *testing.T) {
 
 		// Find the legacy rule
 		var legacyRule *SignRule
+
 		for i := range account.SignRules {
 			if account.SignRules[i].Name == "Legacy Rule No Expiration" {
 				legacyRule = &account.SignRules[i]
@@ -367,12 +370,14 @@ func TestLegacyConfigHandling(t *testing.T) {
 		for i, rule := range account.SignRules {
 			ruleNames[i] = rule.Name
 		}
+
 		assert.Contains(t, ruleNames, "Valid Rule")
 		assert.Contains(t, ruleNames, "Legacy No Expiration")
 		assert.NotContains(t, ruleNames, "Legacy AutoSign No Origin")
 
 		// Verify the legacy rule got an expiration date
 		var legacyRule *SignRule
+
 		for i := range account.SignRules {
 			if account.SignRules[i].Name == "Legacy No Expiration" {
 				legacyRule = &account.SignRules[i]

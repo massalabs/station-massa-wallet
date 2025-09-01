@@ -77,13 +77,13 @@ func Load() *ConfigManager {
 
 func (c *Config) legacyConfigHandling() error {
 	// if we have a legacy config with no rule timeout, set it to the default.
-
 	if c.RuleTimeout == 0 {
 		c.RuleTimeout = DefaultRuleTimeout
 	}
 
 	for i, account := range c.Accounts {
 		newSignRules := make([]SignRule, 0)
+
 		for _, rule := range account.SignRules {
 			// If the rule is an legacy AutoSign rule with no authorized origin, delete it.
 			if (rule.RuleType == RuleTypeAutoSign) && rule.AuthorizedOrigin == nil {

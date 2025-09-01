@@ -1,5 +1,4 @@
 import { walletapp } from '@wailsjs/go/models';
-import { LogDebug } from '@wailsjs/runtime/runtime';
 import { useLocation } from 'react-router-dom';
 
 import { Delete } from './Delete';
@@ -17,8 +16,6 @@ export default function PasswordPromptHandler() {
   const req: promptRequest = state.req;
 
   const { PromptRequestAction } = walletapp;
-
-  LogDebug(`PasswordPromptHandler: ${JSON.stringify(req)}`);
 
   return (
     <>

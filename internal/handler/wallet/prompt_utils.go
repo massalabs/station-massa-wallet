@@ -8,6 +8,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet/account"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 func PromptPassword(prompterApp prompt.WalletPrompterInterface, acc *account.Account, promptRequest *prompt.PromptRequest) (*memguard.LockedBuffer, error) {
@@ -28,9 +29,11 @@ func PromptPassword(prompterApp prompt.WalletPrompterInterface, acc *account.Acc
 }
 
 func PromptForOperation(prompterApp prompt.WalletPrompterInterface, acc *account.Account, promptRequest *prompt.PromptRequest) (*walletapp.SignPromptOutput, error) {
+	logger.Infof("Prompting for operation: %+v", promptRequest)
+
 	promptOutput, err := prompt.WakeUpPrompt(prompterApp, *promptRequest, acc)
 	if err != nil {
-		return nil, fmt.Errorf("prompting password: %w", err)
+		return nil, fmt.Errorf("prompting password: %+w", err)
 	}
 
 	output, ok := promptOutput.(*walletapp.SignPromptOutput)

@@ -31,7 +31,8 @@ import (
 )
 
 const (
-	RollPrice = 100
+	RollPrice        = 100
+	wailsWindowDelay = 5 * time.Second
 )
 
 func NewSign(prompterApp prompt.WalletPrompterInterface) operations.SignHandler {
@@ -69,6 +70,8 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	enabledRule := cfg.GetEnabledRuleForContract(acc.Nickname, contract, origin)
 
+	logger.Infof("enabledRule: %+v", enabledRule)
+
 	var privateKey *memguard.LockedBuffer
 
 	skipPrompt := false
@@ -81,13 +84,18 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		if enabledRule.ExpireAfter.Before(time.Now()) {
 			logger.Infof("sign rule %s has expired", enabledRule.ID)
-			refreshed, err := w.handleExpiredSignRule(acc, *enabledRule, cfg)
 
+			refreshed, err := w.handleExpiredSignRule(acc, *enabledRule, cfg)
 			if err != nil {
 				return newErrorResponse(err.Error(), errorExpiredSignRule, http.StatusInternalServerError)
 			}
 
 			signRuleHasExpired = !refreshed
+
+			// wait for wails window to be closed before prompting for password
+			if !walletapp.IsTestMode() {
+				time.Sleep(wailsWindowDelay)
+			}
 		}
 
 		// at this point, we have a rule enabled for the contract, if private key is cached, we don't need to prompt for password
@@ -202,7 +210,7 @@ func (w *walletSign) handleExpiredSignRule(acc *account.Account, signRule config
 		return false, fmt.Errorf("failed to send refresh sign rule prompt: %w", err)
 	}
 
-	expiredSignRuleOutput, ok := output.(*walletapp.ExpiredSignRuleOutput)
+	expiredSignRuleOutput, ok := output.(*walletapp.ExpiredSignRulePromptOutput)
 	if !ok {
 		return false, fmt.Errorf("%s: invalid type: %T", utils.ErrInvalidInputType.Error(), output)
 	}
@@ -332,6 +340,7 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.ChainID = *params.Body.ChainID
 	data.Assets = convertAssetsToModel(assets.Store.All(acc.Nickname, int(data.ChainID)))
 
+	logger.Infof("Getting prompt request data: %+v", data)
 	promptRequest := prompt.PromptRequest{
 		Action:          walletapp.Sign,
 		Data:            data,

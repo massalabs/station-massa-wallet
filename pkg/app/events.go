@@ -36,7 +36,7 @@ type SignPromptInput struct {
 	Fees     string
 }
 
-type ExpiredSignRuleInput struct {
+type ExpiredSignRulePromptInput struct {
 	BaseMessage
 	Password string
 	ToDelete bool
@@ -60,7 +60,7 @@ type SignPromptOutput struct {
 	Fees uint64
 }
 
-type ExpiredSignRuleOutput struct {
+type ExpiredSignRulePromptOutput struct {
 	PasswordPromptOutput
 	ToDelete bool
 }
