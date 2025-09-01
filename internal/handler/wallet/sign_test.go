@@ -696,7 +696,6 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("auto sign rule expired, user don't refresh (cancel) -> password prompt", func(t *testing.T) {
-		// t.Skip("skipping test")
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
