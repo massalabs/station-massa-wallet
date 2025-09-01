@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strconv"
 	"testing"
 	"time"
@@ -696,6 +697,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("auto sign rule expired, user don't refresh (cancel) -> password prompt", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -764,6 +770,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("sign rule expired, user delete it -> prompt password to sign op and sign rule deleted", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -834,6 +845,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("sign rule expired, user refresh it -> no prompt to sign op", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -899,6 +915,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("sign rule expired, no private key in cache, user refresh sign rule -> no prompt to sign op", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -958,6 +979,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("no pwd prompt sign rule expired, user don't refresh (cancel) -> password prompt to sign op", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -1021,6 +1047,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("no pwd prompt sign rule expired, user delete it -> password prompt to sign op and sign rule deleted", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)
@@ -1096,6 +1127,11 @@ func Test_walletSign_Handle(t *testing.T) {
 	})
 
 	t.Run("no pwd prompt sign rule expired, user refresh it -> prompt without password", func(t *testing.T) {
+		// When running with `go test -race`, the test take too much time so we skip it
+		if os.Getenv("TEST_RACE_MODE") == "1" {
+			t.Skip("skipping test")
+		}
+
 		testCache.Purge()
 
 		// Set a very short rule timeout for testing (1 second)

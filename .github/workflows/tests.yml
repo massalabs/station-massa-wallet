@@ -19,7 +19,11 @@ jobs:
           mkdir internal/handler/html/dist && touch internal/handler/html/dist/yolo
           mkdir wails-frontend/dist && touch wails-frontend/dist/yolo
       - name: Run coverage tests
-        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+        run: |
+          # Run tests with race detection and coverage reporting. Exclude tests that are to long to run with race detection.
+          TEST_RACE_MODE=1 go test -race -coverprofile=coverage.out -covermode=atomic ./...
+          # Run remaining tests without race detection 
+          TEST_MODE=1 go test -timeout 20s -run Test_walletSign_Handle  ./internal/handler/wallet
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
 

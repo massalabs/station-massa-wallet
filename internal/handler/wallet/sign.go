@@ -70,8 +70,6 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	enabledRule := cfg.GetEnabledRuleForContract(acc.Nickname, contract, origin)
 
-	logger.Infof("enabledRule: %+v", enabledRule)
-
 	var privateKey *memguard.LockedBuffer
 
 	skipPrompt := false
@@ -340,7 +338,6 @@ func (w *walletSign) getPromptRequest(params operations.SignParams, acc *account
 	data.ChainID = *params.Body.ChainID
 	data.Assets = convertAssetsToModel(assets.Store.All(acc.Nickname, int(data.ChainID)))
 
-	logger.Infof("Getting prompt request data: %+v", data)
 	promptRequest := prompt.PromptRequest{
 		Action:          walletapp.Sign,
 		Data:            data,

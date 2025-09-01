@@ -49,7 +49,7 @@ func NewWalletApp(wallet *wallet.Wallet) *WalletApp {
 }
 
 func IsTestMode() bool {
-	return os.Getenv("WALLET_PASSWORD") != ""
+	return os.Getenv("WALLET_PASSWORD") != "" || os.Getenv("TEST_MODE") == "1"
 }
 
 // Startup is called when the app starts. The context is saved
