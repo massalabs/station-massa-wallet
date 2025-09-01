@@ -10,13 +10,14 @@ import {
   toast,
   Tooltip,
 } from '@massalabs/react-ui-kit';
-import { Config, RuleType, SignRule } from '@massalabs/wallet-provider';
+import { RuleType } from '@massalabs/wallet-provider';
 import { FcExpired } from 'react-icons/fc';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 import { SignRuleModal } from './SignRuleAddEditModal';
 import { useProvider } from '@/custom/useProvider';
 import Intl from '@/i18n/i18n';
+import { SignRule, Config } from '@/models/ConfigModel';
 
 interface SettingsSignRulesProps {
   nickname: string;
@@ -38,7 +39,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
   const fetchConfig = async () => {
     try {
       const walletConfig = await wallet?.getConfig();
-      setConfig(walletConfig);
+      setConfig(walletConfig as Config);
     } catch (error) {
       console.error('Error fetching config:', error);
       toast.error('Error fetching config');

@@ -9,6 +9,8 @@ export interface SignRule {
   name?: string;
   contract: string;
   enabled: boolean;
+  authorizedOrigin?: string;
+  expireAfter?: string;
 }
 
 export interface AccountConfig {
