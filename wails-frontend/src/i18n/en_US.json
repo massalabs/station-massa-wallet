@@ -24,14 +24,7 @@
     "deleteRule": {
       "title": "Delete sign rule"
     },
-    "expiredSignRule": {
-      "title": "Sign rule expired",
-      "expiredRuleOptions": {
-        "refreshRule": "Refresh rule",
-        "deleteRule": "Delete rule"
-      },
-      "radioFormNotChecked": "Please select an action"
-    },
+    "expiredSignRule":"{signRuleType} sign rule should be used but has expired. Validating this operation will refresh the sign rule. You can delete the rule in the wallet config section",
     "behavior": {
       "DISABLE_PASSWORD_PROMPT": "You are allowing the wallet to remember your password and enable one click sign for the selected contract",
       "AUTO_SIGN": "You are allowing the wallet to sign transactions without asking for confirmation for the selected contract"

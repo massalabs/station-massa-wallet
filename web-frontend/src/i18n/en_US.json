@@ -113,7 +113,7 @@
       "disable-password-prompt-short": "No Password",
       "auto-sign-tooltip": "This will automatically sign operations coming from the linked contract address, without asking for your password nor your confirmation.",
       "disable-password-prompt-tooltip": "This will disable the password prompt for operations coming from the linked contract address, but will still require your confirmation.",
-      "expired-tooltip": "The rule has expired. To refresh it click on update button and update the rule without changing anything.",
+      "expired-tooltip": "The rule has expired. It will be refreshed next time you validate an operation involving this rule.",
       "errors": {
         "add": "An error occurred while adding the sign rule",
         "already-exist": "A similar rule already exists for account",

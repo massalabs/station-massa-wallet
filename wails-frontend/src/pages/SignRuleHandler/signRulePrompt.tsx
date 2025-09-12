@@ -4,14 +4,12 @@ import {
   Button,
   Clipboard,
   Password,
-  RadioButton,
   Tooltip,
   maskAddress,
 } from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
 import {
   SendPromptInput,
-  SendExpiredSignRulePromptInput,
 } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiAlertTriangle } from 'react-icons/fi';
@@ -31,22 +29,10 @@ import {
   parseForm,
 } from '@/utils';
 
-enum ExpiredRuleAction {
-  Refresh = 'refresh',
-  Delete = 'delete',
-  None = 'none',
-}
 
 export function SignRule() {
   const [error, setError] = useState<IErrorObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [
-    refreshDeleteExpiredSignRuleError,
-    setRefreshDeleteExpiredSignRuleError,
-  ] = useState<string>('');
-  const [expiredRuleAction, setExpiredRuleAction] = useState<ExpiredRuleAction>(
-    ExpiredRuleAction.None,
-  );
 
   const navigate = useNavigate();
   const form = useRef(null);
@@ -57,7 +43,7 @@ export function SignRule() {
   let action = '';
   let showWarning = false;
   let winHeight = 0;
-  const { addSignRule, updateSignRule, deleteSignRule, expiredSignRule } =
+  const { addSignRule, updateSignRule, deleteSignRule } =
     walletapp.PromptRequestAction;
 
   const { EventType } = walletapp;
@@ -76,10 +62,6 @@ export function SignRule() {
     case deleteSignRule:
       action = signRuleActionStr.deleteSignRule;
       winHeight = 510;
-      break;
-    case expiredSignRule:
-      action = signRuleActionStr.expiredSignRule;
-      winHeight = 630;
       break;
     default:
       setErrorMessage(Intl.t(`errors.unknownRuleRequest`));
@@ -118,30 +100,12 @@ export function SignRule() {
 
     EventsOnce(EventType.promptResult, handleResult);
 
-    if (req.Action === expiredSignRule) {
-      SendExpiredSignRulePromptInput(
-        password,
-        expiredRuleAction === ExpiredRuleAction.Delete,
-      );
-      return;
-    }
     SendPromptInput(password);
   }
 
   async function handleSubmitPassword(e: SyntheticEvent) {
     e.preventDefault();
     if (!validate(e, setError)) return;
-
-    // Additional validation for expired sign rule
-    if (
-      req.Action === expiredSignRule &&
-      expiredRuleAction === ExpiredRuleAction.None
-    ) {
-      setRefreshDeleteExpiredSignRuleError(
-        Intl.t('signRule.expiredSignRule.radioFormNotChecked'),
-      );
-      return;
-    }
 
     submitPassword(e);
   }
@@ -254,55 +218,6 @@ export function SignRule() {
           </div>
         </div>
 
-        {req.Action === expiredSignRule && (
-          <div className="mb-4">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center">
-                <RadioButton
-                  name="expiredRuleAction"
-                  value={ExpiredRuleAction.Refresh}
-                  checked={expiredRuleAction === 'refresh'}
-                  onChange={() =>
-                    setExpiredRuleAction(ExpiredRuleAction.Refresh)
-                  }
-                />
-                <p
-                  className="h-full ml-3 pb-1 cursor-pointer"
-                  onClick={() =>
-                    setExpiredRuleAction(ExpiredRuleAction.Refresh)
-                  }
-                >
-                  {Intl.t(
-                    'signRule.expiredSignRule.expiredRuleOptions.refreshRule',
-                  )}
-                </p>
-              </div>
-              <div className="flex items-center">
-                <RadioButton
-                  name="expiredRuleAction"
-                  value={ExpiredRuleAction.Delete}
-                  checked={expiredRuleAction === 'delete'}
-                  onChange={() =>
-                    setExpiredRuleAction(ExpiredRuleAction.Delete)
-                  }
-                />
-                <p
-                  className="h-full ml-3 pb-1 cursor-pointer"
-                  onClick={() => setExpiredRuleAction(ExpiredRuleAction.Delete)}
-                >
-                  {Intl.t(
-                    'signRule.expiredSignRule.expiredRuleOptions.deleteRule',
-                  )}
-                </p>
-              </div>
-            </div>
-            {refreshDeleteExpiredSignRuleError && (
-              <p className="mt-2 text-s-error mas-body">
-                {refreshDeleteExpiredSignRuleError}
-              </p>
-            )}
-          </div>
-        )}
 
         <div className="mb-4">
           <Password

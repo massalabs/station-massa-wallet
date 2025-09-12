@@ -38,5 +38,4 @@ const (
 	errorUpdateSignRule
 	errorCachePrivateKey
 	errorGetAccountConfig
-	errorExpiredSignRule
 )

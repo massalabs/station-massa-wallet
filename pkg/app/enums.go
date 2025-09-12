@@ -22,17 +22,16 @@ var EventTypes = []struct {
 type PromptRequestAction string
 
 const (
-	Delete          PromptRequestAction = "DELETE_ACCOUNT"
-	NewPassword     PromptRequestAction = "CREATE_PASSWORD"
-	Sign            PromptRequestAction = "SIGN"
-	Import          PromptRequestAction = "IMPORT_ACCOUNT"
-	Backup          PromptRequestAction = "BACKUP_ACCOUNT"
-	TradeRolls      PromptRequestAction = "TRADE_ROLLS"
-	Unprotect       PromptRequestAction = "UNPROTECT"
-	AddSignRule     PromptRequestAction = "ADD_SIGN_RULE"
-	DeleteSignRule  PromptRequestAction = "DELETE_SIGN_RULE"
-	UpdateSignRule  PromptRequestAction = "UPDATE_SIGN_RULE"
-	ExpiredSignRule PromptRequestAction = "EXPIRED_SIGN_RULE" // Refresh the sign rule when expired
+	Delete         PromptRequestAction = "DELETE_ACCOUNT"
+	NewPassword    PromptRequestAction = "CREATE_PASSWORD"
+	Sign           PromptRequestAction = "SIGN"
+	Import         PromptRequestAction = "IMPORT_ACCOUNT"
+	Backup         PromptRequestAction = "BACKUP_ACCOUNT"
+	TradeRolls     PromptRequestAction = "TRADE_ROLLS"
+	Unprotect      PromptRequestAction = "UNPROTECT"
+	AddSignRule    PromptRequestAction = "ADD_SIGN_RULE"
+	DeleteSignRule PromptRequestAction = "DELETE_SIGN_RULE"
+	UpdateSignRule PromptRequestAction = "UPDATE_SIGN_RULE"
 )
 
 var PromptRequest = []struct {
@@ -49,5 +48,4 @@ var PromptRequest = []struct {
 	{AddSignRule, "addSignRule"},
 	{DeleteSignRule, "deleteSignRule"},
 	{UpdateSignRule, "updateSignRule"},
-	{ExpiredSignRule, "expiredSignRule"},
 }

@@ -5,7 +5,6 @@ export enum signRuleActionStr {
   addSignRule = 'addRule',
   deleteSignRule = 'deleteRule',
   updateSignRule = 'updateRule',
-  expiredSignRule = 'expiredSignRule',
 }
 
 export interface ruleRequestData {

@@ -87,15 +87,6 @@ func (a *WalletApp) SendPromptInput(input string) {
 	a.PromptInput <- &StringPromptInput{BaseMessage: BaseMessage{}, Message: input}
 }
 
-func (a *WalletApp) SendExpiredSignRulePromptInput(password string, toDelete bool) {
-	if !a.IsListening {
-		logger.Warn("Not listening (in SendExpiredSignRulePromptInput)")
-		return
-	}
-
-	a.PromptInput <- &ExpiredSignRulePromptInput{BaseMessage: BaseMessage{}, Password: password, ToDelete: toDelete}
-}
-
 func (a *WalletApp) SendSignPromptInput(password string, fees string) {
 	if !a.IsListening {
 		logger.Warn("Not listening (in SendSignPromptInput)")

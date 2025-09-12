@@ -16,8 +16,6 @@ export function SendPKeyPromptInput(arg1:string,arg2:string,arg3:string):Promise
 
 export function SendPromptInput(arg1:string):Promise<void>;
 
-export function SendExpiredSignRulePromptInput(arg1:string,arg2:boolean):Promise<void>;
-
 export function SendSignPromptInput(arg1:string,arg2:string):Promise<void>;
 
 export function Show():Promise<void>;

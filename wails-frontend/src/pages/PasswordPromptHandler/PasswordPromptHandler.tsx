@@ -28,7 +28,6 @@ export default function PasswordPromptHandler() {
           case PromptRequestAction.addSignRule:
           case PromptRequestAction.updateSignRule:
           case PromptRequestAction.deleteSignRule:
-          case PromptRequestAction.expiredSignRule:
             return <SignRule />;
         }
       })()}

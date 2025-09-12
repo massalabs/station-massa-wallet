@@ -24,7 +24,6 @@ export function App() {
       case PromptRequestAction.addSignRule:
       case PromptRequestAction.deleteSignRule:
       case PromptRequestAction.updateSignRule:
-      case PromptRequestAction.expiredSignRule:
         navigate('/password', { state: { req } });
         return;
       case PromptRequestAction.newPassword:
