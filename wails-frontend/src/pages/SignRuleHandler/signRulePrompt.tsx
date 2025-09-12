@@ -8,9 +8,7 @@ import {
   maskAddress,
 } from '@massalabs/react-ui-kit';
 import { walletapp } from '@wailsjs/go/models';
-import {
-  SendPromptInput,
-} from '@wailsjs/go/walletapp/WalletApp';
+import { SendPromptInput } from '@wailsjs/go/walletapp/WalletApp';
 import { EventsOnce, WindowSetSize } from '@wailsjs/runtime/runtime';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -28,7 +26,6 @@ import {
   handleCancel,
   parseForm,
 } from '@/utils';
-
 
 export function SignRule() {
   const [error, setError] = useState<IErrorObject | null>(null);
@@ -217,7 +214,6 @@ export function SignRule() {
             </span>
           </div>
         </div>
-
 
         <div className="mb-4">
           <Password

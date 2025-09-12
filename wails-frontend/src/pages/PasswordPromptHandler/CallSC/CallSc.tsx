@@ -29,9 +29,11 @@ export function CallSc(props: SignBodyProps) {
         <div className="p-4 flex items-center mb-4">
           <FiAlertTriangle size={42} className="text-s-warning" />
           <div className="ml-2 text-s-warning text-sm">
-            <p>{Intl.t('signRule.expiredSignRule', {
-              signRuleType: EnabledSignRule,
-            })}</p>
+            <p>
+              {Intl.t('signRule.expiredSignRule', {
+                signRuleType: EnabledSignRule,
+              })}
+            </p>
           </div>
         </div>
       )}
