@@ -38,9 +38,7 @@ tasks:
   test:
     cmds:
       - task: clean
-      - cmd: go test -v -timeout 70s ./...
-    env:
-      TEST_MODE: 1
+      - cmd: go test -v -timeout 30s ./...
 
   fmt:
     cmds:

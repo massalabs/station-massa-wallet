@@ -35,7 +35,7 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 	// Add the new rule
 
 	// Set the expiration time of the rule to now + RuleTimeout
-	rule.ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+	rule.ExpireAfter = c.NewRuleExpirationTime()
 
 	account.SignRules = append(account.SignRules, rule)
 	c.Accounts[accountName] = account
@@ -57,6 +57,10 @@ func (c *Config) findRuleIndex(accountConfig AccountCfg, ruleID string) (int, er
 	return -1, fmt.Errorf("rule not found: %s", ruleID)
 }
 
+func (c Config) NewRuleExpirationTime() time.Time {
+	return time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+}
+
 func (c *Config) DeleteSignRule(accountName, ruleID string) error {
 	configManager.mu.Lock()
 	defer configManager.mu.Unlock()
@@ -72,15 +76,11 @@ func (c *Config) DeleteSignRule(accountName, ruleID string) error {
 		return fmt.Errorf("deleting sign rule: %w", err)
 	}
 
-	return c.deleteSignRules(uint(index), accountName, accountConfig)
-}
-
-func (c *Config) deleteSignRules(index uint, accountName string, accountConfig AccountCfg) error {
 	// Remove the rule from the slice
 	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
 	c.Accounts[accountName] = accountConfig
 
-	err := saveConfigUnsafe(c)
+	err = saveConfigUnsafe(c)
 	if err != nil {
 		return fmt.Errorf("error saving configuration: %v", err)
 	}
@@ -108,7 +108,7 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 	}
 
 	// Reset the expiration time of the rule to now + RuleTimeout
-	newRule.ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+	newRule.ExpireAfter = c.NewRuleExpirationTime()
 
 	// Delete the existing rule
 	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)

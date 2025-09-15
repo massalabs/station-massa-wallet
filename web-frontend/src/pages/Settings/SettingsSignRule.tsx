@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   Button,
@@ -36,7 +36,7 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
 
   const { wallet } = useProvider();
 
-  const fetchConfig = async () => {
+  const fetchConfig = useCallback(async () => {
     try {
       const walletConfig = await wallet?.getConfig();
       setConfig(walletConfig as Config);
@@ -46,13 +46,13 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [wallet]);
 
   useEffect(() => {
     if (!isAddEditRuleModalOpen) {
       fetchConfig();
     }
-  }, [wallet, isAddEditRuleModalOpen]);
+  }, [fetchConfig, isAddEditRuleModalOpen]);
 
   const signRules = config?.accounts?.[nickname]?.signRules ?? [];
 

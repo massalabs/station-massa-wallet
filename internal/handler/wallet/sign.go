@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/awnumar/memguard"
 	"github.com/go-openapi/runtime/middleware"
@@ -77,7 +76,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		promptData.EnabledSignRule = &enabledRule.RuleType
 
 		// check if the rule is expired
-		signRuleHasExpired := enabledRule.ExpireAfter.Before(time.Now())
+		signRuleHasExpired := enabledRule.IsExpired()
 
 		if signRuleHasExpired {
 			logger.Infof("sign rule %s has expired", enabledRule.ID)
@@ -123,7 +122,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 					return newErrorResponse(err.Error(), errorWrongPassword, http.StatusInternalServerError)
 				}
 			} else {
-				return newErrorResponse("No password provided from prompt", errorNoPassword, http.StatusInternalServerError)
+				return newErrorResponse("No password provided from prompt", errorNoPassword, http.StatusUnauthorized)
 			}
 		}
 
@@ -149,8 +148,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	// If the user validated the operation and there was an expired sign rule, refresh it
 	if promptData.ExpiredSignRule && enabledRule != nil {
 		logger.Infof("refreshing expired sign rule %s after user validation", enabledRule.ID)
-		enabledRule.ExpireAfter = time.Now().Add(time.Duration(cfg.RuleTimeout) * time.Second)
-
+		// the UpdateSignRule method will internally refresh the expiration time of the rule
 		if _, err := cfg.UpdateSignRule(acc.Nickname, enabledRule.ID, *enabledRule); err != nil {
 			logger.Warnf("failed to refresh expired sign rule %s: %v", enabledRule.ID, err)
 			// Don't fail the operation, just log the warning

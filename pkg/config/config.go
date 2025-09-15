@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
 
 	"github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/providers/file"
@@ -94,7 +93,7 @@ func (c *Config) legacyConfigHandling() error {
 
 			// If it is a legacy rule with no expiration date, add a default expiration date.
 			if rule.ExpireAfter.IsZero() {
-				rule.ExpireAfter = time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+				rule.ExpireAfter = c.NewRuleExpirationTime()
 
 				logger.Infof("Added default expiration date to legacy rule %s (name: %s)", rule.ID, rule.Name)
 			}

@@ -47,6 +47,10 @@ type SignRule struct {
 	AuthorizedOrigin *string   `koanf:"authorizedOrigin"`
 }
 
+func (s SignRule) IsExpired() bool {
+	return s.ExpireAfter.Before(time.Now())
+}
+
 type AccountCfg struct {
 	SignRules []SignRule `koanf:"signRules"`
 }

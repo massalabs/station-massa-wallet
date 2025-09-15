@@ -90,7 +90,7 @@ export function SignRule() {
     const form = parseForm(e);
     const { password } = form;
 
-    if (password === undefined) {
+    if (!password) {
       setErrorMessage(Intl.t('errors.PasswordRequired'));
       return;
     }
