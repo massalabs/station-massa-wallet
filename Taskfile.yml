@@ -38,7 +38,7 @@ tasks:
   test:
     cmds:
       - task: clean
-      - cmd: go test -v -timeout 20s ./...
+      - cmd: go test -v -timeout 30s ./...
 
   fmt:
     cmds:

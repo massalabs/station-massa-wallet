@@ -1,6 +1,9 @@
 package config
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type EventType string
 
@@ -35,12 +38,17 @@ var RuleTypes = []struct {
 }
 
 type SignRule struct {
-	Name             string   `koanf:"name"`
-	ID               string   `koanf:"id"`
-	Contract         string   `koanf:"contract"`
-	RuleType         RuleType `koanf:"ruleType"`
-	Enabled          bool     `koanf:"enabled"`
-	AuthorizedOrigin *string  `koanf:"authorizedOrigin"`
+	Name             string    `koanf:"name"`
+	ID               string    `koanf:"id"`
+	Contract         string    `koanf:"contract"`
+	RuleType         RuleType  `koanf:"ruleType"`
+	Enabled          bool      `koanf:"enabled"`
+	ExpireAfter      time.Time `koanf:"expireAfter"`
+	AuthorizedOrigin *string   `koanf:"authorizedOrigin"`
+}
+
+func (s SignRule) IsExpired() bool {
+	return s.ExpireAfter.Before(time.Now())
 }
 
 type AccountCfg struct {
@@ -48,7 +56,8 @@ type AccountCfg struct {
 }
 
 type Config struct {
-	Accounts map[string]AccountCfg `koanf:"accounts"`
+	RuleTimeout uint64                `koanf:"ruleTimeout"` // time in seconds
+	Accounts    map[string]AccountCfg `koanf:"accounts"`
 }
 type ConfigManager struct {
 	mu     sync.RWMutex

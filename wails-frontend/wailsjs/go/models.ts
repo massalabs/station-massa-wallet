@@ -20,6 +20,7 @@ export namespace walletapp {
 	    addSignRule = "ADD_SIGN_RULE",
 	    deleteSignRule = "DELETE_SIGN_RULE",
 	    updateSignRule = "UPDATE_SIGN_RULE",
+	    expiredSignRule = "EXPIRED_SIGN_RULE",
 	}
 	export enum EventType {
 	    promptResult = "PROMPT_RESULT",

@@ -30,7 +30,7 @@ func PromptPassword(prompterApp prompt.WalletPrompterInterface, acc *account.Acc
 func PromptForOperation(prompterApp prompt.WalletPrompterInterface, acc *account.Account, promptRequest *prompt.PromptRequest) (*walletapp.SignPromptOutput, error) {
 	promptOutput, err := prompt.WakeUpPrompt(prompterApp, *promptRequest, acc)
 	if err != nil {
-		return nil, fmt.Errorf("prompting password: %w", err)
+		return nil, fmt.Errorf("prompting password: %+w", err)
 	}
 
 	output, ok := promptOutput.(*walletapp.SignPromptOutput)

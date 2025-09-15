@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -26,7 +27,6 @@ import (
 	"github.com/massalabs/station/pkg/node/sendoperation/sellrolls"
 	"github.com/massalabs/station/pkg/node/sendoperation/transaction"
 	onchain "github.com/massalabs/station/pkg/onchain"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -75,12 +75,20 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 	if enabledRule != nil {
 		promptData.EnabledSignRule = &enabledRule.RuleType
 
+		// check if the rule is expired
+		signRuleHasExpired := enabledRule.IsExpired()
+
+		if signRuleHasExpired {
+			logger.Infof("sign rule %s has expired", enabledRule.ID)
+			promptData.ExpiredSignRule = true
+		}
+
 		// at this point, we have a rule enabled for the contract, if private key is cached, we don't need to prompt for password
 		privateKey, err = cache.PrivateKeyFromCache(acc)
 		if err != nil {
 			logger.Warn("error retriving private key from cache: ", err)
-		} else if privateKey != nil {
-			// If privatekey is cached, we don't need to prompt for password
+		} else if privateKey != nil && !signRuleHasExpired {
+			// if the sign rule has not expired, we don't need to prompt for password
 			promptRequest.DisablePassword = true
 
 			// If the rule is AutoSign, we don't need to open wails prompt
@@ -90,6 +98,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 		}
 	}
 
+	// if no auto-sign rule is enabled for this contract, we display the prompt
 	if !skipPrompt {
 		promptRequest.Data = promptData
 
@@ -105,12 +114,15 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		fees = output.Fees
 
+		// if no sign rule enabled for this contract or if the private key is not found in cache, we prompt for password
 		if privateKey == nil {
 			if output.Password != nil {
 				privateKey, err = acc.PrivateKeyBytesInClear(output.Password)
 				if err != nil {
 					return newErrorResponse(err.Error(), errorWrongPassword, http.StatusInternalServerError)
 				}
+			} else {
+				return newErrorResponse("No password provided from prompt", errorNoPassword, http.StatusUnauthorized)
 			}
 		}
 
@@ -131,6 +143,16 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 	if !acc.VerifySignature(msgToSign, signature) {
 		return newErrorResponse("Error: signature verification failed", "errorSignVerifySignature", http.StatusInternalServerError)
+	}
+
+	// If the user validated the operation and there was an expired sign rule, refresh it
+	if promptData.ExpiredSignRule && enabledRule != nil {
+		logger.Infof("refreshing expired sign rule %s after user validation", enabledRule.ID)
+		// the UpdateSignRule method will internally refresh the expiration time of the rule
+		if _, err := cfg.UpdateSignRule(acc.Nickname, enabledRule.ID, *enabledRule); err != nil {
+			logger.Warnf("failed to refresh expired sign rule %s: %v", enabledRule.ID, err)
+			// Don't fail the operation, just log the warning
+		}
 	}
 
 	return w.Success(acc, signature, operation)

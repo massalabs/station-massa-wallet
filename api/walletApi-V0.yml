@@ -985,6 +985,9 @@ definitions:
       authorizedOrigin:
         type: string
         x-nullable: true
+      expireAfter:
+        type: string
+        format: date-time
     required:
       - ruleType
 

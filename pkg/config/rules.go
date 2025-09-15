@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
 )
@@ -32,6 +33,10 @@ func (c *Config) AddSignRule(accountName string, rule SignRule) (string, error) 
 	}
 
 	// Add the new rule
+
+	// Set the expiration time of the rule to now + RuleTimeout
+	rule.ExpireAfter = c.NewRuleExpirationTime()
+
 	account.SignRules = append(account.SignRules, rule)
 	c.Accounts[accountName] = account
 
@@ -50,6 +55,10 @@ func (c *Config) findRuleIndex(accountConfig AccountCfg, ruleID string) (int, er
 	}
 
 	return -1, fmt.Errorf("rule not found: %s", ruleID)
+}
+
+func (c Config) NewRuleExpirationTime() time.Time {
+	return time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
 }
 
 func (c *Config) DeleteSignRule(accountName, ruleID string) error {
@@ -97,6 +106,9 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 	if err != nil {
 		return "", fmt.Errorf("updating sign rule: %w", err)
 	}
+
+	// Reset the expiration time of the rule to now + RuleTimeout
+	newRule.ExpireAfter = c.NewRuleExpirationTime()
 
 	// Delete the existing rule
 	accountConfig.SignRules = append(accountConfig.SignRules[:index], accountConfig.SignRules[index+1:]...)
@@ -185,15 +197,6 @@ func ValidateRuleID(accountName string, rule SignRule) error {
 func (c *Config) validateAllRuleIDs() error {
 	for accountName, account := range c.Accounts {
 		for i, rule := range account.SignRules {
-			// This is a temporary fix to delete rules with empty AuthorizedOrigin
-			if (rule.RuleType == RuleTypeAutoSign) && rule.AuthorizedOrigin == nil {
-				if err := c.DeleteSignRule(accountName, rule.ID); err != nil {
-					return fmt.Errorf("failed to delete rule with empty AuthorizedOrigin: %v", err)
-				}
-
-				continue
-			}
-
 			if err := ValidateRuleID(accountName, rule); err != nil {
 				return fmt.Errorf("invalid rule ID in account '%s', rule index %d: %v", accountName, i, err)
 			}

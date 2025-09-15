@@ -35,6 +35,7 @@ type PromptRequestSignData struct {
 	DeployedByteCodeSize uint   // for executeSC of type deploySC
 	DeployedCoins        uint64 // for executeSC of type DeploySC; the number of coins sent to the deployed contract
 	EnabledSignRule      *config.RuleType
+	ExpiredSignRule      bool
 }
 
 // handleSignPrompt returns the password as a LockedBuffer, or an error if the input is not a string.

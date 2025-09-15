@@ -12,6 +12,7 @@ import (
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
 	"github.com/massalabs/station-massa-wallet/pkg/wallet"
+	"github.com/massalabs/station/pkg/logger"
 )
 
 var (
@@ -21,8 +22,9 @@ var (
 )
 
 const (
-	fileName     = "wallet_config.json"
-	nanoIDLength = 10 // Length of NanoID
+	fileName           = "wallet_config.json"
+	nanoIDLength       = 10                    // Length of NanoID
+	DefaultRuleTimeout = uint64(3600 * 24 * 7) // time in seconds: One week
 )
 
 var configFileDirOverride string
@@ -52,6 +54,11 @@ func Load() *ConfigManager {
 
 		configManager.Config = &cfg
 
+		// Handle legacy config
+		if err := configManager.Config.legacyConfigHandling(); err != nil {
+			log.Fatalf("Error handling legacy config: %v", err)
+		}
+
 		// Validate all rule IDs
 		if err := configManager.Config.validateAllRuleIDs(); err != nil {
 			log.Fatalf("Invalid rule IDs found: %v", err)
@@ -63,6 +70,42 @@ func Load() *ConfigManager {
 	})
 
 	return configManager
+}
+
+// legacyConfigHandling updates legacy config to the new format.
+
+func (c *Config) legacyConfigHandling() error {
+	// if we have a legacy config with no rule timeout, set it to the default.
+	if c.RuleTimeout == 0 {
+		c.RuleTimeout = DefaultRuleTimeout
+	}
+
+	for i, account := range c.Accounts {
+		newSignRules := make([]SignRule, 0)
+
+		for _, rule := range account.SignRules {
+			// If the rule is an legacy AutoSign rule with no authorized origin, delete it.
+			if (rule.RuleType == RuleTypeAutoSign) && rule.AuthorizedOrigin == nil {
+				logger.Infof("Deleted legacy AutoSign rule %s (name: %s) with no authorized origin", rule.ID, rule.Name)
+
+				continue
+			}
+
+			// If it is a legacy rule with no expiration date, add a default expiration date.
+			if rule.ExpireAfter.IsZero() {
+				rule.ExpireAfter = c.NewRuleExpirationTime()
+
+				logger.Infof("Added default expiration date to legacy rule %s (name: %s)", rule.ID, rule.Name)
+			}
+
+			newSignRules = append(newSignRules, rule)
+
+		}
+		account.SignRules = newSignRules
+		c.Accounts[i] = account
+	}
+
+	return nil
 }
 
 // Used by unit test
@@ -98,7 +141,8 @@ func GetAccountConfig(accountName string) (*AccountCfg, error) {
 
 func defaultConfig() *Config {
 	return &Config{
-		Accounts: map[string]AccountCfg{},
+		RuleTimeout: DefaultRuleTimeout,
+		Accounts:    map[string]AccountCfg{},
 	}
 }
 

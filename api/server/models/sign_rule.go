@@ -28,6 +28,10 @@ type SignRule struct {
 	// enabled
 	Enabled *bool `json:"enabled,omitempty"`
 
+	// expire after
+	// Format: date-time
+	ExpireAfter strfmt.DateTime `json:"expireAfter,omitempty"`
+
 	// id
 	ID *string `json:"id,omitempty"`
 
@@ -43,6 +47,10 @@ type SignRule struct {
 func (m *SignRule) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateExpireAfter(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateRuleType(formats); err != nil {
 		res = append(res, err)
 	}
@@ -50,6 +58,18 @@ func (m *SignRule) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *SignRule) validateExpireAfter(formats strfmt.Registry) error {
+	if swag.IsZero(m.ExpireAfter) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("expireAfter", "body", "date-time", m.ExpireAfter.String(), formats); err != nil {
+		return err
+	}
+
 	return nil
 }
 

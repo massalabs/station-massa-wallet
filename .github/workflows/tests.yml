@@ -19,7 +19,9 @@ jobs:
           mkdir internal/handler/html/dist && touch internal/handler/html/dist/yolo
           mkdir wails-frontend/dist && touch wails-frontend/dist/yolo
       - name: Run coverage tests
-        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+        run: |
+          # Run tests with race detection and coverage reporting.
+          go test -race -coverprofile=coverage.out -covermode=atomic ./...
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
 

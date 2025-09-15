@@ -7,6 +7,7 @@ const (
 	errorCanceledAction
 	errorCreateNoNickname
 	errorCreateNoPassword
+	errorNoPassword
 	errorCreateNew
 	errorDeleteNoNickname
 	errorDeleteFile

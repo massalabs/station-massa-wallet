@@ -54,7 +54,7 @@ export function SignRule() {
     case updateSignRule:
       action = signRuleActionStr.updateSignRule;
       showWarning = data.SignRule.Enabled;
-      winHeight = 570;
+      winHeight = 670;
       break;
     case deleteSignRule:
       action = signRuleActionStr.deleteSignRule;
@@ -90,6 +90,11 @@ export function SignRule() {
     const form = parseForm(e);
     const { password } = form;
 
+    if (!password) {
+      setErrorMessage(Intl.t('errors.PasswordRequired'));
+      return;
+    }
+
     EventsOnce(EventType.promptResult, handleResult);
 
     SendPromptInput(password);
@@ -98,6 +103,7 @@ export function SignRule() {
   async function handleSubmitPassword(e: SyntheticEvent) {
     e.preventDefault();
     if (!validate(e, setError)) return;
+
     submitPassword(e);
   }
 

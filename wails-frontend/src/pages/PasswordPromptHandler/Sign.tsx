@@ -65,6 +65,7 @@ export interface SignBodyProps {
   DeployedByteCodeSize: number; // for executeSC of type deploySC
   DeployedCoins: string; // for executeSC of type deploySC
   EnabledSignRule: string | null;
+  ExpiredSignRule: boolean;
   children?: React.ReactNode;
 }
 

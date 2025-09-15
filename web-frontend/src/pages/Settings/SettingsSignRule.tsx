@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   Button,
@@ -10,12 +10,14 @@ import {
   toast,
   Tooltip,
 } from '@massalabs/react-ui-kit';
-import { Config, RuleType, SignRule } from '@massalabs/wallet-provider';
+import { RuleType } from '@massalabs/wallet-provider';
+import { FcExpired } from 'react-icons/fc';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 
 import { SignRuleModal } from './SignRuleAddEditModal';
 import { useProvider } from '@/custom/useProvider';
 import Intl from '@/i18n/i18n';
+import { SignRule, Config } from '@/models/ConfigModel';
 
 interface SettingsSignRulesProps {
   nickname: string;
@@ -34,23 +36,23 @@ export default function SettingsSignRules(props: SettingsSignRulesProps) {
 
   const { wallet } = useProvider();
 
-  const fetchConfig = async () => {
+  const fetchConfig = useCallback(async () => {
     try {
       const walletConfig = await wallet?.getConfig();
-      setConfig(walletConfig);
+      setConfig(walletConfig as Config);
     } catch (error) {
       console.error('Error fetching config:', error);
       toast.error('Error fetching config');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [wallet]);
 
   useEffect(() => {
     if (!isAddEditRuleModalOpen) {
       fetchConfig();
     }
-  }, [wallet, isAddEditRuleModalOpen]);
+  }, [fetchConfig, isAddEditRuleModalOpen]);
 
   const signRules = config?.accounts?.[nickname]?.signRules ?? [];
 
@@ -173,6 +175,11 @@ function SignRuleListItem(props: SignRuleListItemProps) {
 
   const isAllContract = rule.contract === '*';
 
+  // Check if the rule has expired
+  const isExpired = rule.expireAfter
+    ? new Date(rule.expireAfter) < new Date()
+    : false;
+
   const handleToggle = async () => {
     try {
       setIsUpdating(true);
@@ -217,20 +224,31 @@ function SignRuleListItem(props: SignRuleListItemProps) {
   return (
     <>
       <td className="max-w-[128px] truncate py-3 px-4">
-        {rule.name && rule.name.length > 0 ? (
-          <Tooltip
-            body={rule.name}
-            placement="right"
-            triggerClassName="truncate w-full"
-            tooltipClassName="mas-caption"
-          >
-            {rule.name}
-          </Tooltip>
-        ) : (
-          <div className="flex justify-center">
-            <span className="text-f-primary">-</span>
-          </div>
-        )}
+        <div className="flex items-center gap-1 truncate">
+          {isExpired && (
+            <Tooltip
+              body={Intl.t('settings.sign-rules.expired-tooltip')}
+              placement="top"
+              tooltipClassName="mas-caption max-w-96"
+            >
+              <FcExpired className="mr-1" />
+            </Tooltip>
+          )}
+          {rule.name && rule.name.length > 0 ? (
+            <Tooltip
+              body={rule.name}
+              placement="right"
+              triggerClassName="truncate w-full"
+              tooltipClassName="mas-caption"
+            >
+              {rule.name}
+            </Tooltip>
+          ) : (
+            <div className="flex justify-center">
+              <span className="text-f-primary">-</span>
+            </div>
+          )}
+        </div>
       </td>
       <td className="max-w-xs truncate whitespace-nowrap py-3 px-4">
         {rule.ruleType === RuleType.AutoSign ? (
