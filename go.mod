@@ -1,6 +1,6 @@
 module github.com/massalabs/station-massa-wallet
 
-go 1.24
+go 1.24.6
 
 require (
 	github.com/bluele/gcache v0.0.2
@@ -10,7 +10,7 @@ require (
 	github.com/knadh/koanf/providers/file v1.1.2
 	github.com/knadh/koanf/v2 v2.1.2
 	github.com/massalabs/station v0.6.6-0.20250122093330-de0ab4bbb76c
-	github.com/massalabs/station-massa-hello-world v0.0.11-0.20240503070604-6b14a27fcdff
+	github.com/massalabs/station/plugin-kit v0.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.3
 	github.com/shopspring/decimal v1.3.1

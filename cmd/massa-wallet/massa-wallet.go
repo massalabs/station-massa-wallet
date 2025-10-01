@@ -3,7 +3,6 @@ package app
 import (
 	"os"
 
-	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi"
 	"github.com/massalabs/station-massa-wallet/internal/handler"
 	walletApp "github.com/massalabs/station-massa-wallet/pkg/app"
@@ -13,6 +12,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/massalabs/station-massa-wallet/pkg/prompt"
 	"github.com/massalabs/station/pkg/logger"
+	pluginKit "github.com/massalabs/station/plugin-kit"
 )
 
 func StartServer(app *walletApp.WalletApp) {
@@ -44,16 +44,16 @@ func StartServer(app *walletApp.WalletApp) {
 
 	if os.Getenv("STANDALONE") == "1" {
 		server.Port = 8080
-	}
+	} else { // if no standalone, register plugin to station
+		listener, err := server.HTTPListener()
+		if err != nil {
+			logger.Fatalf("Failed to create HTTP listener: %v", err)
+		}
 
-	listener, err := server.HTTPListener()
-	if err != nil {
-		logger.Fatalf("Failed to create HTTP listener: %v", err)
-	}
-
-	err = plugin.RegisterPlugin(listener)
-	if err != nil {
-		logger.Fatalf("Failed to register plugin: %v", err)
+		err = pluginKit.RegisterPlugin(listener)
+		if err != nil {
+			logger.Fatalf("Failed to register plugin: %v", err)
+		}
 	}
 
 	if err = server.Serve(); err != nil {
