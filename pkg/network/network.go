@@ -5,12 +5,12 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/massalabs/station-massa-hello-world/pkg/plugin"
 	"github.com/massalabs/station/pkg/logger"
+	pluginKit "github.com/massalabs/station/plugin-kit"
 )
 
 const (
-	massaStationNodeEndpoint = plugin.MassaStationBaseURL + "/massa/node"
+	massaStationNodeEndpoint = pluginKit.MassaStationBaseURL + "/massa/node"
 	defaultNetwork           = "buildnet"
 	defaultNodeUrl           = "https://buildnet.massa.net/api/v2"
 	defaultChainId           = 77658366
