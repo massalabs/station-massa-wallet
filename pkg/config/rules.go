@@ -139,6 +139,7 @@ func ValidateRule(rule SignRule) error {
 		if err != nil {
 			return fmt.Errorf("invalid AuthorizedOrigin URL: %v", err)
 		}
+
 		if parsed.Scheme == "" || parsed.Host == "" || parsed.Path != "" || parsed.RawQuery != "" || parsed.Fragment != "" {
 			return fmt.Errorf("invalid AuthorizedOrigin URL: must contain only scheme, host and optional port")
 		}

@@ -45,11 +45,14 @@ func TestValidateRule(t *testing.T) {
 			err := ValidateRule(c.rule)
 			if c.wantErr {
 				require.Error(t, err)
+
 				if c.errContains != "" {
 					require.Contains(t, err.Error(), c.errContains)
 				}
+
 				return
 			}
+
 			require.NoError(t, err)
 		})
 	}

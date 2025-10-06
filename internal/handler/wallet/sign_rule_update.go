@@ -88,7 +88,6 @@ func (w *updateSignRuleHandler) isUpdatingToAlreadyExistingRule(oldRule *config.
 	if oldRule.Contract != newRule.Contract ||
 		oldRule.RuleType != newRule.RuleType ||
 		!utils.PtrEqual(oldRule.AuthorizedOrigin, newRule.AuthorizedOrigin) {
-
 		return cfg.IsExistingRule(nickname, newRule)
 	}
 

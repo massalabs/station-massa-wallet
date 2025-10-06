@@ -273,7 +273,9 @@ export function SignRuleModal(props: SignRuleModalProps) {
                     justify-center w-4 h-4 rounded-full border border-s-info text-s-info cursor-help"
                     tooltipClassName="mas-caption max-w-96"
                   >
-                    <span className="mas-caption leading-none">🔒</span>
+                    <span className="mas-caption leading-none role='img' aria-label='Locked'">
+                      🔒
+                    </span>
                   </Tooltip>
                 )}
               </div>
