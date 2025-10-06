@@ -23,7 +23,6 @@ var (
 
 const (
 	fileName           = "wallet_config.json"
-	nanoIDLength       = 10                    // Length of NanoID
 	DefaultRuleTimeout = uint64(3600 * 24 * 7) // time in seconds: One week
 )
 

@@ -304,14 +304,20 @@ function SignRuleListItem(props: SignRuleListItemProps) {
         )}
       </td>
       <td className="max-w-[200px] truncate whitespace-nowrap py-3 px-4">
-        <Tooltip
-          body={rule.authorizedOrigin}
-          placement="top"
-          triggerClassName="truncate w-full"
-          tooltipClassName="mas-caption max-w-96"
-        >
-          <span className="truncate">{rule.authorizedOrigin}</span>
-        </Tooltip>
+        {rule.authorizedOrigin ? (
+          <Tooltip
+            body={rule.authorizedOrigin}
+            placement="top"
+            triggerClassName="truncate w-full"
+            tooltipClassName="mas-caption max-w-96"
+          >
+            <span className="truncate">{rule.authorizedOrigin}</span>
+          </Tooltip>
+        ) : (
+          <div className="flex justify-center">
+            <span className="text-f-primary">All domains</span>
+          </div>
+        )}
       </td>
       <td className="text-right py-3 px-4">
         <div className="flex justify-end items-center space-x-2">

@@ -45,10 +45,8 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		AuthorizedOrigin: signRule.AuthorizedOrigin,
 	}
 
-	if signRule.Contract != newRule.Contract || signRule.RuleType != newRule.RuleType {
-		if cfg.IsExistingRule(acc.Nickname, newRule) {
-			return newErrorResponse("A similar rule already exists", errorUpdateSignRule, http.StatusBadRequest)
-		}
+	if w.isUpdatingToAlreadyExistingRule(signRule, newRule, acc.Nickname, cfg) {
+		return newErrorResponse("A similar rule already exists", errorUpdateSignRule, http.StatusBadRequest)
 	}
 
 	if err := config.ValidateRule(newRule); err != nil {
@@ -83,6 +81,18 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 	}
 
 	return w.Success(ruleID)
+}
+
+// check that the new rule is not already existing in the config.
+func (w *updateSignRuleHandler) isUpdatingToAlreadyExistingRule(oldRule *config.SignRule, newRule config.SignRule, nickname string, cfg *config.Config) bool {
+	if oldRule.Contract != newRule.Contract ||
+		oldRule.RuleType != newRule.RuleType ||
+		!utils.PtrEqual(oldRule.AuthorizedOrigin, newRule.AuthorizedOrigin) {
+
+		return cfg.IsExistingRule(nickname, newRule)
+	}
+
+	return false
 }
 
 func (w *updateSignRuleHandler) Success(ruleID string) middleware.Responder {
