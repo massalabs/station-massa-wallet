@@ -84,7 +84,7 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 }
 
 // check that the new rule is not already existing in the config.
-func (w *updateSignRuleHandler) isUpdatingToAlreadyExistingRule(oldRule *config.SignRule, newRule config.SignRule, nickname string, cfg *config.Config) bool {
+func (w *updateSignRuleHandler) preventOverwritingRule(oldRule *config.SignRule, newRule config.SignRule, nickname string, cfg *config.Config) bool {
 	if oldRule.Contract != newRule.Contract ||
 		oldRule.RuleType != newRule.RuleType ||
 		!utils.PtrEqual(oldRule.AuthorizedOrigin, newRule.AuthorizedOrigin) {

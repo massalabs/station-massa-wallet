@@ -510,7 +510,7 @@ func Test_signrule_Handlers(t *testing.T) {
 	})
 }
 
-func Test_isUpdatingToAlreadyExistingRule(t *testing.T) {
+func Test_preventOverwritingRule(t *testing.T) {
 	assert := assert.New(t)
 
 	// Arrange shared context
@@ -564,7 +564,7 @@ func Test_isUpdatingToAlreadyExistingRule(t *testing.T) {
 	t.Run("no change returns false", func(t *testing.T) {
 		oldRule := ruleDPP_A
 		newRule := ruleDPP_A
-		changedToExisting := h.isUpdatingToAlreadyExistingRule(&oldRule, newRule, nickname, cfg)
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
 		assert.False(changedToExisting)
 	})
 
@@ -577,7 +577,7 @@ func Test_isUpdatingToAlreadyExistingRule(t *testing.T) {
 			RuleType: config.RuleTypeDisablePasswordPrompt,
 			Enabled:  true,
 		}
-		changedToExisting := h.isUpdatingToAlreadyExistingRule(&oldRule, newRule, nickname, cfg)
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
 		assert.False(changedToExisting)
 	})
 
@@ -590,7 +590,7 @@ func Test_isUpdatingToAlreadyExistingRule(t *testing.T) {
 			RuleType: config.RuleTypeDisablePasswordPrompt,
 			Enabled:  true,
 		}
-		changedToExisting := h.isUpdatingToAlreadyExistingRule(&oldRule, newRule, nickname, cfg)
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
 		assert.True(changedToExisting)
 	})
 
@@ -612,7 +612,7 @@ func Test_isUpdatingToAlreadyExistingRule(t *testing.T) {
 			Enabled:          true,
 			AuthorizedOrigin: &originEx,
 		}
-		changedToExisting := h.isUpdatingToAlreadyExistingRule(&oldRule, newRule, nickname, cfg)
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
 		assert.True(changedToExisting)
 	})
 
