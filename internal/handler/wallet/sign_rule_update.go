@@ -45,7 +45,7 @@ func (w *updateSignRuleHandler) Handle(params operations.UpdateSignRuleParams) m
 		AuthorizedOrigin: signRule.AuthorizedOrigin,
 	}
 
-	if w.isUpdatingToAlreadyExistingRule(signRule, newRule, acc.Nickname, cfg) {
+	if w.preventOverwritingRule(signRule, newRule, acc.Nickname, cfg) {
 		return newErrorResponse("A similar rule already exists", errorUpdateSignRule, http.StatusBadRequest)
 	}
 
