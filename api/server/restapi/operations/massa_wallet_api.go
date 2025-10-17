@@ -42,81 +42,155 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 		JSONConsumer: runtime.JSONConsumer(),
 
 		BinProducer: runtime.ByteStreamProducer(),
-		CSSProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
+		CSSProducer: runtime.ProducerFunc(func(w io.Writer, data any) error {
+			_ = w
+			_ = data
+
 			return errors.NotImplemented("css producer has not yet been implemented")
 		}),
-		HTMLProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
+		HTMLProducer: runtime.ProducerFunc(func(w io.Writer, data any) error {
+			_ = w
+			_ = data
+
 			return errors.NotImplemented("html producer has not yet been implemented")
 		}),
-		JsProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
+		JsProducer: runtime.ProducerFunc(func(w io.Writer, data any) error {
+			_ = w
+			_ = data
+
 			return errors.NotImplemented("js producer has not yet been implemented")
 		}),
 		JSONProducer: runtime.JSONProducer(),
-		TextWebpProducer: runtime.ProducerFunc(func(w io.Writer, data interface{}) error {
+		TextWebpProducer: runtime.ProducerFunc(func(w io.Writer, data any) error {
+			_ = w
+			_ = data
+
 			return errors.NotImplemented("textWebp producer has not yet been implemented")
 		}),
 
 		AccountListHandler: AccountListHandlerFunc(func(params AccountListParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation AccountList has not yet been implemented")
 		}),
+
 		AddAssetHandler: AddAssetHandlerFunc(func(params AddAssetParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation AddAsset has not yet been implemented")
 		}),
+
 		AddSignRuleHandler: AddSignRuleHandlerFunc(func(params AddSignRuleParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation AddSignRule has not yet been implemented")
 		}),
+
 		BackupAccountHandler: BackupAccountHandlerFunc(func(params BackupAccountParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation BackupAccount has not yet been implemented")
 		}),
+
 		CreateAccountHandler: CreateAccountHandlerFunc(func(params CreateAccountParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation CreateAccount has not yet been implemented")
 		}),
+
 		DeleteAccountHandler: DeleteAccountHandlerFunc(func(params DeleteAccountParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation DeleteAccount has not yet been implemented")
 		}),
+
 		DeleteAssetHandler: DeleteAssetHandlerFunc(func(params DeleteAssetParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation DeleteAsset has not yet been implemented")
 		}),
+
 		DeleteSignRuleHandler: DeleteSignRuleHandlerFunc(func(params DeleteSignRuleParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation DeleteSignRule has not yet been implemented")
 		}),
+
 		ExportAccountFileHandler: ExportAccountFileHandlerFunc(func(params ExportAccountFileParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation ExportAccountFile has not yet been implemented")
 		}),
+
 		GetAccountHandler: GetAccountHandlerFunc(func(params GetAccountParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation GetAccount has not yet been implemented")
 		}),
+
 		GetAllAssetsHandler: GetAllAssetsHandlerFunc(func(params GetAllAssetsParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation GetAllAssets has not yet been implemented")
 		}),
+
 		GetConfigHandler: GetConfigHandlerFunc(func(params GetConfigParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation GetConfig has not yet been implemented")
 		}),
+
 		ImportAccountHandler: ImportAccountHandlerFunc(func(params ImportAccountParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation ImportAccount has not yet been implemented")
 		}),
+
 		SignHandler: SignHandlerFunc(func(params SignParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation Sign has not yet been implemented")
 		}),
+
 		SignMessageHandler: SignMessageHandlerFunc(func(params SignMessageParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation SignMessage has not yet been implemented")
 		}),
+
 		TradeRollsHandler: TradeRollsHandlerFunc(func(params TradeRollsParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation TradeRolls has not yet been implemented")
 		}),
+
 		TransferCoinHandler: TransferCoinHandlerFunc(func(params TransferCoinParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation TransferCoin has not yet been implemented")
 		}),
+
 		UpdateAccountHandler: UpdateAccountHandlerFunc(func(params UpdateAccountParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation UpdateAccount has not yet been implemented")
 		}),
+
 		UpdateSignRuleHandler: UpdateSignRuleHandlerFunc(func(params UpdateSignRuleParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation UpdateSignRule has not yet been implemented")
 		}),
+
 		DefaultPageHandler: DefaultPageHandlerFunc(func(params DefaultPageParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation DefaultPage has not yet been implemented")
 		}),
+
 		WebAppHandler: WebAppHandlerFunc(func(params WebAppParams) middleware.Responder {
+			_ = params
+
 			return middleware.NotImplemented("operation WebApp has not yet been implemented")
 		}),
 	}
@@ -230,7 +304,7 @@ type MassaWalletAPI struct {
 	CommandLineOptionsGroups []swag.CommandLineOptionsGroup
 
 	// User defined logger function.
-	Logger func(string, ...interface{})
+	Logger func(string, ...any)
 }
 
 // UseRedoc for documentation at /docs
@@ -392,12 +466,12 @@ func (o *MassaWalletAPI) Authorizer() runtime.Authorizer {
 }
 
 // ConsumersFor gets the consumers for the specified media types.
+//
 // MIME type parameters are ignored here.
 func (o *MassaWalletAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer {
 	result := make(map[string]runtime.Consumer, len(mediaTypes))
 	for _, mt := range mediaTypes {
-		switch mt {
-		case "application/json":
+		if mt == "application/json" {
 			result["application/json"] = o.JSONConsumer
 		}
 
@@ -405,10 +479,12 @@ func (o *MassaWalletAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Co
 			result[mt] = c
 		}
 	}
+
 	return result
 }
 
 // ProducersFor gets the producers for the specified media types.
+//
 // MIME type parameters are ignored here.
 func (o *MassaWalletAPI) ProducersFor(mediaTypes []string) map[string]runtime.Producer {
 	result := make(map[string]runtime.Producer, len(mediaTypes))
@@ -434,6 +510,7 @@ func (o *MassaWalletAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 			result[mt] = p
 		}
 	}
+
 	return result
 }
 

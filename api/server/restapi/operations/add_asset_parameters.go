@@ -28,7 +28,6 @@ func NewAddAssetParams() AddAssetParams {
 //
 // swagger:parameters AddAsset
 type AddAssetParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -38,6 +37,7 @@ type AddAssetParams struct {
 	  In: query
 	*/
 	AssetAddress string
+
 	/*The nickname of the account to add the asset to.
 	  Required: true
 	  In: path
@@ -53,7 +53,6 @@ func (o *AddAssetParams) BindRequest(r *http.Request, route *middleware.MatchedR
 	var res []error
 
 	o.HTTPRequest = r
-
 	qs := runtime.Values(r.URL.Query())
 
 	qAssetAddress, qhkAssetAddress, _ := qs.GetOK("assetAddress")
@@ -96,7 +95,7 @@ func (o *AddAssetParams) bindAssetAddress(rawData []string, hasKey bool, formats
 	return nil
 }
 
-// validateAssetAddress carries on validations for parameter AssetAddress
+// validateAssetAddress carries out validations for parameter AssetAddress
 func (o *AddAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 
 	if err := validate.Pattern("assetAddress", "query", o.AssetAddress, `^AS[0-9a-zA-Z]+$`); err != nil {

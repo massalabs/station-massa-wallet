@@ -33,7 +33,6 @@ func NewWebAppParams() WebAppParams {
 //
 // swagger:parameters webApp
 type WebAppParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 

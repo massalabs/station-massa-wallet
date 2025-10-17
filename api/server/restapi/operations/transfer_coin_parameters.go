@@ -6,6 +6,7 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	stderrors "errors"
 	"io"
 	"net/http"
 
@@ -30,7 +31,6 @@ func NewTransferCoinParams() TransferCoinParams {
 //
 // swagger:parameters TransferCoin
 type TransferCoinParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -39,6 +39,7 @@ type TransferCoinParams struct {
 	  In: body
 	*/
 	Body *models.TransferRequest
+
 	/*Account's short name.
 	  Required: true
 	  In: path
@@ -56,10 +57,12 @@ func (o *TransferCoinParams) BindRequest(r *http.Request, route *middleware.Matc
 	o.HTTPRequest = r
 
 	if runtime.HasBody(r) {
-		defer r.Body.Close()
+		defer func() {
+			_ = r.Body.Close()
+		}()
 		var body models.TransferRequest
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			if err == io.EOF {
+			if stderrors.Is(err, io.EOF) {
 				res = append(res, errors.Required("body", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("body", "body", "", err))

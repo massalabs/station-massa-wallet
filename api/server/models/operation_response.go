@@ -45,7 +45,7 @@ func (m *OperationResponse) ContextValidate(ctx context.Context, formats strfmt.
 
 func (m *OperationResponse) contextValidateOperationID(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "operationId", "body", string(m.OperationID)); err != nil {
+	if err := validate.ReadOnly(ctx, "operationId", "body", m.OperationID); err != nil {
 		return err
 	}
 

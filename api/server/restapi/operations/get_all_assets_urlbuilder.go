@@ -44,7 +44,7 @@ func (o *GetAllAssetsURL) Build() (*url.URL, error) {
 
 	nickname := o.Nickname
 	if nickname != "" {
-		_path = strings.Replace(_path, "{nickname}", nickname, -1)
+		_path = strings.ReplaceAll(_path, "{nickname}", nickname)
 	} else {
 		return nil, errors.New("nickname is required on GetAllAssetsURL")
 	}

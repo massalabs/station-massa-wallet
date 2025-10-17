@@ -45,14 +45,14 @@ func (o *DeleteSignRuleURL) Build() (*url.URL, error) {
 
 	nickname := o.Nickname
 	if nickname != "" {
-		_path = strings.Replace(_path, "{nickname}", nickname, -1)
+		_path = strings.ReplaceAll(_path, "{nickname}", nickname)
 	} else {
 		return nil, errors.New("nickname is required on DeleteSignRuleURL")
 	}
 
 	ruleID := o.RuleID
 	if ruleID != "" {
-		_path = strings.Replace(_path, "{ruleId}", ruleID, -1)
+		_path = strings.ReplaceAll(_path, "{ruleId}", ruleID)
 	} else {
 		return nil, errors.New("ruleId is required on DeleteSignRuleURL")
 	}

@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	stderrors "errors"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -72,11 +73,15 @@ func (m *UpdateAccountRequest) validateAddress(formats strfmt.Registry) error {
 	}
 
 	if err := m.Address.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("address")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("address")
 		}
+
 		return err
 	}
 
@@ -89,11 +94,15 @@ func (m *UpdateAccountRequest) validateBalance(formats strfmt.Registry) error {
 	}
 
 	if err := m.Balance.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("balance")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("balance")
 		}
+
 		return err
 	}
 
@@ -106,11 +115,15 @@ func (m *UpdateAccountRequest) validateCandidateBalance(formats strfmt.Registry)
 	}
 
 	if err := m.CandidateBalance.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("candidateBalance")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("candidateBalance")
 		}
+
 		return err
 	}
 
@@ -123,11 +136,15 @@ func (m *UpdateAccountRequest) validateKeyPair(formats strfmt.Registry) error {
 	}
 
 	if err := m.KeyPair.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("keyPair")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("keyPair")
 		}
+
 		return err
 	}
 
@@ -136,16 +153,20 @@ func (m *UpdateAccountRequest) validateKeyPair(formats strfmt.Registry) error {
 
 func (m *UpdateAccountRequest) validateNickname(formats strfmt.Registry) error {
 
-	if err := validate.Required("nickname", "body", Nickname(m.Nickname)); err != nil {
+	if err := validate.Required("nickname", "body", m.Nickname); err != nil {
 		return err
 	}
 
 	if err := m.Nickname.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("nickname")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("nickname")
 		}
+
 		return err
 	}
 
@@ -189,11 +210,15 @@ func (m *UpdateAccountRequest) contextValidateAddress(ctx context.Context, forma
 	}
 
 	if err := m.Address.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("address")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("address")
 		}
+
 		return err
 	}
 
@@ -207,11 +232,15 @@ func (m *UpdateAccountRequest) contextValidateBalance(ctx context.Context, forma
 	}
 
 	if err := m.Balance.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("balance")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("balance")
 		}
+
 		return err
 	}
 
@@ -225,11 +254,15 @@ func (m *UpdateAccountRequest) contextValidateCandidateBalance(ctx context.Conte
 	}
 
 	if err := m.CandidateBalance.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("candidateBalance")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("candidateBalance")
 		}
+
 		return err
 	}
 
@@ -243,11 +276,15 @@ func (m *UpdateAccountRequest) contextValidateKeyPair(ctx context.Context, forma
 	}
 
 	if err := m.KeyPair.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("keyPair")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("keyPair")
 		}
+
 		return err
 	}
 
@@ -257,11 +294,15 @@ func (m *UpdateAccountRequest) contextValidateKeyPair(ctx context.Context, forma
 func (m *UpdateAccountRequest) contextValidateNickname(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Nickname.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("nickname")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("nickname")
 		}
+
 		return err
 	}
 

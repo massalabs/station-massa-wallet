@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	stderrors "errors"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -134,16 +135,20 @@ func (m *AddSignRule) validateName(formats strfmt.Registry) error {
 
 func (m *AddSignRule) validateRuleType(formats strfmt.Registry) error {
 
-	if err := validate.Required("ruleType", "body", RuleType(m.RuleType)); err != nil {
+	if err := validate.Required("ruleType", "body", m.RuleType); err != nil {
 		return err
 	}
 
 	if err := m.RuleType.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("ruleType")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("ruleType")
 		}
+
 		return err
 	}
 
@@ -167,11 +172,15 @@ func (m *AddSignRule) ContextValidate(ctx context.Context, formats strfmt.Regist
 func (m *AddSignRule) contextValidateRuleType(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.RuleType.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("ruleType")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("ruleType")
 		}
+
 		return err
 	}
 

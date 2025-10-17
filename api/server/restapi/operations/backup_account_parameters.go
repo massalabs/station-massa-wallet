@@ -26,7 +26,6 @@ func NewBackupAccountParams() BackupAccountParams {
 //
 // swagger:parameters BackupAccount
 type BackupAccountParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
