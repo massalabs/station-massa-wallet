@@ -39,6 +39,9 @@ export function SignRuleModal(props: SignRuleModalProps) {
   const [authorizedOrigin, setAuthorizedOrigin] = useState(
     rule?.authorizedOrigin || '',
   );
+  const [applyToAllDomains, setApplyToAllDomains] = useState(
+    !rule?.authorizedOrigin,
+  );
 
   const isEditMode = !!rule;
 
@@ -52,7 +55,11 @@ export function SignRuleModal(props: SignRuleModalProps) {
         ruleType,
         enabled: rule?.enabled || true,
         authorizedOrigin:
-          ruleType === RuleType.AutoSign ? authorizedOrigin : undefined,
+          ruleType === RuleType.AutoSign
+            ? authorizedOrigin
+            : applyToAllDomains
+            ? undefined
+            : authorizedOrigin,
       };
 
       if (isEditMode) {
@@ -84,6 +91,11 @@ export function SignRuleModal(props: SignRuleModalProps) {
         );
       } else if (error?.message.includes('action canceled by user')) {
         errorMsg = Intl.t('errors.action-canceled');
+      } else if (error?.message.includes('invalid AuthorizedOrigin URL')) {
+        errorMsg = Intl.t(
+          'settings.sign-rules.errors.invalid-authorized-origin',
+          { error: error?.message },
+        );
       }
 
       onError?.(errorMsg);
@@ -92,17 +104,22 @@ export function SignRuleModal(props: SignRuleModalProps) {
     }
   };
 
+  const selectSignRuleType = (type: RuleType) => {
+    setRuleType(type);
+    if (type === RuleType.AutoSign) {
+      if (applyToAllContracts) setApplyToAllContracts(false);
+      if (applyToAllDomains && !isEditMode) setApplyToAllDomains(false);
+    }
+  };
+
   const selectedRuleType = Object.values(RuleType).indexOf(
     ruleType as RuleType,
   );
 
-  const isAllAndAutoSign =
-    applyToAllContracts && ruleType === RuleType.AutoSign;
   const shouldDisableSubmit =
-    isAllAndAutoSign ||
     !name ||
     (!contract && !applyToAllContracts) ||
-    (ruleType === RuleType.AutoSign && !authorizedOrigin);
+    (!authorizedOrigin && !applyToAllDomains);
 
   return (
     <PopupModal
@@ -121,29 +138,65 @@ export function SignRuleModal(props: SignRuleModalProps) {
       </PopupModalHeader>
       <PopupModalContent>
         <div className="mas-body2 pb-10 flex flex-col gap-4">
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            name="name"
-            placeholder={Intl.t('settings.sign-rules.modals.name-placeholder')}
-          />
-          <Input
-            value={applyToAllContracts ? 'All' : contract}
-            onChange={(e) => setContract(e.target.value)}
-            name="contract"
-            placeholder={
-              applyToAllContracts
-                ? 'All'
-                : Intl.t('settings.sign-rules.modals.contract-placeholder')
-            }
-            disabled={applyToAllContracts}
-          />
-          <div className="flex items-center gap-2">
-            <Toggle
-              checked={applyToAllContracts}
-              onChange={(e) => setApplyToAllContracts(e.target.checked)}
+          <div className="flex flex-col gap-1">
+            <p className="mas-caption text-s-info">
+              {Intl.t('settings.sign-rules.modals.name-placeholder')}
+            </p>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              name="name"
+              placeholder={Intl.t(
+                'settings.sign-rules.modals.name-placeholder',
+              )}
+              required
             />
-            {Intl.t('settings.sign-rules.modals.apply-to-all-contracts')}
+          </div>
+          <div className="flex flex-col gap-1">
+            <p className="mas-caption text-s-info">
+              {Intl.t('settings.sign-rules.modals.contract-placeholder')}
+            </p>
+            <Input
+              value={applyToAllContracts ? 'All' : contract}
+              onChange={(e) => setContract(e.target.value)}
+              name="contract"
+              placeholder={
+                applyToAllContracts
+                  ? 'All'
+                  : Intl.t('settings.sign-rules.modals.contract-placeholder')
+              }
+              disabled={applyToAllContracts}
+              required={!applyToAllContracts}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            {ruleType === RuleType.AutoSign ? (
+              <Tooltip
+                body={Intl.t(
+                  'settings.sign-rules.modals.all-contracts-auto-sign',
+                )}
+                placement="top"
+                triggerClassName="truncate"
+                tooltipClassName="mas-caption max-w-96"
+              >
+                <div className="flex items-center gap-2 opacity-50 cursor-not-allowed">
+                  <Toggle
+                    checked={applyToAllContracts}
+                    onChange={(e) => setApplyToAllContracts(e.target.checked)}
+                    disabled
+                  />
+                  {Intl.t('settings.sign-rules.modals.apply-to-all-contracts')}
+                </div>
+              </Tooltip>
+            ) : (
+              <>
+                <Toggle
+                  checked={applyToAllContracts}
+                  onChange={(e) => setApplyToAllContracts(e.target.checked)}
+                />
+                {Intl.t('settings.sign-rules.modals.apply-to-all-contracts')}
+              </>
+            )}
           </div>
           <Dropdown
             select={selectedRuleType}
@@ -172,45 +225,99 @@ export function SignRuleModal(props: SignRuleModalProps) {
                     {Intl.t('settings.sign-rules.disable-password-prompt')}
                   </Tooltip>
                 ),
-              onClick: () => setRuleType(type),
+              onClick: () => selectSignRuleType(type),
             }))}
           />
-          {ruleType === RuleType.AutoSign && (
-            <>
-              <Tooltip
-                body={Intl.t('settings.sign-rules.authorized-origin-tooltip')}
-                placement="top"
-                triggerClassName="truncate w-full"
-                tooltipClassName="mas-caption max-w-96"
-              >
-                <p className="mas-caption text-s-info mb-2">
-                  {Intl.t('settings.sign-rules.modals.authorized-origin-info')}
-                </p>
-              </Tooltip>
-              <Input
-                value={authorizedOrigin}
-                onChange={(e) => setAuthorizedOrigin(e.target.value)}
-                name="authorizedOrigin"
-                placeholder={Intl.t(
-                  'settings.sign-rules.modals.authorized-origin-placeholder',
-                )}
-                required
-                disabled={isEditMode}
-              />
-              {isEditMode && (
+          <>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
                 <p className="mas-caption text-s-info">
                   {Intl.t(
-                    'settings.sign-rules.modals.authorized-origin-disabled-message',
+                    'settings.sign-rules.modals.authorized-origin-placeholder',
                   )}
                 </p>
+                <Tooltip
+                  body={Intl.t(
+                    'settings.sign-rules.modals.authorized-origin-info',
+                  )}
+                  placement="top"
+                  triggerClassName="inline-flex items-center justify-center w-4 h-4
+                  rounded-full border border-s-info text-s-info cursor-help"
+                  tooltipClassName="mas-caption max-w-96"
+                >
+                  <span className="mas-caption leading-none">?</span>
+                </Tooltip>
+              </div>
+              <div className={`relative ${isEditMode ? 'opacity-60' : ''}`}>
+                <Input
+                  value={applyToAllDomains ? 'All domains' : authorizedOrigin}
+                  onChange={(e) => setAuthorizedOrigin(e.target.value)}
+                  name="authorizedOrigin"
+                  placeholder={
+                    applyToAllDomains
+                      ? 'All domains'
+                      : Intl.t(
+                          'settings.sign-rules.modals.authorized-origin-placeholder',
+                        )
+                  }
+                  required={!applyToAllDomains}
+                  disabled={applyToAllDomains || isEditMode}
+                />
+                {isEditMode && (
+                  <Tooltip
+                    body={Intl.t(
+                      'settings.sign-rules.modals.authorized-origin-disabled-message',
+                    )}
+                    placement="top"
+                    triggerClassName="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center 
+                    justify-center w-4 h-4 rounded-full border border-s-info text-s-info cursor-help"
+                    tooltipClassName="mas-caption max-w-96"
+                  >
+                    <span className="mas-caption leading-none role='img' aria-label='Locked'">
+                      🔒
+                    </span>
+                  </Tooltip>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {ruleType === RuleType.AutoSign ? (
+                <Tooltip
+                  body={Intl.t(
+                    'settings.sign-rules.modals.all-authorized-origin-auto-sign',
+                  )}
+                  placement="top"
+                  triggerClassName="truncate"
+                  tooltipClassName="mas-caption max-w-96"
+                >
+                  <div className="flex items-center gap-2 opacity-50 cursor-not-allowed">
+                    <Toggle
+                      checked={applyToAllDomains}
+                      onChange={(e) => setApplyToAllDomains(e.target.checked)}
+                      disabled
+                    />
+                    {Intl.t('settings.sign-rules.modals.apply-to-all-domains')}
+                  </div>
+                </Tooltip>
+              ) : (
+                <>
+                  <Toggle
+                    checked={applyToAllDomains}
+                    onChange={(e) => setApplyToAllDomains(e.target.checked)}
+                    disabled={isEditMode}
+                  />
+                  {Intl.t('settings.sign-rules.modals.apply-to-all-domains')}
+                </>
               )}
-            </>
-          )}
-          {isAllAndAutoSign && (
-            <p className="mas-caption text-s-error">
-              {Intl.t('settings.sign-rules.errors.all-and-auto-sign-error')}
-            </p>
-          )}
+            </div>
+            {isEditMode && (
+              <p className="mas-caption text-s-info">
+                {Intl.t(
+                  'settings.sign-rules.modals.authorized-origin-disabled-message',
+                )}
+              </p>
+            )}
+          </>
           <Button
             customClass="self-start"
             onClick={handleSubmit}

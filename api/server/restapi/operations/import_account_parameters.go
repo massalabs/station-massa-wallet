@@ -25,7 +25,6 @@ func NewImportAccountParams() ImportAccountParams {
 //
 // swagger:parameters ImportAccount
 type ImportAccountParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 }

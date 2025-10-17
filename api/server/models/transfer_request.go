@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	stderrors "errors"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -56,16 +57,20 @@ func (m *TransferRequest) Validate(formats strfmt.Registry) error {
 
 func (m *TransferRequest) validateAmount(formats strfmt.Registry) error {
 
-	if err := validate.Required("amount", "body", Amount(m.Amount)); err != nil {
+	if err := validate.Required("amount", "body", m.Amount); err != nil {
 		return err
 	}
 
 	if err := m.Amount.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("amount")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("amount")
 		}
+
 		return err
 	}
 
@@ -74,16 +79,20 @@ func (m *TransferRequest) validateAmount(formats strfmt.Registry) error {
 
 func (m *TransferRequest) validateFee(formats strfmt.Registry) error {
 
-	if err := validate.Required("fee", "body", Amount(m.Fee)); err != nil {
+	if err := validate.Required("fee", "body", m.Fee); err != nil {
 		return err
 	}
 
 	if err := m.Fee.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("fee")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("fee")
 		}
+
 		return err
 	}
 
@@ -120,11 +129,15 @@ func (m *TransferRequest) ContextValidate(ctx context.Context, formats strfmt.Re
 func (m *TransferRequest) contextValidateAmount(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Amount.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("amount")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("amount")
 		}
+
 		return err
 	}
 
@@ -134,11 +147,15 @@ func (m *TransferRequest) contextValidateAmount(ctx context.Context, formats str
 func (m *TransferRequest) contextValidateFee(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Fee.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("fee")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("fee")
 		}
+
 		return err
 	}
 

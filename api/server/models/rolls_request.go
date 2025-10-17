@@ -8,6 +8,7 @@ package models
 import (
 	"context"
 	"encoding/json"
+	stderrors "errors"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -58,16 +59,20 @@ func (m *RollsRequest) Validate(formats strfmt.Registry) error {
 
 func (m *RollsRequest) validateAmount(formats strfmt.Registry) error {
 
-	if err := validate.Required("amount", "body", Amount(m.Amount)); err != nil {
+	if err := validate.Required("amount", "body", m.Amount); err != nil {
 		return err
 	}
 
 	if err := m.Amount.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("amount")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("amount")
 		}
+
 		return err
 	}
 
@@ -76,23 +81,27 @@ func (m *RollsRequest) validateAmount(formats strfmt.Registry) error {
 
 func (m *RollsRequest) validateFee(formats strfmt.Registry) error {
 
-	if err := validate.Required("fee", "body", Amount(m.Fee)); err != nil {
+	if err := validate.Required("fee", "body", m.Fee); err != nil {
 		return err
 	}
 
 	if err := m.Fee.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("fee")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("fee")
 		}
+
 		return err
 	}
 
 	return nil
 }
 
-var rollsRequestTypeSidePropEnum []interface{}
+var rollsRequestTypeSidePropEnum []any
 
 func init() {
 	var res []string
@@ -156,11 +165,15 @@ func (m *RollsRequest) ContextValidate(ctx context.Context, formats strfmt.Regis
 func (m *RollsRequest) contextValidateAmount(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Amount.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("amount")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("amount")
 		}
+
 		return err
 	}
 
@@ -170,11 +183,15 @@ func (m *RollsRequest) contextValidateAmount(ctx context.Context, formats strfmt
 func (m *RollsRequest) contextValidateFee(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := m.Fee.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
+		ve := new(errors.Validation)
+		if stderrors.As(err, &ve) {
 			return ve.ValidateName("fee")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
+		}
+		ce := new(errors.CompositeError)
+		if stderrors.As(err, &ce) {
 			return ce.ValidateName("fee")
 		}
+
 		return err
 	}
 

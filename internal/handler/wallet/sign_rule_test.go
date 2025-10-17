@@ -509,3 +509,115 @@ func Test_signrule_Handlers(t *testing.T) {
 		assert.NotNil(pkey)
 	})
 }
+
+func Test_preventOverwritingRule(t *testing.T) {
+	assert := assert.New(t)
+
+	// Arrange shared context
+	config.Load()
+	cfg := config.Get()
+	nickname := "isUpdating_user"
+
+	// Ensure account exists and is empty for isolation
+	cfg.Accounts[nickname] = config.AccountCfg{SignRules: []config.SignRule{}}
+
+	// Sample contracts
+	contractA := "AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9"
+	contractB := "AS133eqPPaPttJ6hJnk3sfoG5cjFFqBDi1VGxdo2wzWkq8AfZnan"
+
+	// Existing rules to compare against
+	// 1) DisablePasswordPrompt rule for contractA
+	ruleDPP_A := config.SignRule{
+		Name:     "DPP A",
+		Contract: contractA,
+		RuleType: config.RuleTypeDisablePasswordPrompt,
+		Enabled:  true,
+	}
+	idDPP_A, err := cfg.AddSignRule(nickname, ruleDPP_A)
+	assert.NoError(err)
+
+	// 2) DisablePasswordPrompt rule for contractB
+	ruleDPP_B := config.SignRule{
+		Name:     "DPP B",
+		Contract: contractB,
+		RuleType: config.RuleTypeDisablePasswordPrompt,
+		Enabled:  true,
+	}
+	idDPP_B, err := cfg.AddSignRule(nickname, ruleDPP_B)
+	assert.NoError(err)
+
+	// 3) AutoSign rule for contractA with origin ex.com
+	originEx := "https://ex.com"
+	ruleAuto_A_ex := config.SignRule{
+		Name:             "AUTO A ex",
+		Contract:         contractA,
+		RuleType:         config.RuleTypeAutoSign,
+		Enabled:          true,
+		AuthorizedOrigin: &originEx,
+	}
+	idAuto_A_ex, err := cfg.AddSignRule(nickname, ruleAuto_A_ex)
+	assert.NoError(err)
+
+	// Instantiate handler (prompter not used in this helper)
+	h := &updateSignRuleHandler{}
+
+	t.Run("no change returns false", func(t *testing.T) {
+		oldRule := ruleDPP_A
+		newRule := ruleDPP_A
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
+		assert.False(changedToExisting)
+	})
+
+	t.Run("change to non-existing combination returns false", func(t *testing.T) {
+		oldRule := ruleDPP_A
+		// Change contract to a value that does not match an existing rule type combo
+		newRule := config.SignRule{
+			Name:     "DPP A -> C",
+			Contract: "AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ",
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		}
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
+		assert.False(changedToExisting)
+	})
+
+	t.Run("change to already existing rule returns true", func(t *testing.T) {
+		oldRule := ruleDPP_A
+		// Change to match DPP for contractB which already exists
+		newRule := config.SignRule{
+			Name:     "DPP B",
+			Contract: contractB,
+			RuleType: config.RuleTypeDisablePasswordPrompt,
+			Enabled:  true,
+		}
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
+		assert.True(changedToExisting)
+	})
+
+	t.Run("change authorized origin to existing AutoSign rule returns true", func(t *testing.T) {
+		// Start from a similar autosign rule on same contract but with different origin
+		originOther := "https://other.com"
+		oldRule := config.SignRule{
+			Name:             "AUTO A other",
+			Contract:         contractA,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &originOther,
+		}
+		// New rule matches existing AutoSign rule (origin ex.com)
+		newRule := config.SignRule{
+			Name:             "AUTO A ex",
+			Contract:         contractA,
+			RuleType:         config.RuleTypeAutoSign,
+			Enabled:          true,
+			AuthorizedOrigin: &originEx,
+		}
+		changedToExisting := h.preventOverwritingRule(&oldRule, newRule, nickname, cfg)
+		assert.True(changedToExisting)
+	})
+
+	// Cleanup created rules
+	_ = cfg.DeleteSignRule(nickname, idDPP_A)
+	_ = cfg.DeleteSignRule(nickname, idDPP_B)
+	_ = cfg.DeleteSignRule(nickname, idAuto_A_ex)
+}

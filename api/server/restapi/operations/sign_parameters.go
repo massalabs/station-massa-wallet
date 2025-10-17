@@ -6,6 +6,7 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	stderrors "errors"
 	"io"
 	"net/http"
 
@@ -38,7 +39,6 @@ func NewSignParams() SignParams {
 //
 // swagger:parameters Sign
 type SignParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -47,11 +47,13 @@ type SignParams struct {
 	  Default: false
 	*/
 	AllowFeeEdition *bool
+
 	/*
 	  Required: true
 	  In: body
 	*/
 	Body *models.SignRequest
+
 	/*Account's short name.
 	  Required: true
 	  In: path
@@ -67,7 +69,6 @@ func (o *SignParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 	var res []error
 
 	o.HTTPRequest = r
-
 	qs := runtime.Values(r.URL.Query())
 
 	qAllowFeeEdition, qhkAllowFeeEdition, _ := qs.GetOK("allow-fee-edition")
@@ -76,10 +77,12 @@ func (o *SignParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 	}
 
 	if runtime.HasBody(r) {
-		defer r.Body.Close()
+		defer func() {
+			_ = r.Body.Close()
+		}()
 		var body models.SignRequest
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			if err == io.EOF {
+			if stderrors.Is(err, io.EOF) {
 				res = append(res, errors.Required("body", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("body", "body", "", err))

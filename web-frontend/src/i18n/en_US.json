@@ -120,7 +120,7 @@
         "update": "An error occurred while updating the sign rule",
         "toggle": "An error occurred while toggling the sign rule",
         "invalid-contract-address": "The provided contract address is not valid.",
-        "all-and-auto-sign-error": "Auto sign cannot be applied to all contracts for security reasons."
+        "invalid-authorized-origin": "The provided authorized origin is not valid: {error}"
       },
       "success": {
         "add": "Sign rule added",
@@ -134,13 +134,16 @@
         "name-placeholder": "Enter a name",
         "contract-placeholder": "Enter a contract address",
         "apply-to-all-contracts": "Apply to all contracts",
+        "apply-to-all-domains": "Apply to all domains",
         "rule-type": "Rule type",
         "auto-sign": "Auto sign",
         "disable-password-prompt": "Disable password prompt",
         "update": "Update",
         "add": "Add",
+        "all-contracts-auto-sign": "Auto sign cannot be applied to all contracts for security reasons.",
+        "all-authorized-origin-auto-sign": "For security reasons, a specific authorized origin must be assigned to auto sign rules",
         "authorized-origin-placeholder": "Enter an authorized origin",
-        "authorized-origin-info": "Enter the url of the app you want to allow to send auto sign operations.",
+        "authorized-origin-info": "Enter the url of the website you want to allow to send auto sign operations.",
         "authorized-origin-disabled-message": "For security reasons, the authorized origin cannot be modified after creation"
       }
     },

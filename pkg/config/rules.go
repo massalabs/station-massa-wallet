@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/massalabs/station-massa-wallet/pkg/utils"
@@ -130,6 +131,18 @@ func (c *Config) UpdateSignRule(accountName, ruleID string, newRule SignRule) (s
 func ValidateRule(rule SignRule) error {
 	if rule.Contract != "*" && !utils.IsValidContract(rule.Contract) {
 		return fmt.Errorf("invalid contract address: %s", rule.Contract)
+	}
+
+	// If provided, AuthorizedOrigin must be a valid URL containing only scheme, host and optional port
+	if rule.AuthorizedOrigin != nil && len(*rule.AuthorizedOrigin) > 0 {
+		parsed, err := url.Parse(*rule.AuthorizedOrigin)
+		if err != nil {
+			return fmt.Errorf("invalid AuthorizedOrigin URL: %v", err)
+		}
+
+		if parsed.Scheme == "" || parsed.Host == "" || parsed.Path != "" || parsed.RawQuery != "" || parsed.Fragment != "" {
+			return fmt.Errorf("invalid AuthorizedOrigin URL: must contain only scheme, host and optional port")
+		}
 	}
 
 	switch rule.RuleType {
@@ -268,16 +281,18 @@ func (c *Config) GetEnabledRuleForContract(accountName string, contract *string,
 			switch rule.RuleType {
 			case RuleTypeAutoSign:
 				if contract != nil && rule.Contract == *contract {
-					if rule.AuthorizedOrigin != nil && origin != nil && *rule.AuthorizedOrigin == *origin {
+					if rule.IsAuthorizedOrigin(origin) {
 						enabledRule = &rule
 					}
 				}
 
 			case RuleTypeDisablePasswordPrompt:
 				if rule.Contract == "*" || (contract != nil && rule.Contract == *contract) {
-					if enabledRule == nil {
-						// If there are multiple rules that apply to the contract, the rule with the highest priority is used (AutoSign)
-						enabledRule = &rule
+					if rule.IsAuthorizedOrigin(origin) {
+						if enabledRule == nil {
+							// If there are multiple rules that apply to the contract, the rule with the highest priority is used (AutoSign)
+							enabledRule = &rule
+						}
 					}
 				}
 			}

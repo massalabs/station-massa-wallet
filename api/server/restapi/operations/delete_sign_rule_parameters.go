@@ -26,7 +26,6 @@ func NewDeleteSignRuleParams() DeleteSignRuleParams {
 //
 // swagger:parameters DeleteSignRule
 type DeleteSignRuleParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -35,6 +34,7 @@ type DeleteSignRuleParams struct {
 	  In: path
 	*/
 	Nickname string
+
 	/*The ID of the sign rule
 	  Required: true
 	  In: path

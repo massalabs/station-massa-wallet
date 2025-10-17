@@ -63,7 +63,7 @@ func (m *SignResponse) ContextValidate(ctx context.Context, formats strfmt.Regis
 
 func (m *SignResponse) contextValidateOperation(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "operation", "body", strfmt.Base64(m.Operation)); err != nil {
+	if err := validate.ReadOnly(ctx, "operation", "body", m.Operation); err != nil {
 		return err
 	}
 
@@ -72,7 +72,7 @@ func (m *SignResponse) contextValidateOperation(ctx context.Context, formats str
 
 func (m *SignResponse) contextValidatePublicKey(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "publicKey", "body", string(m.PublicKey)); err != nil {
+	if err := validate.ReadOnly(ctx, "publicKey", "body", m.PublicKey); err != nil {
 		return err
 	}
 
@@ -81,7 +81,7 @@ func (m *SignResponse) contextValidatePublicKey(ctx context.Context, formats str
 
 func (m *SignResponse) contextValidateSignature(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "signature", "body", strfmt.Base64(m.Signature)); err != nil {
+	if err := validate.ReadOnly(ctx, "signature", "body", m.Signature); err != nil {
 		return err
 	}
 

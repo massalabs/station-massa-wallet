@@ -51,6 +51,10 @@ func (s SignRule) IsExpired() bool {
 	return s.ExpireAfter.Before(time.Now())
 }
 
+func (s SignRule) IsAuthorizedOrigin(origin *string) bool {
+	return s.AuthorizedOrigin == nil || (origin != nil && *s.AuthorizedOrigin == *origin)
+}
+
 type AccountCfg struct {
 	SignRules []SignRule `koanf:"signRules"`
 }

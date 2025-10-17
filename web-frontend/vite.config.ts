@@ -19,6 +19,7 @@ export default ({ mode }) => {
       assetsDir: './', // put the assets next to the index.html file
     },
     resolve: {
+      preserveSymlinks: true,
       alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
     },
     server: {
@@ -28,7 +29,12 @@ export default ({ mode }) => {
       },
     },
     optimizeDeps: {
-      include: ['react-dom', 'dot-object', 'copy-to-clipboard'],
+      include: [
+        'react-dom',
+        'dot-object',
+        'copy-to-clipboard',
+        '@massalabs/massa-web3',
+      ],
     },
   });
 };

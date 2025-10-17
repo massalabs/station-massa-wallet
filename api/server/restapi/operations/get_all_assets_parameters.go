@@ -26,7 +26,6 @@ func NewGetAllAssetsParams() GetAllAssetsParams {
 //
 // swagger:parameters GetAllAssets
 type GetAllAssetsParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 

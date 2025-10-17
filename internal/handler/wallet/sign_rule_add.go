@@ -40,25 +40,24 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 	}
 
 	newRule := config.SignRule{
-		Name:     params.Body.Name,
-		Contract: *params.Body.Contract,
-		RuleType: config.RuleType(params.Body.RuleType),
-		Enabled:  *params.Body.Enabled,
+		Name:             params.Body.Name,
+		Contract:         *params.Body.Contract,
+		RuleType:         config.RuleType(params.Body.RuleType),
+		Enabled:          *params.Body.Enabled,
+		AuthorizedOrigin: params.Body.AuthorizedOrigin,
 	}
 
-	if newRule.RuleType == config.RuleTypeAutoSign {
-		origin := params.Body.AuthorizedOrigin
-
-		if origin == nil || len(*origin) == 0 {
-			detectedOrigin, err := getOrigin(params.HTTPRequest)
-			if err != nil {
-				return newErrorResponse(err.Error(), errorAddSignRule, http.StatusBadRequest)
-			}
-			origin = detectedOrigin
-			params.Body.AuthorizedOrigin = origin
+	/*
+		If the rule type is auto sign, the authorized origin is required.
+		If authorized origin is not set, detect the origin from the request headers
+	*/
+	if newRule.RuleType == config.RuleTypeAutoSign && (newRule.AuthorizedOrigin == nil || len(*newRule.AuthorizedOrigin) == 0) {
+		detectedOrigin, err := getOrigin(params.HTTPRequest)
+		if err != nil {
+			return newErrorResponse(err.Error(), errorAddSignRule, http.StatusBadRequest)
 		}
 
-		newRule.AuthorizedOrigin = origin
+		newRule.AuthorizedOrigin = detectedOrigin
 	}
 
 	cfg := config.Get()
@@ -71,7 +70,7 @@ func (w *addSignRuleHandler) Handle(params operations.AddSignRuleParams) middlew
 		return operations.NewAddSignRuleBadRequest().WithPayload(&models.Error{Code: errorInvalidAssetAddress, Message: err.Error()})
 	}
 
-	promptRequest, err := w.getPromptRequest(params, acc)
+	promptRequest, err := w.getPromptRequest(newRule, params.Body.Description, acc)
 	if err != nil {
 		return newErrorResponse(fmt.Sprintf("Error: %v", err.Error()), errorAddSignRule, http.StatusBadRequest)
 	}
@@ -108,28 +107,16 @@ func (w *addSignRuleHandler) Success(ruleID string) middleware.Responder {
 		})
 }
 
-func (w *addSignRuleHandler) getPromptRequest(params operations.AddSignRuleParams, acc *account.Account) (*prompt.PromptRequest, error) {
+func (w *addSignRuleHandler) getPromptRequest(signRule config.SignRule, description string, acc *account.Account) (*prompt.PromptRequest, error) {
 	address, err := acc.Address.String()
 	if err != nil {
 		return nil, fmt.Errorf("failed to stringify address: %w", err)
 	}
 
-	ruleType := config.RuleType(params.Body.RuleType)
-	signRule := config.SignRule{
-		Name:     params.Body.Name,
-		Contract: *params.Body.Contract,
-		RuleType: ruleType,
-		Enabled:  *params.Body.Enabled,
-	}
-
-	if ruleType == config.RuleTypeAutoSign {
-		signRule.AuthorizedOrigin = params.Body.AuthorizedOrigin
-	}
-
 	promptData := SignRulePromptData{
 		WalletAddress: address,
 		Nickname:      acc.Nickname,
-		Description:   params.Body.Description,
+		Description:   description,
 		SignRule:      signRule,
 	}
 

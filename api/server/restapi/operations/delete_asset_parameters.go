@@ -28,7 +28,6 @@ func NewDeleteAssetParams() DeleteAssetParams {
 //
 // swagger:parameters DeleteAsset
 type DeleteAssetParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -38,6 +37,7 @@ type DeleteAssetParams struct {
 	  In: query
 	*/
 	AssetAddress string
+
 	/*The nickname of the account from which to delete the asset.
 	  Required: true
 	  In: path
@@ -53,7 +53,6 @@ func (o *DeleteAssetParams) BindRequest(r *http.Request, route *middleware.Match
 	var res []error
 
 	o.HTTPRequest = r
-
 	qs := runtime.Values(r.URL.Query())
 
 	qAssetAddress, qhkAssetAddress, _ := qs.GetOK("assetAddress")
@@ -96,7 +95,7 @@ func (o *DeleteAssetParams) bindAssetAddress(rawData []string, hasKey bool, form
 	return nil
 }
 
-// validateAssetAddress carries on validations for parameter AssetAddress
+// validateAssetAddress carries out validations for parameter AssetAddress
 func (o *DeleteAssetParams) validateAssetAddress(formats strfmt.Registry) error {
 
 	if err := validate.Pattern("assetAddress", "query", o.AssetAddress, `^AS[0-9a-zA-Z]+$`); err != nil {

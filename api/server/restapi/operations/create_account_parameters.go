@@ -26,7 +26,6 @@ func NewCreateAccountParams() CreateAccountParams {
 //
 // swagger:parameters CreateAccount
 type CreateAccountParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 

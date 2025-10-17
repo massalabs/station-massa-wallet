@@ -26,7 +26,6 @@ func NewExportAccountFileParams() ExportAccountFileParams {
 //
 // swagger:parameters ExportAccountFile
 type ExportAccountFileParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 

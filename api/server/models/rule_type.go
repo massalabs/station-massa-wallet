@@ -38,7 +38,7 @@ const (
 )
 
 // for schema
-var ruleTypeEnum []interface{}
+var ruleTypeEnum []any
 
 func init() {
 	var res []RuleType

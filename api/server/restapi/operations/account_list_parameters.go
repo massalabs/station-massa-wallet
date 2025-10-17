@@ -25,7 +25,6 @@ func NewAccountListParams() AccountListParams {
 //
 // swagger:parameters AccountList
 type AccountListParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 }

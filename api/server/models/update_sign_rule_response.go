@@ -45,7 +45,7 @@ func (m *UpdateSignRuleResponse) ContextValidate(ctx context.Context, formats st
 
 func (m *UpdateSignRuleResponse) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "id", "body", string(m.ID)); err != nil {
+	if err := validate.ReadOnly(ctx, "id", "body", m.ID); err != nil {
 		return err
 	}
 

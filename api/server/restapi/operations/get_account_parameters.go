@@ -35,7 +35,6 @@ func NewGetAccountParams() GetAccountParams {
 //
 // swagger:parameters GetAccount
 type GetAccountParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -44,6 +43,7 @@ type GetAccountParams struct {
 	  Default: true
 	*/
 	Ciphered *bool
+
 	/*Account's short name.
 	  Required: true
 	  In: path
@@ -59,7 +59,6 @@ func (o *GetAccountParams) BindRequest(r *http.Request, route *middleware.Matche
 	var res []error
 
 	o.HTTPRequest = r
-
 	qs := runtime.Values(r.URL.Query())
 
 	qCiphered, qhkCiphered, _ := qs.GetOK("ciphered")

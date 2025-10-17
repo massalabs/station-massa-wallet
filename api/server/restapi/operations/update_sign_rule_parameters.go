@@ -6,6 +6,7 @@ package operations
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	stderrors "errors"
 	"io"
 	"net/http"
 
@@ -30,7 +31,6 @@ func NewUpdateSignRuleParams() UpdateSignRuleParams {
 //
 // swagger:parameters UpdateSignRule
 type UpdateSignRuleParams struct {
-
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
@@ -39,11 +39,13 @@ type UpdateSignRuleParams struct {
 	  In: body
 	*/
 	Body *models.UpdateSignRule
+
 	/*Account's short name.
 	  Required: true
 	  In: path
 	*/
 	Nickname string
+
 	/*The ID of the sign rule
 	  Required: true
 	  In: path
@@ -61,10 +63,12 @@ func (o *UpdateSignRuleParams) BindRequest(r *http.Request, route *middleware.Ma
 	o.HTTPRequest = r
 
 	if runtime.HasBody(r) {
-		defer r.Body.Close()
+		defer func() {
+			_ = r.Body.Close()
+		}()
 		var body models.UpdateSignRule
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			if err == io.EOF {
+			if stderrors.Is(err, io.EOF) {
 				res = append(res, errors.Required("body", "body", ""))
 			} else {
 				res = append(res, errors.NewParseError("body", "body", "", err))
