@@ -98,7 +98,8 @@ func (w *updateSignRuleHandler) Success(ruleID string) middleware.Responder {
 	return operations.NewUpdateSignRuleOK().WithPayload(
 		&models.UpdateSignRuleResponse{
 			ID: ruleID,
-		})
+		},
+	)
 }
 
 func (w *updateSignRuleHandler) getPromptRequest(acc *account.Account, signRule *config.SignRule, description string) (*prompt.PromptRequest, error) {

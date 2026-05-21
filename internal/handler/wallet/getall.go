@@ -31,7 +31,8 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: errMsg,
-			})
+			},
+		)
 	}
 
 	accounts := w.wallet.AllAccounts()
@@ -45,7 +46,8 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: errMsg,
-			})
+			},
+		)
 	}
 
 	var accountModels []*models.Account

@@ -85,7 +85,8 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 			&models.Error{
 				Code:    errorCanceledAction,
 				Message: "Unable to unprotect wallet",
-			})
+			},
+		)
 	}
 
 	output, ok := promptOutput.(*walletapp.SignPromptOutput)
@@ -111,7 +112,8 @@ func (t *tradeRolls) Handle(params operations.TradeRollsParams) middleware.Respo
 	return operations.NewTradeRollsOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,
-		})
+		},
+	)
 }
 
 func doTradeRolls(

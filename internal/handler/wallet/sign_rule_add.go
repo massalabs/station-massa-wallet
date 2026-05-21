@@ -104,7 +104,8 @@ func (w *addSignRuleHandler) Success(ruleID string) middleware.Responder {
 	return operations.NewAddSignRuleOK().WithPayload(
 		&models.AddSignRuleResponse{
 			ID: ruleID,
-		})
+		},
+	)
 }
 
 func (w *addSignRuleHandler) getPromptRequest(signRule config.SignRule, description string, acc *account.Account) (*prompt.PromptRequest, error) {

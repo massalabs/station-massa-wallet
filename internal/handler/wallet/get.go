@@ -56,7 +56,8 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 				&models.Error{
 					Code:    fmt.Sprint(http.StatusUnauthorized),
 					Message: "Unable to unprotect wallet",
-				})
+				},
+			)
 		}
 
 		password, _ := promptOutput.(*memguard.LockedBuffer)
@@ -87,7 +88,8 @@ func (w *walletGet) Handle(params operations.GetAccountParams) middleware.Respon
 			&models.Error{
 				Code:    utils.ErrNetwork,
 				Message: "Unable to retrieve account infos",
-			})
+			},
+		)
 	}
 
 	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))

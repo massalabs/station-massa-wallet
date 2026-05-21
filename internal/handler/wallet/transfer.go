@@ -126,7 +126,8 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	return operations.NewTransferCoinOK().WithPayload(
 		&models.OperationResponse{
 			OperationID: operation.OperationID,
-		})
+		},
+	)
 }
 
 func doTransfer(

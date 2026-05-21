@@ -56,7 +56,8 @@ func (w *walletUpdateAccount) Handle(params operations.UpdateAccountParams) midd
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: "Unable to retrieve account infos",
-			})
+			},
+		)
 	}
 
 	modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[0].CandidateBalance))

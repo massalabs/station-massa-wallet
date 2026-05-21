@@ -89,7 +89,8 @@ func (w *walletSignMessage) Handle(params operations.SignMessageParams) middlewa
 		&models.SignResponse{
 			PublicKey: string(publicKeyBytes),
 			Signature: signature,
-		})
+		},
+	)
 }
 
 func prepareSignMessagePromptRequest(acc account.Account, body *models.SignMessageRequest) (*prompt.PromptRequest, error) {

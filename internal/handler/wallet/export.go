@@ -37,7 +37,8 @@ func (w *walletExportFile) Handle(params operations.ExportAccountFileParams) mid
 			&models.Error{
 				Code:    errorExportWallet,
 				Message: err.Error(),
-			})
+			},
+		)
 	}
 
 	responder := middleware.ResponderFunc(func(w http.ResponseWriter, _ runtime.Producer) {

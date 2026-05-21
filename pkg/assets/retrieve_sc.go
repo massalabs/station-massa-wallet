@@ -85,7 +85,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 		Name:     name,
 		Symbol:   symbol,
 		Decimals: swag.Int64(int64(decimals)),
-		ChainID:  swag.Int64((int64(nodeInfo.ChainID))),
+		ChainID:  swag.Int64(int64(nodeInfo.ChainID)),
 	}
 
 	return assetInfoFromSC, nil

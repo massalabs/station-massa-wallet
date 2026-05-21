@@ -169,7 +169,8 @@ func (w *walletSign) Success(acc *account.Account, signature []byte, operation [
 			PublicKey: string(publicKeyBytes),
 			Signature: signature,
 			Operation: operation,
-		})
+		},
+	)
 }
 
 // prepareOperation prepares the operation to be signed.

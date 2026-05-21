@@ -42,7 +42,8 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 			&models.Error{
 				Code:    errorGetAccount,
 				Message: "Unable to retrieve account infos",
-			})
+			},
+		)
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -61,7 +62,8 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 			&models.Error{
 				Code:    fmt.Sprint(http.StatusUnauthorized),
 				Message: fmt.Sprintf("error validating password: %v", err.Error()),
-			})
+			},
+		)
 	}
 
 	err = w.prompterApp.App().Wallet.DeleteAccount(acc.Nickname)
@@ -75,7 +77,8 @@ func (w *walletDelete) Handle(params operations.DeleteAccountParams) middleware.
 			&models.Error{
 				Code:    utils.ErrAccountFile,
 				Message: "Unable to delete account file",
-			})
+			},
+		)
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
