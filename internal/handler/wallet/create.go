@@ -33,7 +33,8 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			&models.Error{
 				Code:    errorCreateNoNickname,
 				Message: "Error: nickname field is mandatory.",
-			})
+			},
+		)
 	}
 
 	promptRequest := prompt.PromptRequest{
@@ -58,7 +59,8 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			&models.Error{
 				Code:    errorCreateNew,
 				Message: err.Error(),
-			})
+			},
+		)
 	}
 
 	w.prompterApp.EmitEvent(walletapp.PromptResultEvent,
@@ -70,7 +72,8 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: "Unable to retrieve accounts infos",
-			})
+			},
+		)
 	}
 
 	address, err := acc.Address.MarshalText()
@@ -95,5 +98,6 @@ func (w *walletCreate) Handle(params operations.CreateAccountParams) middleware.
 				Salt:       "",
 				Nonce:      "",
 			},
-		})
+		},
+	)
 }

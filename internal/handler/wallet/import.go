@@ -37,7 +37,8 @@ func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Respo
 			&models.Error{
 				Code:    errorImportWallet,
 				Message: errStr,
-			})
+			},
+		)
 	}
 
 	acc, _ := promptOutput.(*account.Account)
@@ -51,7 +52,8 @@ func (w *walletImport) Handle(_ operations.ImportAccountParams) middleware.Respo
 			&models.Error{
 				Code:    errorGetWallets,
 				Message: "Unable to retrieve accounts infos",
-			})
+			},
+		)
 	}
 
 	modelWallet, err := newAccountModel(acc)

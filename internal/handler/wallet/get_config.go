@@ -23,7 +23,8 @@ func (w *getConfig) Handle(_ operations.GetConfigParams) middleware.Responder {
 			&models.Error{
 				Code:    internalError,
 				Message: "Unable to create config model",
-			})
+			},
+		)
 	}
 
 	return operations.NewGetConfigOK().WithPayload(modelConfig)
@@ -43,7 +44,7 @@ func newConfigModel(cfg *config.Config) (*models.Config, error) {
 				Name:             &rule.Name,
 				Contract:         &rule.Contract,
 				Enabled:          &rule.Enabled,
-				RuleType:         (models.RuleType)(rule.RuleType),
+				RuleType:         models.RuleType(rule.RuleType),
 				AuthorizedOrigin: rule.AuthorizedOrigin,
 				ExpireAfter:      strfmt.DateTime(rule.ExpireAfter),
 			}

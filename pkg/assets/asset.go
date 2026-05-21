@@ -300,7 +300,7 @@ func (s *AssetsStore) All(nickname string, chainID int) []*AssetInfoWithBalances
 				Decimals: &decimals,
 				Name:     asset.Name,
 				Symbol:   asset.Symbol,
-				ChainID:  swag.Int64((int64(asset.ChainID))),
+				ChainID:  swag.Int64(int64(asset.ChainID)),
 			},
 			Balance:     "",
 			MEXCSymbol:  asset.MEXCSymbol,
