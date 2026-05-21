@@ -95,6 +95,11 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	}
 	password := output.Password
 
+	// Copy the password before doTransfer destroys it (acc.Sign wipes the buffer)
+	passwordBytes := make([]byte, len(password.Bytes()))
+	copy(passwordBytes, password.Bytes())
+	passwordBackup := memguard.NewBufferFromBytes(passwordBytes)
+
 	// create the transaction and send it to the network
 	operation, err := doTransfer(acc, password, amount, output.Fees, *params.Body.RecipientAddress, t.massaClient, chainID)
 	if err != nil {
@@ -112,7 +117,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	cfg := config.Get()
 
 	if cfg.HasEnabledRule(acc.Nickname) {
-		err = cache.CachePrivateKeyFromPassword(acc, output.Password)
+		err = cache.CachePrivateKeyFromPassword(acc, passwordBackup)
 		if err != nil {
 			return newErrorResponse(err.Error(), errorCachePrivateKey, http.StatusInternalServerError)
 		}
