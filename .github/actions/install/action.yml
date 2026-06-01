@@ -4,15 +4,12 @@ inputs:
   os:
     required: true
     default: "ubuntu-24.04"
-  repo-token:
-    description: The token to use to authenticate with the GitHub API
-    required: true
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@v6
       with:
-        go-version: 1.24
+        go-version: 1.25.10
         cache: true
 
     - name: Install Xcode
@@ -22,10 +19,9 @@ runs:
         xcode-version: latest-stable
 
     - name: Install Task
-      uses: arduino/setup-task@v1
+      uses: go-task/setup-task@v2
       with:
         version: 3.x
-        repo-token: ${{ inputs.repo-token }}
 
     - name: Install Dependencies
       run: task install
