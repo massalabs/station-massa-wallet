@@ -9,7 +9,7 @@ jobs:
   test-mode:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/install
       - name: build
         run: go build -tags desktop,production,webkit2_41 -ldflags "-w -s" -o build/test_wallet main.go

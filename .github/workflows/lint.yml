@@ -9,11 +9,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/install
         with:
           os: ubuntu-latest
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -36,7 +35,7 @@ jobs:
         working-directory: ./web-frontend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -53,7 +52,7 @@ jobs:
         working-directory: ./wails-frontend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v3
         with:
           node-version: 18
