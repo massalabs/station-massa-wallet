@@ -28,7 +28,11 @@ func logFallback(action string, err error) {
 
 // retrieve network info from endpoint
 func GetNetworkInfo() (*NetworkInfo, error) {
-	resp, err := http.Get(massaStationNodeEndpoint)
+	return fetchNetworkInfo(massaStationNodeEndpoint)
+}
+
+func fetchNetworkInfo(endpoint string) (*NetworkInfo, error) {
+	resp, err := http.Get(endpoint)
 	if err != nil {
 		logFallback("GET massa station node endpoint", err)
 

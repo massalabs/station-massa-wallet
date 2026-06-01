@@ -68,6 +68,7 @@ func (a *WalletApp) BeforeClose(ctx context.Context) bool {
 	// Send a cancel message to the prompt and do NOT shutdown
 	if a.IsListening {
 		logger.Warn("canceling prompt before closing")
+
 		a.CtrlChan <- Cancel
 	}
 
@@ -118,6 +119,7 @@ func (a *WalletApp) SendPKeyPromptInput(privateKeyText string, nickname string, 
 func (a *WalletApp) AbortAction() {
 	if a.IsListening {
 		logger.Warn("Abort action")
+
 		a.CtrlChan <- Cancel
 	}
 }

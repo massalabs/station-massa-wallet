@@ -98,8 +98,8 @@ func (c *Config) legacyConfigHandling() error {
 			}
 
 			newSignRules = append(newSignRules, rule)
-
 		}
+
 		account.SignRules = newSignRules
 		c.Accounts[i] = account
 	}

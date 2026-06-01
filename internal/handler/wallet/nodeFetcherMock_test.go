@@ -24,6 +24,7 @@ func (n *NodeFetcherMock) GetAccountsInfos(accounts []*account.Account) ([]netwo
 		if err != nil {
 			return nil, err
 		}
+
 		infos[i] = network.AccountInfos{
 			Address:          string(textAddress),
 			CandidateBalance: uint64(i + 1*1000000),

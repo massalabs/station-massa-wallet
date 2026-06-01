@@ -30,6 +30,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 			errCh <- fmt.Errorf("failed to fetch asset name: %w", err)
 			return
 		}
+
 		nameCh <- nameData
 	}()
 
@@ -42,6 +43,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 			errCh <- fmt.Errorf("failed to fetch asset symbol: %w", err)
 			return
 		}
+
 		symbolCh <- symbolData
 	}()
 
@@ -54,6 +56,7 @@ func AssetInfo(contractAddress string, massaClient network.NodeFetcherInterface)
 			errCh <- fmt.Errorf("failed to fetch asset decimals: %w", err)
 			return
 		}
+
 		decimalsCh <- decimals
 	}()
 

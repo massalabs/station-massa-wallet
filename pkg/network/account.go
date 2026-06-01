@@ -37,6 +37,7 @@ func (n *NodeFetcher) GetAccountsInfos(accounts []*account.Account) ([]AccountIn
 		if err != nil {
 			return nil, err
 		}
+
 		addresses[i] = string(textAddress)
 	}
 
@@ -53,12 +54,14 @@ func (n *NodeFetcher) GetAccountsInfos(accounts []*account.Account) ([]AccountIn
 		if err != nil {
 			return nil, err
 		}
+
 		res[i].CandidateBalance = nano
 
 		nano, err = utils.MasToNano(info.FinalBalance)
 		if err != nil {
 			return nil, err
 		}
+
 		res[i].Balance = nano
 	}
 

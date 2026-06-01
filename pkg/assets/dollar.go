@@ -26,6 +26,7 @@ func DollarValue(balance, MEXCSymbol, symbol string, decimals int64) (*float64, 
 		if err != nil {
 			return nil, fmt.Errorf("Error getting dollar price: %s\n", err)
 		}
+
 		price = MEXCQuote
 	}
 

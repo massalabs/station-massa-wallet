@@ -120,6 +120,7 @@ func Test_transfer_handler(t *testing.T) {
 				Password:    password,
 				Fees:        "1000",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 

@@ -157,6 +157,7 @@ func (g *getAllAssets) getAssetsData(acc *account.Account, chainID int) []*asset
 
 	for result := range resultsCh {
 		mu.Lock()
+
 		assetsWithBalance = append(assetsWithBalance, result)
 		mu.Unlock()
 	}

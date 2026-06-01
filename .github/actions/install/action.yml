@@ -1,7 +1,9 @@
 name: Install
+description: Installs dependencies and builds the project
 
 inputs:
   os:
+    description: The operating system to install dependencies for
     required: true
     default: "ubuntu-24.04"
 runs:

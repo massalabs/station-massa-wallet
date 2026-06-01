@@ -515,6 +515,7 @@ func Test_preventOverwritingRule(t *testing.T) {
 
 	// Arrange shared context
 	config.Load()
+
 	cfg := config.Get()
 	nickname := "isUpdating_user"
 

@@ -80,6 +80,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Create Wallet", func(t *testing.T) {
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
+
 		w = newWallet
 		assert.NotNil(t, w)
 	})
@@ -157,6 +158,7 @@ func TestWallet(t *testing.T) {
 		accountPath, err := w.AccountPath(sampleNicknameVersion0)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+sampleNicknameVersion0+".yaml", accountPath)
+
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assertAccountIsPresent(t, w, sampleNickname)
@@ -191,9 +193,11 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Invalid or unsupported version: missing required fields", func(t *testing.T) {
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nicknameRequiredFieldMissing)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+nicknameRequiredFieldMissing+".yaml", accountPath)
+
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.Equal(t, 0, newWallet.GetAccountCount())
@@ -202,9 +206,11 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Invalid or unsupported version: 2", func(t *testing.T) {
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nicknameVersion2NotCompatible)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+nicknameVersion2NotCompatible+".yaml", accountPath)
+
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.Equal(t, 0, newWallet.GetAccountCount())
@@ -213,9 +219,11 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Nickname 52 chars", func(t *testing.T) {
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nickname52Chars)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_AAU1AVvtqkzk6NqCn6ifDyBnXT5FskX5aujSCCCfz7LHUkQhr8DpH.yaml", accountPath)
+
 		newWallet, err := New(walletPath)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, newWallet.GetAccountCount())
@@ -225,6 +233,7 @@ func TestWallet(t *testing.T) {
 
 	t.Run("Nickname too long", func(t *testing.T) {
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nicknameTooLong)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_AAAU1AVvtqkzk6NqCn6ifDyBnXT5FskX5aujSCCCfz7LHUkQhr8DpH.yaml", accountPath)
@@ -233,6 +242,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Load account with plaintext size 33 bytes, and sign", func(t *testing.T) {
 		// prepare
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nickname33Bytes)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+nickname33Bytes+".yaml", accountPath)
@@ -253,6 +263,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Load account version 0 that is a version 1, and sign", func(t *testing.T) {
 		// prepare
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nicknameVersionOThatIsVersion1)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+nicknameVersionOThatIsVersion1+".yaml", accountPath)
@@ -274,6 +285,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Retro-compatibility: old wallet file location", func(t *testing.T) {
 		// prepare
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nicknameOldLocation)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+nicknameOldLocation+".yaml", accountPath)
@@ -290,6 +302,7 @@ func TestWallet(t *testing.T) {
 	t.Run("Load account with only required fields (no address, no nickname)", func(t *testing.T) {
 		// prepare
 		ClearAccounts(t, walletPath)
+
 		accountPath, err := w.AccountPath(nicknameOnlyRequiredFields)
 		assert.NoError(t, err)
 		copy(t, "../../tests/wallet_"+nicknameOnlyRequiredFields+".yaml", accountPath)
@@ -323,9 +336,11 @@ func TestWallet(t *testing.T) {
 
 	t.Run("account from address", func(t *testing.T) {
 		ClearAccounts(t, walletPath)
+
 		err := w.Discover()
 		assert.Equal(t, 0, w.GetAccountCount())
 		assert.NoError(t, err)
+
 		acc := createAccount(nicknameNew)
 		err = w.AddAccount(acc, true, false)
 		assert.NoError(t, err)

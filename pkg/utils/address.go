@@ -18,6 +18,7 @@ func IsValidContract(addr string) bool {
 	if !IsValidAddress(addr) {
 		return false
 	}
+
 	addressPrefix := addr[:2]
 
 	return addressPrefix == "AS"

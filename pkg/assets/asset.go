@@ -75,6 +75,7 @@ func InitAssetsStore(massaClient *network.NodeFetcher) *AssetsStore {
 		if err != nil {
 			logger.Fatalf("Failed to create AssetsStore: Failed to get AssetsStore JSON file", err)
 		}
+
 		Store.assetsJSONDir = assetsJSONDir
 	}
 
@@ -193,6 +194,7 @@ func (s *AssetsStore) save() error {
 			}
 			assetsData.Assets = append(assetsData.Assets, asset)
 		}
+
 		accountsData.Accounts[accountName] = struct {
 			Assets []assetData `json:"assets"`
 		}{Assets: assetsData.Assets}
@@ -293,6 +295,7 @@ func (s *AssetsStore) All(nickname string, chainID int) []*AssetInfoWithBalances
 		if asset.ChainID != chainID {
 			continue
 		}
+
 		decimals := asset.Decimals // Copy the decimals value to avoid a pointer to a local variable
 		completeAsset := &AssetInfoWithBalances{
 			AssetInfo: &models.AssetInfo{
@@ -318,6 +321,7 @@ func (s *AssetsStore) All(nickname string, chainID int) []*AssetInfoWithBalances
 		if *asset.ChainID != int64(chainID) || exists {
 			continue
 		}
+
 		completeAsset := &AssetInfoWithBalances{
 			AssetInfo: &models.AssetInfo{
 				Address:  asset.Address,
