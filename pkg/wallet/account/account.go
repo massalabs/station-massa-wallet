@@ -156,6 +156,7 @@ func NewFromPrivateKey(password *memguard.LockedBuffer, nickname string, private
 	seedBuffer := memguard.NewBufferFromBytes(seed)
 	privateKeyBytes := append([]byte{privateKeyVersion}, seedBuffer.Bytes()...)
 	seedBuffer.Destroy()
+
 	privateKey := memguard.NewBufferFromBytes(privateKeyBytes)
 
 	encryptedSecret, err := seal(privateKey, password, salt[:], nonce[:])

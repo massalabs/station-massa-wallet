@@ -57,6 +57,7 @@ func (w *walletGetAll) Handle(params operations.AccountListParams) middleware.Re
 		if err != nil {
 			return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 		}
+
 		modelWallet.CandidateBalance = models.Amount(fmt.Sprint(infos[i].CandidateBalance))
 		modelWallet.Balance = models.Amount(fmt.Sprint(infos[i].Balance))
 		accountModels = append(accountModels, modelWallet)

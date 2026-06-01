@@ -50,6 +50,24 @@ func signMessage(t *testing.T, api *operations.MassaWalletAPI, nickname string, 
 	return resp
 }
 
+func expireSignRule(t *testing.T, cfg *config.Config, nickname, ruleID string) {
+	t.Helper()
+
+	accountCfg, ok := cfg.Accounts[nickname]
+	assert.True(t, ok, "account should exist")
+
+	for i, rule := range accountCfg.SignRules {
+		if rule.ID == ruleID {
+			accountCfg.SignRules[i].ExpireAfter = time.Now().Add(-time.Second)
+			cfg.Accounts[nickname] = accountCfg
+
+			return
+		}
+	}
+
+	t.Fatalf("rule %s should exist", ruleID)
+}
+
 func verifySignResponse(t *testing.T, resp *httptest.ResponseRecorder) {
 	var signResponse models.SignResponse
 	err := json.Unmarshal(resp.Body.Bytes(), &signResponse)
@@ -249,6 +267,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		cacheInstance := cache.Init()
 		address, err := account.Address.String()
 		assert.NoError(t, err)
+
 		cacheKey := "pkey" + address
 		cacheInstance.Remove(cache.KeyHash([]byte(cacheKey)))
 	})
@@ -271,6 +290,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Cache the private key to simulate it being already cached
 		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
 		defer passwordBuffer.Destroy()
+
 		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
 		assert.NoError(t, err)
 
@@ -286,6 +306,7 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
@@ -301,6 +322,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		cacheInstance := cache.Init()
 		address, err := account.Address.String()
 		assert.NoError(t, err)
+
 		cacheKey := "pkey" + address
 		cacheInstance.Remove(cache.KeyHash([]byte(cacheKey)))
 	})
@@ -401,11 +423,13 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData, headers)
 		verifyStatusCode(t, resp, http.StatusOK)
+
 		result := <-testResult
 		checkResultChannel(t, result, true, "")
 		verifySignResponse(t, resp)
@@ -631,6 +655,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Cache the private key to simulate it being already cached
 		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
 		defer passwordBuffer.Destroy()
+
 		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
 		assert.NoError(t, err)
 
@@ -645,6 +670,7 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
@@ -675,6 +701,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Cache the private key to simulate it being already cached
 		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
 		defer passwordBuffer.Destroy()
+
 		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
 		assert.NoError(t, err)
 
@@ -690,11 +717,13 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData, headers)
 		verifyStatusCode(t, resp, http.StatusOK)
+
 		result := <-testResult
 		checkResultChannel(t, result, true, "")
 		verifySignResponse(t, resp)
@@ -706,15 +735,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	t.Run("auto sign rule expired, display prompt password but user don't validate -> rule not refreshed", func(t *testing.T) {
 		testCache.Purge()
 
-		// Set a very short rule timeout for testing (1 second)
 		cfg := config.Get()
-		originalTimeout := cfg.RuleTimeout
-		cfg.RuleTimeout = 1
-
-		// Restore original timeout after test
-		defer func() {
-			cfg.RuleTimeout = originalTimeout
-		}()
 
 		authorizedOrigin := "http://massa.network"
 
@@ -732,6 +753,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Cache the private key to simulate it being already cached
 		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
 		defer passwordBuffer.Destroy()
+
 		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
 		assert.NoError(t, err)
 
@@ -739,8 +761,8 @@ func Test_walletSign_Handle(t *testing.T) {
 			originHeader: authorizedOrigin,
 		}
 
-		// Wait for the rule to expire (1 second + buffer)
-		time.Sleep(2 * time.Second)
+		// Force the rule to expire without waiting for wall-clock time.
+		expireSignRule(t, cfg, nickname, ruleId)
 
 		// Now try to sign again - rule should be expired
 		go func() {
@@ -767,15 +789,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	t.Run("sign rule expired -> automatic refresh after successful signing", func(t *testing.T) {
 		testCache.Purge()
 
-		// Set a very short rule timeout for testing (1 second)
 		cfg := config.Get()
-		originalTimeout := cfg.RuleTimeout
-		cfg.RuleTimeout = 1
-
-		// Restore original timeout after test
-		defer func() {
-			cfg.RuleTimeout = originalTimeout
-		}()
 
 		authorizedOrigin := "http://massa.network"
 
@@ -794,12 +808,13 @@ func Test_walletSign_Handle(t *testing.T) {
 			originHeader: authorizedOrigin,
 		}
 
-		// Wait for the rule to expire (1 second + buffer)
-		time.Sleep(2 * time.Second)
+		// Force the rule to expire without waiting for wall-clock time.
+		expireSignRule(t, cfg, nickname, ruleId)
 
 		// Cache the private key to simulate it being already cached
 		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
 		defer passwordBuffer.Destroy()
+
 		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
 		assert.NoError(t, err)
 
@@ -812,12 +827,14 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData, headers)
 
 		verifyStatusCode(t, resp, http.StatusOK)
+
 		result := <-testResult
 		checkResultChannel(t, result, true, "")
 		verifySignResponse(t, resp)
@@ -836,15 +853,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	t.Run("sign rule expired with no private key in cache -> prompts password and refreshes rule", func(t *testing.T) {
 		testCache.Purge()
 
-		// Set a very short rule timeout for testing (1 second)
 		cfg := config.Get()
-		originalTimeout := cfg.RuleTimeout
-		cfg.RuleTimeout = 1
-
-		// Restore original timeout after test
-		defer func() {
-			cfg.RuleTimeout = originalTimeout
-		}()
 
 		authorizedOrigin := "http://massa.network"
 
@@ -863,8 +872,8 @@ func Test_walletSign_Handle(t *testing.T) {
 			originHeader: authorizedOrigin,
 		}
 
-		// Wait for the rule to expire (1 second + buffer)
-		time.Sleep(2 * time.Second)
+		// Force the rule to expire without waiting for wall-clock time.
+		expireSignRule(t, cfg, nickname, ruleId)
 
 		// Now try to sign - no private key in cache and rule expired, should prompt for password
 		testResult := make(chan walletapp.EventData)
@@ -875,11 +884,13 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData, headers)
 		verifyStatusCode(t, resp, http.StatusOK)
+
 		result := <-testResult
 		checkResultChannel(t, result, true, "")
 		verifySignResponse(t, resp)
@@ -898,15 +909,7 @@ func Test_walletSign_Handle(t *testing.T) {
 	t.Run("DisablePasswordPrompt rule expired -> prompts password and refreshes rule", func(t *testing.T) {
 		testCache.Purge()
 
-		// Set a very short rule timeout for testing (1 second)
 		cfg := config.Get()
-		originalTimeout := cfg.RuleTimeout
-		cfg.RuleTimeout = 1
-
-		// Restore original timeout after test
-		defer func() {
-			cfg.RuleTimeout = originalTimeout
-		}()
 
 		authorizedOrigin := "http://massa.network"
 
@@ -923,6 +926,7 @@ func Test_walletSign_Handle(t *testing.T) {
 		// Cache the private key to simulate it being already cached
 		passwordBuffer := memguard.NewBufferFromBytes([]byte(password))
 		defer passwordBuffer.Destroy()
+
 		err = cache.CachePrivateKeyFromPassword(account, passwordBuffer)
 		assert.NoError(t, err)
 
@@ -930,8 +934,8 @@ func Test_walletSign_Handle(t *testing.T) {
 			originHeader: authorizedOrigin,
 		}
 
-		// Wait for the rule to expire (1 second + buffer)
-		time.Sleep(2 * time.Second)
+		// Force the rule to expire without waiting for wall-clock time.
+		expireSignRule(t, cfg, nickname, ruleId)
 
 		// Now try to sign - rule is expired so should prompt for password despite cached key
 		testResult := make(chan walletapp.EventData)
@@ -942,11 +946,13 @@ func Test_walletSign_Handle(t *testing.T) {
 				Password:    password,
 				Fees:        "14400",
 			}
+
 			res <- (<-resChan)
 		}(testResult)
 
 		resp := signTransaction(t, api, nickname, transactionData, headers)
 		verifyStatusCode(t, resp, http.StatusOK)
+
 		result := <-testResult
 		checkResultChannel(t, result, true, "")
 		verifySignResponse(t, resp)

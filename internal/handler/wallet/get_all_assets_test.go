@@ -9,6 +9,7 @@ import (
 	"github.com/massalabs/station-massa-wallet/api/server/models"
 	"github.com/massalabs/station-massa-wallet/api/server/restapi/operations"
 	"github.com/massalabs/station-massa-wallet/pkg/assets"
+	"github.com/massalabs/station-massa-wallet/pkg/network"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,17 +62,18 @@ func assertAssetInfoWithBalanceEqual(t *testing.T, actual, expected *models.Asse
 }
 
 func getExpectedAssetsCount(t *testing.T) int {
-	// tempDir, err := os.MkdirTemp(os.TempDir(), "*-wallet-dir")
-	// assert.NoError(t, err)
-	// nodeFetcher := network.NewNodeFetcher()
-	// store, err := assets.InitAssetsStore(tempDir, nodeFetcher)
-	// assert.NoError(t, err)
+	t.Helper()
+
+	networkInfo, err := network.GetNetworkInfo()
+	assert.NoError(t, err)
+
 	defaultAssets, err := assets.Store.Default()
 	assert.NoError(t, err)
+
 	counter := 0
 
 	for _, asset := range defaultAssets {
-		if asset.ChainID == 77658366 {
+		if asset.ChainID == networkInfo.ChainID {
 			counter += 1
 		}
 	}

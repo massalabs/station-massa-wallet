@@ -91,6 +91,7 @@ func TestPublicKey_MarshalText(t *testing.T) {
 		sampleData := []byte("Test")
 		publicKeyBytes, privateKeyBytes, err := ed25519.GenerateKey(rand.Reader)
 		assert.NoError(t, err)
+
 		signature := ed25519.Sign(privateKeyBytes, sampleData)
 		publicKey := PublicKey{
 			Object: &object.Object{

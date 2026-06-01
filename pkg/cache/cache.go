@@ -133,6 +133,7 @@ func xor(pkey *memguard.LockedBuffer, cacheKeyHash [64]byte) (*memguard.LockedBu
 	if len(a) != len(cacheKeyHash) {
 		return nil, fmt.Errorf("length of two arrays must be same, %d and %d", len(a), len(cacheKeyHash))
 	}
+
 	result := make([]byte, len(a))
 
 	for i := 0; i < len(a); i++ {

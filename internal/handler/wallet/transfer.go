@@ -52,6 +52,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	if err != nil {
 		return newErrorResponse(err.Error(), errorGetAccount, http.StatusInternalServerError)
 	}
+
 	address := string(addressBytes)
 
 	var recipientNickname string
@@ -93,6 +94,7 @@ func (t *transferCoin) Handle(params operations.TransferCoinParams) middleware.R
 	if !ok {
 		return newErrorResponse(fmt.Sprintf("prompting password for message: %v", utils.ErrInvalidInputType.Error()), utils.ErrInvalidInputType.Error(), http.StatusInternalServerError)
 	}
+
 	password := output.Password
 
 	// Copy the password before doTransfer destroys it (acc.Sign wipes the buffer)

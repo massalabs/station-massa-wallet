@@ -14,9 +14,9 @@ jobs:
         with:
           os: ubuntu-latest
       - name: run golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
-          version: v1.64.2
+          version: v2.12.2
           args: --timeout=30s
       - name: install gofumpt
         run: go install mvdan.cc/gofumpt@latest

@@ -80,6 +80,7 @@ func (w *walletSign) Handle(params operations.SignParams) middleware.Responder {
 
 		if signRuleHasExpired {
 			logger.Infof("sign rule %s has expired", enabledRule.ID)
+
 			promptData.ExpiredSignRule = true
 		}
 

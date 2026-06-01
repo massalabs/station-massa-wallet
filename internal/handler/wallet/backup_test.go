@@ -54,6 +54,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.YamlFileBackup),
 			}
+
 			testResult <- (<-resChan)
 		}()
 
@@ -72,6 +73,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     string(prompt.PrivateKeyBackup),
 			}
+
 			prompterAppMock.App().CtrlChan <- walletapp.Cancel
 		}()
 
@@ -103,6 +105,7 @@ func Test_walletBackupAccount_Handle(t *testing.T) {
 				BaseMessage: walletapp.BaseMessage{},
 				Message:     password,
 			}
+
 			testResult <- (<-resChan)
 		}()
 

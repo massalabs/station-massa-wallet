@@ -38,6 +38,7 @@ func New(walletPath string) (*Wallet, error) {
 		if err != nil {
 			return nil, fmt.Errorf("getting account directory: %w", err)
 		}
+
 		wallet.WalletPath = walletPath
 	} else {
 		wallet.WalletPath = walletPath

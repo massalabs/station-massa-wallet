@@ -49,6 +49,7 @@ func Test_walletCreate_Handle(t *testing.T) {
 					}
 					// forward test result to test goroutine
 				}
+
 				res <- (<-resChan)
 			}(testResult)
 		}

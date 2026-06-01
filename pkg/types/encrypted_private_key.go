@@ -99,7 +99,7 @@ func (e *EncryptedPrivateKey) Sign(password *memguard.LockedBuffer, salt, nonce,
 
 	defer privateKeyInClear.Destroy()
 
-	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKeyInClear.Bytes(), digest[:])...), nil
+	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(ed25519PrivateKeyFromLocked(privateKeyInClear), digest[:])...), nil
 }
 
 // SignWithPrivateKey signs the given data using the private key. Private key is destroyed.
@@ -108,7 +108,7 @@ func (e *EncryptedPrivateKey) SignWithPrivateKey(privateKey *memguard.LockedBuff
 
 	defer privateKey.Destroy()
 
-	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(privateKey.Bytes(), digest[:])...)
+	return append([]byte{EncryptedPrivateKeyLastVersion}, ed25519.Sign(ed25519PrivateKeyFromLocked(privateKey), digest[:])...)
 }
 
 // PublicKey returns the public key corresponding to the private key. Password is destroyed.
@@ -118,7 +118,7 @@ func (e *EncryptedPrivateKey) PublicKey(password *memguard.LockedBuffer, salt, n
 		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
 
-	publicKeyBytes := ed25519.PrivateKey(privateKeyInClear.Bytes()).Public().(ed25519.PublicKey)
+	publicKeyBytes := ed25519PrivateKeyFromLocked(privateKeyInClear).Public().(ed25519.PublicKey)
 
 	privateKeyInClear.Destroy()
 
@@ -138,13 +138,14 @@ func (e *EncryptedPrivateKey) PrivateKeyTextInClear(password *memguard.LockedBuf
 		return nil, fmt.Errorf("failed to get private key: %w", err)
 	}
 
-	seed := ed25519.PrivateKey(privateKeyInClear.Bytes()).Seed()
+	seed := ed25519PrivateKeyFromLocked(privateKeyInClear).Seed()
 	privateKeyInClear.Destroy()
 
 	seedBuffer := memguard.NewBufferFromBytes(seed)
 
 	privateKey := e.Kind.Prefix() + base58.CheckEncode(seedBuffer.Bytes(), e.Version)
 	seedBuffer.Destroy()
+
 	privateKeyBuffer := memguard.NewBufferFromBytes([]byte(privateKey))
 
 	return privateKeyBuffer, nil
@@ -169,6 +170,16 @@ func (e *EncryptedPrivateKey) HasAccess(password *memguard.LockedBuffer, salt, n
 	privateKeyInClear.Destroy()
 
 	return true
+}
+
+// ed25519PrivateKeyFromLocked copies a memguard-backed key into heap memory.
+// Required for Go 1.25+ ed25519, which registers weak pointers on the key slice.
+func ed25519PrivateKeyFromLocked(buf *memguard.LockedBuffer) ed25519.PrivateKey {
+	src := buf.Bytes()
+	pk := make(ed25519.PrivateKey, len(src))
+	copy(pk, src)
+
+	return pk
 }
 
 // privateKey returns the private key in clear. Password is destroyed.

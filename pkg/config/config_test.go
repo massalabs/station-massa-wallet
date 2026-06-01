@@ -23,6 +23,7 @@ func TestMain(m *testing.M) {
 
 	// Load config file with config file path override
 	SetConfigFileDirOverride(tempDir)
+
 	manager := Load()
 	cfg = manager.Config
 
