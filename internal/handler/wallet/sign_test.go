@@ -845,6 +845,11 @@ func Test_walletSign_Handle(t *testing.T) {
 		assert.True(t, refreshedRule.ExpireAfter.After(time.Now()), "Rule should be refreshed with new expiration")
 		assert.True(t, cfg.HasEnabledRule(nickname))
 
+		// The refreshed AutoSign rule should be active again and skip the prompt.
+		resp = signTransaction(t, api, nickname, transactionData, headers)
+		verifyStatusCode(t, resp, http.StatusOK)
+		verifySignResponse(t, resp)
+
 		// Clean up
 		err = cfg.DeleteSignRule(nickname, ruleId)
 		assert.NoError(t, err)

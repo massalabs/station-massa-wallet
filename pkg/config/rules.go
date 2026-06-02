@@ -59,7 +59,12 @@ func (c *Config) findRuleIndex(accountConfig AccountCfg, ruleID string) (int, er
 }
 
 func (c Config) NewRuleExpirationTime() time.Time {
-	return time.Now().Add(time.Duration(c.RuleTimeout) * time.Second)
+	ruleTimeout := c.RuleTimeout
+	if ruleTimeout == 0 {
+		ruleTimeout = DefaultRuleTimeout
+	}
+
+	return time.Now().Add(time.Duration(ruleTimeout) * time.Second)
 }
 
 func (c *Config) DeleteSignRule(accountName, ruleID string) error {
