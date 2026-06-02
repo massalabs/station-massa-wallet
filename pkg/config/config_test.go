@@ -229,3 +229,12 @@ func TestLegacyConfigHandling(t *testing.T) {
 		assert.True(t, legacyRule.ExpireAfter.After(time.Now()))
 	})
 }
+
+func TestNewRuleExpirationTimeUsesDefaultWhenTimeoutIsZero(t *testing.T) {
+	cfg := Config{RuleTimeout: 0}
+
+	expireAfter := cfg.NewRuleExpirationTime()
+
+	assert.True(t, expireAfter.After(time.Now()), "expiration should be in the future")
+	assert.True(t, expireAfter.Before(time.Now().Add(time.Duration(DefaultRuleTimeout+1)*time.Second)))
+}
