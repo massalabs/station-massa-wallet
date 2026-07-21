@@ -58,12 +58,10 @@ func WakeUpPrompt(
 	req PromptRequest,
 	acc *account.Account,
 ) (interface{}, error) {
-	if prompterApp.IsListening() {
+	if !prompterApp.TryLock() {
 		logger.Warn(AlreadyListeningErr)
 		return nil, fmt.Errorf("%s", AlreadyListeningErr)
 	}
-
-	prompterApp.Lock()
 	defer prompterApp.Unlock()
 
 	prompterApp.PromptRequest(req)
