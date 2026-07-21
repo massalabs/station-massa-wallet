@@ -116,12 +116,6 @@ func NewMassaWalletAPI(spec *loads.Document) *MassaWalletAPI {
 			return middleware.NotImplemented("operation DeleteSignRule has not yet been implemented")
 		}),
 
-		ExportAccountFileHandler: ExportAccountFileHandlerFunc(func(params ExportAccountFileParams) middleware.Responder {
-			_ = params
-
-			return middleware.NotImplemented("operation ExportAccountFile has not yet been implemented")
-		}),
-
 		GetAccountHandler: GetAccountHandlerFunc(func(params GetAccountParams) middleware.Responder {
 			_ = params
 
@@ -226,7 +220,6 @@ type MassaWalletAPI struct {
 	JSONConsumer runtime.Consumer
 
 	// BinProducer registers a producer for the following mime types:
-	//   - application/octet-stream
 	//   - image/png
 	BinProducer runtime.Producer
 	// CSSProducer registers a producer for the following mime types:
@@ -261,8 +254,6 @@ type MassaWalletAPI struct {
 	DeleteAssetHandler DeleteAssetHandler
 	// DeleteSignRuleHandler sets the operation handler for the delete sign rule operation
 	DeleteSignRuleHandler DeleteSignRuleHandler
-	// ExportAccountFileHandler sets the operation handler for the export account file operation
-	ExportAccountFileHandler ExportAccountFileHandler
 	// GetAccountHandler sets the operation handler for the get account operation
 	GetAccountHandler GetAccountHandler
 	// GetAllAssetsHandler sets the operation handler for the get all assets operation
@@ -403,9 +394,6 @@ func (o *MassaWalletAPI) Validate() error {
 	if o.DeleteSignRuleHandler == nil {
 		unregistered = append(unregistered, "DeleteSignRuleHandler")
 	}
-	if o.ExportAccountFileHandler == nil {
-		unregistered = append(unregistered, "ExportAccountFileHandler")
-	}
 	if o.GetAccountHandler == nil {
 		unregistered = append(unregistered, "GetAccountHandler")
 	}
@@ -490,8 +478,6 @@ func (o *MassaWalletAPI) ProducersFor(mediaTypes []string) map[string]runtime.Pr
 	result := make(map[string]runtime.Producer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
-		case "application/octet-stream":
-			result["application/octet-stream"] = o.BinProducer
 		case "image/png":
 			result["image/png"] = o.BinProducer
 		case "text/css":
@@ -577,10 +563,6 @@ func (o *MassaWalletAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/api/accounts/{nickname}/signrules/{ruleId}"] = NewDeleteSignRule(o.context, o.DeleteSignRuleHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
-	o.handlers["GET"]["/api/accounts/{nickname}/exportFile"] = NewExportAccountFile(o.context, o.ExportAccountFileHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

@@ -13,7 +13,6 @@
 //	  - application/json
 //
 //	Produces:
-//	  - application/octet-stream
 //	  - image/png
 //	  - text/css
 //	  - text/html
