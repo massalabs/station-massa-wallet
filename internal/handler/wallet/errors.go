@@ -20,7 +20,7 @@ const (
 	errorImportWalletCanceled
 	errorImportNickNameAlreadyTaken
 	errorImportWallet
-	errorExportWallet
+	_ // was errorExportWallet (removed); slot kept to preserve error-code numbering
 	errorTransferCoin
 	errorSaveAccount
 	errorInvalidAssetAddress

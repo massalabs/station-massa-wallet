@@ -489,46 +489,6 @@ func init() {
         }
       }
     },
-    "/api/accounts/{nickname}/exportFile": {
-      "get": {
-        "description": "Download the account file corresponding to the nickname given in path.",
-        "produces": [
-          "application/octet-stream"
-        ],
-        "operationId": "ExportAccountFile",
-        "parameters": [
-          {
-            "$ref": "#/parameters/nickname"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Download the account file",
-            "schema": {
-              "type": "file"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
     "/api/accounts/{nickname}/rolls": {
       "post": {
         "description": "Buy or sell rolls.",
@@ -1982,51 +1942,6 @@ func init() {
           },
           "422": {
             "description": "Unprocessable Entity - syntax is correct, but the server was unable to process the contained instructions.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal Server Error - The server has encountered a situation it does not know how to handle.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/api/accounts/{nickname}/exportFile": {
-      "get": {
-        "description": "Download the account file corresponding to the nickname given in path.",
-        "produces": [
-          "application/octet-stream"
-        ],
-        "operationId": "ExportAccountFile",
-        "parameters": [
-          {
-            "type": "string",
-            "x-nullable": false,
-            "description": "Account's short name.",
-            "name": "nickname",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Download the account file",
-            "schema": {
-              "type": "file"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Not found.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
