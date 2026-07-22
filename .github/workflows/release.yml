@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Version to produce"
+        description: "Version to produce (with 'v' prefix)"
         required: true
       draft:
         description: "Draft"
@@ -34,6 +34,10 @@ jobs:
           sudo apt-get install -y jq
           version=$(jq -r '.version' manifest.json)
           tag_name=${{ inputs.tag_name }}
+          if [[ $tag_name != v* ]]; then
+            echo "The version tag must start with a 'v' prefix"
+            exit 1
+          fi
           tag_name_without_v=${tag_name#v}
           if [[ $version != $tag_name_without_v ]]; then
             echo "The manifest version is not equal to the tag version"
