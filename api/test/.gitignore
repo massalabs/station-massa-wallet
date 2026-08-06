@@ -1,0 +1,5 @@
+log.html
+output.xml
+report.html
+*.log
+selenium-screenshot-*.png
