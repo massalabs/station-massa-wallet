@@ -7,7 +7,7 @@ tasks:
       - cmd: sudo apt update && sudo apt install -y libgtk-3-0 libwebkit2gtk-4.1-dev
         platforms: [linux]
         ignore_error: true
-      - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+      - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@v0.33.1
       - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
         platforms: [linux, windows]
       - cmd: GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
@@ -20,7 +20,7 @@ tasks:
     cmds:
       - cmd: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
       - cmd: go install github.com/daixiang0/gci@latest
-      - cmd: go install mvdan.cc/gofumpt@latest
+      - cmd: go install mvdan.cc/gofumpt@v0.11.0
 
   generate:
     cmds:
