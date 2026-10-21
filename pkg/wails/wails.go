@@ -8,6 +8,8 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/application"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
+	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
 func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application {
@@ -29,6 +31,16 @@ func NewWailsApp(app *wApp.WalletApp, assets embed.FS) *application.Application 
 			wApp.PromptRequest,
 			wApp.EventTypes,
 			config.RuleTypes,
+		},
+		// Hide the prompt window (passwords, signing requests) from screen sharing and screenshots.
+		// Not supported on Linux.
+		Mac: &mac.Options{
+			ContentProtection: true,
+			// Keep the window non-zoomable, as when no Mac options were set.
+			DisableZoom: true,
+		},
+		Windows: &windows.Options{
+			ContentProtection: true,
 		},
 	})
 }
