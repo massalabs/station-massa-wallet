@@ -1,6 +1,6 @@
 module github.com/massalabs/station-massa-wallet
 
-go 1.25.10
+go 1.27.3
 
 require (
 	github.com/bluele/gcache v0.0.2
