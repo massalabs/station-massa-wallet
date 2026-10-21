@@ -14,12 +14,12 @@ jobs:
         with:
           os: ubuntu-latest
       - name: run golangci-lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.12.2
+          version: v2.15.0
           args: --timeout=30s
       - name: install gofumpt
-        run: go install mvdan.cc/gofumpt@v0.11.0
+        run: go install mvdan.cc/gofumpt@v0.12.0
       - name: run gofumpt
         run: |
           ERRORS=$(gofumpt -l . | wc -l)
