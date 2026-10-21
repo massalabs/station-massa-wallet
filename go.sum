@@ -165,6 +165,8 @@ github.com/massalabs/station v0.6.6-0.20250122093330-de0ab4bbb76c h1:QvlTA0KOiq4
 github.com/massalabs/station v0.6.6-0.20250122093330-de0ab4bbb76c/go.mod h1:i9d/zAqeDYxY0Od5LEfEkP6V2osUhA13GwA72ByM8bQ=
 github.com/massalabs/station/plugin-kit v0.1.1 h1:KIzEjQX1ukgSSmmnD3EVADN9N7h3kTbFzHI3lal9+Po=
 github.com/massalabs/station/plugin-kit v0.1.1/go.mod h1:ua8P3mEso/AJSyuAL1cqy4JRu7tn/zzSEZsW3FJLIew=
+github.com/massalabs/station/plugin-kit v0.1.2 h1:erPVq1yQO5s+6ZNgfzwfqaofCcLB/iclWJ2VklxB6G4=
+github.com/massalabs/station/plugin-kit v0.1.2/go.mod h1:ua8P3mEso/AJSyuAL1cqy4JRu7tn/zzSEZsW3FJLIew=
 github.com/matryer/is v1.4.0/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
 github.com/matryer/is v1.4.1 h1:55ehd8zaGABKLXQUe2awZ99BD/PTc2ls+KV/dXphgEQ=
 github.com/matryer/is v1.4.1/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
