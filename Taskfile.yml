@@ -8,11 +8,11 @@ tasks:
         platforms: [linux]
         ignore_error: true
       - cmd: go install github.com/go-swagger/go-swagger/cmd/swagger@v0.33.1
-      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
+      - cmd: go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
         platforms: [linux, windows]
-      - cmd: GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
+      - cmd: GOARCH=amd64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
         platforms: [darwin/amd64]
-      - cmd: GOARCH=arm64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.10.1
+      - cmd: GOARCH=arm64 go install github.com/wailsapp/wails/v2/cmd/wails@v2.17.0
         platforms: [darwin/arm64]
 
   install-dev:
