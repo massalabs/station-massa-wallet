@@ -38,3 +38,30 @@ jobs:
             echo "wallet not deleted"
             exit 1
           fi
+  robot-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/install
+      - name: build
+        run: go build -tags desktop,production -ldflags "-w -s" -o build/test_wallet main.go
+      - name: Set up wallet
+        run: |
+          mkdir -p $HOME/.config/massa-station-wallet/
+          echo "$WALLET_TEST_WALLET" > $HOME/.config/massa-station-wallet/wallet_fullpower.yaml
+      - name: Run app
+        run: STANDALONE=1 xvfb-run ./build/test_wallet > logs.txt &
+        env:
+          WALLET_PASSWORD: ${{ secrets.WALLET_TEST_PASSWORD }}
+      - name: Wait for server to be up
+        uses: juliangruber/sleep-action@v1
+        with:
+          time: 5s
+      - name: Run RobotFramework tests
+        working-directory: api/test
+        run: |
+          mkdir results
+          robot --outputdir results robot_tests
+      - name: Print logs
+        if: always()
+        run: cat logs.txt
